@@ -16,10 +16,10 @@ class ItemTypesFactory extends Factory
      */
     public function definition(): array
     {
-//        return [
+        return [
 //            'name' => fake()->randomElement(['','','','','']),
 //            'created_by' => 1,
 //            'updated_by' => 1
-//        ];
+        ];
     }
 }
