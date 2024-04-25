@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ItemTypesController;
 use App\Http\Controllers\InventoryItemsController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,8 +23,14 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function (){
     Route::get('/dashboard', function (){return Inertia::render('Dashboard');})->name('dashboard');
-    Route::get('/inventoryItems', [InventoryItemsController::class, 'index'])->name('inventoryItems');
-    Route::resource('itemTypes', ItemTypesController::class);
+//    Route::resource('inventoryItems', InventoryItemsController::class);
+//    Route::resource('itemTypes', ItemTypesController::class);
+//    Route::resource('users', UserController::class);
+    Route::group(['middleware' => ['role:admin']], function () {
+        Route::resource('inventoryItems', InventoryItemsController::class);
+        Route::resource('itemTypes', ItemTypesController::class);
+        Route::resource('users', UserController::class);
+    });
 });
 
 Route::middleware('auth')->group(function () {

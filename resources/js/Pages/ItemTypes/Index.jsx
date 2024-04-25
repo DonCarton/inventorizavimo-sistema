@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head, Link} from '@inertiajs/react';
+import Pagination from "@/Components/Pagination.jsx";
 
 export default function InventoryTypes({ auth, itemTypes }) {
     return (
@@ -22,27 +23,39 @@ export default function InventoryTypes({ auth, itemTypes }) {
                                     <th className="px-3 py-2">Name</th>
                                     <th className="px-3 py-2">Created by</th>
                                     <th className="px-3 py-2">Updated by</th>
-                                    <th className="px-3 py-2 text-right">Actions</th>
+                                    <th className="px-3 py-2 text-center">Actions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {itemTypes.data.map(itemType => (
                                     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                         <th className="px-3 py-2">{itemType.id}</th>
-                                        <td className="px-3 py-2">{itemType.name}</td>
-                                        <td className="px-3 py-2">{itemType.created_by.name}</td>
-                                        <td className="px-3 py-2">{itemType.updated_by.name}</td>
                                         <td className="px-3 py-2">
                                             <Link href={route("itemTypes.edit", itemType.id)}
-                                                className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1"
+                                                className="font-medium text-white dark:text-white hover:underline mx-1"
+                                            >
+                                                {itemType.name}
+                                            </Link>
+                                        </td>
+                                        <td className="px-3 py-2">{itemType.created_by.name}</td>
+                                        <td className="px-3 py-2">{itemType.updated_by.name}</td>
+                                        <td className="px-3 py-2 text-center">
+                                            <Link href={route("itemTypes.edit", itemType.id)}
+                                                  className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1"
                                             >
                                                 Edit
+                                            </Link>
+                                            <Link href={route("itemTypes.edit", itemType.id)}
+                                                  className="font-medium text-red-500 dark:text-red-400 hover:underline mx-1"
+                                            >
+                                                Delete
                                             </Link>
                                         </td>
                                     </tr>
                                 ))}
                                 </tbody>
                             </table>
+                            <Pagination links={itemTypes.meta.links}></Pagination>
                         </div>
                     </div>
                 </div>

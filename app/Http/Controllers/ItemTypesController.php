@@ -13,9 +13,10 @@ class ItemTypesController extends Controller
 {
     public function index(): Response
     {
+//        auth()->user()->assignRole('admin');
         $query = ItemTypes::query();
         $itemTypes = $query->paginate(10)->onEachSide(1);
-        return Inertia::render('ItemTypes',[
+        return Inertia::render('ItemTypes/Index',[
             'itemTypes' => ItemTypeResource::collection($itemTypes)
         ]);
     }
