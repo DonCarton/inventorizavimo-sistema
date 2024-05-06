@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreInventoryItemRequest;
+use App\Http\Requests\UpdateInventoryItemRequest;
 use App\Http\Resources\InventoryItemsResource;
 use Illuminate\Http\RedirectResponse;
 use App\Models\InventoryItems;
@@ -15,7 +17,7 @@ class InventoryItemsController extends Controller
     public function index(): Response
     {
         $query = InventoryItems::query();
-        $inventoryItems = $query->paginate(1)->onEachSide(1);
+        $inventoryItems = $query->paginate(3)->onEachSide(1);
         return Inertia::render('Inventory/Index',[
             'inventoryItems' => InventoryItemsResource::collection($inventoryItems)
         ]);
@@ -24,17 +26,20 @@ class InventoryItemsController extends Controller
     {
         return Inertia::render('Inventory/Create');
     }
-    public function store(Request $request): RedirectResponse
+    public function store(StoreInventoryItemRequest $request): RedirectResponse
     {
-        $data = $request;
+        $data = $request->validated();
+
+//        dd($data);
         InventoryItems::create($data);
         //dd($data);
         return to_route('inventoryItems.index');
     }
-    public function update(InventoryItems $inventoryItem): RedirectResponse
+    public function update(UpdateInventoryItemRequest $request, InventoryItems $inventoryItem): RedirectResponse
     {
-        $inventoryItem->update();
-        return Redirect::route('inventoryItems.edit');
+        $data = $request->validated();
+        $inventoryItem->update($data);
+        return Redirect::route('inventoryItems.index');
     }
     public function edit(InventoryItems $inventoryItem): Response
     {

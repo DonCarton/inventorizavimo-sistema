@@ -10,7 +10,14 @@ use Illuminate\Database\Eloquent\Model;
 class InventoryItems extends Model
 {
     use HasFactory;
-    #protected $fillable = ['created_by', 'updated_by'];
+    protected $fillable = [
+        'local_name',
+        'name',
+        'name_eng',
+        'barcode',
+        'created_by',
+        'updated_by'
+    ];
     public function typeByDuration(): HasOne
     {
         return $this->hasOne(ItemTypes::class, 'type_by_duration');

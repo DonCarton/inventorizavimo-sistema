@@ -3,18 +3,35 @@ import {Head, Link, useForm} from "@inertiajs/react";
 import InputLabel from "@/Components/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
-import Select from "react-tailwindcss-select";
-import react from "react";
-import SteamDropdown from "@/Components/SteamDropdown.jsx";
-import {useState} from "react";
+// import Select from "react-tailwindcss-select";
+import react, {useState} from "react";
+import SteamDropdown from "@/Components/SteamDropdown.jsx"
+import Select from "react-select";
 
 export default function Create({auth, roles}) {
+
+    const [selectedOption, setSelectedOption] = useState(null);
+    const options = [
+        { value: 'chocolate', label: 'Chocolate' },
+        { value: 'strawberry', label: 'Strawberry' },
+        { value: 'vanilla', label: 'Vanilla' },
+    ];
     const {data, setData, post, errors} = useForm({
         name: '',
         email: '',
         password: '',
         selectedRole: '',
+        selectedAnimal: '',
     });
+
+    const setAnimalValue = (e) => {
+        setAnimal(e.target.value);
+    }
+
+    const handleChange = value => {
+        console.log("value:", value);
+        setAnimal(value);
+    };
 
     const onSubmit = (e) => {
         e.preventDefault();
@@ -34,6 +51,18 @@ export default function Create({auth, roles}) {
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {/*<div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">*/}
+                    {/*<Select options={options} value={animal} onChange={handleChange} isMultiple={true} primaryColor={"indigo"}/>*/}
+                    <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options}
+                        isMulti
+                        isClearable={true}
+                        classNames={{
+                            control: (state) =>
+                                state.isFocused ? 'border-red-600' : 'border-grey-300',
+                        }}
+                    />
                         <form onSubmit={onSubmit} className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                             <div className="mt-4">
                                 <InputLabel
@@ -95,17 +124,6 @@ export default function Create({auth, roles}) {
                                         className="mt-1 block w-full"
                                     />
                                 </div>
-                                {/*<select*/}
-                                {/*    multiple={true}*/}
-                                {/*    id="user_role"*/}
-                                {/*    name="selectedRole"*/}
-                                {/*    className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"*/}
-                                {/*    onChange={e => setData('selectedRole', e.target.value)}*/}
-                                {/*>*/}
-                                {/*    /!*<option value="">Select a role</option>*!/*/}
-                                {/*    <option value="admin">Admin</option>*/}
-                                {/*    <option value="user">User</option>*/}
-                                {/*</select>*/}
                             </div>
                             <div>
                                 <Link href={route('users.index')}

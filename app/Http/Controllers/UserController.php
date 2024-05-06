@@ -17,10 +17,14 @@ class UserController extends Controller
      */
     public function index(): Response
     {
+        $translations = [
+            'user' => __('passwords.user')
+        ];
         $query = User::query();
         $users = $query->paginate(10)->onEachSide(1);
         return Inertia::render('Users/Index',[
-            'users' => UserResource::collection($users)
+            'users' => UserResource::collection($users),
+            'translations' => $translations
         ]);
     }
 
@@ -29,9 +33,13 @@ class UserController extends Controller
      */
     public function create(): Response
     {
+        //echo $request;
         $query = Role::all()->toArray();
 
-        return Inertia::render('Users/Create',[
+//        return Inertia::render('Users/Create',[
+//            'roles' => $query
+//        ]);
+        return Inertia::render('Users/CreateTwo',[
             'roles' => $query
         ]);
     }
@@ -41,6 +49,7 @@ class UserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        dd($request);
         if ($request['selectedRole'] == null) { redirect()->route('users.create')->with('failure', 'No role was chosen for the user'); }
         $newUser = User::create($request->all());
         $role = $request['selectedRole'];

@@ -1,8 +1,26 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, Link} from '@inertiajs/react';
+import {Head, Link, useForm, usePage} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
+import {useState} from "react";
+import Modal from "@/Components/Modal.jsx";
+import InputLabel from "@/Components/InputLabel.jsx";
 
-export default function Users({ auth, users }) {
+export default function Users({auth, users, translations, flash}) {
+    const [isOpen, setIsOpen] = useState(false)
+    const [chosenValue, setChosenValue] = useState('')
+    const {localFlash} = flash.message || '';
+    const {data, setData, get, errors} = useForm({
+        prefix: '',
+    });
+    const handleOpen = (e) => {
+        e.preventDefault();
+        setIsOpen(true);
+    };
+    const handleClose = (e) => {
+        e.preventDefault();
+        setIsOpen(false);
+        get(route('users.create'));
+    };
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -19,10 +37,39 @@ export default function Users({ auth, users }) {
             <Head title="Users"/>
 
             <div className="py-12">
+                <div>
+                    {localFlash && (
+                        <div className="alert">{localFlash}</div>
+                    )}
+                </div>
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <button onClick={handleOpen}>Open the modal</button>
+                        <Modal
+                            show={isOpen}
+                            closeable={true}
+                        >
+                            <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                                <form onSubmit={handleClose}>
+                                    <div className="mt-4">
+                                        <InputLabel
+                                            htmlFor="location_choice"
+                                            value="New inventory item"
+                                        />
+                                        {/*<select value={chosenValue} onChange={e => setChosenValue(e.target.value)}>*/}
+                                        <select onChange={e => setData('prefix', e.target.value)}>
+                                            <option value="">No option</option>
+                                            <option value="BIO">Option 1</option>
+                                            <option value="DEF">Option 2</option>
+                                        </select>
+                                        <button>Submit and be done</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </Modal>
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             {/*<pre> {JSON.stringify(users, undefined, 2)} </pre>*/}
+                            {/*<pre>{JSON.stringify(translations, undefined, 2)}</pre>*/}
                             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead
                                     className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
