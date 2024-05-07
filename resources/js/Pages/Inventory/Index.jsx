@@ -1,7 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head, Link} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
-import {Button, ButtonGroup} from "@material-tailwind/react";
 
 export default function Index({auth, inventoryItems}) {
     return (

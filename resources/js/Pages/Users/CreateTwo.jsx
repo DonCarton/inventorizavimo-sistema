@@ -1,10 +1,10 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
 import {Head, useForm, usePage} from "@inertiajs/react";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import InputLabel from "@/Components/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
-import {Button, Step, Stepper, CardHeader, Typography} from "@material-tailwind/react";
+import {Button, Step, Stepper} from "@material-tailwind/react";
 
 export default function CreateTwo({auth}) {
     const { roles } = usePage();
