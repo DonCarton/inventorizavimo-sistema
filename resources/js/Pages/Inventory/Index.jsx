@@ -1,8 +1,9 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head, Link} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
+import {Button, ButtonGroup} from "@material-tailwind/react";
 
-export default function InventoryTypes({auth, inventoryItems}) {
+export default function Index({auth, inventoryItems}) {
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -10,10 +11,15 @@ export default function InventoryTypes({auth, inventoryItems}) {
                 <div className="flex justify-between items-center">
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Inventory
                         items</h2>
-                    <Link href={route("inventoryItems.create")}
-                          className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600">
-                        Add new
-                    </Link>
+                    <div>
+                        <a href={route("export")} target="_blank"
+                           className="bg-amber-600 py-1 px-3 mr-2 text-white rounded shadow transition-all hover:bg-amber-700">Atsisiųsti
+                            Excel</a>
+                        <Link href={route("inventoryItems.create")}
+                              className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600">
+                            Įterpti naują
+                        </Link>
+                    </div>
                 </div>
             }
         >

@@ -30,6 +30,9 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::resource('inventoryItems', InventoryItemsController::class);
         Route::resource('itemTypes', ItemTypesController::class);
         Route::resource('users', UserController::class);
+//        Route::post('/inventoryItems/fetch-post-number', [InventoryItemsController::class, 'fetchPostNumber']);
+        Route::post('/inventoryItems/general-identifier', [InventoryItemsController::class, 'generateUniqueIdentifier']);
+        Route::get('export', [InventoryItemsController::class, 'export'])->name('export');
     });
 });
 
