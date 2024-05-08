@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "@material-tailwind/react": "^2.1.9",
+        "html5-qrcode": "^2.3.8",
         "react-select": "^5.8.0",
         "react-tailwindcss-select": "^1.8.5"
     }

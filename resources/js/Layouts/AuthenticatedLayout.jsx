@@ -33,6 +33,9 @@ export default function Authenticated({ user, header, children }) {
                                 <NavLink className="4xl:text-xl" href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
                                     Item types
                                 </NavLink>
+                                <NavLink className="4xl:text-xl" href={route('qrreader')} active={route().current('qrreader')}>
+                                    QR reader
+                                </NavLink>
                             </div>
                         </div>
 
