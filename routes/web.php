@@ -33,6 +33,8 @@ Route::middleware(['auth', 'verified'])->group(function (){
 //        Route::post('/inventoryItems/fetch-post-number', [InventoryItemsController::class, 'fetchPostNumber']);
         Route::post('/inventoryItems/general-identifier', [InventoryItemsController::class, 'generateUniqueIdentifier']);
         Route::get('export', [InventoryItemsController::class, 'export'])->name('export');
+        Route::get('qrreader', [\App\Http\Controllers\BarcodesController::class, 'generate'])->name('qrreader');
+        Route::get('/qrreader/{barcode}', [\App\Http\Controllers\BarcodesController::class, 'query'])->name('qrreader.query');
     });
 });
 
