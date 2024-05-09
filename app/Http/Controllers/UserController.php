@@ -36,12 +36,12 @@ class UserController extends Controller
         //echo $request;
         $query = Role::all()->toArray();
 
-//        return Inertia::render('Users/Create',[
-//            'roles' => $query
-//        ]);
-        return Inertia::render('Users/CreateTwo',[
+        return Inertia::render('Users/Create',[
             'roles' => $query
         ]);
+//        return Inertia::render('Users/CreateTwo',[
+//            'roles' => $query
+//        ]);
     }
 
     /**

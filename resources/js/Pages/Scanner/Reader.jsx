@@ -1,17 +1,18 @@
 import {Html5QrcodeScanner} from 'html5-qrcode';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.jsx';
 import {useEffect, useState} from "react";
 import {Head, useForm} from "@inertiajs/react";
+import {__} from "@/Libs/Lang.jsx";
 
-export default function QRReader({auth}) {
+export default function Reader({auth}) {
 
     const [scanResult, setScanResult] = useState(null);
     const {get} = useForm({});
     useEffect(() => {
         const scanner = new Html5QrcodeScanner('reader', {
             qrbox: {
-                width: 500,
-                height: 500,
+                width: 250,
+                height: 250,
             },
             fps: 5,
         });
@@ -29,15 +30,15 @@ export default function QRReader({auth}) {
         }
     }, []);
     const onQrButtonClick = () => {
-        get(route("qrreader.query", scanResult));
+        get(route("reader.query", scanResult));
     }
     const onQrResetClick = () =>{
-        get(route("qrreader"));
+        get(route("reader"));
     }
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">QR reader</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Reader")}</h2>}
         >
             <Head title="Item types"/>
             <div className="py-12">

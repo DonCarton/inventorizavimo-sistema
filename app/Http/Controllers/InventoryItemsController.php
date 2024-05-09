@@ -76,6 +76,7 @@ class InventoryItemsController extends Controller
     }
     public function store(StoreInventoryItemRequest $request): RedirectResponse
     {
+        dd($request);
         $data = $request->validated();
         InventoryItems::create($data);
         return to_route('inventoryItems.index');

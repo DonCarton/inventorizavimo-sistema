@@ -18,13 +18,9 @@ class InventoryItems extends Model
         'created_by',
         'updated_by'
     ];
-    public function typeByDuration(): HasOne
+    public function itemType(): HasOne
     {
-        return $this->hasOne(ItemTypes::class, 'type_by_duration');
-    }
-    public function typeByUser(): HasOne
-    {
-        return $this->hasOne(ItemTypes::class, 'type_by_use');
+        return $this->hasOne(ItemTypes::class, 'id');
     }
     public  function createdBy(): BelongsTo
     {

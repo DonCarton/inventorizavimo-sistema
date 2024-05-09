@@ -14,7 +14,7 @@ class BarcodesController extends Controller
     }
     public function generate(): \Inertia\Response
     {
-        return Inertia::render('Inventory/QRReader');
+        return Inertia::render('Scanner/Reader');
     }
     public function query(string $barcode): RedirectResponse
     {

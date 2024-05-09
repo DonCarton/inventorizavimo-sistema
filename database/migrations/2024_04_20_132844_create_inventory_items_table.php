@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('inventory_items', function (Blueprint $table) {
             $table->id();
             $table->string('local_name');
-            $table->foreignId('type_by_duration')->nullable()->constrained('item_types');
-            $table->foreignId('type_by_use')->nullable()->constrained('item_types');
+            $table->foreignId('inventory_type')->nullable()->constrained('item_types');
             //$table->unsignedBigInteger('type_by_duration')->nullable();
             //$table->unsignedBigInteger('type_by_use')->nullable();
             $table->string('name');
@@ -28,7 +27,7 @@ return new class extends Migration
             $table->foreignId('barcode')->references('id')->on('barcodes');
             $table->longText('url_to_provider')->nullable();
             $table->longText('alt_url_to_provider')->nullable();
-            $table->bigInteger('count')->nullable();
+            $table->bigInteger('total_count')->nullable();
             $table->bigInteger('critical_amount')->nullable();
             $table->bigInteger('to_order')->nullable();
             $table->bigInteger('average_consumption')->nullable();

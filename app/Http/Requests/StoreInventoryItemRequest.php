@@ -23,7 +23,7 @@ class StoreInventoryItemRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'name_eng' => ['required', 'string', 'max:255'],
             'laboratory' => ['required'],
-            'total_amount' => ['required'],
+            'total_count' => ['required'],
             'barcode' => ['required'],
             'created_by' => ['required'],
             'updated_by' => ['required'],

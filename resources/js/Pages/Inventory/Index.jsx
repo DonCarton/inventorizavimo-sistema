@@ -4,6 +4,7 @@ import Pagination from "@/Components/Pagination.jsx";
 import {useState} from "react";
 import InputLabel from "@/Components/InputLabel.jsx";
 import Modal from "@/Components/Modal.jsx";
+import {__} from "@/Libs/Lang.jsx";
 
 export default function Index({auth, inventoryItems}) {
     const [isOpen, setIsOpen] = useState(false)
@@ -26,12 +27,10 @@ export default function Index({auth, inventoryItems}) {
                         items</h2>
                     <div>
                         <a href={route("export")} target="_blank"
-                           className="bg-amber-600 py-1 px-3 mr-2 text-white rounded shadow transition-all hover:bg-amber-700">Atsisiųsti
-                            Excel</a>
-                        <button onClick={handleOpen} className="bg-gray-400 py-1 px-3 text-white rounded shadow transition-all mr-2 hover:bg-gray-600">Su modal'u</button>
+                           className="bg-amber-600 py-1 px-3 mr-2 text-white rounded shadow transition-all hover:bg-amber-700">{__("Export to Excel")}</a>
+                        {/*<button onClick={handleOpen} className="bg-gray-400 py-1 px-3 text-white rounded shadow transition-all mr-2 hover:bg-gray-600">Su modal'u</button>*/}
                         <Link href={route("inventoryItems.create")}
-                              className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600">
-                            Įterpti naują
+                              className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"> {__("Create")}
                         </Link>
                     </div>
                 </div>
@@ -79,15 +78,12 @@ export default function Index({auth, inventoryItems}) {
                                 <tr className="text-nowrap">
                                     <th className="px-3 py-2">ID</th>
                                     <th className="px-3 py-2">Local name</th>
-                                    <th className="px-3 py-2">Type by duration</th>
-                                    <th className="px-3 py-2">Type by use</th>
-                                    <th className="px-3 py-2">Name</th>
-                                    <th className="px-3 py-2">Name in English</th>
-                                    <th className="px-3 py-2">Created at</th>
-                                    <th className="px-3 py-2">Updated at</th>
-                                    <th className="px-3 py-2">Created by</th>
-                                    <th className="px-3 py-2">Updated by</th>
-                                    <th className="px-3 py-2">Action</th>
+                                    <th className="px-3 py-2">{__("Name")}</th>
+                                    <th className="px-3 py-2">{__("Name ENG")}</th>
+                                    <th className="px-3 py-2">{__("Updated at")}</th>
+                                    <th className="px-3 py-2">{__("Created by")}</th>
+                                    <th className="px-3 py-2">{__("Updated by")}</th>
+                                    <th className="px-3 py-2">{__("Actions")}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -95,19 +91,16 @@ export default function Index({auth, inventoryItems}) {
                                     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                         <th className="px-3 py-2">{inventoryItem.id}</th>
                                         <td className="px-3 py-2">{inventoryItem.local_name}</td>
-                                        <td className="px-3 py-2">{inventoryItem.type_by_duration}</td>
-                                        <td className="px-3 py-2">{inventoryItem.type_by_use}</td>
                                         <td className="px-3 py-2">{inventoryItem.name}</td>
                                         <td className="px-3 py-2">{inventoryItem.name_eng}</td>
-                                        <td className="px-3 py-2">{inventoryItem.created_at}</td>
                                         <td className="px-3 py-2">{inventoryItem.updated_at}</td>
-                                        <td className="px-3 py-2">{inventoryItem.created_by.name}</td>
-                                        <td className="px-3 py-2">{inventoryItem.updated_by.name}</td>
+                                        <td className="px-3 py-2">{inventoryItem.created_by.email}</td>
+                                        <td className="px-3 py-2">{inventoryItem.updated_by.email}</td>
                                         <td className="px-3 py-2">
                                             <Link href={route("inventoryItems.edit", inventoryItem.id)}
                                                   className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1"
                                             >
-                                                Edit
+                                                {__("Edit")}
                                             </Link>
                                         </td>
                                     </tr>
