@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class InventoryItemsResource extends JsonResource
+class InventoryItemResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

@@ -81,7 +81,7 @@ return [
     'lt' => [
         'array' => 'The :attribute field must have less than :value items.',
         'file' => 'The :attribute field must be less than :value kilobytes.',
-        'numeric' => 'The :attribute field must be less than :value.',
+        'numeric' => ':attribute turi būti mažesnis negu :value.',
         'string' => 'The :attribute field must be less than :value characters.',
     ],
     'lte' => [
@@ -135,13 +135,13 @@ return [
     'regex' => 'The :attribute field format is invalid.',
     'required' => ':attribute yra privalomas.',
     'required_array_keys' => 'The :attribute field must contain entries for: :values.',
-    'required_if' => 'The :attribute field is required when :other is :value.',
+    'required_if' => ':attribute yra privalomas jeigu :other yra :value.',
     'required_if_accepted' => 'The :attribute field is required when :other is accepted.',
     'required_if_declined' => 'The :attribute field is required when :other is declined.',
     'required_unless' => 'The :attribute field is required unless :other is in :values.',
     'required_with' => 'The :attribute field is required when :values is present.',
     'required_with_all' => 'The :attribute field is required when :values are present.',
-    'required_without' => 'The :attribute field is required when :values is not present.',
+    'required_without' => ':attribute yra privalomas, jeigu :values nėra įvestas.',
     'required_without_all' => 'The :attribute field is required when none of :values are present.',
     'same' => 'The :attribute field must match :other.',
     'size' => [
@@ -193,6 +193,8 @@ return [
         'name' => 'Pavadinimas',
         'name_eng' => 'Pavadinimas ENG',
         'barcode' => 'Barkodas',
+        'amount_removed' => 'Išimamas kiekis',
+        'amount_added' => 'Įdedamas kiekis'
     ],
 
 ];

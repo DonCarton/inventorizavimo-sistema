@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
-class InventoryItems extends Model
+class InventoryItem extends Model
 {
     use HasFactory;
     protected $fillable = [
@@ -16,11 +16,12 @@ class InventoryItems extends Model
         'name_eng',
         'barcode',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'total_count'
     ];
     public function itemType(): HasOne
     {
-        return $this->hasOne(ItemTypes::class, 'id');
+        return $this->hasOne(ItemType::class, 'id');
     }
     public  function createdBy(): BelongsTo
     {

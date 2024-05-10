@@ -47,6 +47,7 @@
     "Updated by" : "Updated by",
     "Actions" : "Actions",
     "Edit" : "Edit",
+    "Change amount": "Change amount",
     "Create" : "Create",
     "Delete" : "Delete",
     "Cancel" : "Cancel",
@@ -72,5 +73,7 @@
     "Change language": "Change language",
     "With the below setting you can change the language of the whole system": "With the below setting you can change the language of the whole system",
     "English": "English",
-    "Lithuanian": "Lithuanian"
+    "Lithuanian": "Lithuanian",
+    "Amount being taken out": "Amount being taken out",
+    "Amount being added": "Amount being added"
 }

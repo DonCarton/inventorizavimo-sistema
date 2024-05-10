@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\InventoryItems;
+use App\Models\InventoryItem;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 
@@ -13,6 +13,6 @@ class InventoryExports implements FromCollection
     */
     public function collection(): Collection
     {
-        return InventoryItems::all();
+        return InventoryItem::all();
     }
 }

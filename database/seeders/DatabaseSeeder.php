@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\InventoryItems;
-use App\Models\ItemTypes;
+use App\Models\InventoryItem;
+use App\Models\ItemType;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -27,9 +27,9 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => time()
         ]);
 
-//        ItemTypes::factory(5);
+//        ItemType::factory(5);
 //
-//        InventoryItems::factory()
+//        InventoryItem::factory()
 //            ->count(30)
 //            ->create();
     }

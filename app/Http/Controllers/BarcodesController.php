@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\InventoryItems;
+use App\Models\InventoryItem;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -18,7 +18,7 @@ class BarcodesController extends Controller
     }
     public function query(string $barcode): RedirectResponse
     {
-        $inventoryItem = InventoryItems::where('local_name','=',$barcode)->latest()->first();
-        return Redirect::route("inventoryItems.edit", $inventoryItem);
+        $inventoryItem = InventoryItem::where('local_name','=',$barcode)->latest()->first();
+        return Redirect::route("editAmount", $inventoryItem);
     }
 }
