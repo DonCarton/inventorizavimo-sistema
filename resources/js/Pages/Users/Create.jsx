@@ -4,9 +4,7 @@ import InputLabel from "@/Components/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
 import {__} from "@/Libs/Lang.jsx";
-import react, {useState} from "react";
 import SteamDropdown from "@/Components/SteamDropdown.jsx"
-import Select from "react-select";
 
 export default function Create({auth, roles}) {
 

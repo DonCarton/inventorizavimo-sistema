@@ -1,18 +1,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, Link, useForm, usePage} from '@inertiajs/react';
+import {Head, Link} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
-import {useState} from "react";
-import Modal from "@/Components/Modal.jsx";
-import InputLabel from "@/Components/InputLabel.jsx";
 import {__} from "@/Libs/Lang.jsx";
 
-export default function Users({auth, users, translations, flash}) {
-    const [isOpen, setIsOpen] = useState(false)
-    const [chosenValue, setChosenValue] = useState('')
+export default function Users({auth, users, flash}) {
     const {localFlash} = flash.message || '';
-    const {data, setData, get, errors} = useForm({
-        prefix: '',
-    });
     return (
         <AuthenticatedLayout
             user={auth.user}

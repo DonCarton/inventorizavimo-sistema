@@ -16,6 +16,10 @@
     "Update password": "Atnaujinti slaptažodį",
     "Ensure your account is using a long, random password to stay secure": "Įsitikinkite, jog jūsų paskyra naudotų ilgą slaptažodį dėl saugumo",
     "Profile information" : "Profilio informacija",
+    "Update your account's profile first and last name" : "Atnaujinkite savo paskyros vardą ar pavardę",
+    "Your email address is unverified" : "Jūsų el. paštas nėra patvirtintas",
+    "Click here to re-send the verification email" : "Spauskite čia, jog būtų išsiųstas patvirtinimo laiškas",
+    "A new verification link has been sent to your email address" : "Naujas verifikavimos laiškas buvo išsiųstas",
     "Name": "Pavadinimas",
     "Name ENG": "Pavadinimas ENG",
     "Formula" : "Formulė",
@@ -63,5 +67,10 @@
     "Inventory information": "Inventoriaus informacija",
     "Location": "Lokacija",
     "Order information": "Užsakymo informacija",
-    "Amount": "Kiekis"
+    "Amount": "Kiekis",
+    "Language": "Kalba",
+    "Change language": "Pakeisti kalbą",
+    "With the below setting you can change the language of the whole system": "Su žemiau esančia parinktimi, galima pasikeisti sistemos kalbą",
+    "English": "Anglų",
+    "Lithuanian": "Lietuvių"
 }

@@ -1,5 +1,4 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Button} from '@material-tailwind/react';
 import { Head } from '@inertiajs/react';
 import { __ } from '@/Libs/Lang.jsx';
 
