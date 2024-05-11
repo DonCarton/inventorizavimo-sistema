@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class InventoryItemResource extends JsonResource
+class LaboratoryResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,20 +15,9 @@ class InventoryItemResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        //return parent::toArray($request);
         return [
             'id' => $this->id,
-            'local_name' => $this->local_name,
-            'inventory_type' => new ItemTypeResource($this->itemType),
             'name' => $this->name,
-            'name_eng' => $this->name_eng,
-            'provider' => $this->provider,
-            'total_amount' => $this->total_count,
-            'critical_amount' => $this->critical_amount,
-            'url_to_provider_site' =>$this->url_to_provider,
-            'laboratory' => $this->laboratory,
-            'cupboard' => $this->cupboard,
-            'shelf' => $this->shelf,
             'created_at' => (new Carbon($this->created_at))->format('Y-m-d'),
             'updated_at' => (new Carbon($this->updated_at))->format('Y-m-d'),
             'created_by' => new UserResource($this->createdBy),

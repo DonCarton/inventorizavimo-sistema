@@ -69,9 +69,6 @@ export default function Edit({auth, inventoryItem}) {
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div>
-                            <pre> {JSON.stringify(inventoryItem, undefined, 2)} </pre>
-                        </div>
                         <form onSubmit={onSubmit} className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                             <div className="pb-6">
                                 <Accordion open={open === 1}>

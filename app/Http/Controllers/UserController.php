@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -62,7 +63,7 @@ class UserController extends Controller
      */
     public function show(User $user): Response
     {
-        return Inertia::render('Users/Edit',[
+        return Inertia::render('Users/Show',[
             'user' => new UserResource($user)
         ]);
     }

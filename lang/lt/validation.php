@@ -51,7 +51,7 @@ return [
     'email' => 'The :attribute field must be a valid email address.',
     'ends_with' => 'The :attribute field must end with one of the following: :values.',
     'enum' => 'The selected :attribute is invalid.',
-    'exists' => 'The selected :attribute is invalid.',
+    'exists' => 'Pasirinkta :attribute nėra tinkama.',
     'extensions' => 'The :attribute field must have one of the following extensions: :values.',
     'file' => 'The :attribute field must be a file.',
     'filled' => 'The :attribute field must have a value.',
@@ -133,7 +133,7 @@ return [
     'prohibited_unless' => 'The :attribute field is prohibited unless :other is in :values.',
     'prohibits' => 'The :attribute field prohibits :other from being present.',
     'regex' => 'The :attribute field format is invalid.',
-    'required' => ':attribute yra privalomas.',
+    'required' => ':attribute yra privalomas laukas.',
     'required_array_keys' => 'The :attribute field must contain entries for: :values.',
     'required_if' => ':attribute yra privalomas jeigu :other yra :value.',
     'required_if_accepted' => 'The :attribute field is required when :other is accepted.',
@@ -194,7 +194,9 @@ return [
         'name_eng' => 'Pavadinimas ENG',
         'barcode' => 'Barkodas',
         'amount_removed' => 'Išimamas kiekis',
-        'amount_added' => 'Įdedamas kiekis'
+        'amount_added' => 'Įdedamas kiekis',
+        'amount' => 'Kiekis',
+        'laboratory_id' => 'Laboratorija'
     ],
 
 ];

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -22,8 +23,10 @@ class CRUDInventoryItemResource extends JsonResource
             'inventory_type' => new ItemTypeResource($this->itemType),
             'name' => $this->name,
             'name_eng' => $this->name_eng,
+//            'laboratory_object' => new LaboratoryResource($this->laboratory),
             'total_amount' => $this->total_count,
             'critical_amount' => $this->critical_amount,
+            'created_by' => new UserResource($this->createdBy)
         ];
     }
 }

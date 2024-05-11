@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BarcodesController;
 use App\Http\Controllers\ItemTypeController;
-use App\Http\Controllers\InventoryItemsController;
+use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -25,14 +26,18 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function (){
     Route::get('/dashboard', function (){return Inertia::render('Dashboard');})->name('dashboard');
     Route::group(['middleware' => ['role:admin']], function () {
-        Route::resource('inventoryItems', InventoryItemsController::class);
+        Route::resource('inventoryItems', InventoryItemController::class);
         Route::resource('itemTypes', ItemTypeController::class);
         Route::resource('users', UserController::class);
-//        Route::post('/inventoryItems/fetch-post-number', [InventoryItemsController::class, 'fetchPostNumber']);
-        Route::post('/inventoryItems/general-identifier', [InventoryItemsController::class, 'generateUniqueIdentifier']);
-        Route::get('/inventoryItems/{inventoryItem}/editAmount', [InventoryItemsController::class, 'editAmount'])->name('editAmount');
-        Route::patch('inventoryItems/{inventoryItem}/updateAmount', [InventoryItemsController::class, 'updateAmount'])->name('inventoryItems.updateAmount');
-        Route::get('export', [InventoryItemsController::class, 'export'])->name('export');
+//        Route::post('/inventoryItems/fetch-post-number', [InventoryItemController::class, 'fetchPostNumber']);
+        Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('laboratories.index');
+        Route::get('/laboratories/{laboratory}', [LaboratoryController::class, 'show'])->name('laboratories.show');
+        Route::post('/inventoryItems/general-identifier', [InventoryItemController::class, 'generateUniqueIdentifier']);
+        Route::get('/inventoryItems/{inventoryItem}/editAmount', [InventoryItemController::class, 'editAmount'])->name('editAmount');
+        Route::get('/inventoryItems/{inventoryItem}/takeOutAmount', [InventoryItemController::class, 'takeOutAmount'])->name('takeOutAmount');
+        Route::patch('inventoryItems/{inventoryItem}/updateAmount', [InventoryItemController::class, 'updateAmount'])->name('inventoryItems.updateAmount');
+        Route::patch('inventoryItems/{inventoryItem}/takeOutAmountLog', [InventoryItemController::class, 'takeOutAmountLog'])->name('inventoryItems.takeOutAmountLog');
+        Route::get('export', [InventoryItemController::class, 'export'])->name('export');
         Route::get('reader', [BarcodesController::class, 'generate'])->name('reader');
         Route::get('/reader/{barcode}', [BarcodesController::class, 'query'])->name('reader.query');
     });

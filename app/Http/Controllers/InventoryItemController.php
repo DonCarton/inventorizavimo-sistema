@@ -6,20 +6,26 @@ use App\Exports\InventoryExports;
 use App\Http\Requests\ChangeAmountInventoryItemRequest;
 use App\Http\Requests\StoreInventoryItemRequest;
 use App\Http\Requests\UpdateInventoryItemRequest;
+use App\Http\Resources\AmountLogResource;
 use App\Http\Resources\CRUDInventoryItemResource;
 use App\Http\Resources\InventoryItemResource;
+use App\Http\Resources\LaboratoryResource;
+use App\Models\AmountLog;
 use App\Models\InventoryItem;
+use App\Models\Laboratory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\In;
 use Inertia\Inertia;
 use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-class InventoryItemsController extends Controller
+class InventoryItemController extends Controller
 {
     public function index(): Response
     {
@@ -27,10 +33,6 @@ class InventoryItemsController extends Controller
 
         $sortField = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", 'desc');
-
-        if (request('local_name')){
-            $query->where('local_name','like','%'.request('local_name').'%');
-        }
         if (request('name')){
             $query->where('name','like','%'.request('name').'%');
         }
@@ -42,6 +44,7 @@ class InventoryItemsController extends Controller
         return Inertia::render('Inventory/Index', [
             'inventoryItems' => InventoryItemResource::collection($inventoryItems),
             'queryParams' => request()->query() ?: null,
+            'success' => session('success'),
         ]);
     }
 
@@ -125,7 +128,32 @@ class InventoryItemsController extends Controller
             $data['total_amount'] = $data['total_amount'] + $data['amount_added'];
         }
         $inventoryItem->update(['total_count' => $data['total_amount']]);
-        return Redirect::route('inventoryItems.edit', $inventoryItem);
+        return to_route('inventoryItems.index')->with('success', 'Item was updated');
+    }
+    public function takeOutAmountLog(Request $request, InventoryItem $inventoryItem): RedirectResponse
+    {
+        $request->validate([
+            'laboratory_id' => 'required|exists:laboratories,id',
+            'action' => ['required', Rule::in(['TAKE', 'RETURN'])],
+            'amount' => 'required|integer|min:1',
+            // Add custom validation rules for amount here
+        ]);
+        //$id = $inventoryItem->id;
+        AmountLog::create([
+            'inventory_item_id' => $inventoryItem->id,
+            'laboratory_id' => $request->input('laboratory_id'),
+            'action' => $request->input('action'),
+            'amount' => $request->input('amount'),
+            'comment' => $request->input('comment'),
+            'created_by' => $request->user()->id,
+            'updated_by' => $request->user()->id,
+        ]);
+//        $totalTaken = AmountLog::where('inventory_item_id', $inventoryItem->id)->where('action', 'TAKE')->sum('amount');
+//        $totalReturned = AmountLog::where('inventory_item_id', $inventoryItem->id)->where('action', 'RETURN')->sum('amount');
+//        if ($totalTaken == $totalReturned) {
+//            AmountLog::where('inventory_item_id', $inventoryItem->id)->delete();
+//        }
+        return to_route('inventoryItems.index')->with('success', 'Item was adjusted');
     }
 
     public function edit(InventoryItem $inventoryItem): Response
@@ -141,6 +169,23 @@ class InventoryItemsController extends Controller
         return Inertia::render('User/Edit', [
             'inventoryItem' => new CRUDInventoryItemResource($inventoryItem)
         ]);
+    }
+
+    public function takeOutAmount(InventoryItem $inventoryItem): Response
+    {
+        $query = $inventoryItem->amountLogs;
+        $query2 = Laboratory::query()->get()->all();
+        return Inertia::render('User/EditLog', [
+            'inventoryItem' => new CRUDInventoryItemResource($inventoryItem),
+            'logsForItem' => AmountLogResource::collection($query),
+            'laboratories' => LaboratoryResource::collection($query2)
+        ]);
+    }
+
+    public function show($id): JsonResponse
+    {
+        $inventoryItem = InventoryItem::findOrFail($id);
+        return response()->json($inventoryItem);
     }
 
     public function export(): BinaryFileResponse
