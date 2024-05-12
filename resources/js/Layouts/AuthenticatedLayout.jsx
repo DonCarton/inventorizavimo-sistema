@@ -31,12 +31,12 @@ export default function Authenticated({ user, header, children, role }) {
                                 <NavLink className="4xl:text-xl" href={route('inventoryItems.index')} active={route().current('inventoryItems.index')}>
                                     {__("Inventory")}
                                 </NavLink>
-                                <NavLink className="4xl:text-xl" href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
+                                {role ==="admin" && <NavLink className="4xl:text-xl" href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
                                     {__("Types")}
-                                </NavLink>
-                                <NavLink className="4xl:text-xl" href={route('laboratories.index')} active={route().current('laboratories.index')}>
+                                </NavLink>}
+                                {role ==="admin" && <NavLink className="4xl:text-xl" href={route('laboratories.index')} active={route().current('laboratories.index')}>
                                     {__("Laboratories")}
-                                </NavLink>
+                                </NavLink>}
                                 <NavLink className="4xl:text-xl" href={route('reader')} active={route().current('reader')}>
                                     {__("Reader")}
                                 </NavLink>
@@ -111,18 +111,18 @@ export default function Authenticated({ user, header, children, role }) {
                         <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
                             {__("Dashboard")}
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink href={route('users.index')} active={route().current('users.index')}>
+                        {role ==="admin" && <ResponsiveNavLink href={route('users.index')} active={route().current('users.index')}>
                             {__("Users")}
-                        </ResponsiveNavLink>
+                        </ResponsiveNavLink>}
                         <ResponsiveNavLink href={route('inventoryItems.index')} active={route().current('inventoryItems.index')}>
                             {__("Inventory")}
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
+                        {role ==="admin" && <ResponsiveNavLink href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
                             {__("Types")}
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink href={route('laboratories.index')} active={route().current('laboratories.index')}>
+                        </ResponsiveNavLink>}
+                        {role ==="admin" && <ResponsiveNavLink href={route('laboratories.index')} active={route().current('laboratories.index')}>
                             {__("Laboratories")}
-                        </ResponsiveNavLink>
+                        </ResponsiveNavLink>}
                         <ResponsiveNavLink href={route('reader')} active={route().current('reader')}>
                             {__("Reader")}
                         </ResponsiveNavLink>

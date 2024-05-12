@@ -7,7 +7,7 @@ import {Accordion, AccordionBody, AccordionHeader} from "@material-tailwind/reac
 import {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 
-export default function Edit({auth, inventoryItem, laboratories}) {
+export default function Edit({auth, inventoryItem, role, laboratories}) {
     const {data, setData, put, errors, reset} = useForm({
         local_name: inventoryItem.data.local_name || '',
         type: inventoryItem.data.inventory_type.name || '',
@@ -46,6 +46,7 @@ export default function Edit({auth, inventoryItem, laboratories}) {
                         - {inventoryItem.data.name}</h2>
                 </div>
             }
+            role={role}
         >
             <Head title={__("Edit")+ ' - ' + inventoryItem.data.name}/>
             <div className="py-12">

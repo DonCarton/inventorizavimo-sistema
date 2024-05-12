@@ -5,7 +5,7 @@ import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
 import {__} from "@/Libs/Lang.jsx";
 
-export default function Edit({auth, user}) {
+export default function Edit({auth, user, role}) {
     const {data, setData, post, errors} = useForm({
         first_name: user.data.first_name || '',
         last_name: user.data.first_name || '',
@@ -22,6 +22,7 @@ export default function Edit({auth, user}) {
             user={auth.user}
             header={<h2
                 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Edit")} - {user.data.name}</h2>}
+            role={role}
         >
             <Head title={__("Edit") + " - " + user.data.email}/>
 

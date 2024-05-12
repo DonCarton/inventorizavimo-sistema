@@ -4,11 +4,12 @@ import UpdateProfileInformationForm from './Partials/UpdateProfileInformationFor
 import {Head} from '@inertiajs/react';
 import UpdateLanguage from "@/Pages/Profile/Partials/UpdateLanguage.jsx";
 
-export default function Edit({auth, mustVerifyEmail, status}) {
+export default function Edit({auth, role, mustVerifyEmail, status}) {
     return (
         <AuthenticatedLayout
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Profile</h2>}
+            role={role}
         >
             <Head title="Profile"/>
 

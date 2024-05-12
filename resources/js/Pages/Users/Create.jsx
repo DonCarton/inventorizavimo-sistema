@@ -6,7 +6,7 @@ import InputError from "@/Components/InputError.jsx";
 import {__} from "@/Libs/Lang.jsx";
 import SteamDropdown from "@/Components/SteamDropdown.jsx"
 
-export default function Create({auth, roles}) {
+export default function Create({auth, roles, role}) {
 
     const {data, setData, post, errors} = useForm({
         first_name: '',
@@ -29,6 +29,7 @@ export default function Create({auth, roles}) {
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Create new user")}</h2>
                 </div>
             }
+            role={role}
         >
             <Head title={__("Create new user")}/>
             <div className="py-12">

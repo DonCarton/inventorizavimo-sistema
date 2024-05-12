@@ -9,7 +9,7 @@ import {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 
-export default function Edit({auth, inventoryItem}) {
+export default function Edit({auth, inventoryItem, role}) {
     const {data, setData, patch, errors, reset} = useForm({
         total_amount: inventoryItem.data.total_amount,
         amount_added: '',
@@ -53,6 +53,7 @@ export default function Edit({auth, inventoryItem}) {
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Change amount")} - {inventoryItem.data.local_name} - {inventoryItem.data.name}</h2>
                 </div>
             }
+            role={role}
         >
             <Head title={__("Change amount")+ ' - ' + inventoryItem.data.local_name}/>
             <div className="py-12">

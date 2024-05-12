@@ -9,7 +9,7 @@ import {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 import Modal from "@/Components/Modal.jsx";
 
-export default function Edit({auth, inventoryItem, logsForItem, laboratories}) {
+export default function Edit({auth, inventoryItem, role, logsForItem, laboratories}) {
     const [actionFromUser, setActionFromUser] = useState('TAKE');
     const {data, setData, patch, errors} = useForm({
         total_amount: inventoryItem.data.total_amount,
@@ -57,6 +57,7 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories}) {
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Change amount")} - {inventoryItem.data.local_name} - {inventoryItem.data.name}</h2>
                 </div>
             }
+            role={role}
         >
             <Head title={__("Change amount") + ' - ' + inventoryItem.data.local_name}/>
             <div className="py-12">

@@ -5,7 +5,7 @@ import InputLabel from "@/Components/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
 
-export default function Edit({ auth, itemType }) {
+export default function Edit({ auth, itemType, role }) {
     const {data, setData, put, errors} = useForm({
         name: itemType.data.name || '',
     })
@@ -17,6 +17,7 @@ export default function Edit({ auth, itemType }) {
         <AuthenticatedLayout
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Edit")} - {itemType.data.name}</h2>}
+            role={role}
         >
             <Head title={__("Edit") + " - " + itemType.data.name} />
 

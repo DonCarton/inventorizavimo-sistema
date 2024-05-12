@@ -6,7 +6,7 @@ import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 
-export default function Index({auth, laboratories, queryParams = null, success}) {
+export default function Index({auth, laboratories, role, queryParams = null, success}) {
     queryParams = queryParams || {};
     const searchFieldChanged = (name, value) => {
         if (value) {
@@ -51,6 +51,7 @@ export default function Index({auth, laboratories, queryParams = null, success})
                     </div>
                 </div>
             }
+            role={role}
         >
             <Head title={__("Laboratories")}/>
             {success && <div className="bg-emerald-500 py-2 px-4 text-black rounded">{success} </div>}

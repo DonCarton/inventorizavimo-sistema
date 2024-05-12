@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import {Head, useForm} from "@inertiajs/react";
 import {__} from "@/Libs/Lang.jsx";
 
-export default function Reader({auth}) {
+export default function Reader({auth, role}) {
 
     const [scanResult, setScanResult] = useState(null);
     const {get} = useForm({});
@@ -39,6 +39,7 @@ export default function Reader({auth}) {
         <AuthenticatedLayout
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Reader")}</h2>}
+            role={role}
         >
             <Head title="Item types"/>
             <div className="py-12">

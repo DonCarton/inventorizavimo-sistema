@@ -9,7 +9,7 @@ import TextInput from "@/Components/TextInput.jsx";
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/solid/index.js";
 import TableHeader from "@/Components/TableHeader.jsx";
 
-export default function Index({auth, inventoryItems, queryParams = null, success}) {
+export default function Index({auth, inventoryItems, role, queryParams = null, success}) {
     queryParams = queryParams || {};
     const [isOpen, setIsOpen] = useState(false)
     const {setData, get} = useForm({prefix: '',});
@@ -60,6 +60,7 @@ export default function Index({auth, inventoryItems, queryParams = null, success
                     </div>
                 </div>
             }
+            role={role}
         >
             <Head title="Inventory items"/>
             {success && <div className="bg-emerald-500 py-2 px-4 text-black rounded">{success} </div>}

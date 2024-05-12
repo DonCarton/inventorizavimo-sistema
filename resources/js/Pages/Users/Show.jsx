@@ -4,11 +4,12 @@ import InputLabel from "@/Components/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import {__} from "@/Libs/Lang.jsx";
 
-export default function Show({auth, user}) {
+export default function Show({auth, user, role}) {
     return (<AuthenticatedLayout
             user={auth.user}
             header={<h2
                 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Show")} - {user.data.email}</h2>}
+            role={role}
         >
             <Head title={__("Show") + " - " + user.data.email}/>
 

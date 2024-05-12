@@ -23,7 +23,7 @@ function Icon({id, open}) {
     );
 }
 
-export default function Create({auth}) {
+export default function Create({auth,role}) {
     const [open, setOpen] = useState(0);
     const [open2, setOpen2] = useState(false);
     const [open3, setOpen3] = useState(false);
@@ -114,6 +114,7 @@ export default function Create({auth}) {
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Create new inventory item")}</h2>
                 </div>
             }
+            role={role}
         >
             <Head title={__("Create new inventory item")}/>
             <div className="py-12">

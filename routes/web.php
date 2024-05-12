@@ -26,6 +26,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function (){
     Route::get('/dashboard', function (){return Inertia::render('Dashboard');})->name('dashboard');
     Route::group(['middleware' => ['role:admin']], function () {
+        Route::get('/generate-barcode', [BarcodesController::class, 'generateAndStoreBarcode'])->name('generateBarcode');
         Route::resource('inventoryItems', InventoryItemController::class);
         Route::resource('itemTypes', ItemTypeController::class);
         Route::resource('users', UserController::class);
