@@ -77,5 +77,9 @@
     "English": "English",
     "Lithuanian": "Lithuanian",
     "Amount being taken out": "Amount being taken out",
-    "Amount being added": "Amount being added"
+    "Amount being added": "Amount being added",
+    "Here you can view all the available laboratory locations" : "Here you can view all the available laboratory locations",
+    "In this field, the amount which will be added is specified": "In this field, the amount which will be added is specified",
+    "In this field, the amount which will be removed is specified": "In this field, the amount which will be removed is specified",
+    "User does not have the right roles.": "User does not have the right roles."
 }

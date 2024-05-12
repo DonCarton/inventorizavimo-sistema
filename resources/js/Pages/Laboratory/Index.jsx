@@ -1,13 +1,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, Link, useForm, router} from '@inertiajs/react';
+import {Head, Link, router} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
-import {useState} from "react";
-import InputLabel from "@/Components/InputLabel.jsx";
-import Modal from "@/Components/Modal.jsx";
 import {__} from "@/Libs/Lang.jsx";
 import TextInput from "@/Components/TextInput.jsx";
-import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/solid/index.js";
 import TableHeader from "@/Components/TableHeader.jsx";
+import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 
 export default function Index({auth, laboratories, queryParams = null, success}) {
     queryParams = queryParams || {};
@@ -36,12 +33,18 @@ export default function Index({auth, laboratories, queryParams = null, success})
         }
         router.get(route('laboratories.index'), queryParams);
     }
+    const handleChange = (selectedOption) => {
+        console.log('handleChange', selectedOption);
+    }
     return (
         <AuthenticatedLayout
             user={auth.user}
             header={
                 <div className="flex justify-between items-center">
-                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Laboratories")}</h2>
+                    <div className="flex justify-between">
+                        <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Laboratories")}</h2>
+                        <InformationIconToolTip content={__("Here you can view all the available laboratory locations") + '.'} placement="right-end" classname="bg-black" color="black" classnameForIcon="w-5 h-5 ml-1 mt-1"/>
+                    </div>
                     <div>
                         <a href={route("export")} target="_blank"
                            className="bg-amber-600 py-1 px-3 mr-2 text-white rounded shadow transition-all hover:bg-amber-700">{__("Export to Excel")}</a>

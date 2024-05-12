@@ -35,6 +35,12 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'role' => function () use ($request) {
+                $user = $request->user();
+                if ($user){
+                    return $user->roleName();
+                }
+            },
             'flash' => [
                 'message' => fn () => $request->session()->get('message')
             ],
@@ -44,7 +50,7 @@ class HandleInertiaRequests extends Middleware
                 ]);
             },
             'language' => fn () =>
-                translations(base_path('lang/' . app()->getLocale() . '.json'))
+            translations(base_path('lang/' . app()->getLocale() . '.json'))
             ,
         ];
     }

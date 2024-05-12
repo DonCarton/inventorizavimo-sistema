@@ -88,7 +88,7 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories}) {
                                     <div>
                                         <InputLabel htmlFor="inventoryItems_amount">{__("Amount")}<span
                                             className="text-red-500">*</span></InputLabel>
-                                        <TextInput id="inventoryItems_amount" name="amount" onChange={e => setData('amount', e.target.value)}></TextInput>
+                                        <TextInput id="inventoryItems_amount" name="amount" onChange={e => setData('amount', e.target.value)} onKeyPress={handleNumericInput}></TextInput>
                                         <InputError message={errors.amount} className="mt-2"/>
                                     </div>
                                     <div>
@@ -167,10 +167,22 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories}) {
                                         </div>
                                     </AccordionBody>
                                 </Accordion>
+                                <div className="mt-4">
+                                    <Link href={route('inventoryItems.index')}
+                                          className="bg-gray-100 py-1 px-3 text-gray-800 rounded shadow transition-all hover:bg-gray-200 mr-2"
+                                    >
+                                        {__("Inventory")}
+                                    </Link>
+                                    <Link href={route('reader')}
+                                          className="bg-gray-100 py-1 px-3 text-gray-800 rounded shadow transition-all hover:bg-gray-200 mr-2"
+                                    >
+                                        {__("Return to scanner")}
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                         <div className="overflow-auto">
-                        <div className="p-6">
+                            <div className="p-6">
                                 <table
                                     className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                     <thead

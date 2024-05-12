@@ -15,7 +15,6 @@ class InventoryItemResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        //return parent::toArray($request);
         return [
             'id' => $this->id,
             'local_name' => $this->local_name,

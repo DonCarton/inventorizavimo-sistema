@@ -10,6 +10,7 @@ use App\Http\Resources\AmountLogResource;
 use App\Http\Resources\CRUDInventoryItemResource;
 use App\Http\Resources\InventoryItemResource;
 use App\Http\Resources\LaboratoryResource;
+use App\Http\Resources\LaboratoryResourceForMulti;
 use App\Models\AmountLog;
 use App\Models\InventoryItem;
 use App\Models\Laboratory;
@@ -158,8 +159,10 @@ class InventoryItemController extends Controller
 
     public function edit(InventoryItem $inventoryItem): Response
     {
+        $query = Laboratory::query()->get()->all();
         return Inertia::render('Inventory/Edit', [
-            'inventoryItem' => new InventoryItemResource($inventoryItem)
+            'inventoryItem' => new InventoryItemResource($inventoryItem),
+            'laboratories' => LaboratoryResourceForMulti::collection($query)
         ]);
     }
 

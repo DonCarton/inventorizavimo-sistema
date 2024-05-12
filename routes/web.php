@@ -33,11 +33,22 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('laboratories.index');
         Route::get('/laboratories/{laboratory}', [LaboratoryController::class, 'show'])->name('laboratories.show');
         Route::post('/inventoryItems/general-identifier', [InventoryItemController::class, 'generateUniqueIdentifier']);
+        Route::get('export', [InventoryItemController::class, 'export'])->name('export');
+    });
+//    Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function (){
+//        Route::resource('inventoryItems', InventoryItemController::class);
+//    });
+//    Route::prefix('worker')->name('worker.')->middleware('role:user')->group(function()
+//    {
+//        Route::get('/inventoryItems', [InventoryItemController::class, 'index'])->name('index');
+//        Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('index');
+//    });
+    Route::group(['middleware' => ['role:admin|user']], function (){
+        Route::resource('inventoryItems', InventoryItemController::class)->only('index','show');
         Route::get('/inventoryItems/{inventoryItem}/editAmount', [InventoryItemController::class, 'editAmount'])->name('editAmount');
         Route::get('/inventoryItems/{inventoryItem}/takeOutAmount', [InventoryItemController::class, 'takeOutAmount'])->name('takeOutAmount');
-        Route::patch('inventoryItems/{inventoryItem}/updateAmount', [InventoryItemController::class, 'updateAmount'])->name('inventoryItems.updateAmount');
-        Route::patch('inventoryItems/{inventoryItem}/takeOutAmountLog', [InventoryItemController::class, 'takeOutAmountLog'])->name('inventoryItems.takeOutAmountLog');
-        Route::get('export', [InventoryItemController::class, 'export'])->name('export');
+        Route::patch('/inventoryItems/{inventoryItem}/updateAmount', [InventoryItemController::class, 'updateAmount'])->name('inventoryItems.updateAmount');
+        Route::patch('/inventoryItems/{inventoryItem}/takeOutAmountLog', [InventoryItemController::class, 'takeOutAmountLog'])->name('inventoryItems.takeOutAmountLog');
         Route::get('reader', [BarcodesController::class, 'generate'])->name('reader');
         Route::get('/reader/{barcode}', [BarcodesController::class, 'query'])->name('reader.query');
     });

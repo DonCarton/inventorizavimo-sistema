@@ -7,6 +7,7 @@ import InputError from "@/Components/InputError.jsx";
 import {Accordion, AccordionBody, AccordionHeader} from "@material-tailwind/react";
 import {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
+import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 
 export default function Edit({auth, inventoryItem}) {
     const {data, setData, patch, errors, reset} = useForm({
@@ -69,9 +70,12 @@ export default function Edit({auth, inventoryItem}) {
                                             </div>
                                             <div className={removingAllowed ? "mt-4 w-full" : "hidden"}>
                                                 <InputLabel htmlFor="inventoryItems_amount_removed">{__("Amount being taken out")}</InputLabel>
-                                                <TextInput id="inventoryItems_amount_removed" type="text" name="amount_removed" className="mt-1 block w-full bg-red-400 text-white disabled:bg-gray-400" onChange={handleAmountChangeForRemoving}
-                                                    disabled={!removingAllowed} onKeyPress={handleNumericInput}
-                                                />
+                                                <div className="flex justify-between">
+                                                    <TextInput id="inventoryItems_amount_removed" type="text" name="amount_removed" className="mt-1 block w-full bg-red-400 text-white disabled:bg-gray-400" onChange={handleAmountChangeForRemoving}
+                                                               disabled={!removingAllowed} onKeyPress={handleNumericInput}
+                                                    />
+                                                    <InformationIconToolTip classname="bg-black" content={__("In this field, the amount which will be removed is specified") + '.'} color="black" />
+                                                </div>
                                                 <InputError message={errors.amount_removed} className="mt-2"/>
                                             </div>
                                             <div className="mt-4 w-full">
@@ -80,7 +84,10 @@ export default function Edit({auth, inventoryItem}) {
                                             </div>
                                             <div className={addingAllowed ? "mt-4 w-full" : "hidden"}>
                                                 <InputLabel htmlFor="inventoryItems_amount_added">{__("Amount being added")}</InputLabel>
-                                                <TextInput id="inventoryItems_amount_added" type="text" name="amount_added" className="mt-1 block w-full bg-emerald-500 text-white disabled:bg-gray-400" onChange={handleAmountChangeForAdding} disabled={!addingAllowed} onKeyPress={handleNumericInput}/>
+                                                <div className="flex justify-between">
+                                                    <TextInput id="inventoryItems_amount_added" type="text" name="amount_added" className="mt-1 block w-full bg-emerald-500 text-white disabled:bg-gray-400" onChange={handleAmountChangeForAdding} disabled={!addingAllowed} onKeyPress={handleNumericInput}/>
+                                                    <InformationIconToolTip classname="bg-black" content={__("In this field, the amount which will be added is specified") + '.'} color="black" />
+                                                </div>
                                                 <InputError message={errors.amount_added} className="mt-2"/>
                                             </div>
                                         </div>

@@ -6,7 +6,7 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
 import { __ } from '@/Libs/Lang.jsx';
 
-export default function Authenticated({ user, header, children }) {
+export default function Authenticated({ user, header, children, role }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
@@ -25,14 +25,17 @@ export default function Authenticated({ user, header, children }) {
                                 <NavLink className="4xl:text-xl" href={route('dashboard')} active={route().current('dashboard')}>
                                     {__("Dashboard")}
                                 </NavLink>
-                                <NavLink className="4xl:text-xl" href={route('users.index')} active={route().current('users.index')}>
+                                {role === "admin" && <NavLink className="4xl:text-xl" href={route('users.index')} active={route().current('users.index')}>
                                     {__("Users")}
-                                </NavLink>
+                                </NavLink>}
                                 <NavLink className="4xl:text-xl" href={route('inventoryItems.index')} active={route().current('inventoryItems.index')}>
                                     {__("Inventory")}
                                 </NavLink>
                                 <NavLink className="4xl:text-xl" href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
                                     {__("Types")}
+                                </NavLink>
+                                <NavLink className="4xl:text-xl" href={route('laboratories.index')} active={route().current('laboratories.index')}>
+                                    {__("Laboratories")}
                                 </NavLink>
                                 <NavLink className="4xl:text-xl" href={route('reader')} active={route().current('reader')}>
                                     {__("Reader")}
@@ -116,6 +119,9 @@ export default function Authenticated({ user, header, children }) {
                         </ResponsiveNavLink>
                         <ResponsiveNavLink href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
                             {__("Types")}
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('laboratories.index')} active={route().current('laboratories.index')}>
+                            {__("Laboratories")}
                         </ResponsiveNavLink>
                         <ResponsiveNavLink href={route('reader')} active={route().current('reader')}>
                             {__("Reader")}

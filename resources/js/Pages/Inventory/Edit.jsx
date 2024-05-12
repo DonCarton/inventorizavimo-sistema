@@ -7,7 +7,7 @@ import {Accordion, AccordionBody, AccordionHeader} from "@material-tailwind/reac
 import {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 
-export default function Edit({auth, inventoryItem}) {
+export default function Edit({auth, inventoryItem, laboratories}) {
     const {data, setData, put, errors, reset} = useForm({
         local_name: inventoryItem.data.local_name || '',
         type: inventoryItem.data.inventory_type.name || '',
@@ -34,22 +34,6 @@ export default function Edit({auth, inventoryItem}) {
     const handleOpen2 = () => setOpen2((cur) => !cur);
     const handleOpen3 = () => setOpen3((cur) => !cur);
     const handleOpen4 = () => setOpen4((cur) => !cur);
-    const handleAmountChangeForAdding = (e) =>{
-        if (removingAllowed){
-            setRemovingAllowed(false);
-        }
-        setData('amount_added',e.target.value);
-    }
-    const handleAmountChangeForRemoving = (e) =>{
-        if (addingAllowed){
-            setAddingAllowed(false);
-        }
-        setData('amount_removed',e.target.value);
-    }
-    console.log("Amount added value", data.amount_added);
-    console.log("Adding possible", addingAllowed);
-    console.log("Amount added value", data.amount_added);
-    console.log("Removing possible", removingAllowed);
     const onSubmit = (e) => {
         e.preventDefault();
 
@@ -65,7 +49,7 @@ export default function Edit({auth, inventoryItem}) {
                 </div>
             }
         >
-            <Head title={'Redaguoti - ' + inventoryItem.data.name}/>
+            <Head title={__("Edit")+ ' - ' + inventoryItem.data.name}/>
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -77,31 +61,16 @@ export default function Edit({auth, inventoryItem}) {
                                         <div className="grid grid-cols-2 gap-2">
                                             <div className="mt-4 w-full">
                                                 <InputLabel htmlFor="inventoryItems_total_amount" value="Kiekis"/>
-                                                <TextInput id="inventoryItems_total_amount" type="text" name="total_amount" value={data.total_amount} className="mt-1 block w-full disabled:bg-gray-400 text-white" readOnly={true} disabled={true}/>
-                                            </div>
-                                            <div className={removingAllowed ? "mt-4 w-full" : "hidden"}>
-                                                <InputLabel htmlFor="inventoryItems_amount_removed">Išimamas kiekis</InputLabel>
-                                                <TextInput id="inventoryItems_amount_removed" type="text" name="amount_removed" className="mt-1 block w-full bg-red-400 text-white disabled:bg-gray-400" onChange={handleAmountChangeForRemoving}
-                                                    disabled={!removingAllowed}
-                                                />
+                                                <TextInput id="inventoryItems_total_amount" type="text" name="total_amount" value={data.total_amount} className="mt-1 block w-full" onChange={e => setData('total_amount', e.target.value)}/>
                                             </div>
                                             <div className="mt-4 w-full">
                                                 <InputLabel htmlFor="inventoryItems_critical_amount"
                                                             value="Kritinis kiekis"/>
                                                 <TextInput id="inventoryItems_critical_amount" type="text"
                                                            name="critical_amount" value={data.critical_amount}
-                                                           className="mt-1 block w-full disabled:bg-gray-400 text-white"
-                                                           readOnly={true}
-                                                           disabled={true}
+                                                           className="mt-1 block w-full"
                                                            onChange={e => setData('critical_amount', e.target.value)}/>
                                                 <InputError message={errors.critical_amount} className="mt-2"/>
-                                            </div>
-                                            {/*<div className="mt-4 w-full">*/}
-                                            <div className={addingAllowed ? "mt-4 w-full" : "hidden"}>
-                                                <InputLabel htmlFor="inventoryItems_amount_added">Įdedamas kiekis</InputLabel>
-                                                <TextInput id="inventoryItems_amount_added" type="text" name="amount_added" className="mt-1 block w-full bg-emerald-500 text-white disabled:bg-gray-400" onChange={handleAmountChangeForAdding}
-                                                    disabled={!addingAllowed}
-                                                />
                                             </div>
                                         </div>
                                     </AccordionBody>
@@ -111,21 +80,21 @@ export default function Edit({auth, inventoryItem}) {
                                     <AccordionBody>
                                         <div className="grid grid-cols-2 gap-2">
                                             <div className="mt-4">
-                                                <InputLabel htmlFor="inventoryItems_local_laboratory" value="Patalpa"/>
+                                                <InputLabel htmlFor="inventoryItems_local_laboratory" value={__("Laboratory")}/>
                                                 <TextInput id="inventoryItems_local_laboratory" type="text"
                                                            name="laboratory" value={data.laboratory}
                                                            className="mt-1 block w-full"
                                                                onChange={e => setData('laboratory', e.target.value)}/>
                                                 </div>
                                                 <div className="mt-4">
-                                                    <InputLabel htmlFor="inventoryItems_cupboard" value="Spinta"/>
+                                                    <InputLabel htmlFor="inventoryItems_cupboard" value={__("Cupboard")}/>
                                                     <TextInput id="inventoryItems_cupboard" type="text" name="cupboard"
                                                                value={data.cupboard} className="mt-1 block w-full"
                                                                onChange={e => setData('cupboard', e.target.value)}/>
                                                     <InputError message={errors.cupboard} className="mt-2"/>
                                                 </div>
                                                 <div className="mt-4">
-                                                    <InputLabel htmlFor="inventoryItems_shelf" value="Lentyna"/>
+                                                    <InputLabel htmlFor="inventoryItems_shelf" value={__("Shelf")}/>
                                                     <TextInput id="inventoryItems_shelf" type="text" name="shelf"
                                                                value={data.shelf} className="mt-1 block w-full"
                                                                onChange={e => setData('shelf', e.target.value)}/>

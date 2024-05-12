@@ -77,5 +77,10 @@
     "English": "Anglų (English)",
     "Lithuanian": "Lietuvių (Lithuanian)",
     "Amount being taken out": "Išimamas kiekis",
-    "Amount being added": "Įdedamas kiekis"
+    "Amount being added": "Įdedamas kiekis",
+    "Here you can view all the available laboratory locations": "Čia galima matyti visą išklotinę laboratorijos patalpų",
+    "In this field, the amount which will be added is specified": "Šiame laukelyje yra nurodomas pridedamas kiekis",
+    "In this field, the amount which will be removed is specified": "Šiame laukelyje yra nurodomas išimamas kiekis",
+    "User does not have the right roles.": "Veiksmas prisijungusiam naudotojui nėra leistinas.",
+    "Not Found": "Nerasta"
 }

@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('local_name');
             $table->foreignId('inventory_type')->nullable()->constrained('item_types');
-            //$table->unsignedBigInteger('type_by_duration')->nullable();
-            //$table->unsignedBigInteger('type_by_use')->nullable();
             $table->string('name');
             $table->string('name_eng')->nullable();
             $table->string('formula')->nullable();
@@ -32,7 +30,7 @@ return new class extends Migration
             $table->bigInteger('to_order')->nullable();
             $table->bigInteger('average_consumption')->nullable();
             $table->boolean('multiple_locations')->nullable();
-            $table->foreignId('laboratory')->nullable()->constrained('laboratories');
+            $table->foreignId('laboratory')->constrained('laboratories');
             $table->foreignId('cupboard')->nullable()->constrained('cupboards');
             $table->foreignId('shelf')->nullable()->constrained('shelves');
             $table->longText('storage_conditions')->nullable();
@@ -42,15 +40,6 @@ return new class extends Migration
             $table->timestamps();
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('updated_by')->constrained('users');
-
-            //$table->unsignedBigInteger('created_by');
-            //$table->unsignedBigInteger('updated_by');
-
-
-            //$table->foreign('type_by_duration')->references('id')->on('item_types');
-            //$table->foreign('type_by_use')->references('id')->on('item_types');
-            //$table->foreign('created_by')->references('id')->on('users');
-            //$table->foreign('updated_by')->references('id')->on('users');
         });
     }
 

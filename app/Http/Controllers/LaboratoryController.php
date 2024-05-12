@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\LaboratoryResource;
+use App\Http\Resources\LaboratoryResourceForMulti;
 use App\Models\Laboratory;
 use Illuminate\Http\JsonResponse;
 use Inertia\Inertia;
@@ -13,7 +14,6 @@ class LaboratoryController extends Controller
     public function index(): Response
     {
         $query = Laboratory::query();
-
         $sortField = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", 'desc');
 
@@ -24,10 +24,12 @@ class LaboratoryController extends Controller
             $query->where('name','like','%'.request('name').'%');
         }
         if (request('updated_by')){
-            $query->where('updated_by','like','%'.request('updated_by').'%');
+            $query->whereHas('createdBy', function ($query) {
+                $query->where('email', 'like', '%'.request('updated_by').'%');
+            });
         }
 
-        $laboratories = $query->orderBy($sortField, $sortDirection)->paginate(3)->onEachSide(1);
+        $laboratories = $query->orderBy($sortField, $sortDirection)->paginate(15)->onEachSide(1);
         return Inertia::render('Laboratory/Index',[
             'laboratories' => LaboratoryResource::collection($laboratories),
             'queryParams' => request()->query() ?: null,

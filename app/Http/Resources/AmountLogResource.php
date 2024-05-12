@@ -19,7 +19,6 @@ class AmountLogResource extends JsonResource
         return [
             'id' => $this->id,
             'inventory_item_id' => $this->inventory_item_id,
-//            'laboratory' => $this->laboratory_id,
             'laboratory' => new LaboratoryResource($this->inventoryItem),
             'action_taken' => $this->action,
             'amount_handled' => $this->amount,

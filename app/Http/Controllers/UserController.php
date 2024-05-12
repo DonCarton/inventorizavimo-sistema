@@ -25,7 +25,8 @@ class UserController extends Controller
         $users = $query->paginate(10)->onEachSide(1);
         return Inertia::render('Users/Index',[
             'users' => UserResource::collection($users),
-            'translations' => $translations
+            'translations' => $translations,
+            'success' => session('success'),
         ]);
     }
 
@@ -50,12 +51,11 @@ class UserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        dd($request);
         if ($request['selectedRole'] == null) { redirect()->route('users.create')->with('failure', 'No role was chosen for the user'); }
         $newUser = User::create($request->all());
         $role = $request['selectedRole'];
         $newUser->assignRole($role);
-        return redirect()->route('users.index')->with('success', 'New user '. $request['name'].' has been created successfully.');
+        return redirect()->route('users.index')->with('success', 'New user '. $request['email'].' has been created successfully.');
     }
 
     /**
