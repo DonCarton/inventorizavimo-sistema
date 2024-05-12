@@ -25,8 +25,6 @@ export default function Edit({auth, inventoryItem, laboratories}) {
     })
     const inventoryTypeDetails = inventoryItem.data.inventory_type;
     const [open, setOpen] = useState(1);
-    const [addingAllowed, setAddingAllowed] = useState(true);
-    const [removingAllowed, setRemovingAllowed] = useState(true);
     const [open2, setOpen2] = useState(false);
     const [open3, setOpen3] = useState(false);
     const [open4, setOpen4] = useState(false);

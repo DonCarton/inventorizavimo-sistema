@@ -8,7 +8,6 @@ import {Accordion, AccordionBody, AccordionHeader} from "@material-tailwind/reac
 import {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 import Modal from "@/Components/Modal.jsx";
-import MultiSelectInput from "@/Components/MultiSelectInput.jsx";
 
 export default function Edit({auth, inventoryItem, logsForItem, laboratories}) {
     const [actionFromUser, setActionFromUser] = useState('TAKE');
@@ -19,7 +18,6 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories}) {
         amount: '',
         comment: '',
     })
-    const [item, setItem] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const inventoryTypeDetails = inventoryItem.data.inventory_type;
     const [open, setOpen] = useState(1);

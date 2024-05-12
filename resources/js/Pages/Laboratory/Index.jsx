@@ -33,9 +33,6 @@ export default function Index({auth, laboratories, queryParams = null, success})
         }
         router.get(route('laboratories.index'), queryParams);
     }
-    const handleChange = (selectedOption) => {
-        console.log('handleChange', selectedOption);
-    }
     return (
         <AuthenticatedLayout
             user={auth.user}
