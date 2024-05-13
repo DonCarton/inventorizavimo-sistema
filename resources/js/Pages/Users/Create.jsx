@@ -40,12 +40,14 @@ export default function Create({auth, roles, role}) {
                             <TextInput id="user_first_name" type="text" name="first_name" value={data.first_name}
                                        className="mt-1 block w-full"
                                        onChange={e => setData('first_name', e.target.value)}/>
+                            <InputError message={errors.first_name} className="mt-2"/>
                         </div>
                         <div className="mt-4">
                             <InputLabel htmlFor="user_last_name" value={__("Last name")}/>
                             <TextInput id="user_last_name" type="text" name="last_name" value={data.last_name}
                                        className="mt-1 block w-full"
                                        onChange={e => setData('last_name', e.target.value)}/>
+                            <InputError message={errors.last_name} className="mt-2"/>
                         </div>
                         <div className="mt-4">
                             <InputLabel htmlFor="user_email" value={__("Email")}/>
@@ -59,6 +61,7 @@ export default function Create({auth, roles, role}) {
                             <TextInput id="user_laboratory" type="text" name="laboratory" value={data.laboratory}
                                        className="mt-1 block w-full"
                                        onChange={e => setData('laboratory', e.target.value)}/>
+                            <InputError message={errors.laboratory} className="mt-2"/>
                         </div>
                         <div className="mt-4">
                             <InputLabel htmlFor="user_password" value={__("Password")}/>
@@ -81,6 +84,7 @@ export default function Create({auth, roles, role}) {
                                     className="mt-1 block w-full"
                                 />
                             </div>
+                            <InputError message={errors.selectedRole} className="mt-2"/>
                         </div>
                         <div className="mt-2">
                             <Link href={route('users.index')}

@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserCreated;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;
@@ -51,10 +54,20 @@ class UserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        if ($request['selectedRole'] == null) { redirect()->route('users.create')->with('failure', 'No role was chosen for the user'); }
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'selectedRole' => 'required',
+        ]);
+        $password = Str::random(10);
+        $request['password'] = Hash::make($password);
+        $request['name'] = $request['first_name'].' '.$request['last_name'];
+//        if ($request['selectedRole'] == null) { redirect()->route('users.create')->with('failure', 'No role was chosen for the user'); }
         $newUser = User::create($request->all());
         $role = $request['selectedRole'];
         $newUser->assignRole($role);
+        event(new UserCreated($newUser));
         return redirect()->route('users.index')->with('success', 'New user '. $request['email'].' has been created successfully.');
     }
 

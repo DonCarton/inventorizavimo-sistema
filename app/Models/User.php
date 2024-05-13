@@ -51,12 +51,12 @@ class User extends Authenticatable
         ];
     }
 
-    public function roles(): HasManyThrough
+    public function rolesForDisplay(): HasManyThrough
     {
         return $this->hasManyThrough(Role::class, ModelHasRole::class, 'model_id', 'id', 'id', 'role_id');
     }
     public function roleName()
     {
-        return $this->roles->pluck('name')->implode(', ');
+        return $this->rolesForDisplay->pluck('name')->implode(', ');
     }
 }
