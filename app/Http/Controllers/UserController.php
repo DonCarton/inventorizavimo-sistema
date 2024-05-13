@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserCreated;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;
@@ -24,7 +28,8 @@ class UserController extends Controller
         $users = $query->paginate(10)->onEachSide(1);
         return Inertia::render('Users/Index',[
             'users' => UserResource::collection($users),
-            'translations' => $translations
+            'translations' => $translations,
+            'success' => session('success'),
         ]);
     }
 
@@ -36,12 +41,12 @@ class UserController extends Controller
         //echo $request;
         $query = Role::all()->toArray();
 
-//        return Inertia::render('Users/Create',[
-//            'roles' => $query
-//        ]);
-        return Inertia::render('Users/CreateTwo',[
+        return Inertia::render('Users/Create',[
             'roles' => $query
         ]);
+//        return Inertia::render('Users/CreateTwo',[
+//            'roles' => $query
+//        ]);
     }
 
     /**
@@ -49,12 +54,21 @@ class UserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        dd($request);
-        if ($request['selectedRole'] == null) { redirect()->route('users.create')->with('failure', 'No role was chosen for the user'); }
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'selectedRole' => 'required',
+        ]);
+        $password = Str::random(10);
+        $request['password'] = Hash::make($password);
+        $request['name'] = $request['first_name'].' '.$request['last_name'];
+//        if ($request['selectedRole'] == null) { redirect()->route('users.create')->with('failure', 'No role was chosen for the user'); }
         $newUser = User::create($request->all());
         $role = $request['selectedRole'];
         $newUser->assignRole($role);
-        return redirect()->route('users.index')->with('success', 'New user '. $request['name'].' has been created successfully.');
+        event(new UserCreated($newUser));
+        return redirect()->route('users.index')->with('success', 'New user '. $request['email'].' has been created successfully.');
     }
 
     /**
@@ -62,7 +76,7 @@ class UserController extends Controller
      */
     public function show(User $user): Response
     {
-        return Inertia::render('Users/Edit',[
+        return Inertia::render('Users/Show',[
             'user' => new UserResource($user)
         ]);
     }

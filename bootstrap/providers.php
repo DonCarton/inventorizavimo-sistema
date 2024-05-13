@@ -2,6 +2,7 @@
 
 return [
     App\Providers\AppServiceProvider::class,
-    Spatie\Permission\PermissionServiceProvider::class,
+    App\Providers\EitherOrIsRequired::class,
     Milon\Barcode\BarcodeServiceProvider::class,
+    Spatie\Permission\PermissionServiceProvider::class,
 ];

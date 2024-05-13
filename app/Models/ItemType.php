@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ItemTypes extends Model
+class ItemType extends Model
 {
     use HasFactory;
     public  function createdBy(): BelongsTo

@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -34,9 +35,23 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'role' => function () use ($request) {
+                $user = $request->user();
+                if ($user){
+                    return $user->roleName();
+                }
+            },
             'flash' => [
                 'message' => fn () => $request->session()->get('message')
             ],
+            'ziggy' => function () use ($request) {
+                return array_merge((new Ziggy)->toArray(), [
+                    'location' => $request->url(),
+                ]);
+            },
+            'language' => fn () =>
+            translations(base_path('lang/' . app()->getLocale() . '.json'))
+            ,
         ];
     }
 }

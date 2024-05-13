@@ -11,18 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('item_types', function (Blueprint $table) {
+        Schema::create('amount_logs', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->foreignId('inventory_item_id')->constrained('inventory_items');
+            $table->foreignId('laboratory_id')->constrained('laboratories');
+            $table->string('action');
+            $table->integer('amount');
+            $table->longText('comment');
             $table->timestamps();
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('updated_by')->constrained('users');
-
-            //$table->unsignedBigInteger('created_by');
-            //$table->unsignedBigInteger('updated_by');
-
-            //$table->foreign('created_by')->references('id')->on('users');
-            //$table->foreign('updated_by')->references('id')->on('users');
         });
     }
 
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('item_types');
+        Schema::dropIfExists('amount_logs');
     }
 };

@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ItemTypesController;
-use App\Http\Controllers\InventoryItemsController;
+use App\Http\Controllers\BarcodesController;
+use App\Http\Controllers\ItemTypeController;
+use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -23,24 +25,40 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function (){
     Route::get('/dashboard', function (){return Inertia::render('Dashboard');})->name('dashboard');
-//    Route::resource('inventoryItems', InventoryItemsController::class);
-//    Route::resource('itemTypes', ItemTypesController::class);
-//    Route::resource('users', UserController::class);
     Route::group(['middleware' => ['role:admin']], function () {
-        Route::resource('inventoryItems', InventoryItemsController::class);
-        Route::resource('itemTypes', ItemTypesController::class);
+        Route::get('/generate-barcode', [BarcodesController::class, 'generateAndStoreBarcode'])->name('generateBarcode');
+        Route::resource('inventoryItems', InventoryItemController::class);
+        Route::resource('itemTypes', ItemTypeController::class);
         Route::resource('users', UserController::class);
-//        Route::post('/inventoryItems/fetch-post-number', [InventoryItemsController::class, 'fetchPostNumber']);
-        Route::post('/inventoryItems/general-identifier', [InventoryItemsController::class, 'generateUniqueIdentifier']);
-        Route::get('export', [InventoryItemsController::class, 'export'])->name('export');
-        Route::get('qrreader', [\App\Http\Controllers\BarcodesController::class, 'generate'])->name('qrreader');
-        Route::get('/qrreader/{barcode}', [\App\Http\Controllers\BarcodesController::class, 'query'])->name('qrreader.query');
+//        Route::post('/inventoryItems/fetch-post-number', [InventoryItemController::class, 'fetchPostNumber']);
+        Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('laboratories.index');
+        Route::get('/laboratories/{laboratory}', [LaboratoryController::class, 'show'])->name('laboratories.show');
+        Route::post('/inventoryItems/general-identifier', [InventoryItemController::class, 'generateUniqueIdentifier']);
+        Route::get('export', [InventoryItemController::class, 'export'])->name('export');
+    });
+//    Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function (){
+//        Route::resource('inventoryItems', InventoryItemController::class);
+//    });
+//    Route::prefix('worker')->name('worker.')->middleware('role:user')->group(function()
+//    {
+//        Route::get('/inventoryItems', [InventoryItemController::class, 'index'])->name('index');
+//        Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('index');
+//    });
+    Route::group(['middleware' => ['role:admin|user']], function (){
+        Route::resource('inventoryItems', InventoryItemController::class)->only('index','show');
+        Route::get('/inventoryItems/{inventoryItem}/editAmount', [InventoryItemController::class, 'editAmount'])->name('editAmount');
+        Route::get('/inventoryItems/{inventoryItem}/takeOutAmount', [InventoryItemController::class, 'takeOutAmount'])->name('takeOutAmount');
+        Route::patch('/inventoryItems/{inventoryItem}/updateAmount', [InventoryItemController::class, 'updateAmount'])->name('inventoryItems.updateAmount');
+        Route::patch('/inventoryItems/{inventoryItem}/takeOutAmountLog', [InventoryItemController::class, 'takeOutAmountLog'])->name('inventoryItems.takeOutAmountLog');
+        Route::get('reader', [BarcodesController::class, 'generate'])->name('reader');
+        Route::get('/reader/{barcode}', [BarcodesController::class, 'query'])->name('reader.query');
     });
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/updateLanguage', [ProfileController::class, 'updateLanguage'])->name('profile.updateLanguage');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 

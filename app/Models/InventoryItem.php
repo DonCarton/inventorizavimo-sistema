@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
-class InventoryItems extends Model
+class InventoryItem extends Model
 {
     use HasFactory;
     protected $fillable = [
@@ -16,15 +17,16 @@ class InventoryItems extends Model
         'name_eng',
         'barcode',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'total_count'
     ];
-    public function typeByDuration(): HasOne
+    public function itemType(): HasOne
     {
-        return $this->hasOne(ItemTypes::class, 'type_by_duration');
+        return $this->hasOne(ItemType::class, 'id');
     }
-    public function typeByUser(): HasOne
+    public function laboratory(): HasOne
     {
-        return $this->hasOne(ItemTypes::class, 'type_by_use');
+        return $this->hasOne(Laboratory::class);
     }
     public  function createdBy(): BelongsTo
     {
@@ -34,18 +36,8 @@ class InventoryItems extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
-//    protected static function boot()
-//    {
-//        parent::boot();
-//
-//        static::saving(function ($model) {
-//            if (!$model->exists) {
-//                $model->created_by = Auth::id();
-//            }
-//        });
-//
-//        static::updating(function ($model) {
-//            $model->updated_by = Auth::id();
-//        });
-//    }
+    public function amountLogs(): HasMany
+    {
+        return $this->hasMany(AmountLog::class, 'inventory_item_id');
+    }
 }

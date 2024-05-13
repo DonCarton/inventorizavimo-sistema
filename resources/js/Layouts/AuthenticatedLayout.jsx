@@ -4,8 +4,9 @@ import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
+import { __ } from '@/Libs/Lang.jsx';
 
-export default function Authenticated({ user, header, children }) {
+export default function Authenticated({ user, header, children, role }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
@@ -22,19 +23,22 @@ export default function Authenticated({ user, header, children }) {
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink className="4xl:text-xl" href={route('dashboard')} active={route().current('dashboard')}>
-                                    Dashboard
+                                    {__("Dashboard")}
                                 </NavLink>
-                                <NavLink className="4xl:text-xl" href={route('users.index')} active={route().current('users.index')}>
-                                    Users
-                                </NavLink>
+                                {role === "admin" && <NavLink className="4xl:text-xl" href={route('users.index')} active={route().current('users.index')}>
+                                    {__("Users")}
+                                </NavLink>}
                                 <NavLink className="4xl:text-xl" href={route('inventoryItems.index')} active={route().current('inventoryItems.index')}>
-                                    Inventory items
+                                    {__("Inventory")}
                                 </NavLink>
-                                <NavLink className="4xl:text-xl" href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
-                                    Item types
-                                </NavLink>
-                                <NavLink className="4xl:text-xl" href={route('qrreader')} active={route().current('qrreader')}>
-                                    QR reader
+                                {role ==="admin" && <NavLink className="4xl:text-xl" href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
+                                    {__("Types")}
+                                </NavLink>}
+                                {role ==="admin" && <NavLink className="4xl:text-xl" href={route('laboratories.index')} active={route().current('laboratories.index')}>
+                                    {__("Laboratories")}
+                                </NavLink>}
+                                <NavLink className="4xl:text-xl" href={route('reader')} active={route().current('reader')}>
+                                    {__("Reader")}
                                 </NavLink>
                             </div>
                         </div>
@@ -67,9 +71,9 @@ export default function Authenticated({ user, header, children }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
-                                        <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
+                                        <Dropdown.Link href={route('profile.edit')}>{__("Profile")}</Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
-                                            Log Out
+                                            {__("Log out")}
                                         </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
@@ -105,16 +109,22 @@ export default function Authenticated({ user, header, children }) {
                 <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
                     <div className="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
-                            Dashboard
+                            {__("Dashboard")}
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink href={route('users.index')} active={route().current('users.index')}>
-                            Users
-                        </ResponsiveNavLink>
+                        {role ==="admin" && <ResponsiveNavLink href={route('users.index')} active={route().current('users.index')}>
+                            {__("Users")}
+                        </ResponsiveNavLink>}
                         <ResponsiveNavLink href={route('inventoryItems.index')} active={route().current('inventoryItems.index')}>
-                            Inventory items
+                            {__("Inventory")}
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
-                            Item types
+                        {role ==="admin" && <ResponsiveNavLink href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
+                            {__("Types")}
+                        </ResponsiveNavLink>}
+                        {role ==="admin" && <ResponsiveNavLink href={route('laboratories.index')} active={route().current('laboratories.index')}>
+                            {__("Laboratories")}
+                        </ResponsiveNavLink>}
+                        <ResponsiveNavLink href={route('reader')} active={route().current('reader')}>
+                            {__("Reader")}
                         </ResponsiveNavLink>
                     </div>
 
@@ -125,9 +135,9 @@ export default function Authenticated({ user, header, children }) {
                         </div>
 
                         <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink className="4xl:text-xl" href={route('profile.edit')}>Profile</ResponsiveNavLink>
+                            <ResponsiveNavLink className="4xl:text-xl" href={route('profile.edit')}>{__("Profile")}</ResponsiveNavLink>
                             <ResponsiveNavLink className="4xl:text-xl" method="post" href={route('logout')} as="button">
-                                Log Out
+                                {__("Log out")}
                             </ResponsiveNavLink>
                         </div>
                     </div>
