@@ -1,10 +1,11 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
-import {Head, Link, useForm} from "@inertiajs/react";
+import {Head, Link} from "@inertiajs/react";
 import InputLabel from "@/Components/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import {__} from "@/Libs/Lang.jsx";
+import {Capitalize} from "@/Libs/Capitalize.jsx";
 
-export default function Show({auth, user, role}) {
+export default function Show({auth, user, role, userRole, roles, laboratories}) {
     return (<AuthenticatedLayout
             user={auth.user}
             header={<h2
@@ -27,11 +28,21 @@ export default function Show({auth, user, role}) {
                             </div>
                             <div className="mt-4">
                                 <InputLabel htmlFor="user_email" value={__("Email")}/>
-                                <TextInput id="user_email" type="text" name="email" value={user.data.email} className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white" readOnly={true} disabled={true}/>
+                                <TextInput id="user_email" type="email" name="email" value={user.data.email} className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white" readOnly={true} disabled={true}/>
                             </div>
                             <div className="mt-4">
                                 <InputLabel htmlFor="user_laboratory" value={__("Laboratory")}/>
-                                <TextInput id="user_laboratory" type="text" name="laboratory" value={user.data.laboratory} className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white" readOnly={true} disabled={true}/>
+                                <select disabled={true} className="disabled:bg-gray-400 disabled:text-white border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={user.data.laboratory}>
+                                    <option>{__("Choose a value")}</option>
+                                    {laboratories.map((laboratory) => (<option key={laboratory.id} value={laboratory.id}>{laboratory.name}</option>))}
+                                </select>
+                            </div>
+                            <div className="mt-4">
+                                <InputLabel htmlFor="user_role" value={__("Role")}/>
+                                <select id="user_role" name="role" disabled={true} className="disabled:bg-gray-400 disabled:text-white border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={userRole[0].name}>
+                                    <option>{__("Choose a value")}</option>
+                                    {roles.map((role) => (<option key={role.id} value={role.name}>{Capitalize(role.name)}</option>))}
+                                </select>
                             </div>
                             <div className="mt-4">
                                 <Link href={route('users.index')} className="bg-gray-100 py-1 px-3 text-gray-800 rounded shadow transition-all hover:bg-gray-200 mr-2"> {__("Cancel")}</Link>

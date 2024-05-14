@@ -15,6 +15,8 @@ class InventoryItem extends Model
         'local_name',
         'name',
         'name_eng',
+        'laboratory',
+        'critical_amount',
         'barcode',
         'created_by',
         'updated_by',

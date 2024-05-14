@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use PhpParser\Node\Expr\AssignOp\Mod;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -26,6 +27,7 @@ class User extends Authenticatable
         'email',
         'password',
         'locale',
+        'laboratory'
     ];
 
     /**
@@ -59,4 +61,5 @@ class User extends Authenticatable
     {
         return $this->rolesForDisplay->pluck('name')->implode(', ');
     }
+
 }

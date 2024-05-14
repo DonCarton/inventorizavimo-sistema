@@ -2,12 +2,23 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head, Link} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
 import {__} from '@/Libs/Lang.jsx';
+import {RiFileExcel2Line} from "react-icons/ri";
+import {TbTablePlus} from "react-icons/tb";
 
 export default function InventoryTypes({auth, itemTypes, role}) {
     return (
         <AuthenticatedLayout user={auth.user}
-                             header={<h2
-                                 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Types")}</h2>}
+                             header={
+                                 <div className="flex justify-between items-center"><h2
+                                     className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Types")}
+                                 </h2>
+                                     <div className="grid grid-cols-2 gap-4">
+                                         <a href={route("export")} target="_blank"><RiFileExcel2Line
+                                             className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
+                                         <a href={route("itemTypes.create")}><TbTablePlus
+                                             className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
+                                     </div>
+                                 </div>}
                              role={role}
         >
             <Head title={__("Types")}/>

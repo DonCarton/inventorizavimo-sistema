@@ -26,14 +26,20 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function (){
     Route::get('/dashboard', function (){return Inertia::render('Dashboard');})->name('dashboard');
     Route::group(['middleware' => ['role:admin']], function () {
+//        Route::delete('inventoryItems/{inventoryItem}/destroy', [InventoryItemController::class, 'destroy'])->name('inventoryItems.destroy.destroy');
         Route::get('/generate-barcode', [BarcodesController::class, 'generateAndStoreBarcode'])->name('generateBarcode');
         Route::resource('inventoryItems', InventoryItemController::class);
         Route::resource('itemTypes', ItemTypeController::class);
         Route::resource('users', UserController::class);
-//        Route::post('/inventoryItems/fetch-post-number', [InventoryItemController::class, 'fetchPostNumber']);
+        Route::post('/inventoryItems/fetch-post-number', [InventoryItemController::class, 'fetchPostNumber']);
         Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('laboratories.index');
+        Route::get('/laboratories/create', [LaboratoryController::class, 'create'])->name('laboratories.create');
+        Route::post('/laboratories', [LaboratoryController::class, 'store'])->name('laboratories.store');
         Route::get('/laboratories/{laboratory}', [LaboratoryController::class, 'show'])->name('laboratories.show');
-        Route::post('/inventoryItems/general-identifier', [InventoryItemController::class, 'generateUniqueIdentifier']);
+        Route::get('/laboratories/{laboratory}/edit', [LaboratoryController::class, 'edit'])->name('laboratories.edit');
+        Route::patch('/laboratories/{laboratory}', [LaboratoryController::class, 'update'])->name('laboratories.update');
+        Route::delete('/laboratories/{laboratory}', [LaboratoryController::class, 'destroy'])->name('laboratories.destroy');
+//        Route::post('/inventoryItems/general-identifier', [InventoryItemController::class, 'generateUniqueIdentifier']);
         Route::get('export', [InventoryItemController::class, 'export'])->name('export');
     });
 //    Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function (){

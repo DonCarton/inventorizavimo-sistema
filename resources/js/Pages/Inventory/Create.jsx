@@ -24,6 +24,7 @@ function Icon({id, open}) {
 }
 
 export default function Create({auth,role}) {
+
     const [open, setOpen] = useState(0);
     const [open2, setOpen2] = useState(false);
     const [open3, setOpen3] = useState(false);
@@ -68,8 +69,8 @@ export default function Create({auth,role}) {
             const prefixId = e.target.value;
             setSelectedPrefix(prefixId);
             try {
-                //const response = await axios.post('/inventoryItems/fetch-post-number', { prefix_option_id: prefixId });
-                const response = await axios.post('/inventoryItems/general-identifier', {prefix_option_id: prefixId});
+                const response = await axios.post('/inventoryItems/fetch-post-number', { prefix_option_id: prefixId });
+                // const response = await axios.post('/inventoryItems/general-identifier', {prefix_option_id: prefixId});
                 const {post_number} = response.data;
                 setPostNumber(post_number);
                 setData('local_name', post_number);
@@ -317,17 +318,8 @@ export default function Create({auth,role}) {
                                                 <InputLabel htmlFor="inventoryItems_multiple_locations">
                                                     {__("Multiple locations")} <span className="text-red-500">*</span>
                                                 </InputLabel>
-                                                {/*<TextInput*/}
-                                                {/*    id="inventoryItems_multiple_locations"*/}
-                                                {/*    type="text"*/}
-                                                {/*    name="multiple_locations"*/}
-                                                {/*    value={data.multiple_locations}*/}
-                                                {/*    className="mt-1 block w-full"*/}
-                                                {/*    onChange={e => setData('multiple_locations', e.target.value)}*/}
-                                                {/*/>*/}
-                                                <Checkbox id="inventoryItems_multiple_locations"
-                                                          className="ml-1 p-2 block w-8 h-8" onClick={handleCheckbox}/>
-                                                <InputError message={errors.critical_amount} className="mt-2"/>
+                                                <Checkbox id="inventoryItems_multiple_locations" className="ml-1 p-2 block w-8 h-8" onClick={handleCheckbox}/>
+                                                <InputError message={errors.multiple_locations} className="mt-2"/>
                                             </div>
                                         </AccordionBody>
                                     </Accordion>

@@ -60,6 +60,7 @@
     "Role": "Role",
     "Create new user": "Create new user",
     "Create new inventory item": "Create new inventory item",
+    "Create new laboratory": "Create new laboratory",
     "Choose a value": "Choose a value",
     "Choose where the item will be stored": "Choose where the item will be stored",
     "Storage measurement": "Storage measurement",
@@ -79,6 +80,7 @@
     "Amount being taken out": "Amount being taken out",
     "Amount being added": "Amount being added",
     "Here you can view all the available laboratory locations" : "Here you can view all the available laboratory locations",
+    "Here you can view all the available inventory items" : "Here you can view all the available inventory items",
     "In this field, the amount which will be added is specified": "In this field, the amount which will be added is specified",
     "In this field, the amount which will be removed is specified": "In this field, the amount which will be removed is specified",
     "User does not have the right roles.": "User does not have the right roles."

@@ -16,6 +16,19 @@ export default function Create({auth, roles, role}) {
         laboratory: '',
         selectedRole: '',
     });
+    const prefixOptions = [
+        {value: '1', label: 'BIO'},
+        {value: '2', label: 'CHE'},
+        {value: '3', label: 'FIZ'},
+        {value: '4', label: 'FAB'},
+        {value: '5', label: 'PRO'},
+        {value: '6', label: 'ROB'},
+        {value: '7', label: 'SVI'},
+        {value: '8', label: 'INZ'},
+        {value: '9', label: 'BEN'},
+    ];
+
+    console.log(data.laboratory);
 
     const onSubmit = (e) => {
         e.preventDefault();
@@ -58,16 +71,11 @@ export default function Create({auth, roles, role}) {
                         </div>
                         <div className="mt-4">
                             <InputLabel htmlFor="user_laboratory" value={__("Laboratory")}/>
-                            <TextInput id="user_laboratory" type="text" name="laboratory" value={data.laboratory}
-                                       className="mt-1 block w-full"
-                                       onChange={e => setData('laboratory', e.target.value)}/>
+                            <select className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={data.laboratory} onChange={e => setData('laboratory', e.target.value)}>
+                                <option value="">{__("Choose a value")}</option>
+                                {prefixOptions.map((prefixOption) => (<option key={prefixOption.value} value={prefixOption.value}>{prefixOption.label}</option>))}
+                            </select>
                             <InputError message={errors.laboratory} className="mt-2"/>
-                        </div>
-                        <div className="mt-4">
-                            <InputLabel htmlFor="user_password" value={__("Password")}/>
-                            <TextInput id="user_password" type="password" name="password" value={data.password}
-                                       className="mt-1 block w-full"
-                                       onChange={e => setData('password', e.target.value)}/>
                         </div>
                         <div className="mt-4 mb-2">
                             <InputLabel
@@ -75,10 +83,9 @@ export default function Create({auth, roles, role}) {
                                 value={__("Role")}
                             />
                             <div>
-                                <SteamDropdown
+                            <SteamDropdown
                                     name="roles"
                                     value={data.selectedRole}
-                                    //value={data.selectedRole}
                                     onChange={e => setData('selectedRole', e.target.value)}
                                     options={roles}
                                     className="mt-1 block w-full"
