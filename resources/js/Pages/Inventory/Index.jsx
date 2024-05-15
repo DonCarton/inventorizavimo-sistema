@@ -6,8 +6,11 @@ import InputLabel from "@/Components/InputLabel.jsx";
 import Modal from "@/Components/Modal.jsx";
 import {__} from "@/Libs/Lang.jsx";
 import TextInput from "@/Components/TextInput.jsx";
-import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/solid/index.js";
 import TableHeader from "@/Components/TableHeader.jsx";
+import DeleteTextOrIcon from "@/Components/DeleteTextOrIcon.jsx";
+import {RiDeleteBin6Line, RiFileExcel2Line} from 'react-icons/ri';
+import {TbEdit, TbTablePlus} from "react-icons/tb";
+import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 
 export default function Index({auth, inventoryItems, role, queryParams = null, success}) {
     queryParams = queryParams || {};
@@ -21,22 +24,31 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
         }
         router.get(route('inventoryItems.index'), queryParams);
     }
+
     const onKeyPress = (name, e) => {
         if (e.key !== 'Enter') return;
         searchFieldChanged(name, e.target.value);
     }
     const sortChanged = (name) => {
-        if (name === queryParams.sort_field){
-            if(queryParams.sort_direction === 'asc'){
+        if (name === queryParams.sort_field) {
+            if (queryParams.sort_direction === 'asc') {
                 queryParams.sort_direction = 'desc';
-            }else {
+            } else {
                 queryParams.sort_direction = 'asc';
             }
-        }else {
+        } else {
             queryParams.sort_field = name;
             queryParams.sort_direction = 'asc';
         }
         router.get(route('inventoryItems.index'), queryParams);
+    }
+    const handleDelete = (e) => {
+        router.delete('inventoryItems.destroy.destroy', e.target.value);
+    }
+    const handleDestory = (value) => {
+        if (window.confirm('Are you sure you want to delete this item?')) {
+            router.delete(route('inventoryItems.destroy', value), {preserveScroll: true})
+        }
     }
     const handleClose = (e) => {
         e.preventDefault();
@@ -48,15 +60,21 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
             user={auth.user}
             header={
                 <div className="flex justify-between items-center">
-                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Inventory
-                        items</h2>
-                    <div>
-                        <a href={route("export")} target="_blank"
-                           className="bg-amber-600 py-1 px-3 mr-2 text-white rounded shadow transition-all hover:bg-amber-700">{__("Export to Excel")}</a>
-                        {/*<button onClick={handleOpen} className="bg-gray-400 py-1 px-3 text-white rounded shadow transition-all mr-2 hover:bg-gray-600">Su modal'u</button>*/}
-                        <Link href={route("inventoryItems.create")}
-                              className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"> {__("Create")}
-                        </Link>
+                    <div className="flex justify-between">
+                        <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Inventory")}</h2>
+                        <InformationIconToolTip
+                            content={__("Here you can view all the available inventory items") + '.'}
+                            placement="right-end" classname="bg-black" color="black"
+                            classnameForIcon="w-5 h-5 ml-1 mt-1"/>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <a href={route("export")} target="_blank"><RiFileExcel2Line
+                            className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
+                        <a href={route("inventoryItems.create")}><TbTablePlus
+                            className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
+                        {/*<Link href={route("inventoryItems.create")}*/}
+                        {/*      className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"> {__("Create")}*/}
+                        {/*</Link>*/}
                     </div>
                 </div>
             }
@@ -178,17 +196,30 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                             <td className="px-3 py-2">{inventoryItem.updated_at}</td>
                                             <td className="px-3 py-2">{inventoryItem.created_by.email}</td>
                                             <td className="px-3 py-2">{inventoryItem.updated_by.email}</td>
-                                            <td className="px-3 py-2">
+                                            <td className="flex justify-start mt-1 px-2 py-1">
+                                                {/*<Link href={route("inventoryItems.edit", inventoryItem.id)}*/}
+                                                {/*      className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1"*/}
+                                                {/*>*/}
+                                                {/*    {__("Edit")}*/}
+                                                {/*</Link>*/}
+                                                {/*<Link href={route("editAmount", inventoryItem.id)}*/}
+                                                {/*      className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1"*/}
+                                                {/*>*/}
+                                                {/*    {__("Edit")} 2*/}
+                                                {/*</Link>*/}
+
+                                                {/*<a href={route('inventoryItems.show', inventoryItem.id)}><ShowEditOrIcon textValue={__("Show")}/></a>*/}
+                                                {/*<a href={route('inventoryItems.edit', inventoryItem.id)}><EditTextOrIcon textValue={__("Edit")}/></a>*/}
                                                 <Link href={route("inventoryItems.edit", inventoryItem.id)}
-                                                      className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1"
-                                                >
-                                                    {__("Edit")}
+                                                      className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
+                                                    <TbEdit
+                                                        className="w-6 h-6 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
                                                 </Link>
-                                                <Link href={route("editAmount", inventoryItem.id)}
-                                                      className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1"
-                                                >
-                                                    {__("Edit")} 2
-                                                </Link>
+                                                <a type="button"
+                                                   onClick={() => handleDestory(inventoryItem.id)}><RiDeleteBin6Line
+                                                    className="w-6 h-6 text-red-500 hover:text-red-700 hover:animate-pulse hover:bg-gray-50"/></a>
+                                                {/*<a href={route('inventoryItems.edit', inventoryItem.id)}><DeleteTextOrIcon*/}
+                                                {/*    textValue={__("Delete")}/></a>*/}
                                             </td>
                                         </tr>
                                     ))}

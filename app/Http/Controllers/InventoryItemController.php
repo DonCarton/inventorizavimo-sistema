@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AmountRunningLow;
 use App\Exports\InventoryExports;
 use App\Http\Requests\ChangeAmountInventoryItemRequest;
 use App\Http\Requests\StoreInventoryItemRequest;
@@ -41,7 +42,7 @@ class InventoryItemController extends Controller
         $query->where('updated_by','like','%'.request('updated_by').'%');
         }
 
-        $inventoryItems = $query->orderBy($sortField, $sortDirection)->paginate(3)->onEachSide(1);
+        $inventoryItems = $query->orderBy($sortField, $sortDirection)->paginate(3)->withQueryString()->onEachSide(1);
         return Inertia::render('Inventory/Index', [
             'inventoryItems' => InventoryItemResource::collection($inventoryItems),
             'queryParams' => request()->query() ?: null,
@@ -55,12 +56,16 @@ class InventoryItemController extends Controller
         $prefixOptionIdToFetch = $prefixOptionId . '%';
         $latestPost = InventoryItem::where('local_name', 'like', $prefixOptionIdToFetch)->latest()->first();
         if ($latestPost == null) {
-            $newIdentifier = $prefixOptionId . '-001';
+            $newIdentifier = $prefixOptionId . '001';
             return response()->json(['post_number' => $newIdentifier]);
         }
         $numericPart = (int)preg_replace('/[^0-9]/', '', $latestPost->local_name);
-        $numericPart++;
-        $newIdentifier = $prefixOptionId . str_pad($numericPart, 3, '0', STR_PAD_LEFT) . '-P';
+        if ($numericPart < 999) {
+            $numericPart++;
+        } else {
+            $numericPart = 1;
+        }
+        $newIdentifier = $prefixOptionId . str_pad($numericPart, 3, '0', STR_PAD_LEFT);
         return response()->json(['post_number' => $newIdentifier]);
     }
 
@@ -103,10 +108,10 @@ class InventoryItemController extends Controller
 
     public function store(StoreInventoryItemRequest $request): RedirectResponse
     {
-        dd($request);
         $data = $request->validated();
+//        dd($data);
         InventoryItem::create($data);
-        return to_route('inventoryItems.index');
+        return to_route('inventoryItems.index')->with('success',('actions.created'));
     }
 
     public function update(UpdateInventoryItemRequest $request, InventoryItem $inventoryItem): RedirectResponse
@@ -129,6 +134,9 @@ class InventoryItemController extends Controller
             $data['total_amount'] = $data['total_amount'] + $data['amount_added'];
         }
         $inventoryItem->update(['total_count' => $data['total_amount']]);
+        if ($inventoryItem['total_count'] <= $inventoryItem['critical_amount']){
+            event(new AmountRunningLow($inventoryItem, $request->user()));
+        }
         return to_route('inventoryItems.index')->with('success', 'Item was updated');
     }
     public function takeOutAmountLog(Request $request, InventoryItem $inventoryItem): RedirectResponse
@@ -185,10 +193,19 @@ class InventoryItemController extends Controller
         ]);
     }
 
-    public function show($id): JsonResponse
+    public function show(InventoryItem $inventoryItem): Response
+    {
+        return Inertia::render('Inventory/Show', [
+            'inventoryItem' => new InventoryItemResource($inventoryItem),
+        ]);
+    }
+
+    public function destroy(int $id): RedirectResponse
     {
         $inventoryItem = InventoryItem::findOrFail($id);
-        return response()->json($inventoryItem);
+        $inventoryItem->delete();
+        return redirect()->route('inventoryItems.index')
+            ->with('success','Deleted.');
     }
 
     public function export(): BinaryFileResponse

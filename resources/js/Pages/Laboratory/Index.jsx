@@ -5,6 +5,8 @@ import {__} from "@/Libs/Lang.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
+import {TbEdit, TbTablePlus} from "react-icons/tb";
+import {RiDeleteBin6Line, RiFileExcel2Line} from "react-icons/ri";
 
 export default function Index({auth, laboratories, role, queryParams = null, success}) {
     queryParams = queryParams || {};
@@ -21,17 +23,22 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
         searchFieldChanged(name, e.target.value);
     }
     const sortChanged = (name) => {
-        if (name === queryParams.sort_field){
-            if(queryParams.sort_direction === 'asc'){
+        if (name === queryParams.sort_field) {
+            if (queryParams.sort_direction === 'asc') {
                 queryParams.sort_direction = 'desc';
-            }else {
+            } else {
                 queryParams.sort_direction = 'asc';
             }
-        }else {
+        } else {
             queryParams.sort_field = name;
             queryParams.sort_direction = 'asc';
         }
         router.get(route('laboratories.index'), queryParams);
+    }
+    const handleDestory = (value) => {
+        if (window.confirm('Are you sure you want to delete this item?')) {
+            router.delete(route('laboratories.destroy', value), {preserveScroll: true})
+        }
     }
     return (
         <AuthenticatedLayout
@@ -40,14 +47,17 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                 <div className="flex justify-between items-center">
                     <div className="flex justify-between">
                         <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Laboratories")}</h2>
-                        <InformationIconToolTip content={__("Here you can view all the available laboratory locations") + '.'} placement="right-end" classname="bg-black" color="black" classnameForIcon="w-5 h-5 ml-1 mt-1"/>
+                        <InformationIconToolTip
+                            content={__("Here you can view all the available laboratory locations") + '.'}
+                            placement="right-end" classname="bg-black" color="black"
+                            classnameForIcon="w-5 h-5 ml-1 mt-1"/>
+
                     </div>
-                    <div>
-                        <a href={route("export")} target="_blank"
-                           className="bg-amber-600 py-1 px-3 mr-2 text-white rounded shadow transition-all hover:bg-amber-700">{__("Export to Excel")}</a>
-                        <Link href={route("inventoryItems.create")}
-                              className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"> {__("Create")}
-                        </Link>
+                    <div className="grid grid-cols-2 gap-4">
+                        <a href={route("export")} target="_blank"><RiFileExcel2Line
+                            className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
+                        <a href={route("laboratories.create")}><TbTablePlus
+                            className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
                     </div>
                 </div>
             }
@@ -112,16 +122,24 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                                     {laboratories.data.map(laboratory => (
                                         <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                             <th className="px-3 py-2">{laboratory.id}</th>
-                                            <td className="px-3 py-2">{laboratory.name}</td>
+                                            <td className="px-3 py-2"><Link
+                                                href={route("laboratories.show", laboratory.id)}
+                                                className="text-black dark:text-green-400 hover:underline mx-1"
+                                            >{laboratory.name}
+                                            </Link>
+                                            </td>
                                             <td className="px-3 py-2">{laboratory.updated_at}</td>
                                             <td className="px-3 py-2">{laboratory.created_by.email}</td>
                                             <td className="px-3 py-2">{laboratory.updated_by.email}</td>
-                                            <td className="px-3 py-2">
-                                                <Link href={route("laboratories.show", laboratory.id)}
-                                                      className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1"
-                                                >
-                                                    {__("Show")}
+                                            <td className="flex justify-start mt-1 px-2 py-1">
+                                                <Link href={route("laboratories.edit", laboratory.id)}
+                                                      className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
+                                                    <TbEdit
+                                                        className="w-6 h-6 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
                                                 </Link>
+                                                <a type="button"
+                                                   onClick={() => handleDestory(laboratory.id)}><RiDeleteBin6Line
+                                                    className="w-6 h-6 text-red-500 hover:text-red-700 hover:animate-pulse hover:bg-gray-50"/></a>
                                             </td>
                                         </tr>
                                     ))}
