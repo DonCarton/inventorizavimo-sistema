@@ -8,9 +8,12 @@ import {Accordion, AccordionBody, AccordionHeader} from "@material-tailwind/reac
 import {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 import Modal from "@/Components/Modal.jsx";
+import { actionsOnInventory } from '@/Configurations/SelectConfigurations.jsx';
+import SecondaryButton from "@/Components/SecondaryButton.jsx";
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
 export default function Edit({auth, inventoryItem, role, logsForItem, laboratories}) {
-    const [actionFromUser, setActionFromUser] = useState('TAKE');
+    const [actionFromUser, setActionFromUser] = useState('REMOVE');
     const {data, setData, patch, errors} = useForm({
         total_amount: inventoryItem.data.total_amount,
         laboratory_id: '',
@@ -48,7 +51,6 @@ export default function Edit({auth, inventoryItem, role, logsForItem, laboratori
             e.preventDefault();
         }
     }
-    console.log(data.laboratory_id);
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -63,12 +65,12 @@ export default function Edit({auth, inventoryItem, role, logsForItem, laboratori
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg space-y-6">
-                        <Modal show={modalOpen} onClose={closeModal}>
-                            <form onSubmit={onSubmit2}>
-                                <div>
-                                    <div>
+                        <Modal closeable="sm" show={modalOpen} onClose={closeModal}>
+                            <form className="p-6" onSubmit={onSubmit2}>
+                                <div className="grid grid-cols-2 gap-x-6">
+                                    <div className="mt-4">
                                         <InputLabel htmlFor="inventoryItems_laboratory_id">{__("Laboratory")}<span className="text-red-500">*</span></InputLabel>
-                                        <select value={data.laboratory_id} onChange={e => setData('laboratory_id',e.target.value)}>
+                                        <select className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={data.laboratory_id} onChange={e => setData('laboratory_id',e.target.value)}>
                                             <option value="">{__("Choose a value")}</option>
                                             {laboratories.data.map(laboratory => (
                                                 <option value={laboratory.id}>{laboratory.name}</option>
@@ -76,27 +78,31 @@ export default function Edit({auth, inventoryItem, role, logsForItem, laboratori
                                         </select>
                                         <InputError message={errors.laboratory_id} className="mt-2"/>
                                     </div>
-                                    <div>
+                                    <div className="mt-4">
                                         <InputLabel htmlFor="inventoryItems_action">{__("Action")}<span
                                             className="text-red-500">*</span></InputLabel>
-                                        <select onChange={e => setData('action',e.target.value)} value={data.action}>
-                                            <option id="1" value="TAKE">{__("Remove")}</option>
-                                            <option id="2" value="RETURN">{__("Return")}</option>
+                                        <select className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" onChange={e => setData('action',e.target.value)} value={data.action}>
+                                            {actionsOnInventory.map(action => (
+                                                <option value={action.value}>{__(action.label)}</option>
+                                            ))}
                                         </select>
                                     </div>
-                                    <div>
+                                    <div className="mt-4">
                                         <InputLabel htmlFor="inventoryItems_amount">{__("Amount")}<span
                                             className="text-red-500">*</span></InputLabel>
-                                        <TextInput id="inventoryItems_amount" name="amount" onChange={e => setData('amount', e.target.value)} onKeyPress={handleNumericInput}></TextInput>
+                                        <TextInput className="mt-1 block w-full" id="inventoryItems_amount" name="amount" onChange={e => setData('amount', e.target.value)} onKeyPress={handleNumericInput}></TextInput>
                                         <InputError message={errors.amount} className="mt-2"/>
                                     </div>
-                                    <div>
+                                    <div className="mt-4">
                                         <InputLabel htmlFor="inventoryItems_comment">{__("Comment")}</InputLabel>
-                                        <TextInput id="inventoryItems_comment" name="comment" onChange={e => setData('comment', e.target.value)}></TextInput>
+                                        <TextInput className="mt-1 block w-full" id="inventoryItems_comment" name="comment" onChange={e => setData('comment', e.target.value)}></TextInput>
                                     </div>
                                 </div>
-                                <a className="hover:cursor-pointer mr-2" onClick={closeModal}>Close the modal</a>
-                                <button>{__("Save")}</button>
+                                <div className="mt-2">
+                                    {/*<a className="px-3 py-1 bg-emerald-500 hover:bg-emerald-700 hover:cursor-pointer mr-2" onClick={closeModal}>Close the modal</a>*/}
+                                    <SecondaryButton className="hover:bg-gray-100 mr-2" onClick={closeModal}>{__("Cancel")}</SecondaryButton>
+                                    <PrimaryButton className="bg-emerald-700">{__("Save")}</PrimaryButton>
+                                </div>
                             </form>
                         </Modal>
                         <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
@@ -201,7 +207,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, laboratori
                                             <td className="px-3 py-2">
                                                 <Link href={route("laboratories.show", logForItem.laboratory.id)} className="font-medium text-white hover:underline mx-1"> {logForItem.laboratory.name} </Link>
                                             </td>
-                                            <td className="px-3 py-2">{logForItem.action_taken}</td>
+                                            <td className="px-3 py-2">{__(logForItem.action_taken)}</td>
                                             <td className="px-3 py-2">{logForItem.amount_handled}</td>
                                             <td className="px-3 py-2">{logForItem.comment}</td>
                                             <td className="px-3 py-2">

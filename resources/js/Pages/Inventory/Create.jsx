@@ -7,6 +7,7 @@ import {useState} from "react";
 import {Accordion, AccordionBody, AccordionHeader} from "@material-tailwind/react";
 import {__} from "@/Libs/Lang.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
+import {measureOptions, labPrefixOptions} from "@/Configurations/SelectConfigurations.jsx";
 
 function Icon({id, open}) {
     return (
@@ -23,7 +24,7 @@ function Icon({id, open}) {
     );
 }
 
-export default function Create({auth,role}) {
+export default function Create({auth, role, laboratories}) {
 
     const [open, setOpen] = useState(0);
     const [open2, setOpen2] = useState(false);
@@ -53,23 +54,12 @@ export default function Create({auth,role}) {
         created_by: 1,
         updated_by: 1
     });
-    const prefixOptions = [
-        {value: 'BIO', label: 'BIO'},
-        {value: 'CHE', label: 'CHE'},
-        {value: 'FIZ', label: 'FIZ'},
-        {value: 'FAB', label: 'FAB'},
-        {value: 'PRO', label: 'PRO'},
-        {value: 'ROB', label: 'ROB'},
-        {value: 'SVI', label: 'SVI'},
-        {value: 'INZ', label: 'INZ'},
-        {value: 'BEN', label: 'BEN'},
-    ];
     const handlePrefixChange = async (e) => {
-        if (e.target.value !== ''){
+        if (e.target.value !== '') {
             const prefixId = e.target.value;
             setSelectedPrefix(prefixId);
             try {
-                const response = await axios.post('/inventoryItems/fetch-post-number', { prefix_option_id: prefixId });
+                const response = await axios.post('/inventoryItems/fetch-post-number', {prefix_option_id: prefixId});
                 // const response = await axios.post('/inventoryItems/general-identifier', {prefix_option_id: prefixId});
                 const {post_number} = response.data;
                 setPostNumber(post_number);
@@ -79,6 +69,10 @@ export default function Create({auth,role}) {
             }
         }
     };
+    const handleOpen = (value) => setOpen(open === value ? 0 : value);
+    const handleOpen2 = () => setOpen2((cur) => !cur);
+    const handleOpen3 = () => setOpen3((cur) => !cur);
+    const handleOpen4 = () => setOpen4((cur) => !cur);
     const handleTabChange = (tabNumber) => {
         setActiveTab(tabNumber);
     };
@@ -98,10 +92,6 @@ export default function Create({auth,role}) {
             setData('local_name', postNumber);
         }
     }
-    const handleOpen = (value) => setOpen(open === value ? 0 : value);
-    const handleOpen2 = () => setOpen2((cur) => !cur);
-    const handleOpen3 = () => setOpen3((cur) => !cur);
-    const handleOpen4 = () => setOpen4((cur) => !cur);
     const onSubmit = (e) => {
         e.preventDefault();
 
@@ -119,8 +109,8 @@ export default function Create({auth,role}) {
         >
             <Head title={__("Create new inventory item")}/>
             <div className="py-12">
+                <pre>{JSON.stringify(laboratories, undefined, 2)}</pre>
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    {/*{postNumber && ( <p>Next Post Number: {postNumber}</p> )}*/}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         {activeTab === 1 && (
                             <div
@@ -128,14 +118,15 @@ export default function Create({auth,role}) {
                                 {/*<div className="pb-6">*/}
                                 <div>
                                     <InputLabel htmlFor="inventoryItems_unit" className="4xl:text-2xl 3xl:text-xl">
-                                        {__("Choose where the item will be stored")}<span className="text-red-500">*</span>
+                                        {__("Choose where the item will be stored")}<span
+                                        className="text-red-500">*</span>
                                     </InputLabel>
                                     <select className="rounded shadow mt-1 block w-3/4" value={selectedPrefix}
                                             onChange={handlePrefixChange}>
                                         <option value="">{__("Choose a value")}</option>
-                                        {prefixOptions.map((prefixOption) => (
-                                            <option key={prefixOption.id}
-                                                    value={prefixOption.id}>{prefixOption.label}</option>
+                                        {labPrefixOptions.map((prefixOption) => (
+                                            <option key={prefixOption.value}
+                                                    value={prefixOption.value}>{prefixOption.label}</option>
                                         ))}
                                     </select>
                                 </div>
@@ -148,9 +139,9 @@ export default function Create({auth,role}) {
                                             value={selectedMeasurement}
                                             onChange={handleMeasureChoice}>
                                         <option id="0" value="">{__("Choose a value")}</option>
-                                        <option id="1" value="L">{__("Litres")}</option>
-                                        <option id="2" value="K">{__("Kilograms")}</option>
-                                        <option id="3" value="P">{__("Packs")}</option>
+                                        {measureOptions.map(option => (
+                                            <option key={option.value} value={option.value}>{__(option.label)}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 {/*</div>*/}
@@ -318,7 +309,8 @@ export default function Create({auth,role}) {
                                                 <InputLabel htmlFor="inventoryItems_multiple_locations">
                                                     {__("Multiple locations")} <span className="text-red-500">*</span>
                                                 </InputLabel>
-                                                <Checkbox id="inventoryItems_multiple_locations" className="ml-1 p-2 block w-8 h-8" onClick={handleCheckbox}/>
+                                                <Checkbox id="inventoryItems_multiple_locations"
+                                                          className="ml-1 p-2 block w-8 h-8" onClick={handleCheckbox}/>
                                                 <InputError message={errors.multiple_locations} className="mt-2"/>
                                             </div>
                                         </AccordionBody>
@@ -327,18 +319,16 @@ export default function Create({auth,role}) {
                                         <AccordionHeader onClick={() => handleOpen4()}>Vieta</AccordionHeader>
                                         <AccordionBody>
                                             <div className="mt-4">
-                                                <InputLabel
-                                                    htmlFor="inventoryItems_local_laboratory"
-                                                    value={__("Laboratory")}
-                                                />
-                                                <TextInput
-                                                    id="inventoryItems_local_laboratory"
-                                                    type="text"
-                                                    name="laboratory"
-                                                    value={data.laboratory}
-                                                    className="mt-1 block w-full"
-                                                    onChange={e => setData('laboratory', e.target.value)}
-                                                />
+                                                <InputLabel htmlFor="inventoryItems_local_laboratory">{__("Laboratory")}<span className="text-red-500">*</span></InputLabel>
+                                                <select id="inventoryItems_local_laboratory" name="laboratory"
+                                                        className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={data.laboratory}
+                                                        onChange={e => setData('laboratory', e.target.value)}>
+                                                    <option value="">{__("Choose a value")}</option>
+                                                    {laboratories.data.map(laboratory => (
+                                                        <option key={laboratory.value}
+                                                                value={laboratory.value}>{__(laboratory.label)}</option>
+                                                    ))}
+                                                </select>
                                                 <InputError message={errors.laboratory} className="mt-2"/>
                                             </div>
                                         </AccordionBody>

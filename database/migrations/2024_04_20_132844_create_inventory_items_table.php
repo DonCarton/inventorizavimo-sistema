@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('inventory_items', function (Blueprint $table) {
             $table->id();
-            $table->string('local_name');
+            $table->string('local_name')->unique();
             $table->foreignId('inventory_type')->nullable()->constrained('item_types');
             $table->string('name');
             $table->string('name_eng')->nullable();
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('user_guide')->nullable();
             $table->string('provider')->nullable();
             $table->string('product_code')->nullable();
-            $table->foreignId('barcode')->references('id')->on('barcodes');
+            $table->string('barcode');
             $table->longText('url_to_provider')->nullable();
             $table->longText('alt_url_to_provider')->nullable();
             $table->bigInteger('total_count')->nullable();

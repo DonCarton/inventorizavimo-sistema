@@ -11,6 +11,10 @@ use PhpParser\Node\Expr\AssignOp\Mod;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @method static findOrFail(int $id)
+ * @method static create(array $all)
+ */
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles;
