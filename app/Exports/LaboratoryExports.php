@@ -2,29 +2,27 @@
 
 namespace App\Exports;
 
-use App\Models\InventoryItem;
+use App\Models\Laboratory;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class InventoryExports implements FromCollection, WithMapping, WithHeadings
+class LaboratoryExports implements FromQuery, WithMapping, WithHeadings
 {
     /**
-    * @return Collection
-    */
-    public function collection(): Collection
+     * @return Builder
+     */
+    public function query(): Builder
     {
-        return InventoryItem::all();
+        return Laboratory::query();
     }
     public function map($row): array
     {
         return [
             $row->id,
-            $row->local_name,
             $row->name,
-            $row->name_eng,
             (new Carbon($row->created_at))->format('Y-m-d H:m'),
             (new Carbon($row->updated_at))->format('Y-m-d H:m')
         ];
@@ -33,11 +31,10 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings
     {
         return [
             'ID',
-            'Code',
             'Name',
-            'NameENG',
             'CreateTime',
-            'UpdateTime',
+            'UpdateTime'
         ];
     }
+
 }

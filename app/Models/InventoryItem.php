@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property mixed $amountLogs
+ * @property mixed $id
+ * @method static findOrFail(int $id)
+ */
 class InventoryItem extends Model
 {
     use HasFactory;

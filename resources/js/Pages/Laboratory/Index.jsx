@@ -54,7 +54,7 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
 
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <a href={route("export")} target="_blank"><RiFileExcel2Line
+                        <a href={route("exportLaboratories")} target="_blank"><RiFileExcel2Line
                             className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
                         <a href={route("laboratories.create")}><TbTablePlus
                             className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>

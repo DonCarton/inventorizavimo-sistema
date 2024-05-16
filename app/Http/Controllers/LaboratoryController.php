@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\LaboratoryExports;
 use App\Http\Resources\LaboratoryResource;
 use App\Http\Resources\LaboratoryResourceForMulti;
+use App\Imports\LaboratoryImport;
 use App\Models\Laboratory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LaboratoryController extends Controller
 {
@@ -88,5 +92,18 @@ class LaboratoryController extends Controller
         $laboratory = Laboratory::findOrFail($id);
         $laboratory->delete();
         return to_route('laboratories.index')->with('success',(__('actions.deleted').'.'));
+    }
+    public function export(): BinaryFileResponse
+    {
+        return Excel::download(new LaboratoryExports(), 'laboratories.xlsx');
+    }
+    public function import(Request $request): RedirectResponse
+    {
+        $request->validate([
+           'file' => 'file|mimetypes:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/excel'
+        ]);
+        $file = $request->file('file');
+        Excel::import(new LaboratoryImport(), $file);
+        return to_route('laboratories.index')->with('success','Uploaded successfully');
     }
 }

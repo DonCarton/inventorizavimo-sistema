@@ -27,6 +27,51 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => time()
         ]);
 
+        $adminRole = [
+            'id' => 1,
+            'name' => 'admin',
+            'guard_name' => 'web',
+        ];
+
+        Role::create($adminRole);
+
+
+
+//        ItemType::factory()->create([
+//            'name' => 'Atsargos (kitos)',
+//            'change_acc_amount' => 0,
+//            'created_by' => 1,
+//            'updated_by' => 1
+//        ]);
+//
+//        ItemType::factory()->create([
+//            'name' => 'Ilgalaikis (kompiuterine tech)',
+//            'change_acc_amount' => 0,
+//            'created_by' => 1,
+//            'updated_by' => 1
+//        ]);
+//
+//        ItemType::factory()->create([
+//            'name' => 'Ilgalaikis (laboratorinis)',
+//            'change_acc_amount' => 0,
+//            'created_by' => 1,
+//            'updated_by' => 1
+//        ]);
+//
+//        ItemType::factory()->create([
+//            'name' => 'Trumpalaikis',
+//            'change_acc_amount' => 0,
+//            'created_by' => 1,
+//            'updated_by' => 1
+//        ]);
+//
+//        ItemType::factory()->create([
+//            'name' => 'Atsargos (reagentai)',
+//            'change_acc_amount' => 0,
+//            'created_by' => 1,
+//            'updated_by' => 1
+//        ]);
+
 //        ItemType::factory(5);
 //
 //        InventoryItem::factory()

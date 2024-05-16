@@ -12,6 +12,7 @@ use App\Http\Resources\CRUDInventoryItemResource;
 use App\Http\Resources\InventoryItemResource;
 use App\Http\Resources\LaboratoryResource;
 use App\Http\Resources\LaboratoryResourceForMulti;
+use App\Imports\InventoryImport;
 use App\Models\AmountLog;
 use App\Models\InventoryItem;
 use App\Models\Laboratory;
@@ -19,9 +20,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\In;
 use Inertia\Inertia;
 use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
@@ -103,7 +102,10 @@ class InventoryItemController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('Inventory/Create');
+        $laboratories = Laboratory::query()->get();
+        return Inertia::render('Inventory/Create',[
+            'laboratories' => LaboratoryResourceForMulti::collection($laboratories)
+        ]);
     }
 
     public function store(StoreInventoryItemRequest $request): RedirectResponse
@@ -143,11 +145,9 @@ class InventoryItemController extends Controller
     {
         $request->validate([
             'laboratory_id' => 'required|exists:laboratories,id',
-            'action' => ['required', Rule::in(['TAKE', 'RETURN'])],
+            'action' => ['required', Rule::in(['REMOVE', 'RETURN'])],
             'amount' => 'required|integer|min:1',
-            // Add custom validation rules for amount here
         ]);
-        //$id = $inventoryItem->id;
         AmountLog::create([
             'inventory_item_id' => $inventoryItem->id,
             'laboratory_id' => $request->input('laboratory_id'),
@@ -157,14 +157,13 @@ class InventoryItemController extends Controller
             'created_by' => $request->user()->id,
             'updated_by' => $request->user()->id,
         ]);
-//        $totalTaken = AmountLog::where('inventory_item_id', $inventoryItem->id)->where('action', 'TAKE')->sum('amount');
-//        $totalReturned = AmountLog::where('inventory_item_id', $inventoryItem->id)->where('action', 'RETURN')->sum('amount');
-//        if ($totalTaken == $totalReturned) {
-//            AmountLog::where('inventory_item_id', $inventoryItem->id)->delete();
-//        }
+        $totalTaken = AmountLog::where('inventory_item_id', $inventoryItem->id)->where('action', 'REMOVE')->sum('amount');
+        $totalReturned = AmountLog::where('inventory_item_id', $inventoryItem->id)->where('action', 'RETURN')->sum('amount');
+        if ($totalTaken == $totalReturned) {
+            AmountLog::where('inventory_item_id', $inventoryItem->id)->delete();
+        }
         return to_route('inventoryItems.index')->with('success', 'Item was adjusted');
     }
-
     public function edit(InventoryItem $inventoryItem): Response
     {
         $query = Laboratory::query()->get()->all();
@@ -211,5 +210,11 @@ class InventoryItemController extends Controller
     public function export(): BinaryFileResponse
     {
         return Excel::download(new InventoryExports(), 'inventory.xlsx');
+    }
+    public function import(Request $request): RedirectResponse
+    {
+        $file = $request->file('file');
+        Excel::import(new InventoryImport(), $file);
+        return to_route('inventoryItems.index')->with('success','Uploaded successfully');
     }
 }

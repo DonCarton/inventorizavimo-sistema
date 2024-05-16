@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Events\UserCreated;
+use App\Exports\UserExports;
 use App\Http\Resources\UserResource;
 use App\Models\Laboratory;
-use App\Models\ModelHasRole;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
@@ -15,7 +14,9 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class UserController extends Controller
 {
@@ -46,15 +47,10 @@ class UserController extends Controller
      */
     public function create(): Response
     {
-        //echo $request;
         $query = Role::all()->toArray();
-
         return Inertia::render('Users/Create',[
             'roles' => $query
         ]);
-//        return Inertia::render('Users/CreateTwo',[
-//            'roles' => $query
-//        ]);
     }
 
     /**
@@ -141,5 +137,9 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
         return to_route('users.index')->with('success',(__('actions.deleted').'.'));
+    }
+    public function export(): BinaryFileResponse
+    {
+        return Excel::download(new UserExports(), 'users.xlsx');
     }
 }

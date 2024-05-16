@@ -40,7 +40,11 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::patch('/laboratories/{laboratory}', [LaboratoryController::class, 'update'])->name('laboratories.update');
         Route::delete('/laboratories/{laboratory}', [LaboratoryController::class, 'destroy'])->name('laboratories.destroy');
 //        Route::post('/inventoryItems/general-identifier', [InventoryItemController::class, 'generateUniqueIdentifier']);
-        Route::get('export', [InventoryItemController::class, 'export'])->name('export');
+        Route::get('exportUsers', [UserController::class, 'export'])->name('exportUsers');
+        Route::get('exportInventoryItems', [InventoryItemController::class, 'export'])->name('exportInventoryItems');
+        Route::get('exportLaboratories', [LaboratoryController::class, 'export'])->name('exportLaboratories');
+        Route::post('importInventoryItems', [InventoryItemController::class, 'import'])->name('importInventoryItems');
+        Route::post('importLaboratories', [LaboratoryController::class, 'import'])->name('importLaboratories');
     });
 //    Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function (){
 //        Route::resource('inventoryItems', InventoryItemController::class);
