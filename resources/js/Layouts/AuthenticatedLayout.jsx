@@ -5,6 +5,7 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
 import { __ } from '@/Libs/Lang.jsx';
+import ApplicationLogo2 from "@/Components/ApplicationLogo2.jsx";
 
 export default function Authenticated({ user, header, children, role }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
@@ -17,7 +18,8 @@ export default function Authenticated({ user, header, children, role }) {
                         <div className="flex">
                             <div className="shrink-0 flex items-center">
                                 <Link href="/">
-                                    <ApplicationLogo className="block h-12 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                                    {/*<ApplicationLogo className="block h-12 w-auto fill-current text-gray-800 dark:text-gray-200" />*/}
+                                    <ApplicationLogo2 className="block h-12 w-auto fill-current text-gray-800 dark:text-gray-200" />
                                 </Link>
                             </div>
 

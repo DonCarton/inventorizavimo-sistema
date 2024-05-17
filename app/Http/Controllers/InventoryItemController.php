@@ -4,17 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Events\AmountRunningLow;
 use App\Exports\InventoryExports;
+use App\Http\Requests\AdjustInventoryAmountViaLog;
 use App\Http\Requests\ChangeAmountInventoryItemRequest;
 use App\Http\Requests\StoreInventoryItemRequest;
 use App\Http\Requests\UpdateInventoryItemRequest;
 use App\Http\Resources\AmountLogResource;
 use App\Http\Resources\CRUDInventoryItemResource;
 use App\Http\Resources\InventoryItemResource;
+use App\Http\Resources\ItemTypeResource;
 use App\Http\Resources\LaboratoryResource;
 use App\Http\Resources\LaboratoryResourceForMulti;
+use App\Http\Resources\SelectObjectResources\ItemTypeForSelect;
 use App\Imports\InventoryImport;
 use App\Models\AmountLog;
 use App\Models\InventoryItem;
+use App\Models\ItemType;
 use App\Models\Laboratory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -34,13 +38,17 @@ class InventoryItemController extends Controller
 
         $sortField = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", 'desc');
-        if (request('name')){
-            $query->where('name','like','%'.request('name').'%');
+        if (request('local_name')) {
+            $query->where('local_name', 'like', '%' . request('local_name') . '%');
         }
-        if (request('updated_by')){
-        $query->where('updated_by','like','%'.request('updated_by').'%');
+        if (request('name')) {
+            $query->where('name', 'like', '%' . request('name') . '%');
         }
-
+        if (request('updated_by')) {
+            $query->whereHas('createdBy', function ($query) {
+                $query->where('email', 'like', '%' . request('updated_by') . '%');
+            });
+        }
         $inventoryItems = $query->orderBy($sortField, $sortDirection)->paginate(3)->withQueryString()->onEachSide(1);
         return Inertia::render('Inventory/Index', [
             'inventoryItems' => InventoryItemResource::collection($inventoryItems),
@@ -103,17 +111,18 @@ class InventoryItemController extends Controller
     public function create(): Response
     {
         $laboratories = Laboratory::query()->get();
-        return Inertia::render('Inventory/Create',[
-            'laboratories' => LaboratoryResourceForMulti::collection($laboratories)
+        $itemTypes = ItemType::query()->get();
+        return Inertia::render('Inventory/Create', [
+            'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
+            'itemTypes' => ItemTypeForSelect::collection($itemTypes)
         ]);
     }
 
     public function store(StoreInventoryItemRequest $request): RedirectResponse
     {
         $data = $request->validated();
-//        dd($data);
         InventoryItem::create($data);
-        return to_route('inventoryItems.index')->with('success',('actions.created'));
+        return to_route('inventoryItems.index')->with('success', ('actions.created'));
     }
 
     public function update(UpdateInventoryItemRequest $request, InventoryItem $inventoryItem): RedirectResponse
@@ -136,18 +145,36 @@ class InventoryItemController extends Controller
             $data['total_amount'] = $data['total_amount'] + $data['amount_added'];
         }
         $inventoryItem->update(['total_count' => $data['total_amount']]);
-        if ($inventoryItem['total_count'] <= $inventoryItem['critical_amount']){
+        if ($inventoryItem['total_count'] <= $inventoryItem['critical_amount']) {
             event(new AmountRunningLow($inventoryItem, $request->user()));
         }
         return to_route('inventoryItems.index')->with('success', 'Item was updated');
     }
-    public function takeOutAmountLog(Request $request, InventoryItem $inventoryItem): RedirectResponse
+
+    public function takeOutAmountLog(AdjustInventoryAmountViaLog $request, InventoryItem $inventoryItem): RedirectResponse
     {
-        $request->validate([
-            'laboratory_id' => 'required|exists:laboratories,id',
-            'action' => ['required', Rule::in(['REMOVE', 'RETURN'])],
-            'amount' => 'required|integer|min:1',
-        ]);
+        if ($request->action === 'REMOVE') {
+            $request->validate([
+                'amount' => [
+                    'lte:total_available'
+                ]
+            ]);
+        }
+        $laboratoryId = $request->input('laboratory_id');
+        if ($request->action === 'RETURN') {
+            $amountInLaboratory = AmountLog::where('inventory_item_id', $inventoryItem->id)
+                ->where('laboratory_id', $laboratoryId)
+                ->where('action', 'REMOVE')
+                ->sum('amount');
+            $amountReturned = AmountLog::where('inventory_item_id', $inventoryItem->id)
+                ->where('laboratory_id', $laboratoryId)
+                ->where('action', 'RETURN')
+                ->sum('amount');
+            $availableInLaboratory = $amountInLaboratory - $amountReturned;
+            if ($request->amount > $availableInLaboratory) {
+                return back()->withErrors(['amount' => 'The specified amount exceeds the amount available in the laboratory.']);
+            }
+        }
         AmountLog::create([
             'inventory_item_id' => $inventoryItem->id,
             'laboratory_id' => $request->input('laboratory_id'),
@@ -157,25 +184,50 @@ class InventoryItemController extends Controller
             'created_by' => $request->user()->id,
             'updated_by' => $request->user()->id,
         ]);
-        $totalTaken = AmountLog::where('inventory_item_id', $inventoryItem->id)->where('action', 'REMOVE')->sum('amount');
-        $totalReturned = AmountLog::where('inventory_item_id', $inventoryItem->id)->where('action', 'RETURN')->sum('amount');
-        if ($totalTaken == $totalReturned) {
-            AmountLog::where('inventory_item_id', $inventoryItem->id)->delete();
+        $totalTakenInLab = AmountLog::where('inventory_item_id', $inventoryItem->id)
+            ->where('laboratory_id', $laboratoryId)
+            ->where('action', 'REMOVE')
+            ->sum('amount');
+        $totalReturnedInLab = AmountLog::where('inventory_item_id', $inventoryItem->id)
+            ->where('laboratory_id', $laboratoryId)
+            ->where('action', 'RETURN')
+            ->sum('amount');
+        if ($totalTakenInLab == $totalReturnedInLab) {
+            AmountLog::where('inventory_item_id', $inventoryItem->id)
+                ->where('laboratory_id', $laboratoryId)
+                ->delete();
         }
-        return to_route('inventoryItems.index')->with('success', 'Item was adjusted');
+        return redirect()->route('inventoryItems.index')->with('success', 'Item ' . $inventoryItem->local_name . ' was adjusted');
     }
+
     public function edit(InventoryItem $inventoryItem): Response
     {
-        $query = Laboratory::query()->get()->all();
-        return Inertia::render('Inventory/Edit', [
-            'inventoryItem' => new InventoryItemResource($inventoryItem),
-            'laboratories' => LaboratoryResourceForMulti::collection($query)
-        ]);
+        $laboratories = Laboratory::query()->get()->all();
+        if ($inventoryItem->itemType->change_acc_amount) {
+            return Inertia::render('User/Edit', [
+                'inventoryItem' => new CRUDInventoryItemResource($inventoryItem),
+                'laboratories' => LaboratoryResourceForMulti::collection($laboratories)
+            ]);
+        } else {
+            $amountLogs = $inventoryItem->amountLogs;
+            $totalTaken = AmountLog::where('inventory_item_id', $inventoryItem->id)->where('action', 'REMOVE')->sum('amount');
+            $totalReturned = AmountLog::where('inventory_item_id', $inventoryItem->id)->where('action', 'RETURN')->sum('amount');
+            return Inertia::render('User/EditLog', [
+                'inventoryItem' => new CRUDInventoryItemResource($inventoryItem),
+                'logsForItem' => AmountLogResource::collection($amountLogs),
+                'totalInUse' => $inventoryItem->total_count - $totalTaken + $totalReturned,
+                'laboratories' => LaboratoryResource::collection($laboratories),
+                'previousUrl' => url()->previous()
+            ]);
+        }
+//        return Inertia::render('Inventory/Edit', [
+//            'inventoryItem' => new InventoryItemResource($inventoryItem),
+//            'laboratories' => LaboratoryResourceForMulti::collection($laboratories)
+//        ]);
     }
 
     public function editAmount(InventoryItem $inventoryItem): Response
     {
-//        $inventoryItem = InventoryItems::findOrFail($id);
         return Inertia::render('User/Edit', [
             'inventoryItem' => new CRUDInventoryItemResource($inventoryItem)
         ]);
@@ -204,17 +256,18 @@ class InventoryItemController extends Controller
         $inventoryItem = InventoryItem::findOrFail($id);
         $inventoryItem->delete();
         return redirect()->route('inventoryItems.index')
-            ->with('success','Deleted.');
+            ->with('success', 'Deleted.');
     }
 
     public function export(): BinaryFileResponse
     {
         return Excel::download(new InventoryExports(), 'inventory.xlsx');
     }
+
     public function import(Request $request): RedirectResponse
     {
         $file = $request->file('file');
         Excel::import(new InventoryImport(), $file);
-        return to_route('inventoryItems.index')->with('success','Uploaded successfully');
+        return to_route('inventoryItems.index')->with('success', 'Uploaded successfully');
     }
 }

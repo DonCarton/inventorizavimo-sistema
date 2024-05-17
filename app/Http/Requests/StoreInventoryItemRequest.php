@@ -20,12 +20,15 @@ class StoreInventoryItemRequest extends FormRequest
     {
         return [
             'local_name' => ['required'],
+            'inventory_type' => ['required'],
             'name' => ['required', 'string', 'max:255'],
             'name_eng' => ['required', 'string', 'max:255'],
             'total_count' => ['required', 'int', 'min:1'],
-            'barcode' => ['required'],
             'critical_amount' => ['required', 'int', 'lt:total_count'],
+            'barcode' => ['required'],
             'laboratory' => ['required', 'int'],
+            'created_by' => 'required|exists:users,id',
+            'updated_by' => 'required|exists:users,id',
         ];
     }
 }

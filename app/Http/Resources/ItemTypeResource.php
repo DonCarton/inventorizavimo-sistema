@@ -16,12 +16,13 @@ class ItemTypeResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-          'id'=>$this->id,
-          'name'=>$this->name,
-          'created_at' => (new Carbon($this->created_at))->format('Y-m-d'),
-          'updated_at' => (new Carbon($this->updated_at))->format('Y-m-d'),
-          'created_by'=>new UserResource($this->createdBy),
-          'updated_by'=>new UserResource($this->updatedBy),
+            'id' => $this->id,
+            'name' => $this->name,
+            'change_acc_amount' => (bool)$this->change_acc_amount,
+            'created_at' => (new Carbon($this->created_at))->format('Y-m-d'),
+            'updated_at' => (new Carbon($this->updated_at))->format('Y-m-d'),
+            'created_by' => new UserResource($this->createdBy),
+            'updated_by' => new UserResource($this->updatedBy),
         ];
     }
 }

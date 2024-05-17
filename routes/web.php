@@ -10,31 +10,31 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+//Route::get('/', function () {
+//    return Inertia::render('Welcome', [
+//        'canLogin' => Route::has('login'),
+//        'canRegister' => Route::has('register'),
+//        'laravelVersion' => Application::VERSION,
+//        'phpVersion' => PHP_VERSION,
+//    ]);
+//});
 
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard');
 //})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function (){
-    Route::get('/dashboard', function (){return Inertia::render('Dashboard');})->name('dashboard');
+    Route::get('/', function (){return Inertia::render('Dashboard');})->name('dashboard');
     Route::group(['middleware' => ['role:admin']], function () {
 //        Route::delete('inventoryItems/{inventoryItem}/destroy', [InventoryItemController::class, 'destroy'])->name('inventoryItems.destroy.destroy');
         Route::get('/generate-barcode', [BarcodesController::class, 'generateAndStoreBarcode'])->name('generateBarcode');
-        Route::resource('inventoryItems', InventoryItemController::class);
+        Route::resource('inventoryItems', InventoryItemController::class)->middleware('includeUserId');
         Route::resource('itemTypes', ItemTypeController::class);
         Route::resource('users', UserController::class);
         Route::post('/inventoryItems/fetch-post-number', [InventoryItemController::class, 'fetchPostNumber']);
         Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('laboratories.index');
         Route::get('/laboratories/create', [LaboratoryController::class, 'create'])->name('laboratories.create');
-        Route::post('/laboratories', [LaboratoryController::class, 'store'])->name('laboratories.store');
+        Route::post('/laboratories', [LaboratoryController::class, 'store'])->middleware('includeUserId')->name('laboratories.store');
         Route::get('/laboratories/{laboratory}', [LaboratoryController::class, 'show'])->name('laboratories.show');
         Route::get('/laboratories/{laboratory}/edit', [LaboratoryController::class, 'edit'])->name('laboratories.edit');
         Route::patch('/laboratories/{laboratory}', [LaboratoryController::class, 'update'])->name('laboratories.update');

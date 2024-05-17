@@ -24,7 +24,7 @@ class BarcodesController extends Controller
         $inventoryItem = InventoryItem::where('local_name','=',$barcode)->latest()->first();
         return Redirect::route("editAmount", $inventoryItem);
     }
-    public function generateAndStoreBarcode()
+    public function generateAndStoreBarcode(): string
     {
         $barcodeData = 'BEN011-P';
         $barcode = (new \Milon\Barcode\DNS1D)->getBarcodePNG($barcodeData, 'C39');

@@ -87,7 +87,7 @@ return [
     'lte' => [
         'array' => 'The :attribute field must not have more than :value items.',
         'file' => 'The :attribute field must be less than or equal to :value kilobytes.',
-        'numeric' => 'The :attribute field must be less than or equal to :value.',
+        'numeric' => ':attribute turi būti mažesnis arba lygus :value.',
         'string' => 'The :attribute field must be less than or equal to :value characters.',
     ],
     'mac_address' => 'The :attribute field must be a valid MAC address.',
@@ -201,7 +201,8 @@ return [
         'last_name' => 'Pavardė',
         'email' => 'El. paštas',
         'laboratory' => 'Laboratorija',
-        'selectedRole' => 'Rolė'
+        'selectedRole' => 'Rolė',
+        'inventory_type' => 'Tipas'
     ],
 
 ];

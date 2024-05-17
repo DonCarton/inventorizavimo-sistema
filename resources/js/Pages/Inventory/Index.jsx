@@ -6,7 +6,8 @@ import {__} from "@/Libs/Lang.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import {RiDeleteBin6Line, RiFileExcel2Line} from 'react-icons/ri';
-import {TbEdit, TbTablePlus} from "react-icons/tb";
+import {TbEdit, TbTablePlus, TbArrowsUpDown} from "react-icons/tb";
+
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import {FiUpload} from "react-icons/fi";
 import FileUploadModal from "@/Components/FileUploadModal.jsx";
@@ -84,7 +85,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
             role={role}
         >
             <Head title="Inventory items"/>
-            {success && <div className="bg-emerald-500 py-2 px-4 text-black rounded">{success} </div>}
             <FileUploadModal modalHeaderText={__("Import Excel of data")}
                              alertForWrongType={__("Please select a .xlsx or .csv file")}
                              alertTextForMissingFile={__("Please choose a file before uploading")}
@@ -93,6 +93,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                              onFileSelect={handleFileSelect} onSubmit={handleSubmit2}/>
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    {success && <div className="bg-emerald-500 py-2 px-4 text-white font-bold rounded mb-4">{success} </div>}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <div className="overflow-auto">
@@ -175,7 +176,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                             <td className="flex justify-start mt-1 px-2 py-1">
                                                 <Link href={route("inventoryItems.edit", inventoryItem.id)}
                                                       className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
-                                                    <TbEdit
+                                                    <TbArrowsUpDown
                                                         className="w-6 h-6 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
                                                 </Link>
                                                 <a type="button"

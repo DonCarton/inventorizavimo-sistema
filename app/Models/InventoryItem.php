@@ -9,15 +9,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property mixed $amountLogs
- * @property mixed $id
+ * @property int $amountLogs
+ * @property int $id
+ * @property int $itemType
+ * @property int $total_count
+ * @property string $local_name
  * @method static findOrFail(int $id)
+ * @method static create(mixed $data)
  */
 class InventoryItem extends Model
 {
     use HasFactory;
     protected $fillable = [
         'local_name',
+        'inventory_type',
         'name',
         'name_eng',
         'laboratory',
@@ -27,13 +32,13 @@ class InventoryItem extends Model
         'updated_by',
         'total_count'
     ];
-    public function itemType(): HasOne
+    public function itemType(): BelongsTo
     {
-        return $this->hasOne(ItemType::class, 'id');
+        return $this->belongsTo(ItemType::class, 'inventory_type');
     }
-    public function laboratory(): HasOne
+    public function laboratory(): BelongsTo
     {
-        return $this->hasOne(Laboratory::class);
+        return $this->belongsTo(Laboratory::class, 'laboratory');
     }
     public  function createdBy(): BelongsTo
     {

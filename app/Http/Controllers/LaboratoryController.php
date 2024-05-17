@@ -22,10 +22,6 @@ class LaboratoryController extends Controller
         $query = Laboratory::query();
         $sortField = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", 'desc');
-
-        if (request('local_name')){
-            $query->where('local_name','like','%'.request('local_name').'%');
-        }
         if (request('name')){
             $query->where('name','like','%'.request('name').'%');
         }
@@ -34,7 +30,6 @@ class LaboratoryController extends Controller
                 $query->where('email', 'like', '%'.request('updated_by').'%');
             });
         }
-
         $laboratories = $query->orderBy($sortField, $sortDirection)->paginate(15)->withQueryString()->onEachSide(1);
         return Inertia::render('Laboratory/Index',[
             'laboratories' => LaboratoryResource::collection($laboratories),

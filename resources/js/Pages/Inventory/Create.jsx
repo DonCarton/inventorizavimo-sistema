@@ -24,7 +24,7 @@ function Icon({id, open}) {
     );
 }
 
-export default function Create({auth, role, laboratories}) {
+export default function Create({auth, role, laboratories, itemTypes}) {
 
     const [open, setOpen] = useState(0);
     const [open2, setOpen2] = useState(false);
@@ -37,6 +37,7 @@ export default function Create({auth, role, laboratories}) {
     const [selectedMeasurement, setSelectedMeasurement] = useState('');
     const {data, formData, setData, post, processing, errors} = useForm({
         local_name: postNumber || '',
+        inventory_type: '',
         name: '',
         name_eng: '',
         formula: '',
@@ -109,7 +110,6 @@ export default function Create({auth, role, laboratories}) {
         >
             <Head title={__("Create new inventory item")}/>
             <div className="py-12">
-                <pre>{JSON.stringify(laboratories, undefined, 2)}</pre>
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         {activeTab === 1 && (
@@ -121,7 +121,7 @@ export default function Create({auth, role, laboratories}) {
                                         {__("Choose where the item will be stored")}<span
                                         className="text-red-500">*</span>
                                     </InputLabel>
-                                    <select className="rounded shadow mt-1 block w-3/4" value={selectedPrefix}
+                                    <select className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={selectedPrefix}
                                             onChange={handlePrefixChange}>
                                         <option value="">{__("Choose a value")}</option>
                                         {labPrefixOptions.map((prefixOption) => (
@@ -135,7 +135,7 @@ export default function Create({auth, role, laboratories}) {
                                         {__("Storage measurement")}<span className="text-red-500">*</span>
                                     </InputLabel>
                                     <select id="inventoryItems_unit" disabled={!postNumber}
-                                            className="rounded shadow mt-1 block w-64 disabled:bg-gray-600 disabled:text-white"
+                                            className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block disabled:bg-gray-400 disabled:text-white w-full"
                                             value={selectedMeasurement}
                                             onChange={handleMeasureChoice}>
                                         <option id="0" value="">{__("Choose a value")}</option>
@@ -152,8 +152,7 @@ export default function Create({auth, role, laboratories}) {
                                   className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                                 <div className="pb-6">
                                     <Accordion open={open === 1} icon={<Icon id={1} open={open}/>}>
-                                        <AccordionHeader onClick={() => handleOpen(1)}>Inventoriaus
-                                            informacija</AccordionHeader>
+                                        <AccordionHeader onClick={() => handleOpen(1)}>{__("Inventory information")}</AccordionHeader>
                                         <AccordionBody>
                                             <div className="mt-4">
                                                 <InputLabel htmlFor="inventoryItems_local_name">
@@ -162,7 +161,19 @@ export default function Create({auth, role, laboratories}) {
                                                 <TextInput id="inventoryItems_local_name" type="text" name="local_name"
                                                            value={data.local_name}
                                                            onChange={e => setData('local_name', data.local_name)}
-                                                           className="mt-1 block w-full"/>
+                                                           className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white" disabled={true} readOnly={true}/>
+                                            </div>
+                                            <div className="mt-4">
+                                                <InputLabel htmlFor="inventoryItems_itemType">
+                                                    {__("Name")} <span className="text-red-500">*</span>
+                                                </InputLabel>
+                                                <select id="inventoryItems_local_laboratory" name="laboratory"
+                                                        className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={data.inventory_type}
+                                                        onChange={e => setData('inventory_type', e.target.value)}>
+                                                    <option value="">{__("Choose a value")}</option>
+                                                    {itemTypes.data.map(itemType => (<option key={itemType.value} value={itemType.value}>{__(itemType.label)}</option>))}
+                                                </select>
+                                                <InputError message={errors.inventory_type} className="mt-2"/>
                                             </div>
                                             <div className="mt-4">
                                                 <InputLabel htmlFor="inventoryItems_name">
@@ -189,7 +200,6 @@ export default function Create({auth, role, laboratories}) {
                                                 <TextInput id="inventoryItems_formula" type="text" name="name_eng"
                                                            value={data.formula} className="mt-1 block w-full"
                                                            onChange={e => setData('formula', e.target.value)}/>
-                                                <InputError message={errors.name_eng} className="mt-2"/>
                                             </div>
                                             <div className="mt-4">
                                                 <InputLabel htmlFor="inventoryItems_cas_nr">
@@ -198,7 +208,6 @@ export default function Create({auth, role, laboratories}) {
                                                 <TextInput id="inventoryItems_cas_nr" type="text" name="name_eng"
                                                            value={data.formula} className="mt-1 block w-full"
                                                            onChange={e => setData('formula', e.target.value)}/>
-                                                <InputError message={errors.name_eng} className="mt-2"/>
                                             </div>
                                         </AccordionBody>
                                     </Accordion>
@@ -320,13 +329,11 @@ export default function Create({auth, role, laboratories}) {
                                         <AccordionBody>
                                             <div className="mt-4">
                                                 <InputLabel htmlFor="inventoryItems_local_laboratory">{__("Laboratory")}<span className="text-red-500">*</span></InputLabel>
-                                                <select id="inventoryItems_local_laboratory" name="laboratory"
-                                                        className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={data.laboratory}
+                                                <select id="inventoryItems_local_laboratory" name="laboratory" className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={data.laboratory}
                                                         onChange={e => setData('laboratory', e.target.value)}>
                                                     <option value="">{__("Choose a value")}</option>
                                                     {laboratories.data.map(laboratory => (
-                                                        <option key={laboratory.value}
-                                                                value={laboratory.value}>{__(laboratory.label)}</option>
+                                                        <option key={laboratory.value} value={laboratory.value}>{__(laboratory.label)}</option>
                                                     ))}
                                                 </select>
                                                 <InputError message={errors.laboratory} className="mt-2"/>
@@ -340,7 +347,7 @@ export default function Create({auth, role, laboratories}) {
                                     >
                                         Cancel
                                     </Link>
-                                    <button
+                                    <button disabled={processing}
                                         className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600">
                                         Create
                                     </button>
