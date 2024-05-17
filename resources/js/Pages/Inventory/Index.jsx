@@ -92,7 +92,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                              selectFileText={__("Chosen file")} isOpen={modalOpen} onClose={handleSubmit2}
                              onFileSelect={handleFileSelect} onSubmit={handleSubmit2}/>
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="3xl:max-w-screen-3xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {success && <div className="bg-emerald-500 py-2 px-4 text-white font-bold rounded mb-4">{success} </div>}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
@@ -117,7 +117,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                             sortChanged={sortChanged}
                                             children={__("Name")}
                                         />
-                                        <th className="px-3 py-2">{__("Name ENG")}</th>
+                                        <th className="px-3 py-2">{__("Count")}</th>
                                         <TableHeader
                                             name="updated_at"
                                             sort_field={queryParams.sort_field}
@@ -169,7 +169,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                             <th className="px-3 py-2">{inventoryItem.id}</th>
                                             <td className="px-3 py-2">{inventoryItem.local_name}</td>
                                             <td className="px-3 py-2">{inventoryItem.name}</td>
-                                            <td className="px-3 py-2">{inventoryItem.name_eng}</td>
+                                            <td className="px-3 py-2">{inventoryItem.total_amount}</td>
                                             <td className="px-3 py-2">{inventoryItem.updated_at}</td>
                                             <td className="px-3 py-2">{inventoryItem.created_by.email}</td>
                                             <td className="px-3 py-2">{inventoryItem.updated_by.email}</td>

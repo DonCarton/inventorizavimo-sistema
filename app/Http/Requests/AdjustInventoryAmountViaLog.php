@@ -29,8 +29,8 @@ class AdjustInventoryAmountViaLog extends FormRequest
                 'required',
                 'integer',
                 'min:1',
-//                'lte:total_available'
-            ]
+            ],
+            'comment' => ['required', 'min:5', 'max:100']
         ];
     }
 }

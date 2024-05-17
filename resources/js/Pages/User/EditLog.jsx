@@ -4,7 +4,7 @@ import InputLabel from "@/Components/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import Icon from "@/Components/Icon.jsx";
 import InputError from "@/Components/InputError.jsx";
-import {Accordion, AccordionBody, AccordionHeader} from "@material-tailwind/react";
+import {Accordion, AccordionBody, AccordionHeader, Textarea} from "@material-tailwind/react";
 import {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 import Modal from "@/Components/Modal.jsx";
@@ -79,10 +79,10 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                         <InputLabel htmlFor="inventoryItems_action">{__("Action")}<span
                                             className="text-red-500">*</span></InputLabel>
                                         <select
-                                            className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
+                                            className={ data.action === 'REMOVE' ? "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full bg-red-300" : "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full bg-emerald-300 option:"}
                                             onChange={e => setData('action', e.target.value)} value={data.action}>
                                             {actionsOnInventory.map(action => (
-                                                <option value={action.value}>{__(action.label)}</option>
+                                                <option value={action.value} className={action.className}>{__(action.label)}</option>
                                             ))}
                                         </select>
                                     </div>
@@ -95,10 +95,11 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                         <InputError message={errors.amount} className="mt-2"/>
                                     </div>
                                     <div className="mt-4">
-                                        <InputLabel htmlFor="inventoryItems_comment">{__("Comment")}</InputLabel>
-                                        <TextInput className="mt-1 block w-full" id="inventoryItems_comment"
-                                                   name="comment"
-                                                   onChange={e => setData('comment', e.target.value)}></TextInput>
+                                        <InputLabel htmlFor="inventoryItems_comment">{__("Comment")}<span
+                                            className="text-red-500">*</span></InputLabel>
+                                        {/*<TextInput className="mt-1 block w-full" id="inventoryItems_comment" name="comment" onChange={e => setData('comment', e.target.value)}></TextInput>*/}
+                                        <textarea placeholder="Comment" id="inventoryItems_comment" name="comment" className="mt-1 block w-full" onChange={e => setData('comment', e.target.value)}></textarea>
+                                        <InputError message={errors.comment} className="mt-2"/>
                                     </div>
                                 </div>
                                 <div className="mt-2">

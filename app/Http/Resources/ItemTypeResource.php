@@ -19,8 +19,8 @@ class ItemTypeResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'change_acc_amount' => (bool)$this->change_acc_amount,
-            'created_at' => (new Carbon($this->created_at))->format('Y-m-d'),
-            'updated_at' => (new Carbon($this->updated_at))->format('Y-m-d'),
+            'created_at' => (new Carbon($this->created_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
+            'updated_at' => (new Carbon($this->created_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
             'created_by' => new UserResource($this->createdBy),
             'updated_by' => new UserResource($this->updatedBy),
         ];

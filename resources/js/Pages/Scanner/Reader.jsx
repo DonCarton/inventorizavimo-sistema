@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import {Head, useForm} from "@inertiajs/react";
 import {__} from "@/Libs/Lang.jsx";
 
-export default function Reader({auth, role}) {
+export default function Reader({auth, role, success}) {
 
     const [scanResult, setScanResult] = useState(null);
     const {get} = useForm({});
@@ -43,12 +43,26 @@ export default function Reader({auth, role}) {
         >
             <Head title="Item types"/>
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                {success && (<div>
+
+                </div>)}
+                <div className="max-w-2xl mx-auto sm:px-6 lg:px-8">
                     {scanResult
-                        ? <div>
-                            <h1>Kodas atpažintas:</h1>
-                            <button className="bg-emerald-600 rounded px-3 mr-2 text-white shadow transition-all hover:bg-emerald-700" onClick={onQrButtonClick}>{scanResult}</button>
-                            <button className="bg-red-600 rounded px-3 mr-2 text-white shadow transition-all hover:bg-amber-700" onClick={onQrResetClick}>Skenuoti iš naujo</button>
+                        ? <div className="grid grid-cols-2">
+                            <div className="flex justify-center items-center py-4">
+                                <a type="button" onClick={onQrButtonClick}>
+                                    <div className="px-6 py-6 bg-emerald-600 w-full h-full rounded mr-2 text-white shadow transition-all hover:bg-emerald-700">
+                                        {scanResult}
+                                    </div>
+                                </a>
+                            </div>
+                            <div className="flex justify-center items-center py-4">
+                                <a type="button" onClick={onQrResetClick}>
+                                    <div className="px-6 py-6 bg-red-600 rounded mr-2 text-white shadow transition-all hover:bg-amber-700">
+                                        Skenuoti iš naujo
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                         : <div id='reader'></div>
                     }

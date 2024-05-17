@@ -153,6 +153,7 @@ class InventoryItemController extends Controller
 
     public function takeOutAmountLog(AdjustInventoryAmountViaLog $request, InventoryItem $inventoryItem): RedirectResponse
     {
+        $request->validated();
         if ($request->action === 'REMOVE') {
             $request->validate([
                 'amount' => [
@@ -210,6 +211,7 @@ class InventoryItemController extends Controller
             ]);
         } else {
             $amountLogs = $inventoryItem->amountLogs;
+//            dd($amountLogs);
             $totalTaken = AmountLog::where('inventory_item_id', $inventoryItem->id)->where('action', 'REMOVE')->sum('amount');
             $totalReturned = AmountLog::where('inventory_item_id', $inventoryItem->id)->where('action', 'RETURN')->sum('amount');
             return Inertia::render('User/EditLog', [

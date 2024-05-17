@@ -202,7 +202,8 @@ return [
         'email' => 'El. paštas',
         'laboratory' => 'Laboratorija',
         'selectedRole' => 'Rolė',
-        'inventory_type' => 'Tipas'
+        'inventory_type' => 'Tipas',
+        'comment' => 'Komentaras'
     ],
 
 ];

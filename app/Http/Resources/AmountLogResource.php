@@ -24,7 +24,7 @@ class AmountLogResource extends JsonResource
             'amount_handled' => $this->amount,
             'comment' => $this->comment,
             'created_by' => new UserResource($this->createdBy),
-            'created_at' => (new Carbon($this->created_at))->format('Y-m-d H:m'),
+            'created_at' => (new Carbon($this->created_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
         ];
     }
 }

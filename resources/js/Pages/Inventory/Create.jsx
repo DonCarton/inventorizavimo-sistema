@@ -8,6 +8,8 @@ import {Accordion, AccordionBody, AccordionHeader} from "@material-tailwind/reac
 import {__} from "@/Libs/Lang.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
 import {measureOptions, labPrefixOptions} from "@/Configurations/SelectConfigurations.jsx";
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
+import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
 function Icon({id, open}) {
     return (
@@ -24,8 +26,8 @@ function Icon({id, open}) {
     );
 }
 
-export default function Create({auth, role, laboratories, itemTypes}) {
-
+export default function Create({auth, previousUrl, role, laboratories, itemTypes}) {
+    const [previousUrlPage] = useState(previousUrl);
     const [open, setOpen] = useState(0);
     const [open2, setOpen2] = useState(false);
     const [open3, setOpen3] = useState(false);
@@ -115,14 +117,15 @@ export default function Create({auth, role, laboratories, itemTypes}) {
                         {activeTab === 1 && (
                             <div
                                 className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg grid grid-cols-2 gap-2">
-                                {/*<div className="pb-6">*/}
                                 <div>
                                     <InputLabel htmlFor="inventoryItems_unit" className="4xl:text-2xl 3xl:text-xl">
                                         {__("Choose where the item will be stored")}<span
                                         className="text-red-500">*</span>
                                     </InputLabel>
-                                    <select className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={selectedPrefix}
-                                            onChange={handlePrefixChange}>
+                                    <select
+                                        className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
+                                        value={selectedPrefix}
+                                        onChange={handlePrefixChange}>
                                         <option value="">{__("Choose a value")}</option>
                                         {labPrefixOptions.map((prefixOption) => (
                                             <option key={prefixOption.value}
@@ -144,7 +147,13 @@ export default function Create({auth, role, laboratories, itemTypes}) {
                                         ))}
                                     </select>
                                 </div>
-                                {/*</div>*/}
+                                <div>
+                                    <Link href={previousUrlPage}
+                                          className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
+                                    >
+                                        {__("Cancel")}
+                                    </Link>
+                                </div>
                             </div>
                         )}
                         {activeTab === 2 && (
@@ -152,7 +161,8 @@ export default function Create({auth, role, laboratories, itemTypes}) {
                                   className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                                 <div className="pb-6">
                                     <Accordion open={open === 1} icon={<Icon id={1} open={open}/>}>
-                                        <AccordionHeader onClick={() => handleOpen(1)}>{__("Inventory information")}</AccordionHeader>
+                                        <AccordionHeader
+                                            onClick={() => handleOpen(1)}>{__("Inventory information")}</AccordionHeader>
                                         <AccordionBody>
                                             <div className="mt-4">
                                                 <InputLabel htmlFor="inventoryItems_local_name">
@@ -161,17 +171,20 @@ export default function Create({auth, role, laboratories, itemTypes}) {
                                                 <TextInput id="inventoryItems_local_name" type="text" name="local_name"
                                                            value={data.local_name}
                                                            onChange={e => setData('local_name', data.local_name)}
-                                                           className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white" disabled={true} readOnly={true}/>
+                                                           className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"
+                                                           disabled={true} readOnly={true}/>
                                             </div>
                                             <div className="mt-4">
                                                 <InputLabel htmlFor="inventoryItems_itemType">
                                                     {__("Name")} <span className="text-red-500">*</span>
                                                 </InputLabel>
                                                 <select id="inventoryItems_local_laboratory" name="laboratory"
-                                                        className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={data.inventory_type}
+                                                        className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
+                                                        value={data.inventory_type}
                                                         onChange={e => setData('inventory_type', e.target.value)}>
                                                     <option value="">{__("Choose a value")}</option>
-                                                    {itemTypes.data.map(itemType => (<option key={itemType.value} value={itemType.value}>{__(itemType.label)}</option>))}
+                                                    {itemTypes.data.map(itemType => (<option key={itemType.value}
+                                                                                             value={itemType.value}>{__(itemType.label)}</option>))}
                                                 </select>
                                                 <InputError message={errors.inventory_type} className="mt-2"/>
                                             </div>
@@ -328,12 +341,16 @@ export default function Create({auth, role, laboratories, itemTypes}) {
                                         <AccordionHeader onClick={() => handleOpen4()}>Vieta</AccordionHeader>
                                         <AccordionBody>
                                             <div className="mt-4">
-                                                <InputLabel htmlFor="inventoryItems_local_laboratory">{__("Laboratory")}<span className="text-red-500">*</span></InputLabel>
-                                                <select id="inventoryItems_local_laboratory" name="laboratory" className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={data.laboratory}
+                                                <InputLabel htmlFor="inventoryItems_local_laboratory">{__("Laboratory")}<span
+                                                    className="text-red-500">*</span></InputLabel>
+                                                <select id="inventoryItems_local_laboratory" name="laboratory"
+                                                        className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
+                                                        value={data.laboratory}
                                                         onChange={e => setData('laboratory', e.target.value)}>
                                                     <option value="">{__("Choose a value")}</option>
                                                     {laboratories.data.map(laboratory => (
-                                                        <option key={laboratory.value} value={laboratory.value}>{__(laboratory.label)}</option>
+                                                        <option key={laboratory.value}
+                                                                value={laboratory.value}>{__(laboratory.label)}</option>
                                                     ))}
                                                 </select>
                                                 <InputError message={errors.laboratory} className="mt-2"/>
@@ -342,15 +359,12 @@ export default function Create({auth, role, laboratories, itemTypes}) {
                                     </Accordion>
                                 </div>
                                 <div className="mt-4">
-                                    <Link href={route('inventoryItems.index')}
-                                          className="bg-gray-100 py-1 px-3 text-gray-800 rounded shadow transition-all hover:bg-gray-200 mr-2"
+                                    <Link href={previousUrlPage}
+                                          className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                     >
-                                        Cancel
+                                        {__("Cancel")}
                                     </Link>
-                                    <button disabled={processing}
-                                        className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600">
-                                        Create
-                                    </button>
+                                    <PrimaryButton className="ml-2" disabled={processing}>{__("Create")}</PrimaryButton>
                                 </div>
                             </form>)}
                     </div>

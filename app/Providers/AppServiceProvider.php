@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Inertia::share('appLogoPath', env('APP_LOGO_PATH'));
+        Inertia::share('appLogoPathColour', env('APP_LOGO_PATH_COLOUR'));
     }
 }
