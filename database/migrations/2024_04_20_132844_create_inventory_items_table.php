@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('user_guide')->nullable();
             $table->string('provider')->nullable();
             $table->string('product_code')->nullable();
-            $table->string('barcode');
+            $table->string('barcode')->nullable();
             $table->longText('url_to_provider')->nullable();
             $table->longText('alt_url_to_provider')->nullable();
             $table->bigInteger('total_count')->nullable();

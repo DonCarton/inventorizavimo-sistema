@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head, Link} from "@inertiajs/react";
-import InputLabel from "@/Components/InputLabel.jsx";
+import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import {Accordion, AccordionBody, AccordionHeader} from "@material-tailwind/react";
 import {useState} from "react";

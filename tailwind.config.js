@@ -21,7 +21,16 @@ export default {
                 '3xl': '1600px',
                 '2xl': '1080px',
                 'sm': '740px'
-            }
+            },
+            keyFrames: {
+                fadeOut: {
+                    '0%': { opacity: 1 },
+                    '100%': { opacity: 0},
+                },
+            },
+            animation: {
+                fadeOut: 'fadeOut 5s ease-in-out forwards',
+            },
         },
     },
 

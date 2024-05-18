@@ -1,11 +1,13 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
 import {Head, Link} from "@inertiajs/react";
-import InputLabel from "@/Components/InputLabel.jsx";
+import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import {__} from "@/Libs/Lang.jsx";
 import {Capitalize} from "@/Libs/Capitalize.jsx";
+import {useState} from "react";
 
-export default function Show({auth, user, role, userRole, roles, laboratories}) {
+export default function Show({auth, user, role, userRole, roles, laboratories, previousUrl}) {
+    const [previousUrlPage] = useState(previousUrl);
     return (<AuthenticatedLayout
             user={auth.user}
             header={<h2
@@ -45,7 +47,11 @@ export default function Show({auth, user, role, userRole, roles, laboratories}) 
                                 </select>
                             </div>
                             <div className="mt-4">
-                                <Link href={route('users.index')} className="bg-gray-100 py-1 px-3 text-gray-800 rounded shadow transition-all hover:bg-gray-200 mr-2"> {__("Cancel")}</Link>
+                                <Link href={previousUrlPage}
+                                      className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
+                                >
+                                    {__("Cancel")}
+                                </Link>
                             </div>
                         </div>
                     </div>

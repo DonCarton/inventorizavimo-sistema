@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head} from '@inertiajs/react';
 import {__} from '@/Libs/Lang.jsx';
 import {FaBarcode, FaTable, FaUser, FaQrcode} from "react-icons/fa";
+import {MdOutlineQrCode2} from "react-icons/md";
 
 export default function Dashboard({auth, role}) {
     return (
@@ -37,7 +38,7 @@ export default function Dashboard({auth, role}) {
                             </a>
                             <a href={route("reader")}
                                className="w-full flex items-center h-24 bg-gray-100 p-4 rounded-lg shadow-md group hover:bg-rose-800 active:bg-pink-900 transition ease-in-out duration-150">
-                                <FaQrcode className="w-16 h-16 text-4xl text-gray-700 group-hover:text-white"/>
+                                <MdOutlineQrCode2 className="w-16 h-16 text-4xl text-gray-700 group-hover:text-white"/>
                                 <div className="ml-4 group-hover:text-white">
                                     <h2 className="text-lg font-semibold">{__("Reader")}</h2>
                                     <p className="text-sm">{__("Reader interface")}.</p>

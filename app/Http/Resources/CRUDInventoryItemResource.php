@@ -9,6 +9,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CRUDInventoryItemResource extends JsonResource
 {
+    public static $wrap = false;
     /**
      * Transform the resource into an array.
      *
@@ -19,7 +20,7 @@ class CRUDInventoryItemResource extends JsonResource
         return [
             'id' => $this->id,
             'local_name' => $this->local_name,
-            'inventory_type' => new ItemTypeResource($this->itemType),
+            'inventory_type' => $this->inventory_type,
             'name' => $this->name,
             'name_eng' => $this->name_eng,
             'total_amount' => $this->total_count,

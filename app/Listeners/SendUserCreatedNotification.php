@@ -23,6 +23,6 @@ class SendUserCreatedNotification
      */
     public function handle(UserCreated $event): void
     {
-        Mail::to($event->user->email)->send(new UserCreatedNotification($event->user));
+        Mail::to($event->user->email)->send(new UserCreatedNotification($event->user, $event->password));
     }
 }

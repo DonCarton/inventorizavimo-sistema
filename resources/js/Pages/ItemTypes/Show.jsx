@@ -3,25 +3,10 @@ import {Head, Link, useForm} from "@inertiajs/react";
 import {__} from '@/Libs/Lang.jsx';
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
-import InputError from "@/Components/InputError.jsx";
 import {useState} from "react";
-import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
-export default function Edit({ auth, itemType, role, previousUrl }) {
+export default function Show({ auth, itemType, role, previousUrl }) {
     const [previousUrlPage] = useState(previousUrl);
-    const [checked, setChecked] = useState(itemType.data.change_acc_amount);
-    const {data, setData, put, errors, processing} = useForm({
-        name: itemType.data.name || '',
-        change_acc_amount: itemType.data.change_acc_amount,
-    })
-    const onSubmit = (e) => {
-        e.preventDefault();
-        put(route('itemTypes.update', itemType.data.id));
-    }
-    const handleCheckbox = (e) => {
-        setData('change_acc_amount', e.target.checked);
-        setChecked(e.target.checked);
-    };
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -33,26 +18,22 @@ export default function Edit({ auth, itemType, role, previousUrl }) {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <form onSubmit={onSubmit}>
+                            <div>
                                 <div className="mt-4">
-                                    <InputLabel htmlFor="itemType_name">{__("Name")}<span
-                                        className="text-red-500">*</span></InputLabel>
-                                    <TextInput id="itemType_name" type="text" name="name" value={data.name}
-                                               className="mt-1 block w-full" isFocused={true}
-                                               onChange={e => setData('name', e.target.value)}/>
-                                    <InputError message={errors.name} className="mt-2"/>
+                                    <InputLabel htmlFor="itemType_name">{__("Name")}</InputLabel>
+                                    <TextInput id="itemType_name" type="text" name="name" value={itemType.data.name}
+                                               className="mt-1 block w-full disabled:text-white disabled:bg-gray-400" disabled={true} readOnly={true}/>
                                 </div>
                                 <div className="mt-4">
                                     <label>
                                         <input
-                                            className="mr-2 rounded w-6 h-6"
+                                            disabled={true}
+                                            className="mr-2 rounded w-6 h-6 disabled:text-white disabled:bg-gray-400 disabled:hover:bg-gray-500"
                                             type="checkbox"
-                                            checked={checked}
-                                            onChange={handleCheckbox}
+                                            checked={itemType.data.change_acc_amount}
                                         />
-                                        {__("Can change literal amount")}?<span className="text-red-500">*</span>
+                                        {__("Can change literal amount")}?
                                     </label>
-                                    <InputError message={errors.change_acc_amount} className="mt-2"/>
                                 </div>
                                 <div className="mt-4">
                                     <Link href={previousUrlPage}
@@ -60,9 +41,8 @@ export default function Edit({ auth, itemType, role, previousUrl }) {
                                     >
                                         {__("Cancel")}
                                     </Link>
-                                    <PrimaryButton className="ml-2" disabled={processing}>{__("Save")}</PrimaryButton>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>

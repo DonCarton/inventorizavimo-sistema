@@ -29,6 +29,13 @@ class ItemTypeController extends Controller
         return Inertia::render('ItemTypes/Create');
     }
 
+    public function show(ItemType $itemType): Response
+    {
+        return Inertia::render('ItemTypes/Show', [
+            'itemType' => new ItemTypeResource($itemType)
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -36,10 +43,8 @@ class ItemTypeController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'change_acc_amount' => 'required'
+            'change_acc_amount' => 'required|boolean'
         ]);
-        $data['created_by'] = auth()->user()->id;
-        $data['updated_by'] = auth()->user()->id;
         ItemType::create($data);
         return redirect()->route('itemTypes.index')->with('success', 'New item type '. $request['name'].' has been created successfully.');
     }

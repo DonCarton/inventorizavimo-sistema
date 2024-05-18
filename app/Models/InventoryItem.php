@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $local_name
  * @method static findOrFail(int $id)
  * @method static create(mixed $data)
+ * @method static where(string $string, string $string1, mixed $prefixOptionId)
  */
 class InventoryItem extends Model
 {

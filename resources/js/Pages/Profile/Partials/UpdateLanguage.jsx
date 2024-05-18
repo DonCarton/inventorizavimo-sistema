@@ -1,5 +1,5 @@
 import {useForm} from "@inertiajs/react";
-import InputLabel from "@/Components/InputLabel.jsx";
+import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import {__} from "@/Libs/Lang.jsx";
 import {useState} from "react";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";

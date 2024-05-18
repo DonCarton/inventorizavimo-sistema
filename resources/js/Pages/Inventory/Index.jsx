@@ -1,18 +1,19 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, Link, useForm, router} from '@inertiajs/react';
+import {Head, Link, useForm, router, usePage} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
-import React, {useRef, useState} from "react";
+import React, {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import {RiDeleteBin6Line, RiFileExcel2Line} from 'react-icons/ri';
 import {TbEdit, TbTablePlus, TbArrowsUpDown} from "react-icons/tb";
-
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import {FiUpload} from "react-icons/fi";
 import FileUploadModal from "@/Components/FileUploadModal.jsx";
+import FailureMessage from "@/Components/FailureMessage.jsx";
+import SuccessMessage from "@/Components/SuccessMessage.jsx";
 
-export default function Index({auth, inventoryItems, role, queryParams = null, success}) {
+export default function Index({auth, inventoryItems, role, queryParams = null, success, failure}) {
     queryParams = queryParams || {};
     const [modalOpen, setModalOpen] = useState(false);
     const {setData, post} = useForm({
@@ -44,9 +45,11 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
         }
         router.get(route('inventoryItems.index'), queryParams);
     }
-    const handleDestory = (value) => {
+    const handleDestroy = (value) => {
         if (window.confirm('Are you sure you want to delete this item?')) {
-            router.delete(route('inventoryItems.destroy', value), {preserveScroll: true})
+            router.delete(route('inventoryItems.destroy', value), {
+                preserveScroll: true
+            })
         }
     }
     const handleFileSelect = (file) => {
@@ -58,6 +61,10 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
         setModalOpen(false);
         setData("title", "");
         setData("file", null);
+    }
+
+    function closeModal() {
+        setModalOpen(false);
     }
 
     return (
@@ -73,12 +80,12 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                             classnameForIcon="w-5 h-5 ml-1 mt-1"/>
                     </div>
                     <div className="grid grid-cols-3 gap-4">
-                        <a name="laboratoryExcel" onClick={() => setModalOpen(true)}><FiUpload
-                            className="w-10 h-10 text-amber-400 hover:text-amber-600 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
+                        { role === 'admin' && (<a href={route("inventoryItems.create")}><TbTablePlus
+                            className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>)}
+                        { role === 'admin' && (<a name="laboratoryExcel" onClick={() => setModalOpen(true)}><FiUpload
+                            className="w-10 h-10 text-amber-400 hover:text-amber-600 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>)}
                         <a href={route("exportInventoryItems")} target="_blank"><RiFileExcel2Line
                             className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
-                        <a href={route("inventoryItems.create")}><TbTablePlus
-                            className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
                     </div>
                 </div>
             }
@@ -89,11 +96,12 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                              alertForWrongType={__("Please select a .xlsx or .csv file")}
                              alertTextForMissingFile={__("Please choose a file before uploading")}
                              submitButtonText={__("Submit")} itemNotSpecifiedText={__("Nothing chosen yet")}
-                             selectFileText={__("Chosen file")} isOpen={modalOpen} onClose={handleSubmit2}
+                             selectFileText={__("Chosen file")} isOpen={modalOpen} onClose={closeModal}
                              onFileSelect={handleFileSelect} onSubmit={handleSubmit2}/>
             <div className="py-12">
                 <div className="3xl:max-w-screen-3xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    {success && <div className="bg-emerald-500 py-2 px-4 text-white font-bold rounded mb-4">{success} </div>}
+                    {success && <SuccessMessage message={success}/>}
+                    {failure && <FailureMessage message={failure}/>}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <div className="overflow-auto">
@@ -108,7 +116,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                             sort_field={queryParams.sort_field}
                                             sort_direction={queryParams.sort_direction}
                                             sortChanged={sortChanged}
-                                            children={__("Barcode")}
+                                            children={__("Local name")}
                                         />
                                         <TableHeader
                                             name="name"
@@ -118,6 +126,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                             children={__("Name")}
                                         />
                                         <th className="px-3 py-2">{__("Count")}</th>
+                                        <th className="px-3 py-2">{__("Type")}</th>
                                         <TableHeader
                                             name="updated_at"
                                             sort_field={queryParams.sort_field}
@@ -125,7 +134,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                             sortChanged={sortChanged}
                                             children={__("Updated at")}
                                         />
-                                        <th className="px-3 py-2">{__("Created by")}</th>
                                         <th className="px-3 py-2">{__("Updated by")}</th>
                                         <th className="px-3 py-2">{__("Actions")}</th>
                                     </tr>
@@ -170,17 +178,22 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                             <td className="px-3 py-2">{inventoryItem.local_name}</td>
                                             <td className="px-3 py-2">{inventoryItem.name}</td>
                                             <td className="px-3 py-2">{inventoryItem.total_amount}</td>
+                                            <td className="px-3 py-2">{inventoryItem.inventory_type}</td>
                                             <td className="px-3 py-2">{inventoryItem.updated_at}</td>
-                                            <td className="px-3 py-2">{inventoryItem.created_by.email}</td>
-                                            <td className="px-3 py-2">{inventoryItem.updated_by.email}</td>
+                                            <td className="px-3 py-2">{inventoryItem.updated_by}</td>
                                             <td className="flex justify-start mt-1 px-2 py-1">
+                                                <Link href={route("inventoryItems.editRaw", inventoryItem.id)}
+                                                      className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
+                                                    <TbEdit
+                                                        className="w-6 h-6 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
+                                                </Link>
                                                 <Link href={route("inventoryItems.edit", inventoryItem.id)}
                                                       className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
                                                     <TbArrowsUpDown
                                                         className="w-6 h-6 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
                                                 </Link>
                                                 <a type="button"
-                                                   onClick={() => handleDestory(inventoryItem.id)}><RiDeleteBin6Line
+                                                   onClick={() => handleDestroy(inventoryItem.id)}><RiDeleteBin6Line
                                                     className="w-6 h-6 text-red-500 hover:text-red-700 hover:animate-pulse hover:bg-gray-50"/></a>
                                             </td>
                                         </tr>

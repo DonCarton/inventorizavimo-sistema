@@ -3,26 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\Models\InventoryItem;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Inertia\Response;
 use Milon\Barcode\DNS1D;
 use Milon\Barcode\DNS2D;
 
 class BarcodesController extends Controller
 {
-    public function index(){
-        //
-    }
-    public function generate(): \Inertia\Response
+    public function generate(): Response
     {
-        return Inertia::render('Scanner/Reader');
+        return Inertia::render('Scanner/Reader2',[
+            'failure' => session('failure')
+        ]);
     }
     public function query(string $barcode): RedirectResponse
     {
-        $inventoryItem = InventoryItem::where('local_name','=',$barcode)->latest()->first();
-        return Redirect::route("editAmount", $inventoryItem);
+        $inventoryItem = InventoryItem::where('local_name','=', $barcode)->firstOrFail();
+        return Redirect::route("inventoryItems.edit", $inventoryItem);
+    }
+    public function getUrl(string $barcode): RedirectResponse
+    {
+        $inventoryItem = InventoryItem::where('local_name','=', $barcode)->latest()->first();
+        if ($inventoryItem == null){
+            return redirect()->route('reader')->with('failure',__('actions.noItemFound', ['name' => $barcode]) . '.');
+        }
+        return Redirect::route("inventoryItems.edit", $inventoryItem);
     }
     public function generateAndStoreBarcode(): string
     {

@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -14,6 +15,7 @@ use Spatie\Permission\Traits\HasRoles;
 /**
  * @method static findOrFail(int $id)
  * @method static create(array $all)
+ * @property mixed $email
  */
 class User extends Authenticatable
 {
@@ -31,7 +33,9 @@ class User extends Authenticatable
         'email',
         'password',
         'locale',
-        'laboratory'
+        'laboratory',
+        'created_by',
+        'updated_by'
     ];
 
     /**
@@ -65,5 +69,14 @@ class User extends Authenticatable
     {
         return $this->rolesForDisplay->pluck('name')->implode(', ');
     }
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
 
 }

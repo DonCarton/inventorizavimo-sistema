@@ -4,6 +4,8 @@ import Pagination from "@/Components/Pagination.jsx";
 import {__} from '@/Libs/Lang.jsx';
 import {TbEdit, TbTablePlus} from "react-icons/tb";
 import {RiDeleteBin6Line} from "react-icons/ri";
+import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
+import React from "react";
 
 export default function InventoryTypes({auth, itemTypes, role}) {
     const handleDestory = (value) => {
@@ -14,9 +16,14 @@ export default function InventoryTypes({auth, itemTypes, role}) {
     return (
         <AuthenticatedLayout user={auth.user}
                              header={
-                                 <div className="flex justify-between items-center"><h2
-                                     className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Types")}
-                                 </h2>
+                                 <div className="flex justify-between items-center">
+                                     <div className="flex justify-between">
+                                         <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Types")}</h2>
+                                         <InformationIconToolTip
+                                             content={__("Here you can view all the inventory types") + '.'}
+                                             placement="right-end" classname="bg-black" color="black"
+                                             classnameForIcon="w-5 h-5 ml-1 mt-1"/>
+                                     </div>
                                      <div className="grid grid-cols-2 gap-4">
                                          <a href={route("itemTypes.create")}><TbTablePlus
                                              className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>

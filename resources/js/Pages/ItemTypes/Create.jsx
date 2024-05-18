@@ -1,7 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
 import {Head, Link, useForm} from "@inertiajs/react";
 import {__} from '@/Libs/Lang.jsx';
-import InputLabel from "@/Components/InputLabel.jsx";
+import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";

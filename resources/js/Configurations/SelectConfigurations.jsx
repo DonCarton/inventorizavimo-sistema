@@ -17,8 +17,8 @@ const labPrefixOptions = [
 ]
 
 export const actionsOnInventory = [
-    { value: 'REMOVE', label: 'Remove', className: 'bg-red-300'},
-    { value: 'RETURN', label: 'Return', className: 'bg-emerald-400'}
+    { value: 'REMOVE', label: "Remove", className: 'bg-red-300'},
+    { value: 'RETURN', label: "Return", className: 'bg-emerald-400'}
 ]
 
 export {measureOptions, labPrefixOptions};
