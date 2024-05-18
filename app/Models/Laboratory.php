@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @method static create(array $all)
+ * @method static where(string $string, mixed $laboratory)
  */
 class Laboratory extends Model
 {

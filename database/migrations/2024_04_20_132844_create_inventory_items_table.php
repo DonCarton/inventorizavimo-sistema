@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('local_name')->unique();
             $table->foreignId('inventory_type')->nullable()->constrained('item_types');
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->string('name_eng')->nullable();
             $table->string('formula')->nullable();
             $table->string('cas_nr')->nullable();
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->bigInteger('to_order')->nullable();
             $table->bigInteger('average_consumption')->nullable();
             $table->boolean('multiple_locations')->nullable();
-            $table->foreignId('laboratory')->constrained('laboratories');
+            $table->foreignId('laboratory')->nullable()->constrained('laboratories');
             $table->foreignId('cupboard')->nullable()->constrained('cupboards');
             $table->foreignId('shelf')->nullable()->constrained('shelves');
             $table->longText('storage_conditions')->nullable();

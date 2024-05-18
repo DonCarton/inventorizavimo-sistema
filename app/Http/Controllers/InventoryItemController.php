@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateRequests\ChangeAmountInventoryItemRequest;
 use App\Http\Requests\UpdateRequests\UpdateInventoryItemRequest;
 use App\Http\Resources\AmountLogResource;
 use App\Http\Resources\CRUDInventoryItemResource;
+use App\Http\Resources\IndexResources\InventoryItemIndexResource;
 use App\Http\Resources\InventoryItemResource;
 use App\Http\Resources\LaboratoryResource;
 use App\Http\Resources\SelectObjectResources\ItemTypeForSelect;
@@ -49,7 +50,7 @@ class InventoryItemController extends Controller
         }
         $inventoryItems = $query->orderBy($sortField, $sortDirection)->paginate(10)->withQueryString()->onEachSide(1);
         return Inertia::render('Inventory/Index', [
-            'inventoryItems' => InventoryItemResource::collection($inventoryItems),
+            'inventoryItems' => InventoryItemIndexResource::collection($inventoryItems),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
             'failure' => session('failure')
