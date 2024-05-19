@@ -29,6 +29,7 @@
     "Provider" : "Tiekėjas",
     "Product code" : "Prekės kodas (kataloginis numeris)",
     "Barcode" : "Prekės barkodo numeris",
+    "Local barcode": "Brūkšninis kodas",
     "Provider url" : "Nuoroda į tiekėjo puslapį",
     "Alt url to provider" : "Nuoroda į alternatyvaus tiekėjo puslapį",
     "Count" : "Kiekis",

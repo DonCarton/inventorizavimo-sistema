@@ -16,8 +16,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
 
         $adminRole = [
             'id' => 1,
@@ -48,44 +46,38 @@ class DatabaseSeeder extends Seeder
         $adminUser->assignRole('admin');
 
         ItemType::factory()->create([
-            'name' => 'Atsargos (kitos)',
+            'name' => 'Atsargos (kitos sunaudojamos atsargos)',
             'change_acc_amount' => 0,
             'created_by' => 1,
             'updated_by' => 1
         ]);
 
         ItemType::factory()->create([
-            'name' => 'Ilgalaikis (kompiuterine tech)',
+            'name' => 'Ilgalaikis (kompiuterinė t..)',
             'change_acc_amount' => 0,
             'created_by' => 1,
             'updated_by' => 1
         ]);
 
         ItemType::factory()->create([
-            'name' => 'Ilgalaikis (laboratorinis)',
+            'name' => 'Ilgalaikis (laboratorinė technika)',
             'change_acc_amount' => 0,
             'created_by' => 1,
             'updated_by' => 1
         ]);
 
         ItemType::factory()->create([
-            'name' => 'Trumpalaikis',
+            'name' => 'Trumpalaikis (susidėvinčios priemonės)',
             'change_acc_amount' => 0,
             'created_by' => 1,
             'updated_by' => 1
         ]);
 
         ItemType::factory()->create([
-            'name' => 'Atsargos (reagentai)',
+            'name' => 'Atsargos (Reagentai)',
             'change_acc_amount' => 0,
             'created_by' => 1,
             'updated_by' => 1
         ]);
-
-//        ItemType::factory(5);
-//
-//        InventoryItem::factory()
-//            ->count(30)
-//            ->create();
     }
 }
