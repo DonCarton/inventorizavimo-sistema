@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateRequests\UpdateItemTypeRequest;
 use App\Http\Resources\ItemTypeResource;
 use App\Models\ItemType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 use function Termwind\render;
@@ -14,7 +16,6 @@ class ItemTypeController extends Controller
 {
     public function index(): Response
     {
-//        auth()->user()->assignRole('admin');
         $query = ItemType::query();
         $itemTypes = $query->paginate(10)->onEachSide(1);
         return Inertia::render('ItemTypes/Index',[
@@ -28,6 +29,13 @@ class ItemTypeController extends Controller
         return Inertia::render('ItemTypes/Create');
     }
 
+    public function show(ItemType $itemType): Response
+    {
+        return Inertia::render('ItemTypes/Show', [
+            'itemType' => new ItemTypeResource($itemType)
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -35,10 +43,8 @@ class ItemTypeController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
+            'change_acc_amount' => 'required|boolean'
         ]);
-        $data['change_acc_amount'] = 0;
-        $data['created_by'] = auth()->user()->id;
-        $data['updated_by'] = auth()->user()->id;
         ItemType::create($data);
         return redirect()->route('itemTypes.index')->with('success', 'New item type '. $request['name'].' has been created successfully.');
     }
@@ -48,5 +54,13 @@ class ItemTypeController extends Controller
         return Inertia::render('ItemTypes/Edit',[
             'itemType' => new ItemTypeResource($itemType)
         ]);
+    }/**
+ * Update the specified resource in storage.
+ */
+    public function update(UpdateItemTypeRequest $request, ItemType $itemType): RedirectResponse
+    {
+        $data = $request->validated();
+        $itemType->update($data);
+        return Redirect::route('itemTypes.index')->with('success',(__('actions.updated').'.'));
     }
 }

@@ -1,7 +1,8 @@
 <x-mail::message xmlns:x-mail="http://www.w3.org/1999/html">
 Hello {{$user->first_name}},
 **Here is your login information** <br>
-Email: {{$user->email}}
+Email: {{$user->email}}<br>
+Password: {{$password}}
 
 
 <x-mail::button url="{{ route('login') }}">

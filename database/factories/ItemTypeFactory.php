@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\InventoryItem>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ItemType>
  */
-class InventoryItemsFactory extends Factory
+class ItemTypeFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,10 @@ class InventoryItemsFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->text(15),
+            'change_acc_amount' => fake()->boolean(50),
+            'created_by' => 1,
+            'updated_by' => 1
         ];
     }
 }

@@ -27,4 +27,5 @@ return [
     'updated_at' => 'Atnaujinas',
     'created_by' => 'Sukūrė',
     'updated_by' => 'Atnaujino',
+    'logBound' => 'Šis įrašas negali būti ištrintas, nes šiuo metu tam tikras inventorius yra išdėstytas kitose vietose.'
 ];

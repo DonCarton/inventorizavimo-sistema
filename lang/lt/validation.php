@@ -87,7 +87,7 @@ return [
     'lte' => [
         'array' => 'The :attribute field must not have more than :value items.',
         'file' => 'The :attribute field must be less than or equal to :value kilobytes.',
-        'numeric' => 'The :attribute field must be less than or equal to :value.',
+        'numeric' => ':attribute turi būti mažesnis arba lygus :value.',
         'string' => 'The :attribute field must be less than or equal to :value characters.',
     ],
     'mac_address' => 'The :attribute field must be a valid MAC address.',
@@ -190,9 +190,22 @@ return [
 
     'attributes' => [
         'local_name' => 'Vietinis pavadinimas',
+        'inventory_type' => 'Tipas',
         'name' => 'Pavadinimas',
         'name_eng' => 'Pavadinimas ENG',
+        'formula' => 'Formulė',
+        'cas_nr' => 'CAS NR',
+        'user_guide' => 'SDL/Naudojimo instrukcijos',
+        'provider' => 'Tiekėjas',
+        'product_code' => 'Prekės kodas',
         'barcode' => 'Barkodas',
+        'total_count' => 'Kiekis',
+        'critical_amount' => 'Kritinis kiekis',
+        'multiple_locations' => 'Keliose vietose?',
+        'storage_conditions' => 'Laikymo sąlygos',
+        'asset_number' => 'Turto numeris',
+        'used_for' => 'Naudojimas',
+        'comments' => 'Komentarai',
         'amount_removed' => 'Išimamas kiekis',
         'amount_added' => 'Įdedamas kiekis',
         'amount' => 'Kiekis',
@@ -201,7 +214,9 @@ return [
         'last_name' => 'Pavardė',
         'email' => 'El. paštas',
         'laboratory' => 'Laboratorija',
-        'selectedRole' => 'Rolė'
+        'selectedRole' => 'Rolė',
+        'comment' => 'Komentaras',
+        'change_acc_amount' => 'Gali literaliai keisti likutį?'
     ],
 
 ];

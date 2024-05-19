@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\StoreRequests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UpdateInventoryItemRequest extends FormRequest
+class AdjustInventoryAmountViaLog extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +23,14 @@ class UpdateInventoryItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required']
+            'laboratory_id' => 'required|exists:laboratories,id',
+            'action' => ['required', Rule::in(['REMOVE', 'RETURN'])],
+            'amount' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+            'comment' => ['required', 'min:5', 'max:100']
         ];
     }
 }

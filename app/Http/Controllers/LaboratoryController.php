@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Exports\LaboratoryExports;
 use App\Http\Resources\LaboratoryResource;
-use App\Http\Resources\LaboratoryResourceForMulti;
 use App\Imports\LaboratoryImport;
 use App\Models\Laboratory;
 use Illuminate\Http\RedirectResponse;
@@ -22,10 +21,6 @@ class LaboratoryController extends Controller
         $query = Laboratory::query();
         $sortField = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", 'desc');
-
-        if (request('local_name')){
-            $query->where('local_name','like','%'.request('local_name').'%');
-        }
         if (request('name')){
             $query->where('name','like','%'.request('name').'%');
         }
@@ -34,7 +29,6 @@ class LaboratoryController extends Controller
                 $query->where('email', 'like', '%'.request('updated_by').'%');
             });
         }
-
         $laboratories = $query->orderBy($sortField, $sortDirection)->paginate(15)->withQueryString()->onEachSide(1);
         return Inertia::render('Laboratory/Index',[
             'laboratories' => LaboratoryResource::collection($laboratories),
@@ -61,10 +55,8 @@ class LaboratoryController extends Controller
         $request->validate([
             'name' => 'required|string|min:3|max:255',
         ]);
-        $request['created_by'] = auth()->user()->id;
-        $request['updated_by'] = auth()->user()->id;
         Laboratory::create($request->all());
-        return redirect()->route('laboratories.index')->with('success', 'New laboratory '. $request['name'].' has been created successfully.');
+        return redirect()->route('laboratories.index')->with('success', __('actions.labCreated', ['name' => $request['name']]) . '.');
     }
 
     /**
@@ -104,6 +96,6 @@ class LaboratoryController extends Controller
         ]);
         $file = $request->file('file');
         Excel::import(new LaboratoryImport(), $file);
-        return to_route('laboratories.index')->with('success','Uploaded successfully');
+        return to_route('laboratories.index')->with('success',__('actions.uploaded') . '!');
     }
 }

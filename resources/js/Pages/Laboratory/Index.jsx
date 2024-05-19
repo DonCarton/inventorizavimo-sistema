@@ -7,6 +7,8 @@ import TableHeader from "@/Components/TableHeader.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import {TbEdit, TbTablePlus} from "react-icons/tb";
 import {RiDeleteBin6Line, RiFileExcel2Line} from "react-icons/ri";
+import SuccessMessage from "@/Components/SuccessMessage.jsx";
+import React from "react";
 
 export default function Index({auth, laboratories, role, queryParams = null, success}) {
     queryParams = queryParams || {};
@@ -54,19 +56,19 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
 
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <a href={route("exportLaboratories")} target="_blank"><RiFileExcel2Line
-                            className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
                         <a href={route("laboratories.create")}><TbTablePlus
                             className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
+                        <a href={route("exportLaboratories")} target="_blank"><RiFileExcel2Line
+                            className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
                     </div>
                 </div>
             }
             role={role}
         >
             <Head title={__("Laboratories")}/>
-            {success && <div className="bg-emerald-500 py-2 px-4 text-black rounded">{success} </div>}
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="3xl:max-w-screen-3xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    {success && <SuccessMessage message={success}/>}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <div className="overflow-auto">

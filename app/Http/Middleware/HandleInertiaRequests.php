@@ -35,6 +35,9 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'previousUrl' => function () {
+              return url()->previous();
+            },
             'role' => function () use ($request) {
                 $user = $request->user();
                 if ($user){

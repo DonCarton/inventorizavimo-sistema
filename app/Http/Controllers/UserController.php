@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\UserCreated;
 use App\Exports\UserExports;
+use App\Http\Resources\SelectObjectResources\LaboratoriesForSelect;
 use App\Http\Resources\UserResource;
 use App\Models\Laboratory;
 use App\Models\User;
@@ -29,14 +30,16 @@ class UserController extends Controller
      */
     public function index(): Response
     {
-        $translations = [
-            'user' => __('passwords.user')
-        ];
         $query = User::query();
-        $users = $query->paginate(10)->onEachSide(1);
+        $sortField = request("sort_field", 'created_at');
+        $sortDirection = request("sort_direction", 'desc');
+        if (request('email')) {
+            $query->where('email', 'like', '%' . request('email') . '%');
+        }
+        $users = $query->orderBy($sortField, $sortDirection)->paginate(10)->withQueryString()->onEachSide(1);
         return Inertia::render('Users/Index',[
             'users' => UserResource::collection($users),
-            'translations' => $translations,
+            'queryParams' => request()->query() ?: null,
             'success' => session('success'),
             'failure' => session('failure')
         ]);
@@ -47,9 +50,11 @@ class UserController extends Controller
      */
     public function create(): Response
     {
-        $query = Role::all()->toArray();
+        $roles = Role::all()->toArray();
+        $laboratories = Laboratory::query()->get();
         return Inertia::render('Users/Create',[
-            'roles' => $query
+            'roles' => $roles,
+            'laboratories' => LaboratoriesForSelect::collection($laboratories)
         ]);
     }
 
@@ -66,12 +71,13 @@ class UserController extends Controller
             'selectedRole' => 'required',
         ]);
         $password = Str::random(10);
+        $request['locale'] = env('APP_LOCALE');
         $request['password'] = Hash::make($password);
         $request['name'] = $request['first_name'].' '.$request['last_name'];
         $newUser = User::create($request->all());
         $role = $request['selectedRole'];
         $newUser->assignRole($role);
-        event(new UserCreated($newUser));
+        event(new UserCreated($newUser,$password));
         return redirect()->route('users.index')->with('success', 'New user '. $request['email'].' has been created successfully.');
     }
 

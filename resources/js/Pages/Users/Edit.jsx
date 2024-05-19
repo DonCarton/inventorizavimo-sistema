@@ -1,13 +1,16 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
 import {Head, Link, useForm} from "@inertiajs/react";
-import InputLabel from "@/Components/InputLabel.jsx";
+import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
 import {__} from "@/Libs/Lang.jsx";
 import {Capitalize} from "@/Libs/Capitalize.jsx";
+import {useState} from "react";
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
-export default function Edit({auth, user, role, userRole, roles, laboratories}) {
-    const {data, setData, put, errors} = useForm({
+export default function Edit({auth, user, role, userRole, roles, laboratories, previousUrl}) {
+    const [previousUrlPage] = useState(previousUrl);
+    const {data, setData, put, errors, processing} = useForm({
         first_name: user.data.first_name || '',
         last_name: user.data.last_name || '',
         email: user.data.email || '',
@@ -76,14 +79,12 @@ export default function Edit({auth, user, role, userRole, roles, laboratories}) 
                                 <InputError message={errors.role} className="mt-2"/>
                             </div>
                             <div className="mt-4">
-                                <Link href={route('users.index')}
-                                      className="bg-gray-100 py-1 px-3 text-gray-800 rounded shadow transition-all hover:bg-gray-200 mr-2">
+                                <Link href={previousUrlPage}
+                                      className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
+                                >
                                     {__("Cancel")}
                                 </Link>
-                                <button
-                                    className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600">
-                                    {__("Save")}
-                                </button>
+                                <PrimaryButton className="ml-2" disabled={processing}>{__("Save")}</PrimaryButton>
                             </div>
                         </form>
                     </div>

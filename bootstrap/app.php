@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
             'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
+            'includeUserId' => \App\Http\Middleware\IncludeUserId::class
         ]);
 
         //
