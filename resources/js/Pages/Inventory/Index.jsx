@@ -175,7 +175,12 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                     {inventoryItems.data.map(inventoryItem => (
                                         <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                             <th className="px-3 py-2">{inventoryItem.id}</th>
-                                            <td className="px-3 py-2">{inventoryItem.local_name}</td>
+                                            <td className="px-3 py-2">
+                                                <Link href={route("inventoryItems.show", inventoryItem.id)}
+                                                      className="font-medium text-gray-700 dark:text-white hover:underline mx-1">
+                                                    {inventoryItem.local_name}
+                                                </Link>
+                                            </td>
                                             <td className="px-3 py-2">{inventoryItem.name}</td>
                                             <td className="px-3 py-2">{inventoryItem.total_amount}</td>
                                             <td className="px-3 py-2">{inventoryItem.inventory_type}</td>

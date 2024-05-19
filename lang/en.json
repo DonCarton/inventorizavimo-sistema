@@ -29,6 +29,7 @@
     "Provider" : "Provider",
     "Product code" : "Product code",
     "Barcode" : "Barcode",
+    "Local barcode": "Local barcode",
     "Provider url" : "Provider url",
     "Alt url to provider" : "Alternative url to provider",
     "Count" : "Amount",

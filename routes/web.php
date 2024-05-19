@@ -41,6 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::post('importLaboratories', [LaboratoryController::class, 'import'])->name('importLaboratories');
     });
     Route::group(['middleware' => ['role:admin|user']], function (){
+        Route::get('/download-barcode/{barcodeValue}', [BarcodesController::class, 'downloadBarcode'])->name('getBarcodePng');
         Route::resource('inventoryItems', InventoryItemController::class)->only('index','show','edit');
         Route::patch('/inventoryItems/{inventoryItem}/updateAmount', [InventoryItemController::class, 'updateAmount'])->middleware('includeUserId')->name('inventoryItems.updateAmount');
         Route::patch('/inventoryItems/{inventoryItem}/takeOutAmountLog', [InventoryItemController::class, 'takeOutAmountLog'])->middleware('includeUserId')->name('inventoryItems.takeOutAmountLog');

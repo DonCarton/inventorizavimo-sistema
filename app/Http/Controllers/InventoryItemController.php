@@ -76,38 +76,6 @@ class InventoryItemController extends Controller
         return response()->json(['post_number' => $newIdentifier]);
     }
 
-    public function generateUniqueIdentifier(Request $request): JsonResponse
-    {
-        $prefixOptionId = $request->input('prefix_option_id');
-        $prefixOptionIdToFetch = $prefixOptionId . '%';
-        $latestItem = InventoryItem::where('local_name', 'like', $prefixOptionIdToFetch)->latest()->first();
-        if ($latestItem == null) {
-            $newIdentifier = $prefixOptionId . '-001';
-            return response()->json(['post_number' => $newIdentifier]);
-        }
-        preg_match('/(\d+)-([KPB])/', $latestItem, $matches);
-        $numericPart = isset($matches[1]) ? (int)$matches[1] : 0;
-        $suffix = $matches[2] ?? 'K';
-
-        if ($numericPart < 999) {
-            $numericPart++;
-        } else {
-            $numericPart = 1;
-            $suffix = $this->getNextSuffix($suffix);
-        }
-
-        $newIdentifier = $prefixOptionId . str_pad($numericPart, 3, '0', STR_PAD_LEFT) . "-$suffix";
-        return response()->json(['post_number' => $newIdentifier]);
-    }
-
-    private function getNextSuffix($currentSuffix): string
-    {
-        $suffixes = ['K', 'P', 'B'];
-        $currentIndex = array_search($currentSuffix, $suffixes);
-        $nextIndex = ($currentIndex + 1) % count($suffixes);
-        return $suffixes[$nextIndex];
-    }
-
     public function create(): Response
     {
         $laboratories = Laboratory::query()->get();
@@ -121,7 +89,6 @@ class InventoryItemController extends Controller
     public function store(StoreInventoryItemRequest $request): RedirectResponse
     {
         $data = $request->validated();
-//        dd($data);
         InventoryItem::create($request->all());
         return to_route('inventoryItems.index')->with('success', __('actions.created') . ' ' . $data['local_name'] . '.');
     }
@@ -245,28 +212,14 @@ class InventoryItemController extends Controller
         return redirect()->route('inventoryItems.index')->with('success', 'Item ' . $inventoryItem->local_name . ' was adjusted');
     }
 
-//    public function editAmount(InventoryItem $inventoryItem): Response
-//    {
-//        return Inertia::render('User/Edit', [
-//            'inventoryItem' => new CRUDInventoryItemResource($inventoryItem)
-//        ]);
-//    }
-//
-//    public function takeOutAmount(InventoryItem $inventoryItem): Response
-//    {
-//        $query = $inventoryItem->amountLogs;
-//        $query2 = Laboratory::query()->get()->all();
-//        return Inertia::render('User/EditLog', [
-//            'inventoryItem' => new CRUDInventoryItemResource($inventoryItem),
-//            'logsForItem' => AmountLogResource::collection($query),
-//            'laboratories' => LaboratoryResource::collection($query2)
-//        ]);
-//    }
-
     public function show(InventoryItem $inventoryItem): Response
     {
+        $laboratories = Laboratory::query()->get()->all();
+        $itemTypes = ItemType::query()->get();
         return Inertia::render('Inventory/Show', [
             'inventoryItem' => new InventoryItemResource($inventoryItem),
+            'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
+            'itemTypes' => ItemTypeForSelect::collection($itemTypes)
         ]);
     }
 
