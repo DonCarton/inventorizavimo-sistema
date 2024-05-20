@@ -8,6 +8,7 @@ use App\Http\Resources\SelectObjectResources\LaboratoriesForSelect;
 use App\Http\Resources\UserResource;
 use App\Models\Laboratory;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
@@ -21,12 +22,16 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class UserController extends Controller
 {
+    /**
+     * @param Laboratory $laboratory
+     */
     public function __construct(public Laboratory $laboratory)
     {
 
     }
     /**
      * Display a listing of the resource.
+     * @return Response
      */
     public function index(): Response
     {
@@ -47,6 +52,7 @@ class UserController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     * @return Response
      */
     public function create(): Response
     {
@@ -60,6 +66,8 @@ class UserController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function store(Request $request): RedirectResponse
     {
@@ -78,11 +86,13 @@ class UserController extends Controller
         $role = $request['selectedRole'];
         $newUser->assignRole($role);
         event(new UserCreated($newUser,$password));
-        return redirect()->route('users.index')->with('success', 'New user '. $request['email'].' has been created successfully.');
+        return redirect()->route('users.index')->with('success', __('actions.user.created',['email' => $newUser->email]) . '.');
     }
 
     /**
      * Display the specified resource.
+     * @param User $user
+     * @return Response
      */
     public function show(User $user): Response
     {
@@ -99,6 +109,8 @@ class UserController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     * @param User $user
+     * @return Response
      */
     public function edit(User $user): Response
     {
@@ -115,6 +127,9 @@ class UserController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * @param Request $request
+     * @param User $user
+     * @return RedirectResponse
      */
     public function update(Request $request, User $user): RedirectResponse
     {
@@ -123,16 +138,19 @@ class UserController extends Controller
             'last_name' => 'required',
             'email' => 'required',
             'laboratory' => 'required|integer',
-            'role' => 'required'
+            'role' => 'required',
+            'updated_by' => 'required'
         ]);
         $user->roles()->detach();
         $user->assignRole($data['role']);
         $user->update($data);
-        return Redirect::route('users.index')->with('success',(__('actions.updated').'.'));
+        return Redirect::route('users.index')->with('success', __('actions.user.updated',['email' => $user->email]) . '.');
     }
 
     /**
      * Remove the specified resource from storage.
+     * @param int $id
+     * @return RedirectResponse
      */
     public function destroy(int $id): RedirectResponse
     {
@@ -142,10 +160,15 @@ class UserController extends Controller
         }
         $user = User::findOrFail($id);
         $user->delete();
-        return to_route('users.index')->with('success',(__('actions.deleted').'.'));
+        return to_route('users.index')->with('success', __('actions.user.deleted',['email' => $user->email]) . '.');
     }
+
+    /**
+     * @return BinaryFileResponse
+     */
     public function export(): BinaryFileResponse
     {
-        return Excel::download(new UserExports(), 'users.xlsx');
+        $dateTimeNow = Carbon::now()->toDateTimeString();
+        return Excel::download(new UserExports(), $dateTimeNow . '_users.xlsx');
     }
 }

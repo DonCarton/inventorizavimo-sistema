@@ -18,6 +18,11 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings
     {
         return InventoryItem::all();
     }
+
+    /**
+     * @param $row
+     * @return array
+     */
     public function map($row): array
     {
         return [
@@ -29,6 +34,10 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings
             (new Carbon($row->updated_at))->format('Y-m-d H:m')
         ];
     }
+
+    /**
+     * @return string[]
+     */
     public function headings(): array
     {
         return [

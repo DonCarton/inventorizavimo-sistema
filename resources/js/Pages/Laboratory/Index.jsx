@@ -12,6 +12,7 @@ import React from "react";
 
 export default function Index({auth, laboratories, role, queryParams = null, success}) {
     queryParams = queryParams || {};
+    const handleConfirmMessage = __("Are you sure you want to delete this item")+'?';
     const searchFieldChanged = (name, value) => {
         if (value) {
             queryParams[name] = value;
@@ -38,7 +39,7 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
         router.get(route('laboratories.index'), queryParams);
     }
     const handleDestory = (value) => {
-        if (window.confirm('Are you sure you want to delete this item?')) {
+        if (window.confirm(handleConfirmMessage)) {
             router.delete(route('laboratories.destroy', value), {preserveScroll: true})
         }
     }

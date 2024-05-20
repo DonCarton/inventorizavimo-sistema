@@ -16,6 +16,9 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LaboratoryController extends Controller
 {
+    /**
+     * @return Response
+     */
     public function index(): Response
     {
         $query = Laboratory::query();
@@ -36,12 +39,21 @@ class LaboratoryController extends Controller
             'success' => session('success'),
         ]);
     }
+
+    /**
+     * @param Laboratory $laboratory
+     * @return Response
+     */
     public function show(Laboratory $laboratory): Response
     {
         return Inertia::render('Laboratory/Show',[
             'laboratory' => new LaboratoryResource($laboratory)
         ]);
     }
+
+    /**
+     * @return Response
+     */
     public function create(): Response
     {
         return Inertia::render('Laboratory/Create');
@@ -49,6 +61,8 @@ class LaboratoryController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function store(Request $request): RedirectResponse
     {
@@ -56,11 +70,14 @@ class LaboratoryController extends Controller
             'name' => 'required|string|min:3|max:255',
         ]);
         Laboratory::create($request->all());
-        return redirect()->route('laboratories.index')->with('success', __('actions.labCreated', ['name' => $request['name']]) . '.');
+        return redirect()->route('laboratories.index')->with('success', __('actions.laboratory.created', ['name' => $request['name']]) . '.');
     }
 
     /**
      * Update the specified resource in storage.
+     * @param Request $request
+     * @param Laboratory $laboratory
+     * @return RedirectResponse
      */
     public function update(Request $request, Laboratory $laboratory): RedirectResponse
     {
@@ -68,14 +85,20 @@ class LaboratoryController extends Controller
             'name' => 'required|min:3|max:50',
         ]);
         $laboratory->update($data);
-        return Redirect::route('laboratories.index')->with('success',(__('actions.updated').'.'));
+        return Redirect::route('laboratories.index')->with('success',(__('actions.laboratory.updated', ['name' => $request['name']]).'.'));
     }
+
+    /**
+     * @param Laboratory $laboratory
+     * @return Response
+     */
     public function edit(Laboratory $laboratory): Response
     {
         return Inertia::render('Laboratory/Edit',[
             'laboratory' => new LaboratoryResource($laboratory)
         ]);
     }
+
     /**
      * Remove the specified resource from storage.
      */
@@ -83,12 +106,21 @@ class LaboratoryController extends Controller
     {
         $laboratory = Laboratory::findOrFail($id);
         $laboratory->delete();
-        return to_route('laboratories.index')->with('success',(__('actions.deleted').'.'));
+        return to_route('laboratories.index')->with('success',(__('actions.laboratory.deleted', ['name' => $laboratory['name']]).'.'));
     }
+
+    /**
+     * @return BinaryFileResponse
+     */
     public function export(): BinaryFileResponse
     {
         return Excel::download(new LaboratoryExports(), 'laboratories.xlsx');
     }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function import(Request $request): RedirectResponse
     {
         $request->validate([
