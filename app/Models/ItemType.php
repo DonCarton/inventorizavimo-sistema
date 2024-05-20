@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @method static create(\Illuminate\Http\Request $request)
  * @method static where(string $string, mixed $inventory_type)
+ * @method static findOrFail(int $id)
  */
 class ItemType extends Model
 {

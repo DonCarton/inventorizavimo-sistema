@@ -20,6 +20,7 @@ use App\Models\AmountLog;
 use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,6 +32,9 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class InventoryItemController extends Controller
 {
+    /**
+     * @return Response
+     */
     public function index(): Response
     {
         $query = InventoryItem::query();
@@ -57,6 +61,10 @@ class InventoryItemController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function fetchPostNumber(Request $request): JsonResponse
     {
         $prefixOptionId = $request->input('prefix_option_id');
@@ -76,6 +84,9 @@ class InventoryItemController extends Controller
         return response()->json(['post_number' => $newIdentifier]);
     }
 
+    /**
+     * @return Response
+     */
     public function create(): Response
     {
         $laboratories = Laboratory::query()->get();
@@ -86,13 +97,21 @@ class InventoryItemController extends Controller
         ]);
     }
 
+    /**
+     * @param StoreInventoryItemRequest $request
+     * @return RedirectResponse
+     */
     public function store(StoreInventoryItemRequest $request): RedirectResponse
     {
         $data = $request->validated();
         InventoryItem::create($request->all());
-        return to_route('inventoryItems.index')->with('success', __('actions.created') . ' ' . $data['local_name'] . '.');
+        return to_route('inventoryItems.index')->with('success', __('actions.inventoryItem.created', ['local_name' => $data['local_name']]) . '.');
     }
 
+    /**
+     * @param InventoryItem $inventoryItem
+     * @return Response
+     */
     public function editRaw(InventoryItem $inventoryItem): Response
     {
         $laboratories = Laboratory::query()->get()->all();
@@ -105,6 +124,11 @@ class InventoryItemController extends Controller
 
     }
 
+    /**
+     * @param UpdateInventoryItemRequest $request
+     * @param InventoryItem $inventoryItem
+     * @return RedirectResponse
+     */
     public function update(UpdateInventoryItemRequest $request, InventoryItem $inventoryItem): RedirectResponse
     {
         $originalData = $inventoryItem->toArray();
@@ -114,11 +138,16 @@ class InventoryItemController extends Controller
         $inventoryItem->update($data);
         $changedData = array_diff_assoc($data, $originalData);
         if (!empty($changedData)){
-            return Redirect::route('inventoryItems.index')->with('success', __('actions.updated') . ' ' . $data['local_name'] . '.');
+            return Redirect::route('inventoryItems.index')->with('success', __('actions.inventoryItem.updated', ['local_name' => $data['local_name']]) . '.');
         }
         return Redirect::route('inventoryItems.index');
     }
 
+    /**
+     * @param ChangeAmountInventoryItemRequest $request
+     * @param InventoryItem $inventoryItem
+     * @return RedirectResponse
+     */
     public function updateAmount(ChangeAmountInventoryItemRequest $request, InventoryItem $inventoryItem): RedirectResponse
     {
         if ($request['amount_removed'] > 0) {
@@ -135,9 +164,13 @@ class InventoryItemController extends Controller
         if ($inventoryItem['total_count'] <= $inventoryItem['critical_amount']) {
             event(new AmountRunningLow($inventoryItem, $request->user()));
         }
-        return to_route('inventoryItems.index')->with('success', 'Item was updated');
+        return to_route('inventoryItems.index')->with('success', __('actions.inventoryItem.updated', ['local_name' => $inventoryItem->local_name]) . '.');
     }
 
+    /**
+     * @param InventoryItem $inventoryItem
+     * @return Response
+     */
     public function edit(InventoryItem $inventoryItem): Response
     {
         $laboratories = Laboratory::query()->get();
@@ -162,6 +195,11 @@ class InventoryItemController extends Controller
         }
     }
 
+    /**
+     * @param AdjustInventoryAmountViaLog $request
+     * @param InventoryItem $inventoryItem
+     * @return RedirectResponse
+     */
     public function takeOutAmountLog(AdjustInventoryAmountViaLog $request, InventoryItem $inventoryItem): RedirectResponse
     {
         $request->validated();
@@ -209,9 +247,13 @@ class InventoryItemController extends Controller
                 ->where('laboratory_id', $laboratoryId)
                 ->delete();
         }
-        return redirect()->route('inventoryItems.index')->with('success', 'Item ' . $inventoryItem->local_name . ' was adjusted');
+        return redirect()->route('inventoryItems.index')->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
     }
 
+    /**
+     * @param InventoryItem $inventoryItem
+     * @return Response
+     */
     public function show(InventoryItem $inventoryItem): Response
     {
         $laboratories = Laboratory::query()->get()->all();
@@ -223,27 +265,40 @@ class InventoryItemController extends Controller
         ]);
     }
 
+    /**
+     * @param int $id
+     * @return RedirectResponse
+     */
     public function destroy(int $id): RedirectResponse
     {
         $inventoryItem = InventoryItem::findOrFail($id);
         $logs = $inventoryItem->amountLogs;
-        if ($logs){
+        if (!$logs->isEmpty()){
             return redirect()->route('inventoryItems.index')->with('failure',__('inventory_item.logBound'));
         }
         $inventoryItem->delete();
         return redirect()->route('inventoryItems.index')
-            ->with('success', 'Deleted.');
+            ->with('success', __('actions.inventoryItem.deleted', ['local_name' => $inventoryItem['local_name']]) . '.');
     }
 
+    /**
+     * @return BinaryFileResponse
+     */
     public function export(): BinaryFileResponse
     {
-        return Excel::download(new InventoryExports(), 'inventory.xlsx');
+        $dateTimeNow = Carbon::now()->toDateTimeString();
+        return Excel::download(new InventoryExports(), $dateTimeNow . '_inventory.xlsx');
     }
 
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function import(Request $request): RedirectResponse
     {
         $file = $request->file('file');
+        $fileName = $request->file('file')->getClientOriginalName();
         Excel::import(new InventoryImport(), $file);
-        return to_route('inventoryItems.index')->with('success', 'Uploaded successfully');
+        return to_route('inventoryItems.index')->with('success', __('actions.uploaded', ['name' => $fileName]) . '.');
     }
 }

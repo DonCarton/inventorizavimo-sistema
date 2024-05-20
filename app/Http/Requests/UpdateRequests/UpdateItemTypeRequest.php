@@ -23,7 +23,8 @@ class UpdateItemTypeRequest extends FormRequest
     {
         return [
             'name' => 'required|min:3|max:50',
-            'change_acc_amount' => 'required|boolean'
+            'change_acc_amount' => 'required|boolean',
+            'updated_by' => 'required'
         ];
     }
 }

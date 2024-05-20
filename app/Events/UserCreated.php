@@ -16,8 +16,11 @@ class UserCreated
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $user;
     public $password;
+
     /**
      * Create a new event instance.
+     * @param User $user
+     * @param string $password
      */
     public function __construct(User $user, string $password)
     {
@@ -28,7 +31,7 @@ class UserCreated
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return array<int, Channel>
      */
     public function broadcastOn(): array
     {

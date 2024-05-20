@@ -19,6 +19,8 @@ class AmountRunningLow
     public $user;
     /**
      * Create a new event instance.
+     * @param InventoryItem $inventoryItem
+     * @param User $user
      */
     public function __construct(InventoryItem $inventoryItem, User $user)
     {
@@ -29,7 +31,7 @@ class AmountRunningLow
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return array<int, Channel>
      */
     public function broadcastOn(): array
     {

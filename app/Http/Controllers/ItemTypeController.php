@@ -14,21 +14,36 @@ use function Termwind\render;
 
 class ItemTypeController extends Controller
 {
+    /**
+     * Pateikti puslapį, kuriame yra pateikiami visi inventoriaus tipai.
+     * Objektai yra dalinami į puslapius po 10 įrašų kievkiename puslapyje.
+     * @return Response
+     */
     public function index(): Response
     {
         $query = ItemType::query();
         $itemTypes = $query->paginate(10)->onEachSide(1);
         return Inertia::render('ItemTypes/Index',[
             'itemTypes' => ItemTypeResource::collection($itemTypes),
-            'success' => session('success')
+            'success' => session('success'),
+            'warning' => session('warning'),
         ]);
     }
 
+    /**
+     * Pateikti formą, kurioje galime suvesti visus reikiamus/norimus laukus kuriant naują objektą
+     * @return Response
+     */
     public  function create(): Response
     {
         return Inertia::render('ItemTypes/Create');
     }
 
+    /**
+     * Pateikti formą, kurioje galime peržvelgti objektą neleidžiant redaguoti jokių laukų.
+     * @param ItemType $itemType
+     * @return Response
+     */
     public function show(ItemType $itemType): Response
     {
         return Inertia::render('ItemTypes/Show', [
@@ -37,30 +52,51 @@ class ItemTypeController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Išsaugoti naujai sukurtą įrašą sistemoje.
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function store(Request $request): RedirectResponse
     {
-        $data = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
             'change_acc_amount' => 'required|boolean'
         ]);
-        ItemType::create($data);
-        return redirect()->route('itemTypes.index')->with('success', 'New item type '. $request['name'].' has been created successfully.');
+        ItemType::create($request->all());
+        return redirect()->route('itemTypes.index')->with('success',(__('actions.itemType.created', ['name' => $request['name']]) . '.'));
     }
 
+    /**
+     * Pateikti formą, kurioje galime redaguoti užkrautą objektą.
+     * @param ItemType $itemType
+     * @return Response
+     */
     public function edit(ItemType $itemType): Response
     {
         return Inertia::render('ItemTypes/Edit',[
             'itemType' => new ItemTypeResource($itemType)
         ]);
-    }/**
- * Update the specified resource in storage.
- */
+    }
+
+    /**
+     * Atnaujinti egzistuojantį objektą su nauja informacija.
+     * @param UpdateItemTypeRequest $request
+     * @param ItemType $itemType
+     * @return RedirectResponse
+     */
     public function update(UpdateItemTypeRequest $request, ItemType $itemType): RedirectResponse
     {
         $data = $request->validated();
         $itemType->update($data);
-        return Redirect::route('itemTypes.index')->with('success',(__('actions.updated').'.'));
+        return Redirect::route('itemTypes.index')->with('success',(__('actions.itemType.updated', ['name' => $data['name']]) . '.'));
+    }
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(int $id): RedirectResponse
+    {
+        $itemType = ItemType::findOrFail($id);
+        $itemType->delete();
+        return to_route('itemTypes.index')->with('warning',(__('actions.itemType.deleted', ['name' => $itemType['name']]).'.'));
     }
 }

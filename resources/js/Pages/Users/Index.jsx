@@ -13,6 +13,7 @@ import FailureMessage from "@/Components/FailureMessage.jsx";
 
 export default function Users({auth, users, role, queryParams = null, success, failure}) {
     queryParams = queryParams || {};
+    const handleConfirmMessage = __("Are you sure you want to delete this item")+'?';
     const searchFieldChanged = (name, value) => {
         if (value) {
             queryParams[name] = value;
@@ -39,7 +40,7 @@ export default function Users({auth, users, role, queryParams = null, success, f
         router.get(route('users.index'), queryParams);
     }
     const handleDestory = (value) => {
-        if (window.confirm('Are you sure you want to delete this item?')) {
+        if (window.confirm(handleConfirmMessage)) {
             router.delete(route('users.destroy', value), {preserveScroll: true})
         }
     }

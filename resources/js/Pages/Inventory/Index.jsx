@@ -15,9 +15,10 @@ import SuccessMessage from "@/Components/SuccessMessage.jsx";
 
 export default function Index({auth, inventoryItems, role, queryParams = null, success, failure}) {
     queryParams = queryParams || {};
+    const handleConfirmMessage = __("Are you sure you want to delete this item")+'?';
     const [modalOpen, setModalOpen] = useState(false);
     const {setData, post} = useForm({
-        title: "",
+        title: '',
         file: null,
     });
     const searchFieldChanged = (name, value) => {
@@ -46,7 +47,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
         router.get(route('inventoryItems.index'), queryParams);
     }
     const handleDestroy = (value) => {
-        if (window.confirm('Are you sure you want to delete this item?')) {
+        if (window.confirm(handleConfirmMessage)) {
             router.delete(route('inventoryItems.destroy', value), {
                 preserveScroll: true
             })

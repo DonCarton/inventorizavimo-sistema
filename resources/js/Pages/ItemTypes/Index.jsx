@@ -6,10 +6,13 @@ import {TbEdit, TbTablePlus} from "react-icons/tb";
 import {RiDeleteBin6Line} from "react-icons/ri";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import React from "react";
+import SuccessMessage from "@/Components/SuccessMessage.jsx";
+import WarningMessage from "@/Components/WarningMessage.jsx";
 
-export default function InventoryTypes({auth, itemTypes, role}) {
+export default function InventoryTypes({auth, itemTypes, role, success, warning}) {
+    const handleConfirmMessage = __("Are you sure you want to delete this item")+'?';
     const handleDestory = (value) => {
-        if (window.confirm('Are you sure you want to delete this item?')) {
+        if (window.confirm(handleConfirmMessage)) {
             router.delete(route('itemTypes.destroy', value), {preserveScroll: true})
         }
     }
@@ -34,6 +37,8 @@ export default function InventoryTypes({auth, itemTypes, role}) {
             <Head title={__("Types")}/>
             <div className="py-12">
                 <div className="3xl:max-w-screen-3xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    {success && <SuccessMessage message={success}/>}
+                    {warning && <WarningMessage message={warning}/>}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <div className="overflow-auto">
