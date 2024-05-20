@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, Link, useForm, router, usePage} from '@inertiajs/react';
+import {Head, Link, useForm, router} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
 import React, {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
