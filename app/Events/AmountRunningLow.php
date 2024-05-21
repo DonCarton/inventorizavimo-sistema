@@ -16,16 +16,13 @@ class AmountRunningLow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $inventoryItem;
-    public $user;
     /**
      * Create a new event instance.
      * @param InventoryItem $inventoryItem
-     * @param User $user
      */
-    public function __construct(InventoryItem $inventoryItem, User $user)
+    public function __construct(InventoryItem $inventoryItem)
     {
         $this->inventoryItem = $inventoryItem;
-        $this->user = $user;
     }
 
     /**

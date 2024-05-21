@@ -8,6 +8,7 @@ use App\Mail\UserCreatedNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
+use Spatie\Permission\Models\Role;
 
 class InventoryItemAmountCritical
 {
@@ -24,6 +25,9 @@ class InventoryItemAmountCritical
      */
     public function handle(AmountRunningLow $event): void
     {
-        Mail::to($event->user->email)->send(new InventoryItemCriticalAmountReached($event->inventoryItem, $event->user));
+        $adminUsers = Role::findByName('admin')->users;
+        foreach ($adminUsers as $adminUser) {
+            Mail::to($adminUser->email)->send(new InventoryItemCriticalAmountReached($event->inventoryItem, $adminUser));
+        }
     }
 }

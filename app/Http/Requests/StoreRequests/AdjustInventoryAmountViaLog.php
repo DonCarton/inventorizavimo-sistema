@@ -30,7 +30,9 @@ class AdjustInventoryAmountViaLog extends FormRequest
                 'integer',
                 'min:1',
             ],
-            'comment' => ['required', 'min:5', 'max:100']
+            'comment' => ['required', 'min:5', 'max:100'],
+            'created_by' => 'required|exists:users,id',
+            'updated_by' => 'required|exists:users,id',
         ];
     }
 }

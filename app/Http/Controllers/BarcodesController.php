@@ -65,7 +65,8 @@ class BarcodesController extends Controller
      */
     public function generateAndDownloadBarcode(string $barcodeData): StreamedResponse
     {
-        $barcode = (new \Milon\Barcode\DNS1D)->getBarcodePNG($barcodeData,"C128",1,99,array(1,1,1), true);
+        $barcode = (new \Milon\Barcode\DNS1D)
+            ->getBarcodePNG($barcodeData,"C128",1,99,array(1,1,1), true);
         $barcodeContent = base64_decode($barcode);
 
         $filename = 'barcode_' . $barcodeData . '.png';
@@ -78,17 +79,5 @@ class BarcodesController extends Controller
             'Content-Type' => 'image/png',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
-    }
-
-    /**
-     * @return string
-     */
-    public function generateAndStoreBarcode(): string
-    {
-        $barcodeData = 'BEN011-P';
-        $barcode = (new \Milon\Barcode\DNS1D)->getBarcodePNG($barcodeData, 'C39');
-        $filename = 'barcode_' . $barcodeData . '.png';
-        Storage::disk('public')->put($filename, base64_decode((new \Milon\Barcode\DNS1D)->getBarcodePNG($barcodeData,"C39",1,99,array(1,1,1), true)));
-        return 'Barcode generated and store in the public folder';
     }
 }

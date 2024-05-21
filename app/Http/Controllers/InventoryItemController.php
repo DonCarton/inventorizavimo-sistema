@@ -162,9 +162,16 @@ class InventoryItemController extends Controller
         }
         $inventoryItem->update(['total_count' => $data['total_amount']]);
         if ($inventoryItem['total_count'] <= $inventoryItem['critical_amount']) {
-            event(new AmountRunningLow($inventoryItem, $request->user()));
+            event(new AmountRunningLow($inventoryItem));
+            return to_route('inventoryItems.index')
+                ->with('success', __('actions.inventoryItem.updated', [
+                            'local_name' => $inventoryItem->local_name]
+                    ) . '.');
         }
-        return to_route('inventoryItems.index')->with('success', __('actions.inventoryItem.updated', ['local_name' => $inventoryItem->local_name]) . '.');
+        return to_route('inventoryItems.index')
+            ->with('success', __('actions.inventoryItem.updated', [
+                'local_name' => $inventoryItem->local_name]
+                ) . '.');
     }
 
     /**
@@ -222,7 +229,7 @@ class InventoryItemController extends Controller
                 ->sum('amount');
             $availableInLaboratory = $amountInLaboratory - $amountReturned;
             if ($request->amount > $availableInLaboratory) {
-                return back()->withErrors(['amount' => 'The specified amount exceeds the amount available in the laboratory.']);
+                return back()->withErrors(['amount' => __("actions.inventoryItem.volumeMismatch")]);
             }
         }
         AmountLog::create([
@@ -247,7 +254,8 @@ class InventoryItemController extends Controller
                 ->where('laboratory_id', $laboratoryId)
                 ->delete();
         }
-        return redirect()->route('inventoryItems.index')->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
+        return redirect()->route('inventoryItems.index')
+            ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
     }
 
     /**

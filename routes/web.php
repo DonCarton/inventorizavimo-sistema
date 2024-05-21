@@ -10,19 +10,9 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-//Route::get('/', function () {
-//    return Inertia::render('Welcome', [
-//        'canLogin' => Route::has('login'),
-//        'canRegister' => Route::has('register'),
-//        'laravelVersion' => Application::VERSION,
-//        'phpVersion' => PHP_VERSION,
-//    ]);
-//});
-
 Route::middleware(['auth', 'verified'])->group(function (){
     Route::get('/', function (){return Inertia::render('Dashboard');})->name('dashboard');
     Route::group(['middleware' => ['role:admin']], function () {
-        Route::get('/generate-barcode', [BarcodesController::class, 'generateAndStoreBarcode'])->name('generateBarcode');
         Route::resource('inventoryItems', InventoryItemController::class)->middleware('includeUserId');
         Route::get('/inventoryItems/{inventoryItem}/editRaw', [InventoryItemController::class, 'editRaw'])->name('inventoryItems.editRaw')->middleware('includeUserId');
         Route::resource('itemTypes', ItemTypeController::class)->middleware('includeUserId');

@@ -125,15 +125,15 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                 <Accordion open={open === 1} icon={<Icon id={1} open={open}/>}>
                                     <AccordionHeader onClick={() => handleOpen(1)}>{__("Amount")}</AccordionHeader>
                                     <AccordionBody>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <div className="mt-4 w-full">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            <div className="mt-4 w-full flex flex-col">
                                                 <InputLabel htmlFor="inventoryItems_total_amount" value={__("Count")}/>
                                                 <TextInput id="inventoryItems_total_amount" type="text"
                                                            name="total_amount" value={data.total_amount}
                                                            className="mt-1 block w-full disabled:bg-gray-400 text-white"
                                                            readOnly={true} disabled={true}/>
                                             </div>
-                                            <div className="mt-4 w-full">
+                                            <div className="mt-4 w-full flex flex-col">
                                                 <InputLabel htmlFor="inventoryItems_total_available"
                                                             value={__("Available amount")}/>
                                                 <TextInput id="inventoryItems_total_available" type="text"
