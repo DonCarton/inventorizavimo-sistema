@@ -3,7 +3,7 @@ import {Head, Link, router} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
 import {__} from "@/Libs/Lang.jsx";
 import {TbEdit, TbTablePlus} from "react-icons/tb";
-import {RiDeleteBin6Line, RiFileExcel2Line, RiLockUnlockLine, RiLockLine} from "react-icons/ri";
+import {RiFileExcel2Line, RiLockUnlockLine, RiLockLine} from "react-icons/ri";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import React from "react";
 import TextInput from "@/Components/TextInput.jsx";
@@ -13,7 +13,8 @@ import FailureMessage from "@/Components/FailureMessage.jsx";
 
 export default function Users({auth, users, role, queryParams = null, success, failure}) {
     queryParams = queryParams || {};
-    const handleConfirmMessage = __("Are you sure you want to delete this item")+'?';
+    const handleDisableMessage = __("Are you sure you want to deactivate this user")+'?';
+    const handleEnableMessage = __("Are you sure you want to activate this user")+'?';
     const searchFieldChanged = (name, value) => {
         if (value) {
             queryParams[name] = value;
@@ -39,18 +40,13 @@ export default function Users({auth, users, role, queryParams = null, success, f
         }
         router.get(route('users.index'), queryParams);
     }
-    const handleDestory = (value) => {
-        if (window.confirm(handleConfirmMessage)) {
-            router.delete(route('users.destroy', value), {preserveScroll: true})
-        }
-    }
     const handleDisable = (value) => {
-        if (window.confirm(handleConfirmMessage)){
+        if (window.confirm(handleDisableMessage)){
             router.patch(route('users.deactivate', value), {preserveScroll: true})
         }
     }
     const handleEnable = (value) => {
-        if (window.confirm(handleConfirmMessage)){
+        if (window.confirm(handleEnableMessage)){
             router.patch(route('users.activate', value), {preserveScroll: true})
         }
     }
@@ -83,6 +79,7 @@ export default function Users({auth, users, role, queryParams = null, success, f
                     {failure && <FailureMessage message={failure}/> }
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
+                            <div className="overflow-auto">
                             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead
                                     className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
@@ -152,6 +149,7 @@ export default function Users({auth, users, role, queryParams = null, success, f
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
                             <Pagination links={users.meta.links}></Pagination>
                         </div>
                     </div>
