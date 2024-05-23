@@ -120,6 +120,8 @@
     "Inventory management": "Viso inventoriaus valdymui skirtas puslapis",
     "Reader interface": "Skaitytuvo puslapis",
     "Are you sure you want to delete this item": "Ar tikrai norite pašalinti šį įrašą",
+    "Are you sure you want to deactivate this user": "Ar tikrai norite užblokuoti šį naudotoją",
+    "Are you sure you want to activate this user": "Ar tikrai norite atblokuoti šį naudotoją",
     "Admin": "Administratorius",
     "User": "Naudotojas"
 }

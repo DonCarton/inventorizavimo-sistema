@@ -10,8 +10,8 @@ return [
     'user' => [
         'created' => 'Naujas naudotojas :email sukurtas',
         'updated' => 'Naudotojas :email atnaujintas',
-        'activated' => 'Naudotojas :email aktyvuotas',
-        'deactivated' => 'Naudotojas :email deaktyvuotas'
+        'activated' => 'Naudotojas :email atblokuotas',
+        'deactivated' => 'Naudotojas :email užblokuotas'
     ],
     'laboratory' => [
         'created' => 'Nauja lokacija :name sukurta',
