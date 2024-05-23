@@ -21,7 +21,8 @@ return [
         'created' => 'Naujas įrašas :local_name sukurtas',
         'logged' => 'Atskiras įrašas :local_name sekti inventorių sukurtas',
         'updated' => 'Įrašas :local_name atnaujintas',
-        'deleted' => 'Įrašas :local_name ištrintas'
+        'deleted' => 'Įrašas :local_name ištrintas',
+        'volumeMismatch' => 'Pateiktas kiekis gražinti viršija konstatuotą faktą, kiek yra inventoriaus šioje lokacijoje'
     ],
     'itemType' => [
         'created' => 'Naujas tipas :name sukurtas',

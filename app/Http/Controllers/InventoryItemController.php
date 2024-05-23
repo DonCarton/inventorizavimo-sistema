@@ -52,7 +52,9 @@ class InventoryItemController extends Controller
                 $query->where('email', 'like', '%' . request('updated_by') . '%');
             });
         }
-        $inventoryItems = $query->orderBy($sortField, $sortDirection)->paginate(10)->withQueryString()->onEachSide(1);
+        $inventoryItems = $query
+            ->orderBy($sortField, $sortDirection)->paginate(10)
+            ->withQueryString()->onEachSide(1);
         return Inertia::render('Inventory/Index', [
             'inventoryItems' => InventoryItemIndexResource::collection($inventoryItems),
             'queryParams' => request()->query() ?: null,
@@ -162,9 +164,20 @@ class InventoryItemController extends Controller
         }
         $inventoryItem->update(['total_count' => $data['total_amount']]);
         if ($inventoryItem['total_count'] <= $inventoryItem['critical_amount']) {
-            event(new AmountRunningLow($inventoryItem, $request->user()));
+            event(new AmountRunningLow($inventoryItem, $request['urlToRedirect']));
         }
-        return to_route('inventoryItems.index')->with('success', __('actions.inventoryItem.updated', ['local_name' => $inventoryItem->local_name]) . '.');
+        if ($request['urlToRedirect']){
+            return to_route('reader')
+                ->with('success', __('actions.inventoryItem.updated', [
+                            'local_name' => $inventoryItem->local_name]
+                    ) . '.');
+        }
+        else {
+            return to_route('inventoryItems.index')
+                ->with('success', __('actions.inventoryItem.updated', [
+                            'local_name' => $inventoryItem->local_name]
+                    ) . '.');
+        }
     }
 
     /**
@@ -173,6 +186,8 @@ class InventoryItemController extends Controller
      */
     public function edit(InventoryItem $inventoryItem): Response
     {
+        $redirectToReader = false;
+        if (request('urlForReader')) { $redirectToReader = true; }
         $laboratories = Laboratory::query()->get();
         $itemTypes = ItemType::query()->get();
         if ($inventoryItem->itemType->change_acc_amount) {
@@ -180,6 +195,7 @@ class InventoryItemController extends Controller
                 'inventoryItem' => new CRUDInventoryItemResource($inventoryItem),
                 'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
                 'itemTypes' => ItemTypeForSelect::collection($itemTypes),
+                'redirectToReader' => $redirectToReader
             ]);
         } else {
             $amountLogs = $inventoryItem->amountLogs;
@@ -222,7 +238,7 @@ class InventoryItemController extends Controller
                 ->sum('amount');
             $availableInLaboratory = $amountInLaboratory - $amountReturned;
             if ($request->amount > $availableInLaboratory) {
-                return back()->withErrors(['amount' => 'The specified amount exceeds the amount available in the laboratory.']);
+                return back()->withErrors(['amount' => __("actions.inventoryItem.volumeMismatch")]);
             }
         }
         AmountLog::create([
@@ -247,7 +263,8 @@ class InventoryItemController extends Controller
                 ->where('laboratory_id', $laboratoryId)
                 ->delete();
         }
-        return redirect()->route('inventoryItems.index')->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
+        return redirect()->route('inventoryItems.index')
+            ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
     }
 
     /**

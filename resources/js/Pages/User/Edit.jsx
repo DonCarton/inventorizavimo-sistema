@@ -11,13 +11,14 @@ import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import SelectForSingleItem from "@/Components/Forms/SelectForSingleItem.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
-export default function Edit({auth, inventoryItem, role, itemTypes}) {
+export default function Edit({auth, inventoryItem, role, itemTypes, redirectToReader}) {
     const {data, setData, patch, errors, processing} = useForm({
         total_amount: inventoryItem.total_amount,
         amount_added: '',
         amount_removed: '',
+        urlToRedirect: redirectToReader,
     })
-    const inventoryTypeDetails = inventoryItem.inventory_type;
+    console.log(data.urlToRedirect);
     const [open, setOpen] = useState(1);
     const [open2, setOpen2] = useState(0);
     const [addingAllowed, setAddingAllowed] = useState(true);
@@ -38,9 +39,6 @@ export default function Edit({auth, inventoryItem, role, itemTypes}) {
     }
     const onSubmit = (e) => {
         e.preventDefault();
-        if (data.amount_removed > data.total_amount){
-            console.log("Don't remove more than you can take");
-        }
         patch(route('inventoryItems.updateAmount', inventoryItem.id));
     }
     const handleNumericInput = (e) =>{
@@ -158,11 +156,15 @@ export default function Edit({auth, inventoryItem, role, itemTypes}) {
                                     </AccordionBody>
                                 </Accordion>
                                 <div className="mt-4">
-                                    <Link href={route('inventoryItems.index')}
-                                          className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
+                                    {redirectToReader ? <Link href={route('reader')}
+                                                              className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                     >
                                         {__("Cancel")}
-                                    </Link>
+                                    </Link> : <Link href={route('inventoryItems.index')}
+                                                                className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
+                                    >
+                                        {__("Cancel")}
+                                    </Link>}
                                     <PrimaryButton className="ml-2" disabled={processing}>{__("Save")}</PrimaryButton>
                                 </div>
                             </div>

@@ -29,13 +29,13 @@ export default function Login({ status, canResetPassword }) {
 
     return (
         <GuestLayout>
-            <Head title={__("Log in")} />
+            <Head title={__("Log in")}/>
 
             {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
 
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel htmlFor="email" value={__("Email")} />
+                    <InputLabel htmlFor="email" value={__("Email")}/>
 
                     <TextInput
                         id="email"
@@ -48,11 +48,11 @@ export default function Login({ status, canResetPassword }) {
                         onChange={(e) => setData('email', e.target.value)}
                     />
 
-                    <InputError message={errors.email} className="mt-2" />
+                    <InputError message={errors.email} className="mt-2"/>
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="password" value={__("Password")} />
+                    <InputLabel htmlFor="password" value={__("Password")}/>
 
                     <TextInput
                         id="password"
@@ -64,7 +64,7 @@ export default function Login({ status, canResetPassword }) {
                         onChange={(e) => setData('password', e.target.value)}
                     />
 
-                    <InputError message={errors.password} className="mt-2" />
+                    <InputError message={errors.password} className="mt-2"/>
                 </div>
 
                 <div className="block mt-4">
@@ -93,6 +93,9 @@ export default function Login({ status, canResetPassword }) {
                     </PrimaryButton>
                 </div>
             </form>
+            <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                &copy; {new Date().getFullYear()} Dominykas Čygas (VVK)
+            </div>
         </GuestLayout>
     );
 }

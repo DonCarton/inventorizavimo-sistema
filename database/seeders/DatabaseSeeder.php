@@ -7,6 +7,7 @@ use App\Models\ItemType;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
@@ -32,10 +33,10 @@ class DatabaseSeeder extends Seeder
         Role::create($userRole);
 
         $adminUser = User::factory()->create([
-            'name' => 'Damn Admin',
-            'first_name' => 'Damn',
-            'last_name' => 'Admin',
-            'email' => 'damn.admin@tutanota.com',
+            'name' => 'Vardenis Administratorius',
+            'first_name' => 'Vardenis',
+            'last_name' => 'Administratorius',
+            'email' => 'vardenis.administratorius@steamlt.lt',
             'password' => bcrypt('domcyg458'),
             'email_verified_at' => time(),
             'locale' => 'lt',
@@ -45,9 +46,23 @@ class DatabaseSeeder extends Seeder
 
         $adminUser->assignRole('admin');
 
+        $regularUser = User::factory()->create([
+            'name' => 'Vardenis Laborantas',
+            'first_name' => 'Vardenis',
+            'last_name' => 'Laborantas',
+            'email' => 'vardenis.laborantas@steamlt.lt',
+            'password' => bcrypt(Str::random(10)),
+            'email_verified_at' => time(),
+            'locale' => 'lt',
+            'created_by' => 1,
+            'updated_by' => 1
+        ]);
+
+        $regularUser->assignRole('user');
+
         ItemType::factory()->create([
             'name' => 'Atsargos (kitos sunaudojamos atsargos)',
-            'change_acc_amount' => 0,
+            'change_acc_amount' => 1,
             'created_by' => 1,
             'updated_by' => 1
         ]);
@@ -75,7 +90,7 @@ class DatabaseSeeder extends Seeder
 
         ItemType::factory()->create([
             'name' => 'Atsargos (Reagentai)',
-            'change_acc_amount' => 0,
+            'change_acc_amount' => 1,
             'created_by' => 1,
             'updated_by' => 1
         ]);

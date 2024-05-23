@@ -22,6 +22,7 @@ return [
         'logged' => 'Separate entry for :local_name has been created',
         'updated' => 'Entry :local_name has been updated',
         'deleted' => 'Entry :local_name has been deleted',
+        'volumeMismatch' => 'The specified amount exceeds the amount available in the laboratory'
     ],
     'itemType' => [
         'created' => 'New type :name has been created',

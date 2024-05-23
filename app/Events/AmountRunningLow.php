@@ -15,17 +15,16 @@ use Illuminate\Queue\SerializesModels;
 class AmountRunningLow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $inventoryItem;
-    public $user;
+    public InventoryItem $inventoryItem;
+    public bool $readerOrigin;
     /**
      * Create a new event instance.
      * @param InventoryItem $inventoryItem
-     * @param User $user
      */
-    public function __construct(InventoryItem $inventoryItem, User $user)
+    public function __construct(InventoryItem $inventoryItem, bool $readerOrigin)
     {
         $this->inventoryItem = $inventoryItem;
-        $this->user = $user;
+        $this->readerOrigin = $readerOrigin;
     }
 
     /**
