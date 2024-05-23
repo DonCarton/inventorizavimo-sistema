@@ -198,9 +198,11 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                     <TbArrowsUpDown
                                                         className="w-6 h-6 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
                                                 </Link>
-                                                <a type="button"
-                                                   onClick={() => handleDestroy(inventoryItem.id)}><RiDeleteBin6Line
-                                                    className="w-6 h-6 text-red-500 hover:text-red-700 hover:animate-pulse hover:bg-gray-50"/></a>
+                                                {role === "admin" ? <a type="button"
+                                                                       onClick={() => handleDestroy(inventoryItem.id)}>
+                                                    <RiDeleteBin6Line
+                                                    className="w-6 h-6 text-red-500 hover:text-red-700 hover:animate-pulse hover:bg-gray-50"/></a> : <></>}
+
                                             </td>
                                         </tr>
                                     ))}

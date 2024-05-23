@@ -14,6 +14,7 @@ return [
     */
 
     'failed' => 'These credentials do not match our records.',
+    'disabled' => 'The account which you are attempting to access is disabled.',
     'password' => 'The provided password is incorrect.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 

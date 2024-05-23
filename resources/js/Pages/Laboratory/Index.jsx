@@ -9,8 +9,9 @@ import {TbEdit, TbTablePlus} from "react-icons/tb";
 import {RiDeleteBin6Line, RiFileExcel2Line} from "react-icons/ri";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import React from "react";
+import WarningMessage from "@/Components/WarningMessage.jsx";
 
-export default function Index({auth, laboratories, role, queryParams = null, success}) {
+export default function Index({auth, laboratories, role, queryParams = null, success, warning}) {
     queryParams = queryParams || {};
     const handleConfirmMessage = __("Are you sure you want to delete this item")+'?';
     const searchFieldChanged = (name, value) => {
@@ -70,6 +71,7 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
             <div className="py-12">
                 <div className="3xl:max-w-screen-3xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {success && <SuccessMessage message={success}/>}
+                    {warning && <WarningMessage message={warning}/> }
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <div className="overflow-auto">

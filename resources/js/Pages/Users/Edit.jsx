@@ -74,7 +74,7 @@ export default function Edit({auth, user, role, userRole, roles, laboratories, p
                                         className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
                                         value={data.role} onChange={e => setData('role', e.target.value)}>
                                     {roles.map((role) => (
-                                        <option key={role.id} value={role.name}>{Capitalize(role.name)}</option>))}
+                                        <option key={role.id} value={role.name}>{__(Capitalize(role.name))}</option>))}
                                 </select>
                                 <InputError message={errors.role} className="mt-2"/>
                             </div>

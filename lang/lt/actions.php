@@ -10,12 +10,13 @@ return [
     'user' => [
         'created' => 'Naujas naudotojas :email sukurtas',
         'updated' => 'Naudotojas :email atnaujintas',
-        'deleted' => 'Naudotojas :email ištrinta'
+        'activated' => 'Naudotojas :email atblokuotas',
+        'deactivated' => 'Naudotojas :email užblokuotas'
     ],
     'laboratory' => [
-        'created' => 'Nauja laboratorija :name sukurta',
-        'updated' => 'Laboratorija :name atnaujinta',
-        'deleted' => 'Laboratorija :name ištrinta'
+        'created' => 'Nauja lokacija :name sukurta',
+        'updated' => 'Lokacija :name atnaujinta',
+        'deleted' => 'Lokacija :name šiuo metu negali būti ištrinta'
     ],
     'inventoryItem' => [
         'created' => 'Naujas įrašas :local_name sukurtas',
@@ -27,7 +28,7 @@ return [
     'itemType' => [
         'created' => 'Naujas tipas :name sukurtas',
         'updated' => 'Tipas :name atnaujintas',
-        'deleted' => 'Tipas :name ištrintas'
+        'deleted' => 'Tipas :name šiuo metu negali būti ištrintas'
     ],
     'noItemFound' => 'Kodas atpažintas (:name), bet įrašas nerastas'
 

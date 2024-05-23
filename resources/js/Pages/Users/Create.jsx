@@ -8,8 +8,7 @@ import SteamDropdown from "@/Components/SteamDropdown.jsx"
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import {useState} from "react";
 
-export default function Create({auth, roles, role, laboratories, previousUrl}) {
-    const [previousUrlPage] = useState(previousUrl);
+export default function Create({auth, roles, role, laboratories}) {
 
     const {data, setData, post, errors, processing} = useForm({
         first_name: '',
@@ -38,28 +37,28 @@ export default function Create({auth, roles, role, laboratories, previousUrl}) {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <form onSubmit={onSubmit} className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                         <div className="mt-4">
-                            <InputLabel htmlFor="user_first_name" value={__("First name")}/>
+                            <InputLabel htmlFor="user_first_name">{__("First name")}<span className="text-red-500">*</span></InputLabel>
                             <TextInput id="user_first_name" type="text" name="first_name" value={data.first_name}
                                        className="mt-1 block w-full"
                                        onChange={e => setData('first_name', e.target.value)}/>
                             <InputError message={errors.first_name} className="mt-2"/>
                         </div>
                         <div className="mt-4">
-                            <InputLabel htmlFor="user_last_name" value={__("Last name")}/>
+                            <InputLabel htmlFor="user_last_name">{__("Last name")}<span className="text-red-500">*</span></InputLabel>
                             <TextInput id="user_last_name" type="text" name="last_name" value={data.last_name}
                                        className="mt-1 block w-full"
                                        onChange={e => setData('last_name', e.target.value)}/>
                             <InputError message={errors.last_name} className="mt-2"/>
                         </div>
                         <div className="mt-4">
-                            <InputLabel htmlFor="user_email" value={__("Email")}/>
+                            <InputLabel htmlFor="user_email">{__("Email")}<span className="text-red-500">*</span></InputLabel>
                             <TextInput id="user_email" type="text" name="email" value={data.email}
                                        className="mt-1 block w-full"
                                        onChange={e => setData('email', e.target.value)}/>
                             <InputError message={errors.email} className="mt-2"/>
                         </div>
                         <div className="mt-4">
-                            <InputLabel htmlFor="user_laboratory" value={__("Laboratory")}/>
+                            <InputLabel htmlFor="user_laboratory">{__("Laboratory")}<span className="text-red-500">*</span></InputLabel>
                             <select className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={data.laboratory} onChange={e => setData('laboratory', e.target.value)}>
                                 <option value="">{__("Choose a value")}</option>
                                 {laboratories.data.map((laboratory) => (<option key={laboratory.value} value={laboratory.value}>{laboratory.label}</option>))}
@@ -68,9 +67,7 @@ export default function Create({auth, roles, role, laboratories, previousUrl}) {
                         </div>
                         <div className="mt-4 mb-2">
                             <InputLabel
-                                htmlFor="user_role"
-                                value={__("Role")}
-                            />
+                                htmlFor="user_role">{__("Role")}<span className="text-red-500">*</span></InputLabel>
                             <div>
                             <SteamDropdown
                                     name="roles"
@@ -83,7 +80,7 @@ export default function Create({auth, roles, role, laboratories, previousUrl}) {
                             <InputError message={errors.selectedRole} className="mt-2"/>
                         </div>
                         <div className="mt-2">
-                            <Link href={previousUrlPage}
+                            <Link href={route("users.index")}
                                   className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                             >
                                 {__("Cancel")}
