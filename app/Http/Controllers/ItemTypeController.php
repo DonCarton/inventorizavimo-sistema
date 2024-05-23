@@ -96,7 +96,6 @@ class ItemTypeController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         $itemType = ItemType::findOrFail($id);
-        $itemType->delete();
         return to_route('itemTypes.index')->with('warning',(__('actions.itemType.deleted', ['name' => $itemType['name']]).'.'));
     }
 }

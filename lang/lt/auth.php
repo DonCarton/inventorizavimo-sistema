@@ -14,6 +14,7 @@ return [
     */
 
     'failed' => 'Įvesti duomenys neatitinka įrašų duomenų bazėje.',
+    'disabled' => 'Paskyrą prie kurios bandote prisijungti yra išjungta.',
     'password' => 'Pateiktas slaptažodis yra neteisingas.',
     'throttle' => 'Per daug bandymų. Prašome pamėginti už :seconds sekundžių.',
 

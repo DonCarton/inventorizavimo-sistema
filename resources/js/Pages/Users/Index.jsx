@@ -3,7 +3,7 @@ import {Head, Link, router} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
 import {__} from "@/Libs/Lang.jsx";
 import {TbEdit, TbTablePlus} from "react-icons/tb";
-import {RiDeleteBin6Line, RiFileExcel2Line} from "react-icons/ri";
+import {RiDeleteBin6Line, RiFileExcel2Line, RiLockUnlockLine, RiLockLine} from "react-icons/ri";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import React from "react";
 import TextInput from "@/Components/TextInput.jsx";
@@ -42,6 +42,16 @@ export default function Users({auth, users, role, queryParams = null, success, f
     const handleDestory = (value) => {
         if (window.confirm(handleConfirmMessage)) {
             router.delete(route('users.destroy', value), {preserveScroll: true})
+        }
+    }
+    const handleDisable = (value) => {
+        if (window.confirm(handleConfirmMessage)){
+            router.patch(route('users.deactivate', value), {preserveScroll: true})
+        }
+    }
+    const handleEnable = (value) => {
+        if (window.confirm(handleConfirmMessage)){
+            router.patch(route('users.activate', value), {preserveScroll: true})
         }
     }
     return (
@@ -128,12 +138,18 @@ export default function Users({auth, users, role, queryParams = null, success, f
                                                 <TbEdit
                                                     className="w-6 h-6 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
                                             </Link>
-                                            <a type="button"
-                                               onClick={() => handleDestory(user.id)}><RiDeleteBin6Line
-                                                className="w-6 h-6 text-red-500 hover:text-red-700 hover:animate-pulse hover:bg-gray-50"/></a>
+                                            {
+                                                user.is_disabled ?
+                                                <a type="button" onClick={() => handleEnable(user.id)}>
+                                                    <RiLockUnlockLine className="w-6 h-6 text-blue-500 hover:text-blue-500 hover:animate-pulse hover:bg-gray-50"/>
+                                                </a> :
+                                                <a type="button" onClick={() => handleDisable(user.id)}>
+                                                    <RiLockLine className="w-6 h-6 text-red-500 hover:text-red-500 hover:animate-pulse hover:bg-gray-50"/>
+                                                </a>
+                                            }
                                         </td>
                                     </tr>
-                                ))}
+                                    ))}
                                 </tbody>
                             </table>
                             <Pagination links={users.meta.links}></Pagination>

@@ -14,7 +14,7 @@ const SteamDropdown = ({options, name, value, onChange, className = ''}) => {
             value={value}>
                 <option value="">{__("Choose a value")}</option>
             {options.map(option => (
-                <option key={option.id} value={option.name}>{Capitalize(option.name)}</option>
+                <option key={option.id} value={option.name}>{__(Capitalize(option.name))}</option>
             ))}
         </select>
     );

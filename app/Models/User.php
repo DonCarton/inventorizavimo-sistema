@@ -15,7 +15,9 @@ use Spatie\Permission\Traits\HasRoles;
 /**
  * @method static findOrFail(int $id)
  * @method static create(array $all)
+ * @method static where(string $string, mixed $input)
  * @property mixed $email
+ * @property false|mixed $is_disable
  */
 class User extends Authenticatable
 {
@@ -33,6 +35,7 @@ class User extends Authenticatable
         'email',
         'password',
         'locale',
+        'is_disabled',
         'laboratory',
         'created_by',
         'updated_by'

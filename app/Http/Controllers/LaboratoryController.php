@@ -32,11 +32,12 @@ class LaboratoryController extends Controller
                 $query->where('email', 'like', '%'.request('updated_by').'%');
             });
         }
-        $laboratories = $query->orderBy($sortField, $sortDirection)->paginate(15)->withQueryString()->onEachSide(1);
+        $laboratories = $query->orderBy($sortField, $sortDirection)->paginate(10)->withQueryString()->onEachSide(1);
         return Inertia::render('Laboratory/Index',[
             'laboratories' => LaboratoryResource::collection($laboratories),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
+            'warning' => session('warning')
         ]);
     }
 
@@ -105,8 +106,7 @@ class LaboratoryController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         $laboratory = Laboratory::findOrFail($id);
-        $laboratory->delete();
-        return to_route('laboratories.index')->with('success',(__('actions.laboratory.deleted', ['name' => $laboratory['name']]).'.'));
+        return to_route('laboratories.index')->with('warning',(__('actions.laboratory.deleted', ['name' => $laboratory['name']]).'.'));
     }
 
     /**

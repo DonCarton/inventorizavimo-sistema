@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('email')->unique();
             $table->string('locale')->nullable();
+            $table->boolean('is_disabled')->default(false);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

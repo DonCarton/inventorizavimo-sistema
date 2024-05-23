@@ -10,12 +10,13 @@ return [
     'user' => [
         'created' => 'New user :email has been created',
         'updated' => 'User :email has been updated',
-        'deleted' => 'User :email has been deleted',
+        'activated' => 'User :email activated',
+        'deactivated' => 'User :email deactivated'
     ],
     'laboratory' => [
-        'created' => 'New laboratory :name has been created',
-        'updated' => 'Laboratory :name has been updated',
-        'deleted' => 'Laboratory :name has been deleted',
+        'created' => 'New location :name has been created',
+        'updated' => 'Location :name has been updated',
+        'deleted' => 'Location :name cannot be deleted right now'
     ],
     'inventoryItem' => [
         'created' => 'New entry :local_name has been created',
@@ -27,7 +28,7 @@ return [
     'itemType' => [
         'created' => 'New type :name has been created',
         'updated' => 'Type :name has been updated',
-        'deleted' => 'Type :name has been deleted'
+        'deleted' => 'Type :name cannot be deleted right now'
     ],
     'noItemFound' => 'Code recognized (:name), but entry not found'
 

@@ -29,6 +29,7 @@ class UserController extends Controller
     {
 
     }
+
     /**
      * Display a listing of the resource.
      * @return Response
@@ -42,7 +43,7 @@ class UserController extends Controller
             $query->where('email', 'like', '%' . request('email') . '%');
         }
         $users = $query->orderBy($sortField, $sortDirection)->paginate(10)->withQueryString()->onEachSide(1);
-        return Inertia::render('Users/Index',[
+        return Inertia::render('Users/Index', [
             'users' => UserResource::collection($users),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
@@ -58,7 +59,7 @@ class UserController extends Controller
     {
         $roles = Role::all()->toArray();
         $laboratories = Laboratory::query()->get();
-        return Inertia::render('Users/Create',[
+        return Inertia::render('Users/Create', [
             'roles' => $roles,
             'laboratories' => LaboratoriesForSelect::collection($laboratories)
         ]);
@@ -74,19 +75,20 @@ class UserController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'laboratory' => 'required',
             'selectedRole' => 'required',
         ]);
         $password = Str::random(10);
+        $request['is_disabled'] = false;
         $request['locale'] = env('APP_LOCALE');
         $request['password'] = Hash::make($password);
-        $request['name'] = $request['first_name'].' '.$request['last_name'];
+        $request['name'] = $request['first_name'] . ' ' . $request['last_name'];
         $newUser = User::create($request->all());
         $role = $request['selectedRole'];
         $newUser->assignRole($role);
-        event(new UserCreated($newUser,$password));
-        return redirect()->route('users.index')->with('success', __('actions.user.created',['email' => $newUser->email]) . '.');
+        event(new UserCreated($newUser, $password));
+        return redirect()->route('users.index')->with('success', __('actions.user.created', ['email' => $newUser->email]) . '.');
     }
 
     /**
@@ -99,7 +101,7 @@ class UserController extends Controller
         $query = Role::all()->toArray();
         $roleName = $user->roles()->select('name')->get()->toArray();
         $laboratories = Laboratory::all()->toArray();
-        return Inertia::render('Users/Show',[
+        return Inertia::render('Users/Show', [
             'user' => new UserResource($user),
             'userRole' => $roleName,
             'roles' => $query,
@@ -117,7 +119,7 @@ class UserController extends Controller
         $query = Role::all()->toArray();
         $roleName = $user->roles()->select('name')->get()->toArray();
         $laboratories = Laboratory::all()->select('id', 'name')->toArray();
-        return Inertia::render('Users/Edit',[
+        return Inertia::render('Users/Edit', [
             'user' => new UserResource($user),
             'userRole' => $roleName,
             'roles' => $query,
@@ -144,7 +146,7 @@ class UserController extends Controller
         $user->roles()->detach();
         $user->assignRole($data['role']);
         $user->update($data);
-        return Redirect::route('users.index')->with('success', __('actions.user.updated',['email' => $user->email]) . '.');
+        return Redirect::route('users.index')->with('success', __('actions.user.updated', ['email' => $user->email]) . '.');
     }
 
     /**
@@ -155,12 +157,28 @@ class UserController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         $userCount = User::query()->count();
-        if ($userCount <= 1){
-            return to_route('users.index')->with('failure','The record could not be deleted as there will be no users left.');
+        if ($userCount <= 1) {
+            return to_route('users.index')->with('failure', 'The record could not be deleted as there will be no users left.');
         }
         $user = User::findOrFail($id);
         $user->delete();
-        return to_route('users.index')->with('success', __('actions.user.deleted',['email' => $user->email]) . '.');
+        return to_route('users.index')->with('success', __('actions.user.deleted', ['email' => $user->email]) . '.');
+    }
+
+    public function activate(User $user): RedirectResponse
+    {
+        $user->update([
+            'is_disabled' => false
+        ]);
+        return to_route('users.index')->with('success', __('actions.user.activated', ['email' => $user->email]) . '.');
+    }
+
+    public function deactivate(User $user): RedirectResponse
+    {
+        $user->update([
+            'is_disabled' => true
+        ]);
+        return to_route('users.index')->with('success', __('actions.user.deactivated', ['email' => $user->email]) . '.');
     }
 
     /**

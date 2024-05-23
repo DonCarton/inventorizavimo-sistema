@@ -17,6 +17,8 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::get('/inventoryItems/{inventoryItem}/editRaw', [InventoryItemController::class, 'editRaw'])->name('inventoryItems.editRaw')->middleware('includeUserId');
         Route::resource('itemTypes', ItemTypeController::class)->middleware('includeUserId');
         Route::resource('users', UserController::class)->middleware('includeUserId');
+        Route::patch('/users/{user}/activate', [UserController::class, 'activate'])->name('users.activate')->middleware('includeUserId');
+        Route::patch('/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate')->middleware('includeUserId');
         Route::post('/inventoryItems/fetch-post-number', [InventoryItemController::class, 'fetchPostNumber']);
         Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('laboratories.index');
         Route::get('/laboratories/create', [LaboratoryController::class, 'create'])->name('laboratories.create');
