@@ -23,6 +23,7 @@ class BarcodesController extends Controller
     public function generate(): \Inertia\Response
     {
         return Inertia::render('Scanner/Reader2',[
+            'success' => session('success'),
             'failure' => session('failure')
         ]);
     }
@@ -47,7 +48,11 @@ class BarcodesController extends Controller
         if ($inventoryItem == null){
             return redirect()->route('reader')->with('failure',__('actions.noItemFound', ['name' => $barcode]) . '.');
         }
-        return Redirect::route("inventoryItems.edit", $inventoryItem);
+        $merged = array_merge(request()->all() + [
+                'inventoryItem' => $inventoryItem,
+                'urlForReader' => url()->previous()
+            ]);
+        return Redirect::route("inventoryItems.edit", $merged);
     }
 
     /**

@@ -11,13 +11,14 @@ import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import SelectForSingleItem from "@/Components/Forms/SelectForSingleItem.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
-export default function Edit({auth, inventoryItem, role, itemTypes}) {
+export default function Edit({auth, inventoryItem, role, itemTypes, redirectToReader}) {
     const {data, setData, patch, errors, processing} = useForm({
         total_amount: inventoryItem.total_amount,
         amount_added: '',
         amount_removed: '',
+        urlToRedirect: redirectToReader,
     })
-    const inventoryTypeDetails = inventoryItem.inventory_type;
+    console.log(data.urlToRedirect);
     const [open, setOpen] = useState(1);
     const [open2, setOpen2] = useState(0);
     const [addingAllowed, setAddingAllowed] = useState(true);
@@ -38,9 +39,6 @@ export default function Edit({auth, inventoryItem, role, itemTypes}) {
     }
     const onSubmit = (e) => {
         e.preventDefault();
-        if (data.amount_removed > data.total_amount){
-            console.log("Don't remove more than you can take");
-        }
         patch(route('inventoryItems.updateAmount', inventoryItem.id));
     }
     const handleNumericInput = (e) =>{

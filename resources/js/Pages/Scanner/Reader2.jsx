@@ -1,14 +1,12 @@
 import {Html5QrcodeScanner} from 'html5-qrcode';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.jsx';
-import {useEffect, useState} from "react";
-import {Head, router, useForm} from "@inertiajs/react";
+import {useEffect} from "react";
+import {Head, router} from "@inertiajs/react";
 import {__} from "@/Libs/Lang.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
+import SuccessMessage from "@/Components/SuccessMessage.jsx";
 
-export default function Reader2({auth, role, failure}) {
-
-    const [scanResult, setScanResult] = useState(null);
-    const {get} = useForm({});
+export default function Reader2({auth, role, success, failure}) {
     useEffect(() => {
         const scanner = new Html5QrcodeScanner('reader', {
             qrbox: {
@@ -26,7 +24,6 @@ export default function Reader2({auth, role, failure}) {
             console.log(err);
         }
     }, []);
-    console.log(failure);
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -36,6 +33,7 @@ export default function Reader2({auth, role, failure}) {
             <Head title="Item types"/>
             <div className="py-12">
                 <div className="max-w-2xl mx-auto sm:px-6 lg:px-8">
+                    {success && (<SuccessMessage message={success}/>)}
                     {failure && (<FailureMessage message={failure}/>)}
                     <div id='reader'/>
                 </div>

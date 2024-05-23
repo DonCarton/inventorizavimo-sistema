@@ -23,11 +23,23 @@ class InventoryItemAmountCritical
     /**
      * Handle the event.
      */
-    public function handle(AmountRunningLow $event): void
+    public function handle(AmountRunningLow $event): \Illuminate\Http\RedirectResponse
     {
         $adminUsers = Role::findByName('admin')->users;
         foreach ($adminUsers as $adminUser) {
             Mail::to($adminUser->email)->send(new InventoryItemCriticalAmountReached($event->inventoryItem, $adminUser));
+        }
+        if($event->readerOrigin){
+            return to_route('reader')
+                ->with('success', __('actions.inventoryItem.updated', [
+                            'local_name' => $event->inventoryItem->local_name]
+                    ) . '.');
+        }
+        else {
+            return to_route('inventoryItems.index')
+                ->with('success', __('actions.inventoryItem.updated', [
+                            'local_name' => $event->inventoryItem->local_name]
+                    ) . '.');
         }
     }
 }

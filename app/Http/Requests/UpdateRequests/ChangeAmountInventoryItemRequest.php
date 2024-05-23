@@ -24,7 +24,8 @@ class ChangeAmountInventoryItemRequest extends FormRequest
     {
         return [
             'amount_added' => 'required_without:amount_removed',
-            'amount_removed' => 'required_without:amount_added'
+            'amount_removed' => 'required_without:amount_added',
+            'urlToRedirect' => 'boolean',
         ];
     }
 }
