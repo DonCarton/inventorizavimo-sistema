@@ -210,7 +210,8 @@ class InventoryItemController extends Controller
                 'logsForItem' => AmountLogResource::collection($amountLogs),
                 'totalInUse' => $inventoryItem->total_count - $totalTaken + $totalReturned,
                 'laboratories' => LaboratoryResource::collection($laboratories),
-                'previousUrl' => url()->previous()
+                'previousUrl' => url()->previous(),
+                'redirectToReader' => $redirectToReader
             ]);
         }
     }
@@ -267,8 +268,13 @@ class InventoryItemController extends Controller
                 ->where('laboratory_id', $laboratoryId)
                 ->delete();
         }
-        return redirect()->route('inventoryItems.index')
-            ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
+        if ($request->urlToRedirect) {
+            return redirect()->route('reader')
+                ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
+        } else {
+            return redirect()->route('inventoryItems.index')
+                ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
+        }
     }
 
     /**

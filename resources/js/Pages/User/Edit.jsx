@@ -18,7 +18,6 @@ export default function Edit({auth, inventoryItem, role, itemTypes, redirectToRe
         amount_removed: '',
         urlToRedirect: redirectToReader,
     })
-    console.log(data.urlToRedirect);
     const [open, setOpen] = useState(1);
     const [open2, setOpen2] = useState(0);
     const [addingAllowed, setAddingAllowed] = useState(true);

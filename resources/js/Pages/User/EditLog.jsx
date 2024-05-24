@@ -4,7 +4,7 @@ import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import Icon from "@/Components/Icon.jsx";
 import InputError from "@/Components/InputError.jsx";
-import {Accordion, AccordionBody, AccordionHeader, Textarea} from "@material-tailwind/react";
+import {Accordion, AccordionBody, AccordionHeader} from "@material-tailwind/react";
 import {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 import Modal from "@/Components/Modal.jsx";
@@ -16,7 +16,7 @@ import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import NumericInput from "@/Components/Forms/NumericInput.jsx";
 import {FaQrcode} from "react-icons/fa";
 
-export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse, laboratories, previousUrl}) {
+export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse, laboratories, previousUrl, redirectToReader}) {
     const [previousUrlPage] = useState(previousUrl);
     const [actionFromUser, setActionFromUser] = useState('REMOVE');
     const {data, setData, patch, errors} = useForm({
@@ -25,7 +25,8 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
         action: actionFromUser,
         amount: '',
         comment: '',
-        total_available: totalInUse
+        total_available: totalInUse,
+        urlToRedirect: redirectToReader,
     })
     const [modalOpen, setModalOpen] = useState(false);
     const [open, setOpen] = useState(1);
