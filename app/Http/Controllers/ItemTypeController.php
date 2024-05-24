@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreRequests\StoreItemTypeRequest;
 use App\Http\Requests\UpdateRequests\UpdateItemTypeRequest;
 use App\Http\Resources\ItemTypeResource;
 use App\Models\ItemType;
@@ -56,13 +57,10 @@ class ItemTypeController extends Controller
      * @param Request $request
      * @return RedirectResponse
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreItemTypeRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'change_acc_amount' => 'required|boolean'
-        ]);
-        ItemType::create($request->all());
+        $data = $request->validated();
+        ItemType::create($data);
         return redirect()->route('itemTypes.index')->with('success',(__('actions.itemType.created', ['name' => $request['name']]) . '.'));
     }
 

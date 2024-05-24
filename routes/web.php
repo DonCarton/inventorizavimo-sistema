@@ -25,7 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::post('/laboratories', [LaboratoryController::class, 'store'])->middleware('includeUserId')->name('laboratories.store');
         Route::get('/laboratories/{laboratory}', [LaboratoryController::class, 'show'])->name('laboratories.show');
         Route::get('/laboratories/{laboratory}/edit', [LaboratoryController::class, 'edit'])->name('laboratories.edit');
-        Route::patch('/laboratories/{laboratory}', [LaboratoryController::class, 'update'])->name('laboratories.update');
+        Route::patch('/laboratories/{laboratory}', [LaboratoryController::class, 'update'])->middleware('includeUserId')->name('laboratories.update');
         Route::delete('/laboratories/{laboratory}', [LaboratoryController::class, 'destroy'])->name('laboratories.destroy');
         Route::get('exportUsers', [UserController::class, 'export'])->name('exportUsers');
         Route::get('exportLaboratories', [LaboratoryController::class, 'export'])->name('exportLaboratories');

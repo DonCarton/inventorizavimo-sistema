@@ -114,6 +114,7 @@
     "In this field, the amount which will be removed is specified": "Šiame laukelyje yra nurodomas išimamas kiekis",
     "User does not have the right roles.": "Veiksmas prisijungusiam naudotojui nėra leistinas.",
     "Not Found": "Nerasta",
+    "This action is unauthorized": "Šis veiksmas yra neleistinas",
     "Scanner": "Skaitytuvas",
     "Previous page": "Grįžti",
     "User management": "Visų naudotojų valdymui skirtas puslapis",
