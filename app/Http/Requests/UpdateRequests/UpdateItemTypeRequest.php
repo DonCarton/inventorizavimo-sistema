@@ -24,7 +24,7 @@ class UpdateItemTypeRequest extends FormRequest
         return [
             'name' => 'required|min:3|max:50',
             'change_acc_amount' => 'required|boolean',
-            'updated_by' => 'required'
+            'updated_by' => 'required|exists:users,id'
         ];
     }
 }

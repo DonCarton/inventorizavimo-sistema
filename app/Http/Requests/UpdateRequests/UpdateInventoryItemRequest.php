@@ -45,6 +45,7 @@ class UpdateInventoryItemRequest extends FormRequest
             'asset_number',
             'used_for',
             'comments',
+            'updated_by' => 'required|exists:users,id'
         ];
     }
 }

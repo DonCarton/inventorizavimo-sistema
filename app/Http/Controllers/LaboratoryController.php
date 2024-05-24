@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Exports\LaboratoryExports;
+use App\Http\Requests\StoreRequests\StoreLaboratoryRequest;
+use App\Http\Requests\UpdateRequests\UpdateLaboratoryRequest;
 use App\Http\Resources\LaboratoryResource;
 use App\Imports\LaboratoryImport;
 use App\Models\Laboratory;
@@ -65,12 +67,10 @@ class LaboratoryController extends Controller
      * @param Request $request
      * @return RedirectResponse
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreLaboratoryRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|min:3|max:255',
-        ]);
-        Laboratory::create($request->all());
+        $data = $request->validated();
+        Laboratory::create($data);
         return redirect()->route('laboratories.index')->with('success', __('actions.laboratory.created', ['name' => $request['name']]) . '.');
     }
 
@@ -80,11 +80,9 @@ class LaboratoryController extends Controller
      * @param Laboratory $laboratory
      * @return RedirectResponse
      */
-    public function update(Request $request, Laboratory $laboratory): RedirectResponse
+    public function update(UpdateLaboratoryRequest $request, Laboratory $laboratory): RedirectResponse
     {
-        $data = $request->validate([
-            'name' => 'required|min:3|max:50',
-        ]);
+        $data = $request->validated();
         $laboratory->update($data);
         return Redirect::route('laboratories.index')->with('success',(__('actions.laboratory.updated', ['name' => $request['name']]).'.'));
     }

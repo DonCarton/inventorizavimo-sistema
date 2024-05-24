@@ -156,14 +156,18 @@ class InventoryItemController extends Controller
             $data = $request->validate([
                 'amount_removed' => 'numeric|lt:total_amount',
                 'total_amount' => 'numeric',
+                'updated_by' => 'required'
             ]);
             $data['total_amount'] = $data['total_amount'] - $data['amount_removed'];
         } else {
-            $data = $request->only(['amount_added', 'total_amount']);
+            $data = $request->only(['amount_added', 'total_amount', 'updated_by']);
             $data['total_amount'] = $data['total_amount'] + $data['amount_added'];
         }
-        $inventoryItem->update(['total_count' => $data['total_amount']]);
-        if ($inventoryItem['total_count'] <= $inventoryItem['critical_amount']) {
+        $inventoryItem->update([
+            'total_count' => $data['total_amount'],
+            'updated_by' => $data['updated_by']
+        ]);
+        if ($inventoryItem['total_count'] <= $inventoryItem['critical_amount'] && $request['amount_removed']) {
             event(new AmountRunningLow($inventoryItem, $request['urlToRedirect']));
         }
         if ($request['urlToRedirect']){

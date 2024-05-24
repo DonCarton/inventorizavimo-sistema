@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests\UpdateRequests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ChangeAmountInventoryItemRequest extends FormRequest
+class UpdateLaboratoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -18,14 +17,12 @@ class ChangeAmountInventoryItemRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'amount_added' => 'required_without:amount_removed',
-            'amount_removed' => 'required_without:amount_added',
-            'urlToRedirect' => 'boolean',
+            'name' => 'required|string|min:3|max:255',
             'updated_by' => 'required|exists:users,id'
         ];
     }
