@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Resources\SelectObjectResources;
+namespace App\Http\Resources\NameDisplayResource;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ItemTypeForSelect extends JsonResource
+class LaboratoryName extends JsonResource
 {
+    //public static $wrap = false;
     /**
      * Transform the resource into an array.
      *
@@ -15,9 +16,7 @@ class ItemTypeForSelect extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'value' => $this->id,
-            'label' => $this->name,
-            'asset_required' => $this->change_acc_amount
+            'name' => $this->name,
         ];
     }
 }

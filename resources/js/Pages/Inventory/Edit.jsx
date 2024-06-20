@@ -118,15 +118,22 @@ export default function Edit({auth, inventoryItem, role, laboratories, itemTypes
                                                     htmlFor="inventoryItems_inventory_type">{__("Type")}</InputLabel>
                                                 <SelectForSingleItem className="disabled:text-white disabled:bg-gray-400" disabled={true} id="inventoryItems_inventory_type" name="inventory_type" value={data.inventory_type} options={itemTypes.data} noValueText={__("Choose a value")} />
                                             </div>
+                                            { inventoryItem.data.asset_number !== null ? <div className="mt-4">
+                                                <InputLabel htmlFor="inventoryItems_asset_number" value={__("Asset number")}/>
+                                                <TextInput id="inventoryItems_asset_number" type="text" disabled={true}
+                                                           readOnly={true} name="asset_number"
+                                                           value={inventoryItem.data.asset_number}
+                                                           className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            </div> : <></>}
                                             <div className="mt-4">
-                                                <InputLabel htmlFor="inventoryItems_name" value="Pavadinimas"/>
+                                                <InputLabel htmlFor="inventoryItems_name" value={__("Name")}/>
                                                 <TextInput id="inventoryItems_name" type="text" name="name"
                                                            value={data.name} className="mt-1 block w-full"
                                                            onChange={e => setData('name', e.target.value)}/>
                                                 <InputError message={errors.name} className="mt-2"/>
                                             </div>
                                             <div className="mt-4">
-                                                <InputLabel htmlFor="inventoryItems_name_eng" value="Pavadinimas ENG"/>
+                                                <InputLabel htmlFor="inventoryItems_name_eng" value={__("Name ENG")}/>
                                                 <TextInput id="inventoryItems_name_eng" type="text" name="name_eng"
                                                            value={data.name_eng} className="mt-1 block w-full"
                                                            onChange={e => setData('name_eng', e.target.value)}/>

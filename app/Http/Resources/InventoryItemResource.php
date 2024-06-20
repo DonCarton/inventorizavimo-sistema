@@ -28,6 +28,7 @@ class InventoryItemResource extends JsonResource
             'laboratory' => $this->laboratory,
             'cupboard' => $this->cupboard,
             'shelf' => $this->shelf,
+            'asset_number' => $this->asset_number,
             'created_at' => (new Carbon($this->created_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
             'updated_at' => (new Carbon($this->updated_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
             'created_by' => (new UserResource($this->createdBy))->email,
