@@ -41,7 +41,6 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
         >
             <Head title={__("Show") + ' - ' + inventoryItem.data.name}/>
             <div className="py-12">
-                <pre>{JSON.stringify(inventoryItem.data,undefined,2)}</pre>
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
