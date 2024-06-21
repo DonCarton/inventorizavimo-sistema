@@ -41,6 +41,7 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
         >
             <Head title={__("Show") + ' - ' + inventoryItem.data.name}/>
             <div className="py-12">
+                <pre>{JSON.stringify(inventoryItem.data,undefined,2)}</pre>
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
@@ -64,15 +65,22 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                                     htmlFor="inventoryItems_inventory_type">{__("Type")}</InputLabel>
                                                 <SelectForSingleItem value={inventoryItem.data.inventory_type} className="disabled:text-white disabled:bg-gray-400" options={itemTypes.data} disabled={true} name="inventory_type" id="inventoryItems_inventory_type" noValueText={__("Choose a value")}/>
                                             </div>
+                                            { inventoryItem.data.asset_number !== null ? <div className="mt-4">
+                                                <InputLabel htmlFor="inventoryItems_asset_number" value={__("Asset number")}/>
+                                                <TextInput id="inventoryItems_asset_number" type="text" disabled={true}
+                                                           readOnly={true} name="asset_number"
+                                                           value={inventoryItem.data.asset_number}
+                                                           className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            </div> : <></>}
                                             <div className="mt-4">
-                                                <InputLabel htmlFor="inventoryItems_name" value="Pavadinimas"/>
+                                                <InputLabel htmlFor="inventoryItems_name" value={__("Name")}/>
                                                 <TextInput id="inventoryItems_name" type="text" disabled={true}
                                                            readOnly={true} name="name"
                                                            value={inventoryItem.data.name}
                                                            className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                             </div>
                                             <div className="mt-4">
-                                                <InputLabel htmlFor="inventoryItems_name_eng" value="Pavadinimas ENG"/>
+                                                <InputLabel htmlFor="inventoryItems_name_eng" value={__("Name ENG")}/>
                                                 <TextInput id="inventoryItems_name_eng" type="text" disabled={true}
                                                            readOnly={true} name="name_eng"
                                                            value={inventoryItem.data.name_eng}

@@ -37,6 +37,7 @@ class StoreInventoryItemRequest extends FormRequest
             'laboratory' => ['required', 'int'],
             'storage_conditions',
             'asset_number',
+            //asset_number' => 'required_unless:asset_number_required,true',
             'used_for',
             'comments',
             'created_by' => 'required|exists:users,id',

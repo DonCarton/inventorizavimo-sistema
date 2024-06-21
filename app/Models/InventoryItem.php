@@ -53,9 +53,9 @@ class InventoryItem extends Model
     {
         return $this->belongsTo(ItemType::class, 'inventory_type');
     }
-    public function laboratory(): BelongsTo
+    public function laboratory(): HasMany
     {
-        return $this->belongsTo(Laboratory::class, 'laboratory');
+        return $this->hasMany(Laboratory::class, 'laboratory');
     }
     public  function createdBy(): BelongsTo
     {

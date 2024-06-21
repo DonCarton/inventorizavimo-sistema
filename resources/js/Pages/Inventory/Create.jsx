@@ -10,6 +10,7 @@ import Checkbox from "@/Components/Checkbox.jsx";
 import {measureOptions, labPrefixOptions} from "@/Configurations/SelectConfigurations.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
+import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 
 function Icon({id, open}) {
     return (
@@ -53,6 +54,7 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
         cupboard: '',
         shelf: '',
         storage_conditions: '',
+        asset_number_required: false,
         asset_number: '',
         used_for: '',
         comments: ''
@@ -93,6 +95,7 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
     const [open4, setOpen4] = useState(4);
     const [open5, setOpen5] = useState(5);
     const [checkbox, setCheckbox] = useState(false);
+    const [assetNumberShown, setAssetNumberShown] = useState(true);
     const handleOpen = (value) => setOpen(open === value ? 0 : value);
     const handleOpen2 = (value) => setOpen2(open2 === value ? 0 : value);
     const handleOpen3 = (value) => setOpen3(open3 === value ? 0 : value);
@@ -102,6 +105,19 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
         setData('multiple_locations', e.target.checked);
         setCheckbox(e.target.checked);
     }
+    // function handleType (e){
+    //     let typeValue = e.target.value;
+    //     if(itemTypes.data[typeValue-1].asset_required === 0){
+    //         setAssetNumberShown(true);
+    //         setData('asset_number_required',true);
+    //     }
+    //     else {
+    //         setAssetNumberShown(false);
+    //         setData('asset_number_required',false);
+    //     }
+    //     setData('inventory_type',e.target.value);
+    //     console.log(data.inventory_type);
+    // }
     const onSubmit = (e) => {
         e.preventDefault();
 
@@ -184,17 +200,25 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                                                 </div>
                                                 <div>
                                                     <InputLabel htmlFor="inventoryItems_itemType">
-                                                        {__("Name")} <span className="text-red-500">*</span>
+                                                        {__("Type")} <span className="text-red-500">*</span>
                                                     </InputLabel>
                                                     <select id="inventoryItems_local_laboratory" name="laboratory"
                                                             className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
                                                             value={data.inventory_type}
                                                             onChange={e => setData('inventory_type', e.target.value)}>
                                                         <option value="">{__("Choose a value")}</option>
-                                                        {itemTypes.data.map(itemType => (<option key={itemType.value}
-                                                                                                 value={itemType.value}>{__(itemType.label)}</option>))}
+                                                        {itemTypes.data.map(itemType => (<option key={itemType.value} value={itemType.value}>{__(itemType.label)}</option>))}
                                                     </select>
                                                     <InputError message={errors.inventory_type} className="mt-2"/>
+                                                </div>
+                                                <div className={assetNumberShown ? "mt-1 w-full" : "hidden"}>
+                                                    <InputLabel htmlFor="inventoryItems_asset_number">{__("Asset number")}</InputLabel>
+                                                    <TextInputExtra id="inventoryItems_asset_number" name="asset_number"
+                                                                    className="w-full"
+                                                                    type="text"
+                                                                    onChange={e => setData('asset_number', e.target.value)}>
+                                                    </TextInputExtra>
+                                                    <InputError message={errors.asset_number} className="mt-2"/>
                                                 </div>
                                                 <div>
                                                     <InputLabel htmlFor="inventoryItems_name">
@@ -234,7 +258,8 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                                                     <InputLabel htmlFor="inventoryItems_user_guide">
                                                         {__("User guide")}
                                                     </InputLabel>
-                                                    <TextInput id="inventoryItems_user_guide" type="text" name="user_guide"
+                                                    <TextInput id="inventoryItems_user_guide" type="text"
+                                                               name="user_guide"
                                                                value={data.user_guide} className="mt-1 block w-full"
                                                                onChange={e => setData('user_guide', e.target.value)}/>
                                                 </div>
@@ -260,7 +285,7 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                                                     />
                                                 </div>
                                                 <div>
-                                                    <InputLabel htmlFor="inventoryItems_product_code">
+                                                <InputLabel htmlFor="inventoryItems_product_code">
                                                         {__("Product code")}
                                                     </InputLabel>
                                                     <TextInput
@@ -395,14 +420,6 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                                                     <TextInputExtra id="inventoryItems_storage_conditions" className="w-full"
                                                                     name="storage_conditions" type="textarea"
                                                                     onChange={e => setData('storage_conditions', e.target.value)}></TextInputExtra>
-                                                    <InputError message={errors.storage_conditions} className="mt-2"/>
-                                                </div>
-                                                <div>
-                                                    <InputLabel
-                                                        htmlFor="inventoryItems_asset_number">{__("Asset number")}</InputLabel>
-                                                    <TextInputExtra id="inventoryItems_asset_number" name="asset_number" className="w-full"
-                                                                    type="text"
-                                                                    onChange={e => setData('asset_number', e.target.value)}></TextInputExtra>
                                                     <InputError message={errors.storage_conditions} className="mt-2"/>
                                                 </div>
                                                 <div>

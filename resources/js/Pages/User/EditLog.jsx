@@ -15,6 +15,7 @@ import {TbArrowsUpDown} from "react-icons/tb";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import NumericInput from "@/Components/Forms/NumericInput.jsx";
 import {FaQrcode} from "react-icons/fa";
+import {MdClose} from "react-icons/md";
 
 export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse, laboratories, previousUrl, redirectToReader}) {
     const [previousUrlPage] = useState(previousUrl);
@@ -65,6 +66,15 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg space-y-6">
 
                         <Modal closeable="sm" show={modalOpen} onClose={closeModal}>
+                            <div className="flex justify-between items-center p-4 bg-gray-100 border-b dark:bg-gray-800 dark:border-gray-700">
+                                <h4 className="text-lg font-medium">
+                                    {inventoryItem.laboratory === null ? __("Base location undefined") : __("Base amount is located") + ' ' + inventoryItem.laboratory.name }
+                                </h4>
+                                <button onClick={closeModal}
+                                        className="text-gray-600 hover:text-gray-800 dark:hover:text-white">
+                                    <MdClose size={24}/>
+                                </button>
+                            </div>
                             <form className="p-6" onSubmit={onSubmit2}>
                                 <div className="grid grid-cols-2 gap-x-6">
                                     <div className="mt-4">
@@ -85,23 +95,28 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                         <InputLabel htmlFor="inventoryItems_action">{__("Action")}<span
                                             className="text-red-500">*</span></InputLabel>
                                         <select
-                                            className={ data.action === 'REMOVE' ? "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full bg-red-300" : "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full bg-emerald-300 option:"}
+                                            className={data.action === 'REMOVE' ? "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full bg-red-300" : "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full bg-emerald-300 option:"}
                                             onChange={e => setData('action', e.target.value)} value={data.action}>
                                             {actionsOnInventory.map(action => (
-                                                <option value={action.value} className={action.className}>{__(action.label)}</option>
+                                                <option value={action.value}
+                                                        className={action.className}>{__(action.label)}</option>
                                             ))}
                                         </select>
                                     </div>
                                     <div className="mt-4">
                                         <InputLabel htmlFor="inventoryItems_amount">{__("Amount")}<span
                                             className="text-red-500">*</span></InputLabel>
-                                        <NumericInput type="text" className="mt-1 block w-full" id="inventoryItems_amount" name="amount" onChange={e => setData('amount', e.target.value)}></NumericInput>
+                                        <NumericInput type="text" className="mt-1 block w-full"
+                                                      id="inventoryItems_amount" name="amount"
+                                                      onChange={e => setData('amount', e.target.value)}></NumericInput>
                                         <InputError message={errors.amount} className="mt-2"/>
                                     </div>
                                     <div className="mt-4">
                                         <InputLabel htmlFor="inventoryItems_comment">{__("Comment")}<span
                                             className="text-red-500">*</span></InputLabel>
-                                        <TextInputExtra type="textarea" className="mt-1 block w-full" id="inventoryItems_comment" name="comment" onChange={e => setData('comment', e.target.value)} />
+                                        <TextInputExtra type="textarea" className="mt-1 block w-full"
+                                                        id="inventoryItems_comment" name="comment"
+                                                        onChange={e => setData('comment', e.target.value)}/>
                                         <InputError message={errors.comment} className="mt-2"/>
                                     </div>
                                 </div>
