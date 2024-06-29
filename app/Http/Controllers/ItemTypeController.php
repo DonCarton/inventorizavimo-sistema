@@ -6,6 +6,7 @@ use App\Http\Requests\StoreRequests\StoreItemTypeRequest;
 use App\Http\Requests\UpdateRequests\UpdateItemTypeRequest;
 use App\Http\Resources\ItemTypeResource;
 use App\Models\ItemType;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;

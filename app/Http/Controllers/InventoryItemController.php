@@ -48,8 +48,13 @@ class InventoryItemController extends Controller
             $query->where('name', 'like', '%' . request('name') . '%');
         }
         if (request('updated_by')) {
-            $query->whereHas('createdBy', function ($query) {
+            $query->whereHas('updatedBy', function ($query) {
                 $query->where('email', 'like', '%' . request('updated_by') . '%');
+            });
+        }
+        if (request('inventory_type')) {
+            $query->whereHas('itemType', function ($query) {
+               $query->where('name', 'like', '%' . request('inventory_type') . '%');
             });
         }
         $inventoryItems = $query

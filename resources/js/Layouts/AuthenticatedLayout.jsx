@@ -25,16 +25,16 @@ export default function Authenticated({ user, header, children, role }) {
                                 <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('dashboard')} active={route().current('dashboard')}>
                                     {__("Dashboard")}
                                 </NavLink>
-                                {role === "admin" && <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('users.index')} active={route().current('users.index')}>
+                                {role === "admin" && <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('users.index')} active={route().current('users*')}>
                                     {__("Users")}
                                 </NavLink>}
-                                <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('inventoryItems.index')} active={route().current('inventoryItems.index')}>
+                                <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('inventoryItems.index')} active={route().current('inventoryItems*')}>
                                     {__("Inventory")}
                                 </NavLink>
-                                {role ==="admin" && <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
+                                {role ==="admin" && <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('itemTypes.index')} active={route().current('itemTypes*')}>
                                     {__("Types")}
                                 </NavLink>}
-                                {role ==="admin" && <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('laboratories.index')} active={route().current('laboratories.index')}>
+                                {role ==="admin" && <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('laboratories.index')} active={route().current('laboratories*')}>
                                     {__("Laboratories")}
                                 </NavLink>}
                                 <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('reader')} active={route().current('reader')}>

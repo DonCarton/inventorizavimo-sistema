@@ -92,7 +92,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
             }
             role={role}
         >
-            <Head title="Inventory items"/>
+            <Head title={__("Inventory")}/>
             <FileUploadModal modalHeaderText={__("Import Excel of data")}
                              alertForWrongType={__("Please select a .xlsx or .csv file")}
                              alertTextForMissingFile={__("Please choose a file before uploading")}
@@ -111,7 +111,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                     <thead
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                     <tr className="text-nowrap">
-                                        <th className="px-3 py-2">ID</th>
                                         <TableHeader
                                             name="local_name"
                                             sort_field={queryParams.sort_field}
@@ -127,7 +126,13 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                             children={__("Name")}
                                         />
                                         <th className="px-3 py-2">{__("Count")}</th>
-                                        <th className="px-3 py-2">{__("Type")}</th>
+                                        <TableHeader
+                                            name="inventory_type"
+                                            sort_field={queryParams.sort_field}
+                                            sort_direction={queryParams.sort_direction}
+                                            sortChanged={sortChanged}
+                                            children={__("Type")}
+                                        />
                                         <TableHeader
                                             name="updated_at"
                                             sort_field={queryParams.sort_field}
@@ -142,7 +147,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                     <thead
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                     <tr className="text-nowrap">
-                                        <th className="px-3 py-2"></th>
                                         <th className="px-3 py-2">
                                             <TextInput
                                                 className="w-full text-sm"
@@ -161,7 +165,14 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 onKeyPress={e => onKeyPress('name', e)}/>
                                         </th>
                                         <th className="px-3 py-2"></th>
-                                        <th className="px-3 py-2"></th>
+                                        <th className="px-3 py-2">
+                                            <TextInput
+                                                className="w-full text-sm"
+                                                defaultValue={queryParams.inventory_type}
+                                                placeholder={__("Type")}
+                                                onBlur={e => searchFieldChanged('inventory_type', e.target.value)}
+                                                onKeyPress={e => onKeyPress('inventory_type', e)}/>
+                                        </th>
                                         <th className="px-3 py-2"></th>
                                         <th className="px-3 py-2">
                                             <TextInput className="w-full text-sm" placeholder={__("Updated by")}
@@ -175,7 +186,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                     <tbody>
                                     {inventoryItems.data.map(inventoryItem => (
                                         <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                            <th className="px-3 py-2">{inventoryItem.id}</th>
                                             <td className="px-3 py-2">
                                                 <Link href={route("inventoryItems.show", inventoryItem.id)}
                                                       className="font-medium text-gray-700 dark:text-white hover:underline mx-1">
