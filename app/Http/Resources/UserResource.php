@@ -2,10 +2,20 @@
 
 namespace App\Http\Resources;
 
-use App\Models\User;
+use DateTime;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property int $id
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $email
+ * @property int $laboratory
+ * @property boolean $is_disabled
+ * @property BelongsTo $createdBy
+ */
 class UserResource extends JsonResource
 {
     /**

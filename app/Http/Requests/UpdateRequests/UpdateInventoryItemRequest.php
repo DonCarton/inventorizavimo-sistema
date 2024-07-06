@@ -35,7 +35,7 @@ class UpdateInventoryItemRequest extends FormRequest
             'url_to_provider',
             'alt_url_to_provider',
             'total_count' => ['required', 'int', 'min:1'],
-            'critical_amount' => ['required', 'int', 'min:1', 'lt:total_count'],
+            'critical_amount' => ['required', 'int', 'min:1'],
             'to_order',
             'average_consumption',
             'multiple_locations',

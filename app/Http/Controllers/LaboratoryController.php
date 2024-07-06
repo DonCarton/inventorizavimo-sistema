@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateRequests\UpdateLaboratoryRequest;
 use App\Http\Resources\LaboratoryResource;
 use App\Imports\LaboratoryImport;
 use App\Models\Laboratory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -30,7 +31,7 @@ class LaboratoryController extends Controller
             $query->where('name','like','%'.request('name').'%');
         }
         if (request('updated_by')){
-            $query->whereHas('createdBy', function ($query) {
+            $query->whereHas('updatedBy', function ($query) {
                 $query->where('email', 'like', '%'.request('updated_by').'%');
             });
         }

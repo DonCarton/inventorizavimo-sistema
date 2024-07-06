@@ -37,7 +37,7 @@ class InventoryItemController extends Controller
      */
     public function index(): Response
     {
-        $query = InventoryItem::query();
+        $query = InventoryItem::query();//->orderByRaw("CASE WHEN total_count < critical_amount THEN 0 ELSE 1 END");
 
         $sortField = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", 'desc');
@@ -47,13 +47,26 @@ class InventoryItemController extends Controller
         if (request('name')) {
             $query->where('name', 'like', '%' . request('name') . '%');
         }
+        if (request('name_eng')) {
+            $query->where('name_eng', 'like', '%' . request('name_eng') . '%');
+        }
+        if (request('inventory_type')) {
+            $query->whereHas('itemType', function ($query) {
+               $query->where('name', 'like', '%' . request('inventory_type') . '%');
+            });
+        }
+        if (request('laboratory')) {
+            $query->whereHas('belongsToLaboratory', function ($query) {
+               $query->where('name', 'like', '%' . request('laboratory') . '%');
+            });
+        }
         if (request('updated_by')) {
-            $query->whereHas('createdBy', function ($query) {
-                $query->where('email', 'like', '%' . request('updated_by') . '%');
+            $query->whereHas('updatedBy', function ($query) {
+               $query->where('email', 'like', '%' . request('updated_by') . '%');
             });
         }
         $inventoryItems = $query
-            ->orderBy($sortField, $sortDirection)->paginate(10)
+            ->orderBy($sortField, $sortDirection)->paginate(20)
             ->withQueryString()->onEachSide(1);
         return Inertia::render('Inventory/Index', [
             'inventoryItems' => InventoryItemIndexResource::collection($inventoryItems),
@@ -192,7 +205,7 @@ class InventoryItemController extends Controller
     {
         $redirectToReader = false;
         if (request('urlForReader')) { $redirectToReader = true; }
-        $laboratories = Laboratory::query()->get();
+        $laboratories = Laboratory::query()->whereNotIn('id',[$inventoryItem->laboratory])->get();
         $itemTypes = ItemType::query()->get();
         if ($inventoryItem->itemType->change_acc_amount) {
             return Inertia::render('User/Edit', [

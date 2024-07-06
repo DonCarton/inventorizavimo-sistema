@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $itemType
  * @property int $total_count
  * @property string $local_name
+ * @property int $laboratory
  * @method static findOrFail(int $id)
  * @method static create(mixed $data)
  * @method static where(string $string, string $string1, mixed $prefixOptionId)
@@ -53,9 +54,13 @@ class InventoryItem extends Model
     {
         return $this->belongsTo(ItemType::class, 'inventory_type');
     }
-    public function laboratory(): HasMany
+    public function manyLaboratories(): HasMany
     {
-        return $this->hasMany(Laboratory::class, 'laboratory');
+        return $this->hasMany(Laboratory::class, 'id');
+    }
+    public function belongsToLaboratory(): BelongsTo
+    {
+        return $this->belongsTo(Laboratory::class, 'laboratory');
     }
     public  function createdBy(): BelongsTo
     {

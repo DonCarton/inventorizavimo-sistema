@@ -11,6 +11,7 @@ import {measureOptions, labPrefixOptions} from "@/Configurations/SelectConfigura
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
+import FlexibleSelect from "@/Components/Forms/FlexibleSelect.jsx";
 
 function Icon({id, open}) {
     return (
@@ -89,6 +90,7 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
     const handleTabChange = (tabNumber) => {
         setActiveTab(tabNumber);
     };
+
     const [open, setOpen] = useState(1);
     const [open2, setOpen2] = useState(2);
     const [open3, setOpen3] = useState(3);
@@ -104,6 +106,12 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
     const handleCheckbox = (e) => {
         setData('multiple_locations', e.target.checked);
         setCheckbox(e.target.checked);
+    }
+    const handleLaboratoryChoice = (e) => {
+        setData('laboratory', e);
+    }
+    const handleInventoryTypeChange = (e) => {
+        setData('inventory_type', e);
     }
     // function handleType (e){
     //     let typeValue = e.target.value;
@@ -202,17 +210,28 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                                                     <InputLabel htmlFor="inventoryItems_itemType">
                                                         {__("Type")} <span className="text-red-500">*</span>
                                                     </InputLabel>
-                                                    <select id="inventoryItems_local_laboratory" name="laboratory"
-                                                            className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
-                                                            value={data.inventory_type}
-                                                            onChange={e => setData('inventory_type', e.target.value)}>
-                                                        <option value="">{__("Choose a value")}</option>
-                                                        {itemTypes.data.map(itemType => (<option key={itemType.value} value={itemType.value}>{__(itemType.label)}</option>))}
-                                                    </select>
+                                                    {/*<select id="inventoryItems_itemType" name="itemType"*/}
+                                                    {/*        className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"*/}
+                                                    {/*        value={data.inventory_type}*/}
+                                                    {/*        onChange={e => setData('inventory_type', e.target.value)}>*/}
+                                                    {/*    <option value="">{__("Choose a value")}</option>*/}
+                                                    {/*    {itemTypes.data.map(itemType => (<option key={itemType.value}*/}
+                                                    {/*                                             value={itemType.value}>{__(itemType.label)}</option>))}*/}
+                                                    {/*</select>*/}
+                                                    <FlexibleSelect id="inventoryItems_itemType" name="itemType"
+                                                        customPlaceHolder={__("Choose an inventory type")}
+                                                        value={data.inventory_type}
+                                                        onChange={handleInventoryTypeChange}
+                                                        fetchUrlPath="/select/itemTypes"
+                                                        customNoOptionsMessage={__("No item types found")}
+                                                        customLoadingMessage={__("Fetching options") + "..."}
+                                                        customIsMulti={false}
+                                                    />
                                                     <InputError message={errors.inventory_type} className="mt-2"/>
                                                 </div>
                                                 <div className={assetNumberShown ? "mt-1 w-full" : "hidden"}>
-                                                    <InputLabel htmlFor="inventoryItems_asset_number">{__("Asset number")}</InputLabel>
+                                                    <InputLabel
+                                                        htmlFor="inventoryItems_asset_number">{__("Asset number")}</InputLabel>
                                                     <TextInputExtra id="inventoryItems_asset_number" name="asset_number"
                                                                     className="w-full"
                                                                     type="text"
@@ -285,7 +304,7 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                                                     />
                                                 </div>
                                                 <div>
-                                                <InputLabel htmlFor="inventoryItems_product_code">
+                                                    <InputLabel htmlFor="inventoryItems_product_code">
                                                         {__("Product code")}
                                                     </InputLabel>
                                                     <TextInput
@@ -395,29 +414,30 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                                                     <InputLabel
                                                         htmlFor="inventoryItems_local_laboratory">{__("Location")}<span
                                                         className="text-red-500">*</span></InputLabel>
-                                                    <select id="inventoryItems_local_laboratory" name="laboratory"
-                                                            className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
-                                                            value={data.laboratory}
-                                                            onChange={e => setData('laboratory', e.target.value)}>
-                                                        <option value="">{__("Choose a value")}</option>
-                                                        {laboratories.data.map(laboratory => (
-                                                            <option key={laboratory.value}
-                                                                    value={laboratory.value}>{__(laboratory.label)}</option>
-                                                        ))}
-                                                    </select>
+                                                    <FlexibleSelect id="inventoryItems_local_laboratory" name="local_laboratory"
+                                                        customPlaceHolder={__("Choose a laboratory")}
+                                                        value={data.laboratory}
+                                                        onChange={handleLaboratoryChoice}
+                                                        fetchUrlPath="/select/laboratories"
+                                                        customNoOptionsMessage={__("No laboratories found")}
+                                                        customLoadingMessage={__("Fetching options") + "..."}
+                                                        customIsMulti={false}
+                                                    />
                                                     <InputError message={errors.laboratory} className="mt-2"/>
                                                 </div>
                                             </div>
                                         </AccordionBody>
                                     </Accordion>
                                     <Accordion open={open5} icon={<Icon id={5} open={open5}/>}>
-                                        <AccordionHeader onClick={() => handleOpen5(5)}>{__("Additional information")}</AccordionHeader>
+                                        <AccordionHeader
+                                            onClick={() => handleOpen5(5)}>{__("Additional information")}</AccordionHeader>
                                         <AccordionBody>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div>
                                                     <InputLabel
                                                         htmlFor="inventoryItems_storage_conditions">{__("Storage conditions")}</InputLabel>
-                                                    <TextInputExtra id="inventoryItems_storage_conditions" className="w-full"
+                                                    <TextInputExtra id="inventoryItems_storage_conditions"
+                                                                    className="w-full"
                                                                     name="storage_conditions" type="textarea"
                                                                     onChange={e => setData('storage_conditions', e.target.value)}></TextInputExtra>
                                                     <InputError message={errors.storage_conditions} className="mt-2"/>
@@ -425,7 +445,8 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                                                 <div>
                                                     <InputLabel
                                                         htmlFor="inventoryItems_used_for">{__("Used for")}</InputLabel>
-                                                    <TextInputExtra id="inventoryItems_used_for" name="used_for" className="w-full"
+                                                    <TextInputExtra id="inventoryItems_used_for" name="used_for"
+                                                                    className="w-full"
                                                                     type="text"
                                                                     onChange={e => setData('used_for', e.target.value)}></TextInputExtra>
                                                     <InputError message={errors.used_for} className="mt-2"/>
@@ -433,7 +454,8 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                                                 <div>
                                                     <InputLabel
                                                         htmlFor="inventoryItems_comments">{__("Comments")}</InputLabel>
-                                                    <TextInputExtra id="inventoryItems_comments" name="comments" className="w-full"
+                                                    <TextInputExtra id="inventoryItems_comments" name="comments"
+                                                                    className="w-full"
                                                                     type="text"
                                                                     onChange={e => setData('comments', e.target.value)}></TextInputExtra>
                                                     <InputError message={errors.comments} className="mt-2"/>

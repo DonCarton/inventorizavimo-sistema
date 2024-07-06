@@ -1,24 +1,26 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, Link, useForm} from "@inertiajs/react";
+import {Head, Link, router, useForm} from "@inertiajs/react";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
 import {Accordion, AccordionBody, AccordionHeader} from "@material-tailwind/react";
-import {useState} from "react";
+import React, {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 import SelectForSingleItem from "@/Components/Forms/SelectForSingleItem.jsx";
 import NumericInput from "@/Components/Forms/NumericInput.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import Icon from "@/Components/Icon.jsx";
+import {RiDeleteBin6Line} from "react-icons/ri";
 
 export default function Edit({auth, inventoryItem, role, laboratories, itemTypes}) {
+    const handleConfirmMessage = __("Are you sure you want to delete this item") + '?';
     const {data, setData, put, errors, reset, processing} = useForm({
         local_name: inventoryItem.data.local_name || '',
         inventory_type: inventoryItem.data.inventory_type || '',
         name: inventoryItem.data.name || '',
         url_to_provider: inventoryItem.data.url_to_provider_site,
-        total_count: inventoryItem.data.total_amount || 0,
-        critical_amount: inventoryItem.data.critical_amount || 0,
+        total_count: inventoryItem.data.total_amount || '',
+        critical_amount: inventoryItem.data.critical_amount || '',
         name_eng: inventoryItem.data.name_eng || '',
         provider: inventoryItem.data.provider || '',
         laboratory: inventoryItem.data.laboratory,
@@ -34,6 +36,14 @@ export default function Edit({auth, inventoryItem, role, laboratories, itemTypes
     const handleOpen2 = (value) => setOpen2(open2 === value ? 0 : value);
     const handleOpen3 = (value) => setOpen3(open3 === value ? 0 : value);
     const handleOpen4 = (value) => setOpen4(open4 === value ? 0 : value);
+
+    const handleDestroy = (value) => {
+        if (window.confirm(handleConfirmMessage)) {
+            router.delete(route('inventoryItems.destroy', value), {
+                preserveScroll: true
+            })
+        }
+    }
     const onSubmit = (e) => {
         e.preventDefault();
 
@@ -50,19 +60,22 @@ export default function Edit({auth, inventoryItem, role, laboratories, itemTypes
             }
             role={role}
         >
-            <Head title={__("Edit")+ ' - ' + inventoryItem.data.name}/>
+            <Head title={__("Edit") + ' - ' + inventoryItem.data.name}/>
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <form onSubmit={onSubmit} className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                             <div className="pb-6">
-                                <Accordion open={open === 1} icon={<Icon id={1} open={open} />}>
+                                <Accordion open={open === 1} icon={<Icon id={1} open={open}/>}>
                                     <AccordionHeader onClick={() => handleOpen(1)}>{__("Amount")}</AccordionHeader>
                                     <AccordionBody>
                                         <div className="grid grid-cols-2 gap-2">
                                             <div className="mt-4 w-full">
                                                 <InputLabel htmlFor="inventoryItems_total_amount" value="Kiekis"/>
-                                                <NumericInput id="inventoryItems_total_amount" type="text" name="total_amount" value={data.total_count} className="mt-1 block w-full" onChange={e => setData('total_count', e.target.value)} />
+                                                <NumericInput id="inventoryItems_total_amount" type="text"
+                                                              name="total_amount" value={data.total_count}
+                                                              className="mt-1 block w-full"
+                                                              onChange={e => setData('total_count', e.target.value)}/>
                                                 {/*<TextInput id="inventoryItems_total_amount" type="text" name="total_amount" value={data.total_amount} className="mt-1 block w-full" onChange={e => setData('total_amount', e.target.value)}/>*/}
                                             </div>
                                             <div className="mt-4 w-full">
@@ -77,32 +90,38 @@ export default function Edit({auth, inventoryItem, role, laboratories, itemTypes
                                         </div>
                                     </AccordionBody>
                                 </Accordion>
-                                <Accordion open={open2 === 2} icon={<Icon id={2} open={open2} />}>
+                                <Accordion open={open2 === 2} icon={<Icon id={2} open={open2}/>}>
                                     <AccordionHeader onClick={() => handleOpen2(2)}>{__("Location")}</AccordionHeader>
                                     <AccordionBody>
                                         <div className="grid grid-cols-2 gap-2">
                                             <div className="mt-4">
-                                                <InputLabel htmlFor="inventoryItems_local_laboratory" value={__("Laboratory")}/>
-                                                <SelectForSingleItem id="inventoryItems_local_laboratory" name="laboratory" value={data.laboratory} onChange={e => setData('laboratory', e.target.value)} options={laboratories.data} noValueText={__("Choose a value")}/>
+                                                <InputLabel htmlFor="inventoryItems_local_laboratory"
+                                                            value={__("Laboratory")}/>
+                                                <SelectForSingleItem id="inventoryItems_local_laboratory"
+                                                                     name="laboratory" value={data.laboratory}
+                                                                     onChange={e => setData('laboratory', e.target.value)}
+                                                                     options={laboratories.data}
+                                                                     noValueText={__("Choose a value")}/>
                                                 <InputError message={errors.laboratory} className="mt-2"/>
-                                                </div>
-                                                <div className="mt-4">
-                                                    <InputLabel htmlFor="inventoryItems_cupboard" value={__("Cupboard")}/>
-                                                    <TextInput id="inventoryItems_cupboard" type="text" name="cupboard"
-                                                               value={data.cupboard} className="mt-1 block w-full"
-                                                               onChange={e => setData('cupboard', e.target.value)}/>
-                                                </div>
-                                                <div className="mt-4">
-                                                    <InputLabel htmlFor="inventoryItems_shelf" value={__("Shelf")}/>
-                                                    <TextInput id="inventoryItems_shelf" type="text" name="shelf"
-                                                               value={data.shelf} className="mt-1 block w-full"
-                                                               onChange={e => setData('shelf', e.target.value)}/>
-                                                </div>
                                             </div>
-                                        </AccordionBody>
+                                            <div className="mt-4">
+                                                <InputLabel htmlFor="inventoryItems_cupboard" value={__("Cupboard")}/>
+                                                <TextInput id="inventoryItems_cupboard" type="text" name="cupboard"
+                                                           value={data.cupboard} className="mt-1 block w-full"
+                                                           onChange={e => setData('cupboard', e.target.value)}/>
+                                            </div>
+                                            <div className="mt-4">
+                                                <InputLabel htmlFor="inventoryItems_shelf" value={__("Shelf")}/>
+                                                <TextInput id="inventoryItems_shelf" type="text" name="shelf"
+                                                           value={data.shelf} className="mt-1 block w-full"
+                                                           onChange={e => setData('shelf', e.target.value)}/>
+                                            </div>
+                                        </div>
+                                    </AccordionBody>
                                 </Accordion>
-                                <Accordion open={open3 === 3} icon={<Icon id={3} open={open3} />}>
-                                    <AccordionHeader onClick={() => handleOpen3(3)}>{__("Inventory information")}</AccordionHeader>
+                                <Accordion open={open3 === 3} icon={<Icon id={3} open={open3}/>}>
+                                    <AccordionHeader
+                                        onClick={() => handleOpen3(3)}>{__("Inventory information")}</AccordionHeader>
                                     <AccordionBody>
                                         <div className="grid grid-cols-2 gap-2">
                                             <div className="mt-4">
@@ -116,10 +135,15 @@ export default function Edit({auth, inventoryItem, role, laboratories, itemTypes
                                             <div className="mt-4">
                                                 <InputLabel
                                                     htmlFor="inventoryItems_inventory_type">{__("Type")}</InputLabel>
-                                                <SelectForSingleItem className="disabled:text-white disabled:bg-gray-400" disabled={true} id="inventoryItems_inventory_type" name="inventory_type" value={data.inventory_type} options={itemTypes.data} noValueText={__("Choose a value")} />
+                                                <SelectForSingleItem
+                                                    className="disabled:text-white disabled:bg-gray-400" disabled={true}
+                                                    id="inventoryItems_inventory_type" name="inventory_type"
+                                                    value={data.inventory_type} options={itemTypes.data}
+                                                    noValueText={__("Choose a value")}/>
                                             </div>
-                                            { inventoryItem.data.asset_number !== null ? <div className="mt-4">
-                                                <InputLabel htmlFor="inventoryItems_asset_number" value={__("Asset number")}/>
+                                            {inventoryItem.data.asset_number !== null ? <div className="mt-4">
+                                                <InputLabel htmlFor="inventoryItems_asset_number"
+                                                            value={__("Asset number")}/>
                                                 <TextInput id="inventoryItems_asset_number" type="text" disabled={true}
                                                            readOnly={true} name="asset_number"
                                                            value={inventoryItem.data.asset_number}
@@ -141,8 +165,9 @@ export default function Edit({auth, inventoryItem, role, laboratories, itemTypes
                                         </div>
                                     </AccordionBody>
                                 </Accordion>
-                                <Accordion open={open4 === 4}  icon={<Icon id={4} open={open4} />}>
-                                    <AccordionHeader onClick={() => handleOpen4(4)}>{__("Order information")}</AccordionHeader>
+                                <Accordion open={open4 === 4} icon={<Icon id={4} open={open4}/>}>
+                                    <AccordionHeader
+                                        onClick={() => handleOpen4(4)}>{__("Order information")}</AccordionHeader>
                                     <AccordionBody>
                                         <div className="grid grid-cols-2 gap-2">
                                             <div className="mt-4">
@@ -163,13 +188,20 @@ export default function Edit({auth, inventoryItem, role, laboratories, itemTypes
                                         </div>
                                     </AccordionBody>
                                 </Accordion>
-                                <div className="mt-4">
-                                    <Link href={route('inventoryItems.index')}
-                                          className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
-                                    >
-                                        {__("Cancel")}
-                                    </Link>
-                                    <PrimaryButton className="ml-2" disabled={processing}>{__("Save")}</PrimaryButton>
+                                <div className="flex justify-between mt-4">
+                                    <div>
+                                        <Link href={route('inventoryItems.index')}
+                                              className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
+                                        >
+                                            {__("Cancel")}
+                                        </Link>
+                                        <PrimaryButton className="ml-2"
+                                                       disabled={processing}>{__("Save")}</PrimaryButton>
+                                    </div>
+                                    <a type="button" onClick={() => handleDestroy(inventoryItem.data.id)}
+                                       className="inline-flex items-center px-4 py-2 bg-pink-500 dark:bg-pink-500 border border-pink-500 hover:border-pink-800 dark:border-pink-500 rounded-md font-semibold text-xs text-white dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-rose-800 dark:hover:bg-rose-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">{__("Delete")}
+                                        <RiDeleteBin6Line className="ml-1 w-5 h-5 text-white"/>
+                                    </a>
                                 </div>
                             </div>
                         </form>

@@ -41,6 +41,7 @@
     "Laboratory" : "Laboratory",
     "Laboratories" : "Laboratories",
     "Local name" : "Code",
+    "Item search" : "Item search",
     "Cupboard" : "Cupboard",
     "Shelf" : "Shelf",
     "Storage conditions" : "Storage conditions",
@@ -81,6 +82,7 @@
     "Perform change": "Perform change",
     "Create new user": "Create new user",
     "Create new inventory item": "Create new inventory item",
+    "Create new type": "Create new type",
     "Create new laboratory": "Create new laboratory",
     "Choose a value": "Choose a value",
     "Choose where the item will be stored": "Choose where the item will be stored",
@@ -88,8 +90,12 @@
     "Litres": "Litres",
     "Kilograms": "Kilograms",
     "Packs": "Packs",
+    "Fetching options": "Fetching options",
+    "No item types found": "No item types found",
+    "No laboratories found": "No laboratories found",
     "Chosen file": "Chosen file",
     "Import Excel of data": "Import Excel of data",
+    "Export Excel of data": "Export Excel of data",
     "Please select a .xlsx or .csv file": "Please select a .xlsx or .csv file",
     "Nothing chosen yet": "Nothing chosen yet",
     "Please choose a file before uploading": "Please choose a file before uploading",
@@ -125,5 +131,7 @@
     "Are you sure you want to deactivate this user": "Are you sure you want to deactivate this user",
     "Are you sure you want to activate this user": "Are you sure you want to activate this user",
     "Admin": "Admin",
-    "User": "User"
+    "User": "User",
+    "Choose a laboratory": "Choose a laboratory",
+    "Choose an inventory type": "Choose an inventory type"
 }
