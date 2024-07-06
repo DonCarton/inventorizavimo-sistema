@@ -20,9 +20,10 @@ const customStyles = {
         color: '#D1D5DB',
         borderRadius: '0.375rem',
         marginTop: '0.5rem',
-        zIndex: 20,
-        //position: 'absolute',
+        zIndex: 9999,
+        position: 'absolute',
     }),
+    menuPortal: base => ({...base, zIndex: 9999}),
     option: (provided, state) => ({
         ...provided,
         backgroundColor: state.isFocused ? '#E0E0E6' : 'transparent',
@@ -122,6 +123,7 @@ const FlexibleSelect = ({
             noOptionsMessage={() => customNoOptionsMessage}
             placeholder={customPlaceHolder}
             loadingMessage={() => customLoadingMessage}
+            menuPortalTarget={document.body}
         />
     );
 };

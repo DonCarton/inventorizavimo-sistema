@@ -2,7 +2,6 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
 import {Head, useForm} from "@inertiajs/react";
 import {__} from "@/Libs/Lang.jsx";
 import FlexibleSelect from "@/Components/Forms/FlexibleSelect.jsx";
-import TextInput from "@/Components/TextInput.jsx";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import InputError from "@/Components/InputError.jsx";
 
@@ -37,21 +36,9 @@ export default function Create2({auth, previousUrl, role, laboratories, itemType
             <Head title={__("Create new inventory item")}/>
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <form className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg"
-                              onSubmit={handleSubmit}>
+                    <div className="bg-white dark:bg-gray-800 overflow-y-visible shadow-sm sm:rounded-lg">
+                        <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <InputLabel htmlFor="inventoryItems_local_name">
-                                        {__("Local name")}<span className="text-red-500">*</span>
-                                    </InputLabel>
-                                    <TextInput id="inventoryItems_local_name" type="text"
-                                               name="local_name"
-                                               value={data.local_name}
-                                               className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"
-                                               disabled={true} readOnly={true}/>
-                                    <InputError message={errors.local_name} className="mt-2"/>
-                                </div>
                                 <div>
                                     <InputLabel htmlFor="inventoryItems_itemType" className="mb-1">
                                         {__("Type")}<span className="text-red-500">*</span>
@@ -68,7 +55,7 @@ export default function Create2({auth, previousUrl, role, laboratories, itemType
                                     <InputError message={errors.inventory_type} className="mt-2"/>
                                 </div>
                                 <div>
-                                    <InputLabel htmlFor="inventoryItems_name">
+                                    <InputLabel htmlFor="inventoryItems_name" className="mb-1">
                                         {__("Laboratory")} <span className="text-red-500">*</span>
                                     </InputLabel>
                                     <FlexibleSelect
@@ -82,8 +69,7 @@ export default function Create2({auth, previousUrl, role, laboratories, itemType
                                     <InputError message={errors.laboratory} className="mt-2"/>
                                 </div>
                             </div>
-                            <button type="submit" className="mt-4">{__("Create")}</button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>

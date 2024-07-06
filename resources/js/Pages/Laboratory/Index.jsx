@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, Link, router} from '@inertiajs/react';
+import {Head, Link, router, useForm} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
 import {__} from "@/Libs/Lang.jsx";
 import TextInput from "@/Components/TextInput.jsx";
@@ -8,12 +8,19 @@ import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import {TbEdit, TbTablePlus} from "react-icons/tb";
 import {RiDeleteBin6Line, RiFileExcel2Line} from "react-icons/ri";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
-import React from "react";
+import React, {useState} from "react";
 import WarningMessage from "@/Components/WarningMessage.jsx";
+import {FiUpload} from "react-icons/fi";
+import FileUploadModal from "@/Components/FileUploadModal.jsx";
 
 export default function Index({auth, laboratories, role, queryParams = null, success, warning}) {
     queryParams = queryParams || {};
     const handleConfirmMessage = __("Are you sure you want to delete this item")+'?';
+    const [modalOpen, setModalOpen] = useState(false);
+    const {setData, post} = useForm({
+        title: '',
+        file: null,
+    });
     const searchFieldChanged = (name, value) => {
         if (value) {
             queryParams[name] = value;
@@ -44,6 +51,18 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
             router.delete(route('laboratories.destroy', value), {preserveScroll: true})
         }
     }
+    const handleFileSelect = (file) => {
+        setData('file', file);
+    };
+    function handleSubmit2() {
+        post(route("importLaboratories"));
+        setModalOpen(false);
+        setData("title", "");
+        setData("file", null);
+    }
+    function closeModal() {
+        setModalOpen(false);
+    }
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -57,17 +76,25 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                             classnameForIcon="w-5 h-5 ml-1 mt-1"/>
 
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                         <a href={route("laboratories.create")}><TbTablePlus
-                            className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
+                            className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Create new laboratory")}/></a>
+                        <a name="laboratoryExcel" onClick={() => setModalOpen(true)}><FiUpload
+                            className="w-10 h-10 text-amber-400 hover:text-amber-600 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Import Excel of data")}/></a>
                         <a href={route("exportLaboratories")} target="_blank"><RiFileExcel2Line
-                            className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
+                            className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Export Excel of data")}/></a>
                     </div>
                 </div>
             }
             role={role}
         >
             <Head title={__("Laboratories")}/>
+            <FileUploadModal modalHeaderText={__("Import Excel of data")}
+                             alertForWrongType={__("Please select a .xlsx or .csv file")}
+                             alertTextForMissingFile={__("Please choose a file before uploading")}
+                             submitButtonText={__("Submit")} itemNotSpecifiedText={__("Nothing chosen yet")}
+                             selectFileText={__("Chosen file")} isOpen={modalOpen} onClose={closeModal}
+                             onFileSelect={handleFileSelect} onSubmit={handleSubmit2}/>
             <div className="py-12">
                 <div className="3xl:max-w-screen-3xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {success && <SuccessMessage message={success}/>}
@@ -80,7 +107,6 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                                     <thead
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                     <tr className="text-nowrap">
-                                        <th className="px-3 py-2">ID</th>
                                         <TableHeader
                                             name="name"
                                             sort_field={queryParams.sort_field}
@@ -103,7 +129,6 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                                     <thead
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                     <tr className="text-nowrap">
-                                        <th className="px-3 py-2"></th>
                                         <th className="px-3 py-2">
                                             <TextInput
                                                 className="w-full text-sm"
@@ -126,7 +151,6 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                                     <tbody>
                                     {laboratories.data.map(laboratory => (
                                         <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                            <th className="px-3 py-2">{laboratory.id}</th>
                                             <td className="px-3 py-2"><Link
                                                 href={route("laboratories.show", laboratory.id)}
                                                 className="text-black dark:text-green-400 hover:underline mx-1"

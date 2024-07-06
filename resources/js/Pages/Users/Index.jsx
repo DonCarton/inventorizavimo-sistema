@@ -64,9 +64,9 @@ export default function Users({auth, users, role, queryParams = null, success, f
                     </div>
                     {role === "admin" && (<div className="grid grid-cols-2 gap-4">
                         <a href={route("users.create")}><TbTablePlus
-                            className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
+                            className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Create new user")}/></a>
                         <a href={route("exportUsers")} target="_blank"><RiFileExcel2Line
-                            className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
+                            className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Export Excel of data")}/></a>
                     </div>)}
                 </div>
             }
@@ -84,7 +84,6 @@ export default function Users({auth, users, role, queryParams = null, success, f
                                 <thead
                                     className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                 <tr className="text-nowrap">
-                                    <th className="px-3 py-2">ID</th>
                                     <th className="px-3 py-2">{__("First name")}</th>
                                     <th className="px-3 py-2">{__("Last name")}</th>
                                     <TableHeader
@@ -103,7 +102,6 @@ export default function Users({auth, users, role, queryParams = null, success, f
                                 <tr className="text-nowrap">
                                     <th className="px-3 py-2"></th>
                                     <th className="px-3 py-2"></th>
-                                    <th className="px-3 py-2"></th>
                                     <th className="px-3 py-2">
                                         <TextInput
                                             className="w-full text-sm"
@@ -119,7 +117,6 @@ export default function Users({auth, users, role, queryParams = null, success, f
                                 <tbody>
                                 {users.data.map(user => (
                                     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                        <th className="px-3 py-2">{user.id}</th>
                                         <th className="px-3 py-2">{user.first_name}</th>
                                         <th className="px-3 py-2">{user.last_name}</th>
                                         <td className="px-3 py-2">

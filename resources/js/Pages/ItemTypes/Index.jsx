@@ -29,7 +29,7 @@ export default function InventoryTypes({auth, itemTypes, role, success, warning}
                                      </div>
                                      <div className="grid grid-cols-2 gap-4">
                                          <a href={route("itemTypes.create")}><TbTablePlus
-                                             className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
+                                             className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Create new type")}/></a>
                                      </div>
                                  </div>}
                              role={role}
@@ -46,7 +46,6 @@ export default function InventoryTypes({auth, itemTypes, role, success, warning}
                                 <thead
                                     className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                 <tr className="text-nowrap">
-                                    <th className="px-3 py-2">ID</th>
                                     <th className="px-3 py-2">{__("Name")}</th>
                                     <th className="px-3 py-2">{__("Updated at")}</th>
                                     <th className="px-3 py-2">{__("Updated by")}</th>
@@ -56,7 +55,6 @@ export default function InventoryTypes({auth, itemTypes, role, success, warning}
                                 <tbody>
                                 {itemTypes.data.map(itemType => (
                                     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                        <th className="px-3 py-2">{itemType.id}</th>
                                         <td className="px-3 py-2">
                                             <Link href={route("itemTypes.show", itemType.id)}
                                                   className="font-medium text-gray-700 dark:text-white hover:underline mx-1">

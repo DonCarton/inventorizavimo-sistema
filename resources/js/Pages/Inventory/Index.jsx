@@ -68,6 +68,16 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
         setModalOpen(false);
     }
 
+    const [buttonGroupOpen, setButtonGroupOpen] = useState(false);
+
+    function toggleButtonGroup() {
+        if (!buttonGroupOpen){
+            setButtonGroupOpen(true);
+        }
+        else {
+            setButtonGroupOpen(false);
+        }
+    }
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -82,12 +92,21 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                     </div>
                     <div className="grid grid-cols-3 gap-4">
                         { role === 'admin' && (<a href={route("inventoryItems.create")}><TbTablePlus
-                            className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>)}
-                        { role === 'admin' && (<a name="laboratoryExcel" onClick={() => setModalOpen(true)}><FiUpload
-                            className="w-10 h-10 text-amber-400 hover:text-amber-600 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>)}
+                            className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Create new inventory item")}/></a>)}
+                        { role === 'admin' && (<a name="inventoryExcel" onClick={() => setModalOpen(true)}><FiUpload
+                            className="w-10 h-10 text-amber-400 hover:text-amber-600 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Import Excel of data")}/></a>)}
                         <a href={route("exportInventoryItems")} target="_blank"><RiFileExcel2Line
-                            className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse"/></a>
+                            className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Export Excel of data")}/></a>
                     </div>
+                    {/*<div className="inline-flex">*/}
+                    {/*    <a type="button" href={route('inventoryItems.create')}>{__("Create")}</a>*/}
+                    {/*    <div onClick={toggleButtonGroup}><span>V</span>*/}
+                    {/*        {buttonGroupOpen ? <ul>*/}
+                    {/*            <a type="button" onClick={() => setModalOpen(true)}>{__("Import")}</a>*/}
+                    {/*            <a type="button" href={route('exportInventoryItems')} target="_blank">{__("Export")}</a>*/}
+                    {/*        </ul> : ''}*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
                 </div>
             }
             role={role}
@@ -125,6 +144,13 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                             sortChanged={sortChanged}
                                             children={__("Name")}
                                         />
+                                        <TableHeader
+                                            name="name_eng"
+                                            sort_field={queryParams.sort_field}
+                                            sort_direction={queryParams.sort_direction}
+                                            sortChanged={sortChanged}
+                                            children={__("Name ENG")}
+                                        />
                                         <th className="px-3 py-2">{__("Count")}</th>
                                         <TableHeader
                                             name="inventory_type"
@@ -134,13 +160,20 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                             children={__("Type")}
                                         />
                                         <TableHeader
-                                            name="updated_at"
+                                            name="laboratory"
                                             sort_field={queryParams.sort_field}
                                             sort_direction={queryParams.sort_direction}
                                             sortChanged={sortChanged}
-                                            children={__("Updated at")}
+                                            children={__("Laboratory")}
                                         />
-                                        <th className="px-3 py-2">{__("Updated by")}</th>
+                                        <TableHeader
+                                            name="updated_by"
+                                            sort_field={queryParams.sort_field}
+                                            sort_direction={queryParams.sort_direction}
+                                            sortChanged={sortChanged}
+                                            children={__("Updated by")}
+                                        />
+                                        {/*<th className="px-3 py-2">{__("Updated by")}</th>*/}
                                         <th className="px-3 py-2">{__("Actions")}</th>
                                     </tr>
                                     </thead>
@@ -151,7 +184,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                             <TextInput
                                                 className="w-full text-sm"
                                                 defaultValue={queryParams.local_name}
-                                                placeholder={__("Barcode")}
+                                                placeholder={__("Item search")}
                                                 onBlur={e => searchFieldChanged('local_name', e.target.value)}
                                                 onKeyPress={e => onKeyPress('local_name', e)}
                                             />
@@ -164,6 +197,14 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 onBlur={e => searchFieldChanged('name', e.target.value)}
                                                 onKeyPress={e => onKeyPress('name', e)}/>
                                         </th>
+                                        <th className="px-3 py-2">
+                                            <TextInput
+                                                className="w-full text-sm"
+                                                defaultValue={queryParams.name_eng}
+                                                placeholder={__("Name ENG")}
+                                                onBlur={e => searchFieldChanged('name_eng', e.target.value)}
+                                                onKeyPress={e => onKeyPress('name_eng', e)}/>
+                                        </th>
                                         <th className="px-3 py-2"></th>
                                         <th className="px-3 py-2">
                                             <TextInput
@@ -173,7 +214,15 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 onBlur={e => searchFieldChanged('inventory_type', e.target.value)}
                                                 onKeyPress={e => onKeyPress('inventory_type', e)}/>
                                         </th>
-                                        <th className="px-3 py-2"></th>
+                                        <th className="px-3 py-2">
+                                            <TextInput
+                                                className="w-full text-sm"
+                                                defaultValue={queryParams.laboratory}
+                                                placeholder={__("Laboratory")}
+                                                onBlur={e => searchFieldChanged('laboratory', e.target.value)}
+                                                onKeyPress={e => onKeyPress('laboratory', e)}/>
+                                        </th>
+                                        {/*<th className="px-3 py-2"></th>*/}
                                         <th className="px-3 py-2">
                                             <TextInput className="w-full text-sm" placeholder={__("Updated by")}
                                                        defaultValue={queryParams.updated_by}
@@ -185,7 +234,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                     </thead>
                                     <tbody>
                                     {inventoryItems.data.map(inventoryItem => (
-                                        <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                        <tr className={inventoryItem.critical_amount >= inventoryItem.total_amount ? "bg-red-300 border-b dark:bg-red-300 dark:border-red-700" : "bg-white border-b dark:bg-gray-800 dark:border-gray-700"}>
                                             <td className="px-3 py-2">
                                                 <Link href={route("inventoryItems.show", inventoryItem.id)}
                                                       className="font-medium text-gray-700 dark:text-white hover:underline mx-1">
@@ -193,9 +242,10 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 </Link>
                                             </td>
                                             <td className="px-3 py-2">{inventoryItem.name}</td>
+                                            <td className="px-3 py-2">{inventoryItem.name_eng}</td>
                                             <td className="px-3 py-2">{inventoryItem.total_amount}</td>
                                             <td className="px-3 py-2">{inventoryItem.inventory_type}</td>
-                                            <td className="px-3 py-2">{inventoryItem.updated_at}</td>
+                                            <td className="px-3 py-2">{inventoryItem.laboratory}</td>
                                             <td className="px-3 py-2">{inventoryItem.updated_by}</td>
                                             <td className="flex justify-start mt-1 px-2 py-1">
                                                 <Link href={route("inventoryItems.editRaw", inventoryItem.id)}
@@ -208,11 +258,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                     <TbArrowsUpDown
                                                         className="w-6 h-6 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
                                                 </Link>
-                                                {role === "admin" ? <a type="button"
-                                                                       onClick={() => handleDestroy(inventoryItem.id)}>
-                                                    <RiDeleteBin6Line
-                                                    className="w-6 h-6 text-red-500 hover:text-red-700 hover:animate-pulse hover:bg-gray-50"/></a> : <></>}
-
                                             </td>
                                         </tr>
                                     ))}
