@@ -5,14 +5,15 @@ import axios from 'axios';
 const customStyles = {
     control: (provided, state) => ({
         ...provided,
-        backgroundColor: state.isFocused ? 'white' : 'transparent',
+        backgroundColor: state.isFocused ? '#FFFFFF' : state.isDisabled ? 'gray' : 'transparent',
         borderColor: state.isFocused ? '#5B21B6' : '#D1D5DB',
         '&:hover': {
             borderColor: '#5B21B6'
         },
         boxShadow: state.isFocused ? '0 0 0 1px #5B21B6' : 'none',
         borderRadius: '0.375rem',
-        padding: '0.125rem'
+        padding: '0.125rem',
+        fontSize: '16px'
     }),
     menu: (provided) => ({
         ...provided,
@@ -30,12 +31,12 @@ const customStyles = {
         color: state.isFocused ? 'black' : '#000000',
         '&:hover': {
             backgroundColor: '#E0E0E6',
-            color: 'black'
+            color: '#000000'
         },
     }),
-    singleValue: (provided) => ({
+    singleValue: (provided, state) => ({
         ...provided,
-        color: '#1F2937',
+        color: state.isDisabled ? '#FFFFFF' : '#1F2937',
     }),
     multiValue: (provided) => ({
         ...provided,
@@ -72,7 +73,8 @@ const FlexibleSelect = ({
                             customPlaceHolder = '',
                             customNoOptionsMessage = 'No options available',
                             customLoadingMessage = 'Fetching options...',
-                            customIsMulti = false
+                            customIsMulti = false,
+                            customIsDisabled = false
                         }) => {
     const [options, setOptions] = useState([]);
 
@@ -116,6 +118,7 @@ const FlexibleSelect = ({
             options={options}
             isMulti={customIsMulti}
             isClearable
+            isDisabled={customIsDisabled}
             value={getValue()}
             onChange={handleChange}
             styles={customStyles}

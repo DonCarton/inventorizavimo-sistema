@@ -38,7 +38,6 @@ class InventoryItemController extends Controller
     public function index(): Response
     {
         $query = InventoryItem::query();//->orderByRaw("CASE WHEN total_count < critical_amount THEN 0 ELSE 1 END");
-
         $sortField = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", 'desc');
         if (request('local_name')) {
@@ -326,8 +325,9 @@ class InventoryItemController extends Controller
      */
     public function export(): BinaryFileResponse
     {
+        $data = request('local_name');
         $dateTimeNow = Carbon::now()->toDateTimeString();
-        return Excel::download(new InventoryExports(), $dateTimeNow . '_inventory.xlsx');
+        return Excel::download(new InventoryExports($data), $dateTimeNow . '_inventory.xlsx');
     }
 
     /**

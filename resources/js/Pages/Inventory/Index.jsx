@@ -5,7 +5,7 @@ import React, {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
-import {RiDeleteBin6Line, RiFileExcel2Line} from 'react-icons/ri';
+import {RiFileExcel2Line} from 'react-icons/ri';
 import {TbEdit, TbTablePlus, TbArrowsUpDown} from "react-icons/tb";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import {FiUpload} from "react-icons/fi";
@@ -15,7 +15,6 @@ import SuccessMessage from "@/Components/SuccessMessage.jsx";
 
 export default function Index({auth, inventoryItems, role, queryParams = null, success, failure}) {
     queryParams = queryParams || {};
-    const handleConfirmMessage = __("Are you sure you want to delete this item")+'?';
     const [modalOpen, setModalOpen] = useState(false);
     const {setData, post} = useForm({
         title: '',
@@ -45,13 +44,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
             queryParams.sort_direction = 'asc';
         }
         router.get(route('inventoryItems.index'), queryParams);
-    }
-    const handleDestroy = (value) => {
-        if (window.confirm(handleConfirmMessage)) {
-            router.delete(route('inventoryItems.destroy', value), {
-                preserveScroll: true
-            })
-        }
     }
     const handleFileSelect = (file) => {
         setData('file', file);
@@ -95,7 +87,11 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                             className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Create new inventory item")}/></a>)}
                         { role === 'admin' && (<a name="inventoryExcel" onClick={() => setModalOpen(true)}><FiUpload
                             className="w-10 h-10 text-amber-400 hover:text-amber-600 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Import Excel of data")}/></a>)}
-                        <a href={route("exportInventoryItems")} target="_blank"><RiFileExcel2Line
+                        <a
+                            href={route("exportInventoryItems", queryParams)}
+                           target="_blank"
+                        >
+                            <RiFileExcel2Line
                             className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Export Excel of data")}/></a>
                     </div>
                     {/*<div className="inline-flex">*/}
@@ -185,7 +181,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 className="w-full text-sm"
                                                 defaultValue={queryParams.local_name}
                                                 placeholder={__("Item search")}
-                                                onBlur={e => searchFieldChanged('local_name', e.target.value)}
+                                                // onBlur={e => searchFieldChanged('local_name', e.target.value)}
                                                 onKeyPress={e => onKeyPress('local_name', e)}
                                             />
                                         </th>
@@ -194,7 +190,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 className="w-full text-sm"
                                                 defaultValue={queryParams.name}
                                                 placeholder={__("Name")}
-                                                onBlur={e => searchFieldChanged('name', e.target.value)}
+                                                // onBlur={e => searchFieldChanged('name', e.target.value)}
                                                 onKeyPress={e => onKeyPress('name', e)}/>
                                         </th>
                                         <th className="px-3 py-2">
@@ -202,7 +198,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 className="w-full text-sm"
                                                 defaultValue={queryParams.name_eng}
                                                 placeholder={__("Name ENG")}
-                                                onBlur={e => searchFieldChanged('name_eng', e.target.value)}
+                                                // onBlur={e => searchFieldChanged('name_eng', e.target.value)}
                                                 onKeyPress={e => onKeyPress('name_eng', e)}/>
                                         </th>
                                         <th className="px-3 py-2"></th>
@@ -211,7 +207,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 className="w-full text-sm"
                                                 defaultValue={queryParams.inventory_type}
                                                 placeholder={__("Type")}
-                                                onBlur={e => searchFieldChanged('inventory_type', e.target.value)}
+                                                // onBlur={e => searchFieldChanged('inventory_type', e.target.value)}
                                                 onKeyPress={e => onKeyPress('inventory_type', e)}/>
                                         </th>
                                         <th className="px-3 py-2">
@@ -219,7 +215,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 className="w-full text-sm"
                                                 defaultValue={queryParams.laboratory}
                                                 placeholder={__("Laboratory")}
-                                                onBlur={e => searchFieldChanged('laboratory', e.target.value)}
+                                                // onBlur={e => searchFieldChanged('laboratory', e.target.value)}
                                                 onKeyPress={e => onKeyPress('laboratory', e)}/>
                                         </th>
                                         {/*<th className="px-3 py-2"></th>*/}

@@ -11,12 +11,18 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class InventoryExports implements FromCollection, WithMapping, WithHeadings
 {
+    private string $data;
+    public function __construct(string $data)
+    {
+        $this->data = $data;
+    }
     /**
     * @return Collection
     */
     public function collection(): Collection
     {
-        return InventoryItem::all();
+        return InventoryItem::query()->where('local_name','like','%'.$this->data.'%')->get();
+        //return InventoryItem::all();
     }
 
     /**
