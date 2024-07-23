@@ -29,10 +29,6 @@ return new class extends Migration
             $table->double('critical_amount')->nullable();
             $table->double('to_order')->nullable();
             $table->double('average_consumption')->nullable();
-//            $table->bigInteger('total_count')->nullable();
-//            $table->bigInteger('critical_amount')->nullable();
-//            $table->bigInteger('to_order')->nullable();
-//            $table->bigInteger('average_consumption')->nullable();
             $table->boolean('multiple_locations')->nullable();
             $table->foreignId('laboratory')->nullable()->constrained('laboratories');
             $table->foreignId('cupboard')->nullable()->constrained('cupboards');

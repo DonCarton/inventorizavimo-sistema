@@ -11,8 +11,9 @@ import NumericInput from "@/Components/Forms/NumericInput.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import Icon from "@/Components/Icon.jsx";
 import {RiDeleteBin6Line} from "react-icons/ri";
+import LogsTable from "@/Components/Forms/LogsTable.jsx";
 
-export default function Edit({auth, inventoryItem, role, laboratories, itemTypes}) {
+export default function Edit({auth, inventoryItem, logsForItem, role, laboratories, itemTypes}) {
     const handleConfirmMessage = __("Are you sure you want to delete this item") + '?';
     const {data, setData, put, errors, reset, processing} = useForm({
         local_name: inventoryItem.data.local_name || '',
@@ -205,6 +206,7 @@ export default function Edit({auth, inventoryItem, role, laboratories, itemTypes
                                 </div>
                             </div>
                         </form>
+                        {logsForItem.data.length > 0 && <LogsTable logsForItem={logsForItem}/>}
                     </div>
                 </div>
             </div>

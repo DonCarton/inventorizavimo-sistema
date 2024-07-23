@@ -96,6 +96,8 @@
     "Chosen file": "Chosen file",
     "Import Excel of data": "Import Excel of data",
     "Export Excel of data": "Export Excel of data",
+    "Export": "Export",
+    "Import": "Import",
     "Please select a .xlsx or .csv file": "Please select a .xlsx or .csv file",
     "Nothing chosen yet": "Nothing chosen yet",
     "Please choose a file before uploading": "Please choose a file before uploading",

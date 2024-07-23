@@ -20,7 +20,7 @@ export default {
                 '4xl': '2560px',
                 '3xl': '1600px',
                 '2xl': '1080px',
-                'sm': '740px'
+                'sm': '480px'
             },
             keyFrames: {
                 fadeOut: {

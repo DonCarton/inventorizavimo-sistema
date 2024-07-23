@@ -5,7 +5,7 @@ import TextInput from "@/Components/TextInput.jsx";
 import Icon from "@/Components/Icon.jsx";
 import InputError from "@/Components/InputError.jsx";
 import {Accordion, AccordionBody, AccordionHeader} from "@material-tailwind/react";
-import {useState} from "react";
+import React, {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 import Modal from "@/Components/Modal.jsx";
 import { actionsOnInventory } from '@/Configurations/SelectConfigurations.jsx';
@@ -16,6 +16,7 @@ import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import NumericInput from "@/Components/Forms/NumericInput.jsx";
 import {FaQrcode} from "react-icons/fa";
 import {MdClose} from "react-icons/md";
+import LogsTable from "@/Components/Forms/LogsTable.jsx";
 
 export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse, laboratories, previousUrl, redirectToReader}) {
     const [previousUrlPage] = useState(previousUrl);
@@ -66,9 +67,10 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg space-y-6">
 
                         <Modal closeable="sm" show={modalOpen} onClose={closeModal}>
-                            <div className="flex justify-between items-center p-4 bg-gray-100 border-b dark:bg-gray-800 dark:border-gray-700">
+                            <div
+                                className="flex justify-between items-center p-4 bg-gray-100 border-b dark:bg-gray-800 dark:border-gray-700">
                                 <h4 className="text-lg font-medium">
-                                    {inventoryItem.laboratory === null ? __("Base location undefined") : __("Base amount is located") + ' ' + inventoryItem.laboratory.name }
+                                    {inventoryItem.laboratory === null ? __("Base location undefined") : __("Base amount is located") + ' ' + inventoryItem.laboratory.name}
                                 </h4>
                                 <button onClick={closeModal}
                                         className="text-gray-600 hover:text-gray-800 dark:hover:text-white">
@@ -217,42 +219,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                 </div>
                             </div>
                         </div>
-                        <div className="overflow-auto">
-                            <div className="p-6">
-                                <table
-                                    className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                    <thead
-                                        className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
-                                    <tr className="text-nowrap">
-                                        <th className="px-3 py-2">{__("Laboratory")}</th>
-                                        <th className="px-3 py-2">{__("Action")}</th>
-                                        <th className="px-3 py-2">{__("Amount")}</th>
-                                        <th className="px-3 py-2">{__("Comment")}</th>
-                                        <th className="px-3 py-2">{__("Created by")}</th>
-                                        <th className="px-3 py-2">{__("Created at")}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {logsForItem.data.map(logForItem => (
-                                        <tr className={logForItem.action_taken === "RETURN" ? "bg-emerald-600 text-white text-xl border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-emerald-700" : "bg-red-300 text-white text-xl border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-red-400"}>
-                                            <td className="px-3 py-2">
-                                                <Link href={route("laboratories.show", logForItem.laboratory.id)}
-                                                      className="font-medium text-white hover:underline mx-1"> {logForItem.laboratory.name} </Link>
-                                            </td>
-                                            <td className="px-3 py-2">{__(logForItem.action_taken)}</td>
-                                            <td className="px-3 py-2">{logForItem.amount_handled}</td>
-                                            <td className="px-3 py-2">{logForItem.comment}</td>
-                                            <td className="px-3 py-2">
-                                                <Link href={route("users.show", logForItem.created_by.id)}
-                                                      className="font-medium text-white hover:underline mx-1"> {logForItem.created_by.email} </Link>
-                                            </td>
-                                            <td className="px-3 py-2">{logForItem.created_at}</td>
-                                        </tr>
-                                    ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        {logsForItem.data.length > 0 && <LogsTable logsForItem={logsForItem}/>}
                     </div>
                 </div>
             </div>

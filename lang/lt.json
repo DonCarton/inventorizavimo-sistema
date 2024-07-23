@@ -101,6 +101,8 @@
     "Please choose a file before uploading": "Prašome pasirinkti failą prieš importuojant",
     "Please select a file to be imported": "Pasirinkite failą prieš įkeldami",
     "Export to Excel": "Eksporuoti į Excel",
+    "Export": "Eksporuoti",
+    "Import": "Importuoti",
     "Inventory information": "Inventoriaus informacija",
     "Location": "Patalpa",
     "Additional information": "Papildoma informacija",

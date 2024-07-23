@@ -65,7 +65,7 @@ class InventoryItemController extends Controller
             });
         }
         $inventoryItems = $query
-            ->orderBy($sortField, $sortDirection)->paginate(20)
+            ->orderBy($sortField, $sortDirection)->paginate(50)
             ->withQueryString()->onEachSide(1);
         return Inertia::render('Inventory/Index', [
             'inventoryItems' => InventoryItemIndexResource::collection($inventoryItems),
@@ -128,10 +128,12 @@ class InventoryItemController extends Controller
      */
     public function editRaw(InventoryItem $inventoryItem): Response
     {
+        $amountLogs = $inventoryItem->amountLogs;
         $laboratories = Laboratory::query()->get()->all();
         $itemTypes = ItemType::query()->get();
         return Inertia::render('Inventory/Edit', [
             'inventoryItem' => new InventoryItemResource($inventoryItem),
+            'logsForItem' => AmountLogResource::collection($amountLogs),
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
             'itemTypes' => ItemTypeForSelect::collection($itemTypes)
         ]);

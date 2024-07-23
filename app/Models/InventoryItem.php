@@ -2,19 +2,21 @@
 
 namespace App\Models;
 
+use App\Enums\InventoryStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property int $amountLogs
  * @property int $id
+ * @property int $inventory_type
+ * @property int $amountLogs
  * @property int $itemType
- * @property int $total_count
  * @property string $local_name
  * @property int $laboratory
+ * @property double $total_count
+ * @property double $critical_amount
  * @method static findOrFail(int $id)
  * @method static create(mixed $data)
  * @method static where(string $string, string $string1, mixed $prefixOptionId)
@@ -53,6 +55,20 @@ class InventoryItem extends Model
     public function itemType(): BelongsTo
     {
         return $this->belongsTo(ItemType::class, 'inventory_type');
+    }
+    public function getStatusAttribute(): string
+    {
+        $itemType = ItemType::where('id',$this->inventory_type)->select('change_acc_amount')->first();
+        if ($itemType){
+            $canChangeAmount = $itemType->change_acc_amount;
+            if(!$canChangeAmount && $this->amountLogs()->count() > 0){
+                return InventoryStatusEnum::TAKEN;
+            }
+            else if($canChangeAmount && $this->total_count <= $this->critical_amount){
+                return InventoryStatusEnum::CRITICAL;
+            }
+        }
+        return InventoryStatusEnum::NORMAL;
     }
     public function manyLaboratories(): HasMany
     {

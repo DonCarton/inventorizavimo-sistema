@@ -5,13 +5,13 @@ import React, {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
-import {RiFileExcel2Line} from 'react-icons/ri';
 import {TbEdit, TbTablePlus, TbArrowsUpDown} from "react-icons/tb";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
-import {FiUpload} from "react-icons/fi";
 import FileUploadModal from "@/Components/FileUploadModal.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
+import DownloadButton from "@/Components/Actions/DownloadButton.jsx";
+import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 
 export default function Index({auth, inventoryItems, role, queryParams = null, success, failure}) {
     queryParams = queryParams || {};
@@ -63,10 +63,9 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
     const [buttonGroupOpen, setButtonGroupOpen] = useState(false);
 
     function toggleButtonGroup() {
-        if (!buttonGroupOpen){
+        if (!buttonGroupOpen) {
             setButtonGroupOpen(true);
-        }
-        else {
+        } else {
             setButtonGroupOpen(false);
         }
     }
@@ -82,27 +81,18 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                             placement="right-end" classname="bg-black" color="black"
                             classnameForIcon="w-5 h-5 ml-1 mt-1"/>
                     </div>
-                    <div className="grid grid-cols-3 gap-4">
-                        { role === 'admin' && (<a href={route("inventoryItems.create")}><TbTablePlus
-                            className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Create new inventory item")}/></a>)}
-                        { role === 'admin' && (<a name="inventoryExcel" onClick={() => setModalOpen(true)}><FiUpload
-                            className="w-10 h-10 text-amber-400 hover:text-amber-600 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Import Excel of data")}/></a>)}
-                        <a
-                            href={route("exportInventoryItems", queryParams)}
-                           target="_blank"
-                        >
-                            <RiFileExcel2Line
-                            className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Export Excel of data")}/></a>
-                    </div>
-                    {/*<div className="inline-flex">*/}
-                    {/*    <a type="button" href={route('inventoryItems.create')}>{__("Create")}</a>*/}
-                    {/*    <div onClick={toggleButtonGroup}><span>V</span>*/}
-                    {/*        {buttonGroupOpen ? <ul>*/}
-                    {/*            <a type="button" onClick={() => setModalOpen(true)}>{__("Import")}</a>*/}
-                    {/*            <a type="button" href={route('exportInventoryItems')} target="_blank">{__("Export")}</a>*/}
-                    {/*        </ul> : ''}*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
+                    <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={__("Actions")}>
+                        {role === 'admin' ? <>
+                            <div id="create-new-entry"
+                                 className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                <a href={route("inventoryItems.create")}>{__("Create")}</a></div>
+                            <div id="import-entries"
+                                 className="px-2 py-1 bg-white border-2 border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                <a onClick={() => setModalOpen(true)}>{__("Import")}</a></div>
+                            <div id="export-entries"
+                                className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                <a href={route("exportInventoryItems", queryParams)}>{__("Export")}</a></div></> : <DownloadButton linkToItem={route("exportInventoryItems", queryParams)}>{__("Export")}</DownloadButton> }
+                    </GroupButtonDropdown>
                 </div>
             }
             role={role}
@@ -181,7 +171,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 className="w-full text-sm"
                                                 defaultValue={queryParams.local_name}
                                                 placeholder={__("Item search")}
-                                                // onBlur={e => searchFieldChanged('local_name', e.target.value)}
                                                 onKeyPress={e => onKeyPress('local_name', e)}
                                             />
                                         </th>
@@ -190,7 +179,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 className="w-full text-sm"
                                                 defaultValue={queryParams.name}
                                                 placeholder={__("Name")}
-                                                // onBlur={e => searchFieldChanged('name', e.target.value)}
                                                 onKeyPress={e => onKeyPress('name', e)}/>
                                         </th>
                                         <th className="px-3 py-2">
@@ -198,7 +186,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 className="w-full text-sm"
                                                 defaultValue={queryParams.name_eng}
                                                 placeholder={__("Name ENG")}
-                                                // onBlur={e => searchFieldChanged('name_eng', e.target.value)}
                                                 onKeyPress={e => onKeyPress('name_eng', e)}/>
                                         </th>
                                         <th className="px-3 py-2"></th>
@@ -207,7 +194,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 className="w-full text-sm"
                                                 defaultValue={queryParams.inventory_type}
                                                 placeholder={__("Type")}
-                                                // onBlur={e => searchFieldChanged('inventory_type', e.target.value)}
                                                 onKeyPress={e => onKeyPress('inventory_type', e)}/>
                                         </th>
                                         <th className="px-3 py-2">
@@ -215,7 +201,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 className="w-full text-sm"
                                                 defaultValue={queryParams.laboratory}
                                                 placeholder={__("Laboratory")}
-                                                // onBlur={e => searchFieldChanged('laboratory', e.target.value)}
                                                 onKeyPress={e => onKeyPress('laboratory', e)}/>
                                         </th>
                                         {/*<th className="px-3 py-2"></th>*/}
@@ -230,7 +215,11 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                     </thead>
                                     <tbody>
                                     {inventoryItems.data.map(inventoryItem => (
-                                        <tr className={inventoryItem.critical_amount >= inventoryItem.total_amount ? "bg-red-300 border-b dark:bg-red-300 dark:border-red-700" : "bg-white border-b dark:bg-gray-800 dark:border-gray-700"}>
+                                        <tr className={inventoryItem.inventory_status === "critical" ?
+                                            "bg-red-300 border-b dark:bg-red-300 dark:border-red-700" :
+                                            inventoryItem.inventory_status === "taken" ?
+                                                "bg-yellow-300 border-b dark:bg-yellow-300 dark:border-yellow-200" :
+                                                "bg-white border-b dark:bg-gray-800 dark:border-gray-700"}>
                                             <td className="px-3 py-2">
                                                 <Link href={route("inventoryItems.show", inventoryItem.id)}
                                                       className="font-medium text-gray-700 dark:text-white hover:underline mx-1">
