@@ -5,6 +5,8 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
 import { __ } from '@/Libs/Lang.jsx';
 import ApplicationLogoWhite from "@/Components/ApplicationLogoWhite.jsx";
+import {Menu} from "@headlessui/react";
+import {Button, MenuHandler, MenuItem, MenuList} from "@material-tailwind/react";
 
 export default function Authenticated({ user, header, children, role }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
@@ -25,9 +27,10 @@ export default function Authenticated({ user, header, children, role }) {
                                 <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('dashboard')} active={route().current('dashboard')}>
                                     {__("Dashboard")}
                                 </NavLink>
-                                {role === "admin" && <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('users.index')} active={route().current('users*')}>
-                                    {__("Users")}
-                                </NavLink>}
+                                {role === "admin" &&
+                                    <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('users.index')} active={route().current('users*')}>
+                                    {__("Users")}</NavLink>
+                                }
                                 <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('inventoryItems.index')} active={route().current('inventoryItems*')}>
                                     {__("Inventory")}
                                 </NavLink>

@@ -17,7 +17,7 @@ class ItemTypeForSelect extends JsonResource
         return [
             'value' => $this->id,
             'label' => $this->name,
-            'asset_required' => $this->change_acc_amount
+            'assetRequired' => (boolean)$this->change_acc_amount
         ];
     }
 }
