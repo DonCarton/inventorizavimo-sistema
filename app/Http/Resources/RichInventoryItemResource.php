@@ -20,8 +20,10 @@ class RichInventoryItemResource extends JsonResource
                 [
                     'title' => 'Amount',
                     'content' => [
-                        'total_amount' => $this->total_count,
-                        'critical_amount' => $this->critical_amount,
+                        'totalAmount' => $this->total_amount,
+                        'criticalAmount' => $this->critical_amount,
+                        'toOrderAmount' => $this->to_order_amount,
+                        'averageConsumption' => $this->average_consumption,
                     ],
                 ],
                 [
@@ -30,25 +32,40 @@ class RichInventoryItemResource extends JsonResource
                         'laboratory' => $this->laboratory,
                         'cupboard' => $this->cupboard,
                         'shelf' => $this->shelf,
+                        'multipleLocations' => $this->multiple_locations,
                     ],
                 ],
                 [
-                    'title' => 'General info',
+                    'title' => 'General information',
                     'content' => [
-                        'local_name' => $this->local_name,
+                        'localName' => $this->local_name,
+                        'inventoryType' => $this->inventory_type,
                         'name' => $this->name,
-                        'name_eng' => $this->name_eng,
-                        'inventory_type' => $this->inventory_type,
+                        'nameEng' => $this->name_eng,
+                        'assetNumber' => $this->asset_number,
+                        'formula' => $this->formula,
+                        'casNr' => $this->cas_nr,
+                        'userGuide' => $this->user_guide,
                     ],
                 ],
                 [
-                    'title' => 'Order info',
+                    'title' => 'Order information',
                     'content' => [
                         'provider' => $this->provider,
-                        'url_to_provider_site' => $this->url_to_provider,
-                        'asset_number' => $this->asset_number,
+                        'productCode' =>$this->product_code,
+                        'barcode' => $this->barcode,
+                        'urlToProviderSite' => $this->url_to_provider,
+                        'altUrlToProviderSite' => $this->alt_url_to_provider,
                     ],
                 ],
+                [
+                    'title' => 'Additional information',
+                    'content' => [
+                        'storageConditions' => $this->storage_conditions,
+                        'usedFor' => $this->used_for,
+                        'comments' => $this->comments,
+                    ],
+                ]
             ],
         ];
     }

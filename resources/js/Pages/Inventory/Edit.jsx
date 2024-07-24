@@ -18,24 +18,30 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
     const handleConfirmMessage = __("Are you sure you want to delete this item") + '?';
     const {data, setData, put, errors, reset, processing} = useForm({
         local_name: inventoryItem.data.localName || '',
+        inventory_type: inventoryItem.data.inventoryType || '',
         name: inventoryItem.data.name || '',
         name_eng: inventoryItem.data.nameEng || '',
-        inventory_type: inventoryItem.data.inventoryType || '',
+        formula: inventoryItem.data.formula || '',
+        cas_nr: inventoryItem.data.casNr || '',
+        user_guide: inventoryItem.data.userGuide || '',
+        provider: inventoryItem.data.provider || '',
+        product_code: inventoryItem.data.productCode || '',
+        barcode: inventoryItem.data.barcode || '',
         url_to_provider: inventoryItem.data.urlToProviderSite,
         alt_url_to_provider: inventoryItem.data.altUrlToProviderSite,
-        total_count: inventoryItem.data.total_amount || '',
+        total_amount: inventoryItem.data.totalAmount || '',
         critical_amount: inventoryItem.data.criticalAmount || '',
-        to_order: inventoryItem.data.toOrder || '',
+        to_order_amount: inventoryItem.data.toOrderAmount || '',
         average_consumption: inventoryItem.data.averageConsumption || '',
-        provider: inventoryItem.data.provider || '',
-        barcode: inventoryItem.data.barcode || '',
-        product_code: inventoryItem.data.productCode || '',
+        multiple_locations: inventoryItem.data.multipleLocations,
         laboratory: inventoryItem.data.laboratory || '',
         cupboard: inventoryItem.data.cupboard || '',
         shelf: inventoryItem.data.shelf || '',
-        multiple_locations: inventoryItem.data.multipleLocations || '',
+        storage_conditions: inventoryItem.data.storageConditions || '',
+        asset_number: inventoryItem.data.assetNumber || '',
+        used_for: inventoryItem.data.usedFor || '',
+        comments: inventoryItem.data.comments || ''
     })
-    const inventoryTypeDetails = inventoryItem.data.inventoryType;
     const handleDestroy = (value) => {
         if (window.confirm(handleConfirmMessage)) {
             router.delete(route('inventoryItems.destroy', value), {
@@ -71,15 +77,17 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                             <TextInput id="inventoryItems_local_name" type="text" name="local_name"
                                                        value={data.local_name} disabled={true} readOnly={true}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            <InputError message={errors.local_name} className="mt-2"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel
                                                 htmlFor="inventoryItems_inventory_type">{__("Type")}</InputLabel>
                                             <SelectForSingleItem
-                                                className="disabled:text-white disabled:bg-gray-500" disabled={true}
+                                                className="disabled:text-white disabled:bg-gray-400" disabled={true}
                                                 id="inventoryItems_inventory_type" name="inventory_type"
                                                 value={data.inventory_type} options={itemTypes.data}
                                                 noValueText={__("Choose a value")}/>
+                                            <InputError message={errors.inventory_type} className="mt-2"/>
                                         </div>
                                         {inventoryItem.data.assetNumber !== null ? <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_asset_number"
@@ -88,6 +96,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                                        readOnly={true} name="asset_number"
                                                        value={inventoryItem.data.assetNumber}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            <InputError message={errors.assetNumber} className="mt-2"/>
                                         </div> : null}
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_name">{__("Name")}<span
@@ -103,17 +112,41 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                             <TextInput id="inventoryItems_name_eng" type="text" name="name_eng"
                                                        value={data.name_eng} className="mt-1 block w-full"
                                                        onChange={e => setData('name_eng', e.target.value)}/>
+                                            <InputError message={errors.name_eng} className="mt-2"/>
+                                        </div>
+                                        <div className="mt-4">
+                                            <InputLabel htmlFor="inventoryItems_formula">{__("Formula")}</InputLabel>
+                                            <TextInput id="inventoryItems_formula" type="text" name="formula"
+                                                       value={data.formula} className="mt-1 block w-full"
+                                                       onChange={e => setData('formula', e.target.value)}/>
+                                            <InputError message={errors.formula} className="mt-2"/>
+                                        </div>
+                                        <div className="mt-4">
+                                            <InputLabel htmlFor="inventoryItems_cas_nr">{__("CAS NR")}</InputLabel>
+                                            <TextInput id="inventoryItems_cas_nr" type="text" name="cas_nr"
+                                                       value={data.cas_nr} className="mt-1 block w-full"
+                                                       onChange={e => setData('cas_nr', e.target.value)}/>
+                                            <InputError message={errors.cas_nr} className="mt-2"/>
+                                        </div>
+                                        <div className="mt-4">
+                                            <InputLabel htmlFor="inventoryItems_user_guide">{__("User guide")}</InputLabel>
+                                            <TextInput id="inventoryItems_user_guide" type="text" name="user_guide"
+                                                       value={data.user_guide} className="mt-1 block w-full"
+                                                       onChange={e => setData('user_guide', e.target.value)}/>
+                                            <InputError message={errors.user_guide} className="mt-2"/>
                                         </div>
                                     </div>
                                 </AccordionWithManualIndex>
-                                <AccordionWithManualIndex expandedByDefault={true} indexOfAcc={1} headerName={__("Amount")}>
+                                <AccordionWithManualIndex expandedByDefault={true} indexOfAcc={1}
+                                                          headerName={__("Amount")}>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div className="mt-4 w-full">
                                             <InputLabel htmlFor="inventoryItems_total_amount" value={__("Amount")}/>
                                             <NumericInput id="inventoryItems_total_amount" type="text"
-                                                          name="total_amount" value={data.total_count}
+                                                          name="total_amount" value={data.total_amount}
                                                           className="mt-1 block w-full"
-                                                          onChange={e => setData('total_count', e.target.value)}/>
+                                                          onChange={e => setData('total_amount', e.target.value)}/>
+                                            <InputError message={errors.total_amount} className="mt-2"/>
                                         </div>
                                         <div className="mt-4 w-full">
                                             <InputLabel htmlFor="inventoryItems_critical_amount"
@@ -125,13 +158,13 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                             <InputError message={errors.critical_amount} className="mt-2"/>
                                         </div>
                                         <div className="mt-4 w-full">
-                                            <InputLabel htmlFor="inventoryItems_to_order"
+                                            <InputLabel htmlFor="inventoryItems_to_order_amount"
                                                         value={__("To order")}/>
-                                            <NumericInput id="inventoryItems_to_order" type="text"
-                                                       name="to_order" value={data.to_order}
+                                            <NumericInput id="inventoryItems_to_order_amount" type="text"
+                                                       name="to_order_amount" value={data.to_order_amount}
                                                        className="mt-1 block w-full"
-                                                       onChange={e => setData('to_order', e.target.value)}/>
-                                            <InputError message={errors.to_order} className="mt-2"/>
+                                                       onChange={e => setData('to_order_amount', e.target.value)}/>
+                                            <InputError message={errors.to_order_amount} className="mt-2"/>
                                         </div>
                                         <div className="mt-4 w-full">
                                             <InputLabel htmlFor="inventoryItems_average_consumption"
@@ -153,6 +186,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                                        value={data.product_code}
                                                        onChange={e => setData('product_code', e.target.value)}
                                                        className="mt-1 block w-full"/>
+                                            <InputError message={errors.product_code} className="mt-2"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_barcode"
@@ -161,6 +195,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                                        value={data.barcode}
                                                        onChange={e => setData('barcode', e.target.value)}
                                                        className="mt-1 block w-full"/>
+                                            <InputError message={errors.barcode} className="mt-2"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_provider" value={__("Provider")}/>
@@ -168,6 +203,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                                        value={data.provider}
                                                        onChange={e => setData('provider', e.target.value)}
                                                        className="mt-1 block w-full"/>
+                                            <InputError message={errors.provider} className="mt-2"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_provider_url"
@@ -187,6 +223,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                                        value={inventoryItem.data.altUrlToProviderSite}
                                                        onChange={e => setData('alt_url_to_provider', e.target.value)}
                                                        className="mt-1 block w-full"/>
+                                            <InputError message={errors.altUrlToProviderSite} className="mt-2"/>
                                         </div>
                                     </div>
                                 </AccordionWithManualIndex>
@@ -207,18 +244,21 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                             <TextInput id="inventoryItems_cupboard" type="text" name="cupboard"
                                                        value={data.cupboard} className="mt-1 block w-full"
                                                        onChange={e => setData('cupboard', e.target.value)}/>
+                                            <InputError message={errors.cupboard} className="mt-2"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_shelf" value={__("Shelf")}/>
                                             <TextInput id="inventoryItems_shelf" type="text" name="shelf"
                                                        value={data.shelf} className="mt-1 block w-full"
                                                        onChange={e => setData('shelf', e.target.value)}/>
+                                            <InputError message={errors.shelf} className="mt-2"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_multiple_locations"
                                                         value={__("Multiple locations")}/>
                                             <Checkbox checked={data.multiple_locations} onChange={e => setData('multiple_locations', e.target.checked)}
                                                       className="mt-1 block w-6 h-6"/>
+                                            <InputError message={errors.multiple_locations} className="mt-2"/>
                                         </div>
                                     </div>
                                 </AccordionWithManualIndex>
@@ -228,47 +268,25 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                             <InputLabel htmlFor="inventoryItems_storage_conditions"
                                                         value={__("Storage conditions")}/>
                                             <TextInputExtra id="inventoryItems_storage_conditions"
-                                                            name="storage_conditions" type="textarea"
+                                                            name="storage_conditions" type="textarea" value={data.storage_conditions} onChange={e => setData('storage_conditions', e.target.value)}
                                                             className="mt-1 block w-full"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_used_for"
                                                         value={__("Used for")}/>
                                             <TextInputExtra id="inventoryItems_used_for" name="used_for"
-                                                            type="textarea"
+                                                            type="textarea" value={data.used_for} onChange={e => setData('used_for', e.target.value)}
                                                             className="mt-1 block w-full"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_comments"
                                                         value={__("Comments")}/>
                                             <TextInputExtra id="inventoryItems_comments" name="comments"
-                                                            type="textarea"
+                                                            type="textarea" value={data.comments} onChange={e => setData('comments', e.target.value)}
                                                             className="mt-1 block w-full"/>
                                         </div>
                                     </div>
                                 </AccordionWithManualIndex>
-                                {/*<Accordion open={open === 1} icon={<Icon id={1} open={open}/>}>*/}
-                                {/*    <AccordionHeader onClick={() => handleOpen(1)}>{__("Amount")}</AccordionHeader>*/}
-                                {/*    <AccordionBody>*/}
-                                {/*    </AccordionBody>*/}
-                                {/*</Accordion>*/}
-                                {/*<Accordion open={open2 === 2} icon={<Icon id={2} open={open2}/>}>*/}
-                                {/*    <AccordionHeader onClick={() => handleOpen2(2)}>{__("Location")}</AccordionHeader>*/}
-                                {/*    <AccordionBody>*/}
-                                {/*    </AccordionBody>*/}
-                                {/*</Accordion>*/}
-                                {/*<Accordion open={open3 === 3} icon={<Icon id={3} open={open3}/>}>*/}
-                                {/*    <AccordionHeader*/}
-                                {/*        onClick={() => handleOpen3(3)}>{__("Inventory information")}</AccordionHeader>*/}
-                                {/*    <AccordionBody>*/}
-                                {/*    </AccordionBody>*/}
-                                {/*</Accordion>*/}
-                                {/*<Accordion open={open4 === 4} icon={<Icon id={4} open={open4}/>}>*/}
-                                {/*    <AccordionHeader*/}
-                                {/*        onClick={() => handleOpen4(4)}>{__("Order information")}</AccordionHeader>*/}
-                                {/*    <AccordionBody>*/}
-                                {/*    </AccordionBody>*/}
-                                {/*</Accordion>*/}
                                 <div className="flex justify-between mt-4">
                                     <div>
                                         <Link href={route('inventoryItems.index')}

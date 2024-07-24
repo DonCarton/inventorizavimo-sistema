@@ -20,7 +20,7 @@ export default function LogsTable({logsForItem}) {
                     </thead>
                     <tbody>
                     {logsForItem.data.map(logForItem => (
-                        <tr className={logForItem.action_taken === "RETURN" ? "bg-emerald-600 text-white text-xl border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-emerald-700" : "bg-red-300 text-white text-xl border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-red-400"}>
+                        <tr key={logForItem.id} className={logForItem.action_taken === "RETURN" ? "bg-emerald-600 text-white text-xl border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-emerald-700" : "bg-red-300 text-white text-xl border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-red-400"}>
                             <td className="px-3 py-2">
                                 <Link href={route("laboratories.show", logForItem.laboratory.id)}
                                       className="font-medium text-white hover:underline mx-1"> {logForItem.laboratory.name} </Link>

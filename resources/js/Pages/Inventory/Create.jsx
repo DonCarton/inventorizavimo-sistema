@@ -48,9 +48,9 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
         barcode: '',
         url_to_provider: '',
         alt_url_to_provider: '',
-        total_count: '',
+        total_amount: '',
         critical_amount: '',
-        to_order: '',
+        to_order_amount: '',
         multiple_locations: false,
         laboratory: '',
         cupboard: '',
@@ -91,16 +91,6 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
     const handleTabChange = (tabNumber) => {
         setActiveTab(tabNumber);
     };
-    // const [open, setOpen] = useState(1);
-    // const [open2, setOpen2] = useState(2);
-    // const [open3, setOpen3] = useState(3);
-    // const [open4, setOpen4] = useState(4);
-    // const [open5, setOpen5] = useState(5);
-    // const handleOpen = (value) => setOpen(open === value ? 0 : value);
-    // const handleOpen2 = (value) => setOpen2(open2 === value ? 0 : value);
-    // const handleOpen3 = (value) => setOpen3(open3 === value ? 0 : value);
-    // const handleOpen4 = (value) => setOpen4(open4 === value ? 0 : value);
-    // const handleOpen5 = (value) => setOpen5(open5 === value ? 0 : value);
     const [checkbox, setCheckbox] = useState(false);
     const [assetNumberShown, setAssetNumberShown] = useState(false);
     const handleCheckbox = (e) => {
@@ -135,8 +125,7 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         {activeTab === 1 && (
-                            <div
-                                className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg grid grid-cols-2 gap-2">
+                            <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <div>
                                     <InputLabel htmlFor="inventoryItems_unit">
                                         {__("Choose where the item will be stored")}<span
@@ -194,17 +183,9 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                                                            disabled={true} readOnly={true}/>
                                             </div>
                                             <div>
-                                                <InputLabel htmlFor="inventoryItems_itemType">
+                                                <InputLabel htmlFor="inventoryItems_itemType" className="mb-1">
                                                     {__("Type")} <span className="text-red-500">*</span>
                                                 </InputLabel>
-                                                {/*<select id="inventoryItems_itemType" name="itemType"*/}
-                                                {/*        className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"*/}
-                                                {/*        value={data.inventory_type}*/}
-                                                {/*        onChange={e => setData('inventory_type', e.target.value)}>*/}
-                                                {/*    <option value="">{__("Choose a value")}</option>*/}
-                                                {/*    {itemTypes.data.map(itemType => (<option key={itemType.value}*/}
-                                                {/*                                             value={itemType.value}>{__(itemType.label)}</option>))}*/}
-                                                {/*</select>*/}
                                                 <FlexibleSelect id="inventoryItems_itemType" name="itemType"
                                                                 customPlaceHolder={__("Choose an inventory type")}
                                                                 value={data.inventory_type}
@@ -346,18 +327,18 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                                                               headerName={__("Amount")}>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
-                                                <InputLabel htmlFor="inventoryItems_total_count">
+                                                <InputLabel htmlFor="inventoryItems_total_amount">
                                                     {__("Count")} <span className="text-red-500">*</span>
                                                 </InputLabel>
                                                 <TextInput
-                                                    id="inventoryItems_total_count"
+                                                    id="inventoryItems_total_amount"
                                                     type="text"
-                                                    name="total_count"
-                                                    value={data.total_count}
+                                                    name="total_amount"
+                                                    value={data.total_amount}
                                                     className="mt-1 block w-full"
-                                                    onChange={e => setData('total_count', e.target.value)}
+                                                    onChange={e => setData('total_amount', e.target.value)}
                                                 />
-                                                <InputError message={errors.total_count} className="mt-2"/>
+                                                <InputError message={errors.total_amount} className="mt-2"/>
                                             </div>
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_critical_amount">
@@ -404,6 +385,20 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                                                                 customIsMulti={false}
                                                 />
                                                 <InputError message={errors.laboratory} className="mt-2"/>
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="inventoryItems_local_cupboard">{__("Cupboard")}<span
+                                                    className="text-red-500">*</span></InputLabel>
+                                                <TextInput id="inventoryItems_local_cupboard" name="local_cupboard" className="w-full" onChange={e => setData('cupboard', e.target.value)}/>
+                                                <InputError message={errors.cupboard} className="mt-2"/>
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="inventoryItems_local_shelf">{__("Shelf")}<span
+                                                    className="text-red-500">*</span></InputLabel>
+                                                <TextInput id="inventoryItems_local_shelf" name="local_shelf" className="w-full" onChange={e => setData('shelf', e.target.value)}/>
+                                                <InputError message={errors.shelf} className="mt-2"/>
                                             </div>
                                         </div>
                                     </AccordionWithManualIndex>

@@ -8,7 +8,8 @@ import SelectForSingleItem from "@/Components/Forms/SelectForSingleItem.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
-import {useState} from "react";
+import React, {useState} from "react";
+import ClickableUrlInput from "@/Components/Forms/ClickableUrlInput.jsx";
 
 
 export default function Show({auth, inventoryItem, role, laboratories, itemTypes}) {
@@ -79,15 +80,31 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                                        value={inventoryItem.data.nameEng}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
+                                        <div className="mt-4">
+                                            <InputLabel htmlFor="inventoryItems_formula">{__("Formula")}</InputLabel>
+                                            <TextInput id="inventoryItems_formula" type="text" name="formula" disabled={true} readOnly={true}
+                                                       value={inventoryItem.data.formula} className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                        </div>
+                                        <div className="mt-4">
+                                            <InputLabel htmlFor="inventoryItems_cas_nr">{__("CAS NR")}</InputLabel>
+                                            <TextInput id="inventoryItems_cas_nr" type="text" name="cas_nr" disabled={true} readOnly={true}
+                                                       value={inventoryItem.data.casNr} className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                        </div>
+                                        <div className="mt-4">
+                                            <InputLabel
+                                                htmlFor="inventoryItems_user_guide">{__("User guide")}</InputLabel>
+                                            <TextInput id="inventoryItems_user_guide" type="text" name="user_guide" disabled={true} readOnly={true} value={inventoryItem.data.userGuide} className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                        </div>
                                     </div>
                                 </AccordionWithManualIndex>
-                                <AccordionWithManualIndex expandedByDefault={openAll} indexOfAcc={3} headerName={__("Amount")}>
+                                <AccordionWithManualIndex expandedByDefault={openAll} indexOfAcc={3}
+                                                          headerName={__("Amount")}>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div className="mt-4 w-full">
                                             <InputLabel htmlFor="inventoryItems_total_amount" value={__("Count")}/>
                                             <TextInput id="inventoryItems_total_amount" type="text" disabled={true}
                                                        readOnly={true} name="total_amount"
-                                                       value={inventoryItem.data.total_amount}
+                                                       value={inventoryItem.data.totalAmount}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4 w-full">
@@ -103,7 +120,7 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                             <InputLabel htmlFor="inventoryItems_to_order" value={__("To order")}/>
                                             <TextInput id="inventoryItems_to_order" type="text" disabled={true}
                                                        readOnly={true} name="to_order"
-                                                       value={inventoryItem.data.toOrder}
+                                                       value={inventoryItem.data.toOrderAmount}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4 w-full">
@@ -141,18 +158,12 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_provider_url"
                                                         value={__("Provider url")}/>
-                                            <TextInput id="inventoryItems_provider_url" type="text"
-                                                       name="provider_url" disabled={true} readOnly={true}
-                                                       value={inventoryItem.data.urlToProviderSite}
-                                                       className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            <ClickableUrlInput id="inventoryItems_provider_url" name="provider_url" url={inventoryItem.data.urlToProviderSite} className="mt-1 block w-full"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_alt_url_to_provider"
                                                         value={__("Alt url to provider")}/>
-                                            <TextInput id="inventoryItems_alt_url_to_provider" type="text"
-                                                       name="alt_url_to_provider" disabled={true} readOnly={true}
-                                                       value={inventoryItem.data.altUrlToProviderSite}
-                                                       className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            <ClickableUrlInput id="inventoryItems_alt_url_to_provider" name="alt_url_to_provider" url={inventoryItem.data.altUrlToProviderSite} className="mt-1 block w-full"/>
                                         </div>
                                     </div>
                                 </AccordionWithManualIndex>
@@ -163,7 +174,7 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                                         value={__("Laboratory")}/>
 
                                             <SelectForSingleItem value={inventoryItem.data.laboratory}
-                                                                 className="disabled:text-white disabled:bg-gray-400"
+                                                                 className="disabled:text-white disabled:bg-gray-500"
                                                                  options={laboratories.data} disabled={true}
                                                                  name="inventory_type"
                                                                  id="inventoryItems_inventory_type"

@@ -77,7 +77,7 @@ export default function MyInventory({auth, inventoryItems, role, queryParams = n
                         {role === 'admin' ? <>
                                 <div id="create-new-entry" title="Create a new entry in the current page."
                                      className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                    <a href={route("users.create")}>{__("Create")}</a></div>
+                                    <a href={route("inventoryItems.create")}>{__("Create")}</a></div>
                                 <div id="import-entries" title="Import an existing Excel sheet of data."
                                      className="px-2 py-1 bg-white border-2 border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
                                     <a onClick={() => setModalOpen(true)}>{__("Import")}</a></div>
@@ -200,7 +200,7 @@ export default function MyInventory({auth, inventoryItems, role, queryParams = n
                                     </thead>
                                     <tbody>
                                     {inventoryItems.data.map(inventoryItem => (
-                                        <tr className={inventoryItem.inventory_status === "critical" ?
+                                        <tr key={inventoryItem.id} className={inventoryItem.inventory_status === "critical" ?
                                             "bg-red-300 border-b dark:bg-red-300 dark:border-red-700" :
                                             inventoryItem.inventory_status === "taken" ?
                                                 "bg-yellow-300 border-b dark:bg-yellow-300 dark:border-yellow-200" :

@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Http\Resources\NameDisplayResource\LaboratoryName;
+use App\Http\Resources\SelectObjectResources\ItemTypeForSelect;
 use App\Models\Laboratory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -21,11 +22,11 @@ class CRUDInventoryItemResource extends JsonResource
         return [
             'id' => $this->id,
             'local_name' => $this->local_name,
-            'inventory_type' => $this->inventory_type,
+            'inventory_type' => new ItemTypeForSelect($this->itemType),
             'laboratory' => new LaboratoryName(Laboratory::find($this->laboratory)),
             'name' => $this->name,
             'name_eng' => $this->name_eng,
-            'total_amount' => $this->total_count,
+            'total_amount' => $this->total_amount,
             'critical_amount' => $this->critical_amount,
             'created_by' => new UserResource($this->createdBy)
         ];

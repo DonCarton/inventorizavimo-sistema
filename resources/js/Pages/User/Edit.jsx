@@ -56,7 +56,7 @@ export default function Edit({auth, inventoryItem, role, itemTypes, redirectToRe
                         <form onSubmit={onSubmit} className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                             <div className="pb-6">
                                 <AccordionWithManualIndex indexOfAcc={1} headerName={__("Amount")}>
-                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="grid grid-cols-2 gap-2">
                                         <div className="mt-4 w-full">
                                             <InputLabel htmlFor="inventoryItems_total_amount" value={__("Count")}/>
                                             <TextInput id="inventoryItems_total_amount" type="text"
@@ -108,7 +108,7 @@ export default function Edit({auth, inventoryItem, role, itemTypes, redirectToRe
                                     </div>
                                 </AccordionWithManualIndex>
                                 <AccordionWithManualIndex indexOfAcc={2} headerName={__("Inventory information")}>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <div className="mt-4">
                                             <InputLabel
                                                 htmlFor="inventoryItems_local_name">{__("Barcode")}</InputLabel>
@@ -121,10 +121,15 @@ export default function Edit({auth, inventoryItem, role, itemTypes, redirectToRe
                                         <div className="mt-4">
                                             <InputLabel
                                                 htmlFor="inventoryItems_type">{__("Type")}</InputLabel>
-                                            <SelectForSingleItem id="inventoryItems_type"
-                                                                 value={inventoryItem.inventory_type}
-                                                                 options={itemTypes.data} disabled={true}
-                                                                 className="disabled:text-white disabled:bg-gray-500"/>
+                                            <TextInput readOnly={true} disabled={true}
+                                                       id="inventoryItems_type"
+                                                       type="text" name="type"
+                                                       value={inventoryItem.inventory_type.label}
+                                                       className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            {/*<SelectForSingleItem id="inventoryItems_type"*/}
+                                            {/*                     value={inventoryItem.inventory_type}*/}
+                                            {/*                     options={itemTypes.data} disabled={true}*/}
+                                            {/*                     className="disabled:text-white disabled:bg-gray-500"/>*/}
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_name" value="Pavadinimas"/>
