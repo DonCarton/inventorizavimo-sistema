@@ -21,6 +21,7 @@ use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -68,6 +69,41 @@ class InventoryItemController extends Controller
             ->orderBy($sortField, $sortDirection)->paginate(50)
             ->withQueryString()->onEachSide(1);
         return Inertia::render('Inventory/Index', [
+            'inventoryItems' => InventoryItemIndexResource::collection($inventoryItems),
+            'queryParams' => request()->query() ?: null,
+            'success' => session('success'),
+            'failure' => session('failure')
+        ]);
+    }
+
+    public function userOwnInventory(): Response
+    {
+        $query = InventoryItem::query()->where('laboratory', auth()->user()->laboratory);
+        $sortField = request("sort_field", 'created_at');
+        $sortDirection = request("sort_direction", 'desc');
+        if (request('local_name')) {
+            $query->where('local_name', 'like', '%' . request('local_name') . '%');
+        }
+        if (request('name')) {
+            $query->where('name', 'like', '%' . request('name') . '%');
+        }
+        if (request('name_eng')) {
+            $query->where('name_eng', 'like', '%' . request('name_eng') . '%');
+        }
+        if (request('inventory_type')) {
+            $query->whereHas('itemType', function ($query) {
+                $query->where('name', 'like', '%' . request('inventory_type') . '%');
+            });
+        }
+        if (request('updated_by')) {
+            $query->whereHas('updatedBy', function ($query) {
+                $query->where('email', 'like', '%' . request('updated_by') . '%');
+            });
+        }
+        $inventoryItems = $query
+            ->orderBy($sortField, $sortDirection)->paginate(50)
+            ->withQueryString()->onEachSide(1);
+        return Inertia::render('User/MyInventory', [
             'inventoryItems' => InventoryItemIndexResource::collection($inventoryItems),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
@@ -327,6 +363,7 @@ class InventoryItemController extends Controller
      */
     public function export(): BinaryFileResponse
     {
+        dd(request());
         $data = request()->query();
         $dateTimeNow = Carbon::now()->toDateTimeString();
         return Excel::download(new InventoryExports($data), $dateTimeNow . '_inventory.xlsx');

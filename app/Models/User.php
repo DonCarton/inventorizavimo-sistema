@@ -64,6 +64,10 @@ class User extends Authenticatable
         ];
     }
 
+    public function belongsToLaboratory(): BelongsTo
+    {
+        return $this->belongsTo(Laboratory::class, 'laboratory');
+    }
     public function rolesForDisplay(): HasManyThrough
     {
         return $this->hasManyThrough(Role::class, ModelHasRole::class, 'model_id', 'id', 'id', 'role_id');

@@ -5,8 +5,6 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
 import { __ } from '@/Libs/Lang.jsx';
 import ApplicationLogoWhite from "@/Components/ApplicationLogoWhite.jsx";
-import {Menu} from "@headlessui/react";
-import {Button, MenuHandler, MenuItem, MenuList} from "@material-tailwind/react";
 
 export default function Authenticated({ user, header, children, role }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
