@@ -11,8 +11,8 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class InventoryExports implements FromCollection, WithMapping, WithHeadings
 {
-    private string $data;
-    public function __construct(string $data)
+    private array $data;
+    public function __construct(array $data = [])
     {
         $this->data = $data;
     }
@@ -21,8 +21,15 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings
     */
     public function collection(): Collection
     {
-        return InventoryItem::query()->where('local_name','like','%'.$this->data.'%')->get();
-        //return InventoryItem::all();
+        $query = InventoryItem::query();
+        if ($this->data != []){
+            foreach ($this->data as $column => $value) {
+                $query->where($column, 'like', "%{$value}%");
+            }
+            return $query->get();
+        }
+        return InventoryItem::all();
+//        return InventoryItem::query()->where('local_name','like','%'.$this->data.'%')->get();
     }
 
     /**

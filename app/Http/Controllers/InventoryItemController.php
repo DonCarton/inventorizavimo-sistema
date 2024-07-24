@@ -327,7 +327,7 @@ class InventoryItemController extends Controller
      */
     public function export(): BinaryFileResponse
     {
-        $data = request('local_name');
+        $data = request()->query();
         $dateTimeNow = Carbon::now()->toDateTimeString();
         return Excel::download(new InventoryExports($data), $dateTimeNow . '_inventory.xlsx');
     }
