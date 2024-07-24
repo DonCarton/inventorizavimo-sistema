@@ -19,8 +19,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $name;
  * @property string $name_eng;
  * @property string $provider;
- * @property float $total_count;
- * @property float $critical_amount;
+ * @property double $total_amount;
+ * @property double $critical_amount;
  * @property string $url_to_provider;
  * @property BelongsTo $belongsToLaboratory;
  * @property int $cupboard;
@@ -42,21 +42,21 @@ class InventoryItemIndexResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'local_name' => $this->local_name,
-            'inventory_type' => (new ItemTypeResource($this->itemType))->name ?? '',
+            'localName' => $this->local_name,
+            'inventoryType' => (new ItemTypeResource($this->itemType))->name ?? '',
             'name' => $this->name,
-            'name_eng' => $this->name_eng,
+            'nameEng' => $this->name_eng,
             'provider' => $this->provider,
-            'total_amount' => $this->total_count,
-            'inventory_status' => $this->getStatusAttribute(),
-            'url_to_provider_site' =>$this->url_to_provider,
+            'totalAmount' => $this->total_amount,
+            'inventoryStatus' => $this->getStatusAttribute(),
+            'urlToProviderSite' =>$this->url_to_provider,
             'laboratory' => (new LaboratoryResource($this->belongsToLaboratory))->name ?? '',
             'cupboard' => $this->cupboard,
             'shelf' => $this->shelf,
-            'created_at' => (new Carbon($this->created_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
-            'updated_at' => (new Carbon($this->updated_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
-            'created_by' => (new UserResource($this->createdBy))->email,
-            'updated_by' => (new UserResource($this->updatedBy))->email,
+            'createdAt' => (new Carbon($this->created_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
+            'updatedAt' => (new Carbon($this->updated_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
+            'createdBy' => (new UserResource($this->createdBy))->email,
+            'updatedBy' => (new UserResource($this->updatedBy))->email,
         ];
     }
 }

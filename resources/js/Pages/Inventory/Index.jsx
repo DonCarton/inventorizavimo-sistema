@@ -5,7 +5,7 @@ import React, {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
-import {TbEdit, TbTablePlus, TbArrowsUpDown} from "react-icons/tb";
+import {TbEdit, TbArrowsUpDown} from "react-icons/tb";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import FileUploadModal from "@/Components/FileUploadModal.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
@@ -27,11 +27,11 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
             delete queryParams[name];
         }
         router.get(route('inventoryItems.index'), queryParams);
-    }
+    };
     const onKeyPress = (name, e) => {
         if (e.key !== 'Enter') return;
         searchFieldChanged(name, e.target.value);
-    }
+    };
     const sortChanged = (name) => {
         if (name === queryParams.sort_field) {
             if (queryParams.sort_direction === 'asc') {
@@ -44,30 +44,18 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
             queryParams.sort_direction = 'asc';
         }
         router.get(route('inventoryItems.index'), queryParams);
-    }
+    };
     const handleFileSelect = (file) => {
         setData('file', file);
     };
-
-    function handleSubmit2() {
+    function handleSubmit() {
         post(route("importInventoryItems"));
         setModalOpen(false);
         setData("title", "");
         setData("file", null);
     }
-
     function closeModal() {
         setModalOpen(false);
-    }
-
-    const [buttonGroupOpen, setButtonGroupOpen] = useState(false);
-
-    function toggleButtonGroup() {
-        if (!buttonGroupOpen) {
-            setButtonGroupOpen(true);
-        } else {
-            setButtonGroupOpen(false);
-        }
     }
     return (
         <AuthenticatedLayout
@@ -105,7 +93,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                              alertTextForMissingFile={__("Please choose a file before uploading")}
                              submitButtonText={__("Submit")} itemNotSpecifiedText={__("Nothing chosen yet")}
                              selectFileText={__("Chosen file")} isOpen={modalOpen} onClose={closeModal}
-                             onFileSelect={handleFileSelect} onSubmit={handleSubmit2}/>
+                             onFileSelect={handleFileSelect} onSubmit={handleSubmit}/>
             <div className="py-12">
                 <div className="3xl:max-w-screen-3xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {success && <SuccessMessage message={success}/>}
@@ -205,7 +193,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 placeholder={__("Laboratory")}
                                                 onKeyPress={e => onKeyPress('laboratory', e)}/>
                                         </th>
-                                        {/*<th className="px-3 py-2"></th>*/}
                                         <th className="px-3 py-2">
                                             <TextInput className="w-full text-sm" placeholder={__("Updated by")}
                                                        defaultValue={queryParams.updated_by}
@@ -217,23 +204,23 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                     </thead>
                                     <tbody>
                                     {inventoryItems.data.map(inventoryItem => (
-                                        <tr className={inventoryItem.inventory_status === "critical" ?
+                                        <tr className={inventoryItem.inventoryStatus === "critical" ?
                                             "bg-red-300 border-b dark:bg-red-300 dark:border-red-700" :
-                                            inventoryItem.inventory_status === "taken" ?
+                                            inventoryItem.inventoryStatus === "taken" ?
                                                 "bg-yellow-300 border-b dark:bg-yellow-300 dark:border-yellow-200" :
                                                 "bg-white border-b dark:bg-gray-800 dark:border-gray-700"}>
                                             <td className="px-3 py-2">
                                                 <Link href={route("inventoryItems.show", inventoryItem.id)}
                                                       className="font-medium text-gray-700 dark:text-white hover:underline mx-1">
-                                                    {inventoryItem.local_name}
+                                                    {inventoryItem.localName}
                                                 </Link>
                                             </td>
                                             <td className="px-3 py-2">{inventoryItem.name}</td>
-                                            <td className="px-3 py-2">{inventoryItem.name_eng}</td>
-                                            <td className="px-3 py-2">{inventoryItem.total_amount}</td>
-                                            <td className="px-3 py-2">{inventoryItem.inventory_type}</td>
+                                            <td className="px-3 py-2">{inventoryItem.nameEng}</td>
+                                            <td className="px-3 py-2">{inventoryItem.totalAmount}</td>
+                                            <td className="px-3 py-2">{inventoryItem.inventoryType}</td>
                                             <td className="px-3 py-2">{inventoryItem.laboratory}</td>
-                                            <td className="px-3 py-2">{inventoryItem.updated_by}</td>
+                                            <td className="px-3 py-2">{inventoryItem.updatedBy}</td>
                                             <td className="flex justify-start mt-1 px-2 py-1">
                                                 <Link href={route("inventoryItems.editRaw", inventoryItem.id)}
                                                       className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
