@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $itemType
  * @property string $local_name
  * @property int $laboratory
- * @property double $total_count
+ * @property double $total_amount
  * @property double $critical_amount
  * @method static findOrFail(int $id)
  * @method static create(mixed $data)
@@ -37,9 +37,9 @@ class InventoryItem extends Model
         'barcode',
         'url_to_provider',
         'alt_url_to_provider',
-        'total_count',
+        'total_amount',
         'critical_amount',
-        'to_order',
+        'to_order_amount',
         'average_consumption',
         'multiple_locations',
         'laboratory',
@@ -64,7 +64,7 @@ class InventoryItem extends Model
             if(!$canChangeAmount && $this->amountLogs()->count() > 0){
                 return InventoryStatusEnum::TAKEN;
             }
-            else if($canChangeAmount && $this->total_count <= $this->critical_amount){
+            else if($canChangeAmount && $this->total_amount <= $this->critical_amount){
                 return InventoryStatusEnum::CRITICAL;
             }
         }

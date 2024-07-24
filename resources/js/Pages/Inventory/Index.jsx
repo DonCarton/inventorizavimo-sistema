@@ -217,7 +217,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                     </thead>
                                     <tbody>
                                     {inventoryItems.data.map(inventoryItem => (
-                                        <tr className={inventoryItem.inventory_status === "critical" ?
+                                        <tr key={inventoryItem.id} className={inventoryItem.inventory_status === "critical" ?
                                             "bg-red-300 border-b dark:bg-red-300 dark:border-red-700" :
                                             inventoryItem.inventory_status === "taken" ?
                                                 "bg-yellow-300 border-b dark:bg-yellow-300 dark:border-yellow-200" :

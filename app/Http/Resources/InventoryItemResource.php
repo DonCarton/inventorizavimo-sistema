@@ -22,9 +22,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $barcode
  * @property string $url_to_provider
  * @property string $alt_url_to_provider
- * @property double $total_count
+ * @property double $total_amount
  * @property double $critical_amount
- * @property double $to_order
+ * @property double $to_order_amount
  * @property double $average_consumption
  * @property boolean $multiple_locations
  * @property int $laboratory
@@ -62,9 +62,9 @@ class InventoryItemResource extends JsonResource
             'barcode' => $this->barcode,
             'urlToProviderSite' =>$this->url_to_provider,
             'altUrlToProviderSite' =>$this->alt_url_to_provider,
-            'total_amount' => $this->total_count,
+            'totalAmount' => $this->total_amount,
             'criticalAmount' => $this->critical_amount,
-            'toOrder' => $this->to_order,
+            'toOrderAmount' => $this->to_order_amount,
             'averageConsumption' => $this->average_consumption,
             'multipleLocations' => $this->multiple_locations,
             'laboratory' => $this->laboratory,

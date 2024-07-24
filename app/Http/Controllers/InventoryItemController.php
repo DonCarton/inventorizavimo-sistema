@@ -21,7 +21,6 @@ use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -153,9 +152,8 @@ class InventoryItemController extends Controller
      */
     public function store(StoreInventoryItemRequest $request): RedirectResponse
     {
-        $data = $request->validated();
         InventoryItem::create($request->all());
-        return to_route('inventoryItems.index')->with('success', __('actions.inventoryItem.created', ['local_name' => $data['local_name']]) . '.');
+        return to_route('inventoryItems.index')->with('success', __('actions.inventoryItem.created', ['local_name' => $request['local_name']]) . '.');
     }
 
     /**
@@ -214,7 +212,7 @@ class InventoryItemController extends Controller
             $data['total_amount'] = $data['total_amount'] + $data['amount_added'];
         }
         $inventoryItem->update([
-            'total_count' => $data['total_amount'],
+            'total_amount' => $data['total_amount'],
             'updated_by' => $data['updated_by']
         ]);
         if ($inventoryItem['total_count'] <= $inventoryItem['critical_amount'] && $request['amount_removed']) {
@@ -258,7 +256,7 @@ class InventoryItemController extends Controller
             return Inertia::render('User/EditLog', [
                 'inventoryItem' => new CRUDInventoryItemResource($inventoryItem),
                 'logsForItem' => AmountLogResource::collection($amountLogs),
-                'totalInUse' => $inventoryItem->total_count - $totalTaken + $totalReturned,
+                'totalInUse' => $inventoryItem->total_amount - $totalTaken + $totalReturned,
                 'laboratories' => LaboratoryResource::collection($laboratories),
                 'previousUrl' => url()->previous(),
                 'redirectToReader' => $redirectToReader

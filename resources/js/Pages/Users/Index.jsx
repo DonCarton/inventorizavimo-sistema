@@ -122,7 +122,7 @@ export default function Users({auth, users, role, queryParams = null, success, f
                                 </thead>
                                 <tbody>
                                 {users.data.map(user => (
-                                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                    <tr key={user.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                         <th className="px-3 py-2">{user.first_name}</th>
                                         <th className="px-3 py-2">{user.last_name}</th>
                                         <td className="px-3 py-2">

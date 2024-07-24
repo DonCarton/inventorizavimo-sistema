@@ -59,7 +59,7 @@ export default function InventoryTypes({auth, itemTypes, role, success, warning}
                                 </thead>
                                 <tbody>
                                 {itemTypes.data.map(itemType => (
-                                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                    <tr key={itemType.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                         <td className="px-3 py-2">
                                             <Link href={route("itemTypes.show", itemType.id)}
                                                   className="font-medium text-gray-700 dark:text-white hover:underline mx-1">

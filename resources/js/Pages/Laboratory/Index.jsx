@@ -157,7 +157,7 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                                     </thead>
                                     <tbody>
                                     {laboratories.data.map(laboratory => (
-                                        <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                        <tr key={laboratory.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                             <td className="px-3 py-2"><Link
                                                 href={route("laboratories.show", laboratory.id)}
                                                 className="text-black dark:text-green-400 hover:underline mx-1"

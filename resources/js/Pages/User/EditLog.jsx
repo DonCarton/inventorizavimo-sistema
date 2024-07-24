@@ -32,7 +32,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
     })
     const [modalOpen, setModalOpen] = useState(false);
     const [open, setOpen] = useState(1);
-    const [open2, setOpen2] = useState(0);
+    const [open2, setOpen2] = useState(2);
     const [labInfo, setLabInfo] = useState([]);
     const handleOpen = (value) => setOpen(open === value ? 0 : value);
     const handleOpen2 = (value) => setOpen2(open2 === value ? 0 : value);
@@ -88,7 +88,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                             onChange={e => setData('laboratory_id', e.target.value)}>
                                             <option value="">{__("Choose a value")}</option>
                                             {laboratories.data.map(laboratory => (
-                                                <option value={laboratory.id}>{laboratory.name}</option>
+                                                <option key={laboratory.id} value={laboratory.id}>{laboratory.name}</option>
                                             ))}
                                         </select>
                                         <InputError message={errors.laboratory_id} className="mt-2"/>
@@ -100,7 +100,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                             className={data.action === 'REMOVE' ? "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full bg-red-300" : "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full bg-emerald-300 option:"}
                                             onChange={e => setData('action', e.target.value)} value={data.action}>
                                             {actionsOnInventory.map(action => (
-                                                <option value={action.value}
+                                                <option key={action.value} value={action.value}
                                                         className={action.className}>{__(action.label)}</option>
                                             ))}
                                         </select>
@@ -139,7 +139,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                     </div>
                                 </a>
                             </div>
-                            <div className="pr-6 pl-6 pb-6">
+                            {/*<div>*/}
                                 <Accordion open={open === 1} icon={<Icon id={1} open={open}/>}>
                                     <AccordionHeader onClick={() => handleOpen(1)}>{__("Amount")}</AccordionHeader>
                                     <AccordionBody>
@@ -167,7 +167,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                     <AccordionHeader
                                         onClick={() => handleOpen2(2)}>{__("Inventory information")}</AccordionHeader>
                                     <AccordionBody>
-                                        <div className="grid grid-cols-2 gap-2">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                             <div className="mt-4">
                                                 <InputLabel
                                                     htmlFor="inventoryItems_local_name">{__("Barcode")}</InputLabel>
@@ -182,11 +182,11 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                                     htmlFor="inventoryItems_type">{__("Type")}</InputLabel>
                                                 <TextInput readOnly={true} disabled={true} id="inventoryItems_type"
                                                            type="text" name="type"
-                                                           value={inventoryItem.inventory_type.name}
+                                                           value={inventoryItem.inventory_type.label}
                                                            className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                             </div>
                                             <div className="mt-4">
-                                                <InputLabel htmlFor="inventoryItems_name" value="Pavadinimas"/>
+                                            <InputLabel htmlFor="inventoryItems_name" value="Pavadinimas"/>
                                                 <TextInput id="inventoryItems_name" type="text" name="name"
                                                            value={inventoryItem.name}
                                                            className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"
@@ -217,7 +217,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                         {__("Scanner")}
                                     </Link>
                                 </div>
-                            </div>
+                            {/*</div>*/}
                         </div>
                         {logsForItem.data.length > 0 && <LogsTable logsForItem={logsForItem}/>}
                     </div>
