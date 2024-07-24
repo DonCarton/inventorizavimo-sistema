@@ -37,7 +37,7 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings
                 });
             }
             if (isset($this->data['laboratory'])) {
-                $query->whereHas('belongsToLaboratory', function ($query) {
+                $query->whereHas('manyLaboratories', function ($query) {
                     $query->where('name', 'like', '%' . $this->data['laboratory'] . '%');
                 });
             }
