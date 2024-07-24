@@ -24,7 +24,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
         url_to_provider: inventoryItem.data.urlToProviderSite,
         alt_url_to_provider: inventoryItem.data.altUrlToProviderSite,
         total_count: inventoryItem.data.total_amount || '',
-        critical_amount: inventoryItem.data.critical_amount || '',
+        critical_amount: inventoryItem.data.criticalAmount || '',
         to_order: inventoryItem.data.toOrder || '',
         average_consumption: inventoryItem.data.averageConsumption || '',
         provider: inventoryItem.data.provider || '',

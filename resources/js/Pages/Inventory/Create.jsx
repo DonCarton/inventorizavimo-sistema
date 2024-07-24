@@ -111,15 +111,15 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
         setData('laboratory', e);
     }
     const handleInventoryTypeChange = (e) => {
-        setData('inventory_type', e);
         if (itemTypes.data[e-1].assetRequired === false){ setAssetNumberShown(true); setData('asset_number_required', true) } else {setAssetNumberShown(false); setData('asset_number_required', false)}
+        setData('inventory_type', e);
     }
     const onSubmit = (e) => {
         e.preventDefault();
 
         post(route('inventoryItems.store'));
     }
-    console.log(data.asset_number_required);
+    console.log(data.inventory_type);
     return (
         <AuthenticatedLayout
             user={auth.user}

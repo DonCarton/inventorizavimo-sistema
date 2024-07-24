@@ -8,6 +8,7 @@ import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import React from "react";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import WarningMessage from "@/Components/WarningMessage.jsx";
+import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 
 export default function InventoryTypes({auth, itemTypes, role, success, warning}) {
     const handleConfirmMessage = __("Are you sure you want to delete this item")+'?';
@@ -27,10 +28,14 @@ export default function InventoryTypes({auth, itemTypes, role, success, warning}
                                              placement="right-end" classname="bg-black" color="black"
                                              classnameForIcon="w-5 h-5 ml-1 mt-1"/>
                                      </div>
-                                     <div className="grid grid-cols-2 gap-4">
-                                         <a href={route("itemTypes.create")}><TbTablePlus
-                                             className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Create new type")}/></a>
-                                     </div>
+
+                                     <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={__("Actions")}>
+                                         {role === 'admin' && <>
+                                             <div id="create-new-entry" title="Create a new entry in the current page."
+                                                  className="px-2 py-1 bg-white border-2 rounded-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                                 <a href={route("itemTypes.create")}>{__("Create")}</a></div></>
+                                         }
+                                     </GroupButtonDropdown>
                                  </div>}
                              role={role}
         >

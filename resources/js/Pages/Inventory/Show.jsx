@@ -23,7 +23,7 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                 <div className="flex justify-between items-center">
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Show")} - {inventoryItem.data.name}</h2>
                     {/*<a href={route("getBarcodePng", inventoryItem.data.localName)} className="inline-flex items-center px-4 py-2 bg-pink-800 text-white font-semibold text-sm rounded-lg hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75"><FaDownload className="mr-2"/>{__("Local barcode")}</a>*/}
-                    <button onClick={toggleAllAccordions} title={__("Toggle if the form should be fully expanded or collapsed") + '.'} className="mb-4 px-4 py-2 bg-pink-800 text-white rounded hover:bg-pink-700" >
+                    <button onClick={toggleAllAccordions} title={__("Toggle if the form should be fully expanded or collapsed") + '.'} className="px-4 py-2 bg-pink-800 text-white rounded hover:bg-pink-700" >
                         {openAll ? __("Collapse form") : __("Expand form")}
                     </button>
                 </div>

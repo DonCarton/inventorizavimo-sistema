@@ -12,6 +12,8 @@ import React, {useState} from "react";
 import WarningMessage from "@/Components/WarningMessage.jsx";
 import {FiUpload} from "react-icons/fi";
 import FileUploadModal from "@/Components/FileUploadModal.jsx";
+import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
+import DownloadButton from "@/Components/Actions/DownloadButton.jsx";
 
 export default function Index({auth, laboratories, role, queryParams = null, success, warning}) {
     queryParams = queryParams || {};
@@ -76,14 +78,19 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                             classnameForIcon="w-5 h-5 ml-1 mt-1"/>
 
                     </div>
-                    <div className="grid grid-cols-3 gap-4">
-                        <a href={route("laboratories.create")}><TbTablePlus
-                            className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Create new laboratory")}/></a>
-                        <a name="laboratoryExcel" onClick={() => setModalOpen(true)}><FiUpload
-                            className="w-10 h-10 text-amber-400 hover:text-amber-600 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Import Excel of data")}/></a>
-                        <a href={route("exportLaboratories")} target="_blank"><RiFileExcel2Line
-                            className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Export Excel of data")}/></a>
-                    </div>
+                    <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={__("Actions")}>
+                        {role === 'admin' && <>
+                                <div id="create-new-entry" title="Create a new entry in the current page."
+                                     className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                    <a href={route("laboratories.create")}>{__("Create")}</a></div>
+                                <div id="import-entries" title="Import an existing Excel sheet of data."
+                                     className="px-2 py-1 bg-white border-2 border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                    <a onClick={() => setModalOpen(true)}>{__("Import")}</a></div>
+                                <div id="export-entries" title="Export all data from the database or export a specific set with the defined search paramters in the table."
+                                     className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                    <a href={route("exportLaboratories", queryParams)}>{__("Export")}</a></div></>
+                        }
+                    </GroupButtonDropdown>
                 </div>
             }
             role={role}

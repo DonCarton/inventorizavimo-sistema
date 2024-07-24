@@ -83,15 +83,17 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                     </div>
                     <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={__("Actions")}>
                         {role === 'admin' ? <>
-                            <div id="create-new-entry"
+                            <div id="create-new-entry" title="Create a new entry in the current page."
                                  className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                <a href={route("inventoryItems.create")}>{__("Create")}</a></div>
-                            <div id="import-entries"
+                                <a href={route("users.create")}>{__("Create")}</a></div>
+                            <div id="import-entries" title="Import an existing Excel sheet of data."
                                  className="px-2 py-1 bg-white border-2 border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
                                 <a onClick={() => setModalOpen(true)}>{__("Import")}</a></div>
-                            <div id="export-entries"
+                            <div id="export-entries" title="Export all data from the database or export a specific set with the defined search paramters in the table."
                                 className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                <a href={route("exportInventoryItems", queryParams)}>{__("Export")}</a></div></> : <DownloadButton linkToItem={route("exportInventoryItems", queryParams)}>{__("Export")}</DownloadButton> }
+                                <a href={route("exportInventoryItems", queryParams)}>{__("Export")}</a></div></> :
+                            <DownloadButton linkToItem={route("exportInventoryItems", queryParams)}>{__("Export")}</DownloadButton>
+                        }
                     </GroupButtonDropdown>
                 </div>
             }
