@@ -12,6 +12,7 @@ import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import FlexibleSelect from "@/Components/Forms/FlexibleSelect.jsx";
+import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 
 function Icon({id, open}) {
     return (
@@ -90,19 +91,18 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
     const handleTabChange = (tabNumber) => {
         setActiveTab(tabNumber);
     };
-
-    const [open, setOpen] = useState(1);
-    const [open2, setOpen2] = useState(2);
-    const [open3, setOpen3] = useState(3);
-    const [open4, setOpen4] = useState(4);
-    const [open5, setOpen5] = useState(5);
+    // const [open, setOpen] = useState(1);
+    // const [open2, setOpen2] = useState(2);
+    // const [open3, setOpen3] = useState(3);
+    // const [open4, setOpen4] = useState(4);
+    // const [open5, setOpen5] = useState(5);
+    // const handleOpen = (value) => setOpen(open === value ? 0 : value);
+    // const handleOpen2 = (value) => setOpen2(open2 === value ? 0 : value);
+    // const handleOpen3 = (value) => setOpen3(open3 === value ? 0 : value);
+    // const handleOpen4 = (value) => setOpen4(open4 === value ? 0 : value);
+    // const handleOpen5 = (value) => setOpen5(open5 === value ? 0 : value);
     const [checkbox, setCheckbox] = useState(false);
-    const [assetNumberShown, setAssetNumberShown] = useState(true);
-    const handleOpen = (value) => setOpen(open === value ? 0 : value);
-    const handleOpen2 = (value) => setOpen2(open2 === value ? 0 : value);
-    const handleOpen3 = (value) => setOpen3(open3 === value ? 0 : value);
-    const handleOpen4 = (value) => setOpen4(open4 === value ? 0 : value);
-    const handleOpen5 = (value) => setOpen5(open5 === value ? 0 : value);
+    const [assetNumberShown, setAssetNumberShown] = useState(false);
     const handleCheckbox = (e) => {
         setData('multiple_locations', e.target.checked);
         setCheckbox(e.target.checked);
@@ -111,26 +111,15 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
         setData('laboratory', e);
     }
     const handleInventoryTypeChange = (e) => {
+        if (itemTypes.data[e-1].assetRequired === false){ setAssetNumberShown(true); setData('asset_number_required', true) } else {setAssetNumberShown(false); setData('asset_number_required', false)}
         setData('inventory_type', e);
     }
-    // function handleType (e){
-    //     let typeValue = e.target.value;
-    //     if(itemTypes.data[typeValue-1].asset_required === 0){
-    //         setAssetNumberShown(true);
-    //         setData('asset_number_required',true);
-    //     }
-    //     else {
-    //         setAssetNumberShown(false);
-    //         setData('asset_number_required',false);
-    //     }
-    //     setData('inventory_type',e.target.value);
-    //     console.log(data.inventory_type);
-    // }
     const onSubmit = (e) => {
         e.preventDefault();
 
         post(route('inventoryItems.store'));
     }
+    console.log(data.inventory_type);
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -191,278 +180,295 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                             <form onSubmit={onSubmit}
                                   className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                                 <div className="pb-6">
-                                    <Accordion open={open === 1} icon={<Icon id={1} open={open}/>}>
-                                        <AccordionHeader
-                                            onClick={() => handleOpen(1)}>{__("Inventory information")}</AccordionHeader>
-                                        <AccordionBody>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div>
-                                                    <InputLabel htmlFor="inventoryItems_local_name">
-                                                        {__("Local name")}<span className="text-red-500">*</span>
-                                                    </InputLabel>
-                                                    <TextInput id="inventoryItems_local_name" type="text"
-                                                               name="local_name"
-                                                               value={data.local_name}
-                                                               className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"
-                                                               disabled={true} readOnly={true}/>
-                                                </div>
-                                                <div>
-                                                    <InputLabel htmlFor="inventoryItems_itemType">
-                                                        {__("Type")} <span className="text-red-500">*</span>
-                                                    </InputLabel>
-                                                    {/*<select id="inventoryItems_itemType" name="itemType"*/}
-                                                    {/*        className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"*/}
-                                                    {/*        value={data.inventory_type}*/}
-                                                    {/*        onChange={e => setData('inventory_type', e.target.value)}>*/}
-                                                    {/*    <option value="">{__("Choose a value")}</option>*/}
-                                                    {/*    {itemTypes.data.map(itemType => (<option key={itemType.value}*/}
-                                                    {/*                                             value={itemType.value}>{__(itemType.label)}</option>))}*/}
-                                                    {/*</select>*/}
-                                                    <FlexibleSelect id="inventoryItems_itemType" name="itemType"
-                                                        customPlaceHolder={__("Choose an inventory type")}
-                                                        value={data.inventory_type}
-                                                        onChange={handleInventoryTypeChange}
-                                                        fetchUrlPath="/select/itemTypes"
-                                                        customNoOptionsMessage={__("No item types found")}
-                                                        customLoadingMessage={__("Fetching options") + "..."}
-                                                        customIsMulti={false}
-                                                    />
-                                                    <InputError message={errors.inventory_type} className="mt-2"/>
-                                                </div>
-                                                <div className={assetNumberShown ? "mt-1 w-full" : "hidden"}>
-                                                    <InputLabel
-                                                        htmlFor="inventoryItems_asset_number">{__("Asset number")}</InputLabel>
-                                                    <TextInputExtra id="inventoryItems_asset_number" name="asset_number"
-                                                                    className="w-full"
-                                                                    type="text"
-                                                                    onChange={e => setData('asset_number', e.target.value)}>
-                                                    </TextInputExtra>
-                                                    <InputError message={errors.asset_number} className="mt-2"/>
-                                                </div>
-                                                <div>
-                                                    <InputLabel htmlFor="inventoryItems_name">
-                                                        {__("Name")} <span className="text-red-500">*</span>
-                                                    </InputLabel>
-                                                    <TextInput id="inventoryItems_name" type="text" name="name"
-                                                               value={data.name} className="mt-1 block w-full"
-                                                               onChange={e => setData('name', e.target.value)}/>
-                                                    <InputError message={errors.name} className="mt-2"/>
-                                                </div>
-                                                <div>
-                                                    <InputLabel htmlFor="inventoryItems_name_eng">
-                                                        {__("Name ENG")} <span className="text-red-500">*</span>
-                                                    </InputLabel>
-                                                    <TextInput id="inventoryItems_name_eng" type="text" name="name_eng"
-                                                               value={data.name_eng} className="mt-1 block w-full"
-                                                               onChange={e => setData('name_eng', e.target.value)}/>
-                                                    <InputError message={errors.name_eng} className="mt-2"/>
-                                                </div>
-                                                <div>
-                                                    <InputLabel htmlFor="inventoryItems_formula">
-                                                        {__("Formula")}
-                                                    </InputLabel>
-                                                    <TextInput id="inventoryItems_formula" type="text" name="name_eng"
-                                                               value={data.formula} className="mt-1 block w-full"
-                                                               onChange={e => setData('formula', e.target.value)}/>
-                                                </div>
-                                                <div>
-                                                    <InputLabel htmlFor="inventoryItems_cas_nr">
-                                                        {__("CAS NR")}
-                                                    </InputLabel>
-                                                    <TextInput id="inventoryItems_cas_nr" type="text" name="name_eng"
-                                                               value={data.cas_nr} className="mt-1 block w-full"
-                                                               onChange={e => setData('cas_nr', e.target.value)}/>
-                                                </div>
-                                                <div>
-                                                    <InputLabel htmlFor="inventoryItems_user_guide">
-                                                        {__("User guide")}
-                                                    </InputLabel>
-                                                    <TextInput id="inventoryItems_user_guide" type="text"
-                                                               name="user_guide"
-                                                               value={data.user_guide} className="mt-1 block w-full"
-                                                               onChange={e => setData('user_guide', e.target.value)}/>
-                                                </div>
+                                    <AccordionWithManualIndex expandedByDefault={true} indexOfAcc={1}
+                                                              headerName={__("Inventory information")}>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_local_name">
+                                                    {__("Local name")}<span className="text-red-500">*</span>
+                                                </InputLabel>
+                                                <TextInput id="inventoryItems_local_name" type="text"
+                                                           name="local_name"
+                                                           value={data.local_name}
+                                                           className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"
+                                                           disabled={true} readOnly={true}/>
                                             </div>
-                                        </AccordionBody>
-                                    </Accordion>
-                                    <Accordion open={open2} icon={<Icon id={2} open={open2}/>}>
-                                        <AccordionHeader onClick={() => handleOpen2(2)}>Užsakymo
-                                            informacija</AccordionHeader>
-                                        <AccordionBody>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div>
-                                                    <InputLabel htmlFor="inventoryItems_provider">
-                                                        {__("Provider")}
-                                                    </InputLabel>
-                                                    <TextInput
-                                                        id="inventoryItems_provider"
-                                                        type="text"
-                                                        name="provider"
-                                                        value={data.provider}
-                                                        className="mt-1 block w-full"
-                                                        onChange={e => setData('provider', e.target.value)}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <InputLabel htmlFor="inventoryItems_product_code">
-                                                        {__("Product code")}
-                                                    </InputLabel>
-                                                    <TextInput
-                                                        id="inventoryItems_product_code"
-                                                        type="text"
-                                                        name="product_code"
-                                                        value={data.product_code}
-                                                        className="mt-1 block w-full"
-                                                        onChange={e => setData('product_code', e.target.value)}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <InputLabel htmlFor="inventoryItems_barcode">
-                                                        {__("Barcode")}
-                                                    </InputLabel>
-                                                    <TextInput
-                                                        id="inventoryItems_barcode"
-                                                        type="text"
-                                                        name="barcode"
-                                                        value={data.barcode}
-                                                        className="mt-1 block w-full"
-                                                        onChange={e => setData('barcode', e.target.value)}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <InputLabel
-                                                        htmlFor="inventoryItems_url_to_provider"
-                                                        value={__("Provider url")}
-                                                    />
-                                                    <TextInput
-                                                        id="inventoryItems_url_to_provider"
-                                                        type="text"
-                                                        name="url_to_provider"
-                                                        value={data.url_to_provider}
-                                                        className="mt-1 block w-full"
-                                                        onChange={e => setData('url_to_provider', e.target.value)}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <InputLabel htmlFor="inventoryItems_alt_url_to_provider">
-                                                        {__("Alt url to provider")}
-                                                    </InputLabel>
-                                                    <TextInput
-                                                        id="inventoryItems_alt_url_to_provider"
-                                                        type="text"
-                                                        name="alt_url_to_provider"
-                                                        value={data.alt_url_to_provider}
-                                                        className="mt-1 block w-full"
-                                                        onChange={e => setData('alt_url_to_provider', e.target.value)}
-                                                    />
-                                                </div>
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_itemType">
+                                                    {__("Type")} <span className="text-red-500">*</span>
+                                                </InputLabel>
+                                                {/*<select id="inventoryItems_itemType" name="itemType"*/}
+                                                {/*        className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"*/}
+                                                {/*        value={data.inventory_type}*/}
+                                                {/*        onChange={e => setData('inventory_type', e.target.value)}>*/}
+                                                {/*    <option value="">{__("Choose a value")}</option>*/}
+                                                {/*    {itemTypes.data.map(itemType => (<option key={itemType.value}*/}
+                                                {/*                                             value={itemType.value}>{__(itemType.label)}</option>))}*/}
+                                                {/*</select>*/}
+                                                <FlexibleSelect id="inventoryItems_itemType" name="itemType"
+                                                                customPlaceHolder={__("Choose an inventory type")}
+                                                                value={data.inventory_type}
+                                                                onChange={handleInventoryTypeChange}
+                                                                fetchUrlPath="/select/itemTypes"
+                                                                customNoOptionsMessage={__("No item types found")}
+                                                                customLoadingMessage={__("Fetching options") + "..."}
+                                                                customIsMulti={false}
+                                                />
+                                                <InputError message={errors.inventory_type} className="mt-2"/>
+                                            </div>
+                                            <div className={assetNumberShown ? "mt-1 w-full" : "hidden"}>
+                                                <InputLabel
+                                                    htmlFor="inventoryItems_asset_number">{__("Asset number")}</InputLabel>
+                                                <TextInputExtra id="inventoryItems_asset_number" name="asset_number"
+                                                                className="w-full"
+                                                                type="text"
+                                                                onChange={e => setData('asset_number', e.target.value)}>
+                                                </TextInputExtra>
+                                                <InputError message={errors.asset_number} className="mt-2"/>
+                                            </div>
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_name">
+                                                    {__("Name")} <span className="text-red-500">*</span>
+                                                </InputLabel>
+                                                <TextInput id="inventoryItems_name" type="text" name="name"
+                                                           value={data.name} className="mt-1 block w-full"
+                                                           onChange={e => setData('name', e.target.value)}/>
+                                                <InputError message={errors.name} className="mt-2"/>
+                                            </div>
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_name_eng">
+                                                    {__("Name ENG")} <span className="text-red-500">*</span>
+                                                </InputLabel>
+                                                <TextInput id="inventoryItems_name_eng" type="text" name="name_eng"
+                                                           value={data.name_eng} className="mt-1 block w-full"
+                                                           onChange={e => setData('name_eng', e.target.value)}/>
+                                                <InputError message={errors.name_eng} className="mt-2"/>
+                                            </div>
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_formula">
+                                                    {__("Formula")}
+                                                </InputLabel>
+                                                <TextInput id="inventoryItems_formula" type="text" name="name_eng"
+                                                           value={data.formula} className="mt-1 block w-full"
+                                                           onChange={e => setData('formula', e.target.value)}/>
+                                            </div>
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_cas_nr">
+                                                    {__("CAS NR")}
+                                                </InputLabel>
+                                                <TextInput id="inventoryItems_cas_nr" type="text" name="name_eng"
+                                                           value={data.cas_nr} className="mt-1 block w-full"
+                                                           onChange={e => setData('cas_nr', e.target.value)}/>
+                                            </div>
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_user_guide">
+                                                    {__("User guide")}
+                                                </InputLabel>
+                                                <TextInput id="inventoryItems_user_guide" type="text"
+                                                           name="user_guide"
+                                                           value={data.user_guide} className="mt-1 block w-full"
+                                                           onChange={e => setData('user_guide', e.target.value)}/>
+                                            </div>
+                                        </div>
+                                    </AccordionWithManualIndex>
+                                    <AccordionWithManualIndex expandedByDefault={true} indexOfAcc={2}
+                                                              headerName={__("Order information")}>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_provider">
+                                                    {__("Provider")}
+                                                </InputLabel>
+                                                <TextInput
+                                                    id="inventoryItems_provider"
+                                                    type="text"
+                                                    name="provider"
+                                                    value={data.provider}
+                                                    className="mt-1 block w-full"
+                                                    onChange={e => setData('provider', e.target.value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_product_code">
+                                                    {__("Product code")}
+                                                </InputLabel>
+                                                <TextInput
+                                                    id="inventoryItems_product_code"
+                                                    type="text"
+                                                    name="product_code"
+                                                    value={data.product_code}
+                                                    className="mt-1 block w-full"
+                                                    onChange={e => setData('product_code', e.target.value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_barcode">
+                                                    {__("Barcode")}
+                                                </InputLabel>
+                                                <TextInput
+                                                    id="inventoryItems_barcode"
+                                                    type="text"
+                                                    name="barcode"
+                                                    value={data.barcode}
+                                                    className="mt-1 block w-full"
+                                                    onChange={e => setData('barcode', e.target.value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="inventoryItems_url_to_provider"
+                                                    value={__("Provider url")}
+                                                />
+                                                <TextInput
+                                                    id="inventoryItems_url_to_provider"
+                                                    type="text"
+                                                    name="url_to_provider"
+                                                    value={data.url_to_provider}
+                                                    className="mt-1 block w-full"
+                                                    onChange={e => setData('url_to_provider', e.target.value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_alt_url_to_provider">
+                                                    {__("Alt url to provider")}
+                                                </InputLabel>
+                                                <TextInput
+                                                    id="inventoryItems_alt_url_to_provider"
+                                                    type="text"
+                                                    name="alt_url_to_provider"
+                                                    value={data.alt_url_to_provider}
+                                                    className="mt-1 block w-full"
+                                                    onChange={e => setData('alt_url_to_provider', e.target.value)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </AccordionWithManualIndex>
+                                    <AccordionWithManualIndex expandedByDefault={true} indexOfAcc={3}
+                                                              headerName={__("Amount")}>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_total_count">
+                                                    {__("Count")} <span className="text-red-500">*</span>
+                                                </InputLabel>
+                                                <TextInput
+                                                    id="inventoryItems_total_count"
+                                                    type="text"
+                                                    name="total_count"
+                                                    value={data.total_count}
+                                                    className="mt-1 block w-full"
+                                                    onChange={e => setData('total_count', e.target.value)}
+                                                />
+                                                <InputError message={errors.total_count} className="mt-2"/>
+                                            </div>
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_critical_amount">
+                                                    {__("Critical amount")} <span className="text-red-500">*</span>
+                                                </InputLabel>
+                                                <TextInput
+                                                    id="inventoryItems_critical_amount"
+                                                    type="text"
+                                                    name="critical_amount"
+                                                    value={data.critical_amount}
+                                                    className="mt-1 block w-full"
+                                                    onChange={e => setData('critical_amount', e.target.value)}
+                                                />
+                                                <InputError message={errors.critical_amount} className="mt-2"/>
+                                            </div>
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_multiple_locations">
+                                                    {__("Multiple locations")} <span
+                                                    className="text-red-500">*</span>
+                                                </InputLabel>
+                                                <Checkbox id="inventoryItems_multiple_locations"
+                                                          className="ml-1 p-2 block w-6 h-6"
+                                                          checked={checkbox}
+                                                          onChange={handleCheckbox}/>
+                                                <InputError message={errors.multiple_locations} className="mt-2"/>
+                                            </div>
+                                        </div>
+                                    </AccordionWithManualIndex>
+                                    <AccordionWithManualIndex expandedByDefault={true} indexOfAcc={4}
+                                                              headerName={__("Location")}>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="inventoryItems_local_laboratory">{__("Location")}<span
+                                                    className="text-red-500">*</span></InputLabel>
+                                                <FlexibleSelect id="inventoryItems_local_laboratory"
+                                                                name="local_laboratory"
+                                                                customPlaceHolder={__("Choose a laboratory")}
+                                                                value={data.laboratory}
+                                                                onChange={handleLaboratoryChoice}
+                                                                fetchUrlPath="/select/laboratories"
+                                                                customNoOptionsMessage={__("No laboratories found")}
+                                                                customLoadingMessage={__("Fetching options") + "..."}
+                                                                customIsMulti={false}
+                                                />
+                                                <InputError message={errors.laboratory} className="mt-2"/>
+                                            </div>
+                                        </div>
+                                    </AccordionWithManualIndex>
+                                    <AccordionWithManualIndex expandedByDefault={true} indexOfAcc={5}
+                                                              headerName={__("Additional information")}>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="inventoryItems_storage_conditions">{__("Storage conditions")}</InputLabel>
+                                                <TextInputExtra id="inventoryItems_storage_conditions"
+                                                                className="w-full"
+                                                                name="storage_conditions" type="textarea"
+                                                                onChange={e => setData('storage_conditions', e.target.value)}></TextInputExtra>
+                                                <InputError message={errors.storage_conditions} className="mt-2"/>
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="inventoryItems_used_for">{__("Used for")}</InputLabel>
+                                                <TextInputExtra id="inventoryItems_used_for" name="used_for"
+                                                                className="w-full"
+                                                                type="textarea"
+                                                                onChange={e => setData('used_for', e.target.value)}></TextInputExtra>
+                                                <InputError message={errors.used_for} className="mt-2"/>
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="inventoryItems_comments">{__("Comments")}</InputLabel>
+                                                <TextInputExtra id="inventoryItems_comments" name="comments"
+                                                                className="w-full"
+                                                                type="textarea"
+                                                                onChange={e => setData('comments', e.target.value)}></TextInputExtra>
+                                                <InputError message={errors.comments} className="mt-2"/>
+                                            </div>
+                                        </div>
+                                    </AccordionWithManualIndex>
+                                    {/*<Accordion open={open === 1} icon={<Icon id={1} open={open}/>}>*/}
+                                    {/*    <AccordionHeader*/}
+                                    {/*        onClick={() => handleOpen(1)}>{__("Inventory information")}</AccordionHeader>*/}
+                                    {/*    <AccordionBody>*/}
+                                    {/*    </AccordionBody>*/}
+                                    {/*</Accordion>*/}
+                                    {/*<Accordion open={open2} icon={<Icon id={2} open={open2}/>}>*/}
+                                    {/*    <AccordionHeader onClick={() => handleOpen2(2)}>{__("Order information")}</AccordionHeader>*/}
+                                    {/*    <AccordionBody>*/}
+                                    {/*    </AccordionBody>*/}
+                                    {/*</Accordion>*/}
+                                    {/*<Accordion open={open3} icon={<Icon id={3} open={open3}/>}>*/}
+                                    {/*    <AccordionHeader onClick={() => handleOpen3(3)}>{__("Amount")}</AccordionHeader>*/}
+                                    {/*    <AccordionBody>*/}
 
-                                            </div>
-                                        </AccordionBody>
-                                    </Accordion>
-                                    <Accordion open={open3} icon={<Icon id={3} open={open3}/>}>
-                                        <AccordionHeader onClick={() => handleOpen3(3)}>Kiekis</AccordionHeader>
-                                        <AccordionBody>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div>
-                                                    <InputLabel htmlFor="inventoryItems_total_count">
-                                                        {__("Count")} <span className="text-red-500">*</span>
-                                                    </InputLabel>
-                                                    <TextInput
-                                                        id="inventoryItems_total_count"
-                                                        type="text"
-                                                        name="total_count"
-                                                        value={data.total_count}
-                                                        className="mt-1 block w-full"
-                                                        onChange={e => setData('total_count', e.target.value)}
-                                                    />
-                                                    <InputError message={errors.total_count} className="mt-2"/>
-                                                </div>
-                                                <div>
-                                                    <InputLabel htmlFor="inventoryItems_critical_amount">
-                                                        {__("Critical amount")} <span className="text-red-500">*</span>
-                                                    </InputLabel>
-                                                    <TextInput
-                                                        id="inventoryItems_critical_amount"
-                                                        type="text"
-                                                        name="critical_amount"
-                                                        value={data.critical_amount}
-                                                        className="mt-1 block w-full"
-                                                        onChange={e => setData('critical_amount', e.target.value)}
-                                                    />
-                                                    <InputError message={errors.critical_amount} className="mt-2"/>
-                                                </div>
-                                                <div>
-                                                    <InputLabel htmlFor="inventoryItems_multiple_locations">
-                                                        {__("Multiple locations")} <span
-                                                        className="text-red-500">*</span>
-                                                    </InputLabel>
-                                                    <Checkbox id="inventoryItems_multiple_locations"
-                                                              className="ml-1 p-2 block w-8 h-8"
-                                                              checked={checkbox}
-                                                              onChange={handleCheckbox}/>
-                                                    <InputError message={errors.multiple_locations} className="mt-2"/>
-                                                </div>
-                                            </div>
-                                        </AccordionBody>
-                                    </Accordion>
-                                    <Accordion open={open4} icon={<Icon id={4} open={open4}/>}>
-                                        <AccordionHeader onClick={() => handleOpen4(4)}>Vieta</AccordionHeader>
-                                        <AccordionBody>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div>
-                                                    <InputLabel
-                                                        htmlFor="inventoryItems_local_laboratory">{__("Location")}<span
-                                                        className="text-red-500">*</span></InputLabel>
-                                                    <FlexibleSelect id="inventoryItems_local_laboratory" name="local_laboratory"
-                                                        customPlaceHolder={__("Choose a laboratory")}
-                                                        value={data.laboratory}
-                                                        onChange={handleLaboratoryChoice}
-                                                        fetchUrlPath="/select/laboratories"
-                                                        customNoOptionsMessage={__("No laboratories found")}
-                                                        customLoadingMessage={__("Fetching options") + "..."}
-                                                        customIsMulti={false}
-                                                    />
-                                                    <InputError message={errors.laboratory} className="mt-2"/>
-                                                </div>
-                                            </div>
-                                        </AccordionBody>
-                                    </Accordion>
-                                    <Accordion open={open5} icon={<Icon id={5} open={open5}/>}>
-                                        <AccordionHeader
-                                            onClick={() => handleOpen5(5)}>{__("Additional information")}</AccordionHeader>
-                                        <AccordionBody>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div>
-                                                    <InputLabel
-                                                        htmlFor="inventoryItems_storage_conditions">{__("Storage conditions")}</InputLabel>
-                                                    <TextInputExtra id="inventoryItems_storage_conditions"
-                                                                    className="w-full"
-                                                                    name="storage_conditions" type="textarea"
-                                                                    onChange={e => setData('storage_conditions', e.target.value)}></TextInputExtra>
-                                                    <InputError message={errors.storage_conditions} className="mt-2"/>
-                                                </div>
-                                                <div>
-                                                    <InputLabel
-                                                        htmlFor="inventoryItems_used_for">{__("Used for")}</InputLabel>
-                                                    <TextInputExtra id="inventoryItems_used_for" name="used_for"
-                                                                    className="w-full"
-                                                                    type="text"
-                                                                    onChange={e => setData('used_for', e.target.value)}></TextInputExtra>
-                                                    <InputError message={errors.used_for} className="mt-2"/>
-                                                </div>
-                                                <div>
-                                                    <InputLabel
-                                                        htmlFor="inventoryItems_comments">{__("Comments")}</InputLabel>
-                                                    <TextInputExtra id="inventoryItems_comments" name="comments"
-                                                                    className="w-full"
-                                                                    type="text"
-                                                                    onChange={e => setData('comments', e.target.value)}></TextInputExtra>
-                                                    <InputError message={errors.comments} className="mt-2"/>
-                                                </div>
-                                            </div>
-                                        </AccordionBody>
-                                    </Accordion>
+                                    {/*    </AccordionBody>*/}
+                                    {/*</Accordion>*/}
+                                    {/*<Accordion open={open4} icon={<Icon id={4} open={open4}/>}>*/}
+                                    {/*    <AccordionHeader*/}
+                                    {/*        onClick={() => handleOpen4(4)}>{__("Location")}</AccordionHeader>*/}
+                                    {/*    <AccordionBody>*/}
+                                    {/*    </AccordionBody>*/}
+                                    {/*</Accordion>*/}
+                                    {/*<Accordion open={open5} icon={<Icon id={5} open={open5}/>}>*/}
+                                    {/*    <AccordionHeader*/}
+                                    {/*        onClick={() => handleOpen5(5)}>{__("Additional information")}</AccordionHeader>*/}
+                                    {/*    <AccordionBody>*/}
+
+                                    {/*    </AccordionBody>*/}
+                                    {/*</Accordion>*/}
                                 </div>
                                 <div>
                                     <Link href={previousUrlPage}

@@ -10,6 +10,8 @@ import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
+import DownloadButton from "@/Components/Actions/DownloadButton.jsx";
+import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 
 export default function Users({auth, users, role, queryParams = null, success, failure}) {
     queryParams = queryParams || {};
@@ -62,12 +64,16 @@ export default function Users({auth, users, role, queryParams = null, success, f
                             placement="right-end" classname="bg-black" color="black"
                             classnameForIcon="w-5 h-5 ml-1 mt-1"/>
                     </div>
-                    {role === "admin" && (<div className="grid grid-cols-2 gap-4">
-                        <a href={route("users.create")}><TbTablePlus
-                            className="w-10 h-10 text-black hover:text-gray-700 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Create new user")}/></a>
-                        <a href={route("exportUsers")} target="_blank"><RiFileExcel2Line
-                            className="w-10 h-10 text-emerald-600 hover:text-emerald-900 hover:rounded hover:bg-gray-50 hover:animate-pulse" title={__("Export Excel of data")}/></a>
-                    </div>)}
+                    <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={__("Actions")}>
+                        {role === 'admin' && <>
+                                <div id="create-new-entry" title="Create a new entry in the current page."
+                                     className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                    <a href={route("inventoryItems.create")}>{__("Create")}</a></div>
+                                <div id="export-entries" title="Export all data from the database or export a specific set with the defined search paramters in the table."
+                                     className="px-2 py-1 bg-white border-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                    <a href={route("exportUsers", queryParams)}>{__("Export")}</a></div></>
+                        }
+                    </GroupButtonDropdown>
                 </div>
             }
             role={role}

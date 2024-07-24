@@ -1,19 +1,19 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, Link, useForm, router} from '@inertiajs/react';
-import Pagination from "@/Components/Pagination.jsx";
 import React, {useState} from "react";
+import {Head, Link, router, useForm} from "@inertiajs/react";
 import {__} from "@/Libs/Lang.jsx";
-import TextInput from "@/Components/TextInput.jsx";
-import TableHeader from "@/Components/TableHeader.jsx";
-import {TbEdit, TbTablePlus, TbArrowsUpDown} from "react-icons/tb";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
-import FileUploadModal from "@/Components/FileUploadModal.jsx";
-import FailureMessage from "@/Components/FailureMessage.jsx";
-import SuccessMessage from "@/Components/SuccessMessage.jsx";
-import DownloadButton from "@/Components/Actions/DownloadButton.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
+import DownloadButton from "@/Components/Actions/DownloadButton.jsx";
+import FileUploadModal from "@/Components/FileUploadModal.jsx";
+import SuccessMessage from "@/Components/SuccessMessage.jsx";
+import FailureMessage from "@/Components/FailureMessage.jsx";
+import TableHeader from "@/Components/TableHeader.jsx";
+import TextInput from "@/Components/TextInput.jsx";
+import {TbArrowsUpDown, TbEdit} from "react-icons/tb";
+import Pagination from "@/Components/Pagination.jsx";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
 
-export default function Index({auth, inventoryItems, role, queryParams = null, success, failure}) {
+export default function MyInventory({auth, inventoryItems, role, queryParams = null, success, failure}) {
     queryParams = queryParams || {};
     const [modalOpen, setModalOpen] = useState(false);
     const {setData, post} = useForm({
@@ -26,7 +26,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
         } else {
             delete queryParams[name];
         }
-        router.get(route('inventoryItems.index'), queryParams);
+        router.get(route('inventoryItems.myLaboratory'), queryParams);
     }
     const onKeyPress = (name, e) => {
         if (e.key !== 'Enter') return;
@@ -43,7 +43,7 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
             queryParams.sort_field = name;
             queryParams.sort_direction = 'asc';
         }
-        router.get(route('inventoryItems.index'), queryParams);
+        router.get(route('inventoryItems.myLaboratory'), queryParams);
     }
     const handleFileSelect = (file) => {
         setData('file', file);
@@ -60,38 +60,37 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
         setModalOpen(false);
     }
 
-    const [buttonGroupOpen, setButtonGroupOpen] = useState(false);
-
-    function toggleButtonGroup() {
-        if (!buttonGroupOpen) {
-            setButtonGroupOpen(true);
-        } else {
-            setButtonGroupOpen(false);
-        }
-    }
     return (
         <AuthenticatedLayout
             user={auth.user}
             header={
                 <div className="flex justify-between items-center">
                     <div className="flex justify-between">
-                        <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Inventory")}</h2>
+                        <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("My inventory")}</h2>
                         <InformationIconToolTip
                             content={__("Here you can view all the available inventory items") + '.'}
                             placement="right-end" classname="bg-black" color="black"
                             classnameForIcon="w-5 h-5 ml-1 mt-1"/>
                     </div>
-                    <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={__("Actions")}>
+                    <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory"
+                                         nameOfDropdownButton={__("Actions")}>
                         {role === 'admin' ? <>
-                            <div id="create-new-entry" title="Create a new entry in the current page."
-                                 className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                <a href={route("users.create")}>{__("Create")}</a></div>
-                            <div id="import-entries" title="Import an existing Excel sheet of data."
-                                 className="px-2 py-1 bg-white border-2 border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                <a onClick={() => setModalOpen(true)}>{__("Import")}</a></div>
-                            <div id="export-entries" title="Export all data from the database or export a specific set with the defined search paramters in the table."
-                                className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                <a href={route("exportInventoryItems", queryParams)}>{__("Export")}</a></div></> :
+                                <div id="create-new-entry" title="Create a new entry in the current page."
+                                     className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                    <a href={route("users.create")}>{__("Create")}</a></div>
+                                <div id="import-entries" title="Import an existing Excel sheet of data."
+                                     className="px-2 py-1 bg-white border-2 border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                    <a onClick={() => setModalOpen(true)}>{__("Import")}</a></div>
+                                <div id="export-entries"
+                                     title="Export all data from the database or export a specific set with the defined search paramters in the table."
+                                     className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                    <a
+                                        href={route("exportInventoryItems", queryParams)}
+                                    >
+                                        {__("Export")}
+                                    </a>
+                                </div>
+                            </> :
                             <DownloadButton linkToItem={route("exportInventoryItems", queryParams)}>{__("Export")}</DownloadButton>
                         }
                     </GroupButtonDropdown>
@@ -148,20 +147,12 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                             children={__("Type")}
                                         />
                                         <TableHeader
-                                            name="laboratory"
-                                            sort_field={queryParams.sort_field}
-                                            sort_direction={queryParams.sort_direction}
-                                            sortChanged={sortChanged}
-                                            children={__("Laboratory")}
-                                        />
-                                        <TableHeader
                                             name="updated_by"
                                             sort_field={queryParams.sort_field}
                                             sort_direction={queryParams.sort_direction}
                                             sortChanged={sortChanged}
                                             children={__("Updated by")}
                                         />
-                                        {/*<th className="px-3 py-2">{__("Updated by")}</th>*/}
                                         <th className="px-3 py-2">{__("Actions")}</th>
                                     </tr>
                                     </thead>
@@ -199,14 +190,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                                 onKeyPress={e => onKeyPress('inventory_type', e)}/>
                                         </th>
                                         <th className="px-3 py-2">
-                                            <TextInput
-                                                className="w-full text-sm"
-                                                defaultValue={queryParams.laboratory}
-                                                placeholder={__("Laboratory")}
-                                                onKeyPress={e => onKeyPress('laboratory', e)}/>
-                                        </th>
-                                        {/*<th className="px-3 py-2"></th>*/}
-                                        <th className="px-3 py-2">
                                             <TextInput className="w-full text-sm" placeholder={__("Updated by")}
                                                        defaultValue={queryParams.updated_by}
                                                        onBlur={e => searchFieldChanged('updated_by', e.target.value)}
@@ -232,7 +215,6 @@ export default function Index({auth, inventoryItems, role, queryParams = null, s
                                             <td className="px-3 py-2">{inventoryItem.name_eng}</td>
                                             <td className="px-3 py-2">{inventoryItem.total_amount}</td>
                                             <td className="px-3 py-2">{inventoryItem.inventory_type}</td>
-                                            <td className="px-3 py-2">{inventoryItem.laboratory}</td>
                                             <td className="px-3 py-2">{inventoryItem.updated_by}</td>
                                             <td className="flex justify-start mt-1 px-2 py-1">
                                                 <Link href={route("inventoryItems.editRaw", inventoryItem.id)}

@@ -22,22 +22,23 @@ export default function Authenticated({ user, header, children, role }) {
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('dashboard')} active={route().current('dashboard')}>
+                                <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('dashboard')} active={route().current('dashboard')}>
                                     {__("Dashboard")}
                                 </NavLink>
-                                {role === "admin" && <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('users.index')} active={route().current('users*')}>
-                                    {__("Users")}
-                                </NavLink>}
-                                <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('inventoryItems.index')} active={route().current('inventoryItems*')}>
+                                {role === "admin" &&
+                                    <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('users.index')} active={route().current('users*')}>
+                                    {__("Users")}</NavLink>
+                                }
+                                <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('inventoryItems.index')} active={route().current('inventoryItems*')}>
                                     {__("Inventory")}
                                 </NavLink>
-                                {role ==="admin" && <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('itemTypes.index')} active={route().current('itemTypes*')}>
+                                {role ==="admin" && <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('itemTypes.index')} active={route().current('itemTypes*')}>
                                     {__("Types")}
                                 </NavLink>}
-                                {role ==="admin" && <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('laboratories.index')} active={route().current('laboratories*')}>
+                                {role ==="admin" && <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('laboratories.index')} active={route().current('laboratories*')}>
                                     {__("Laboratories")}
                                 </NavLink>}
-                                <NavLink className="4xl:text-xl 3xl:text-lg 2xl:text-base text-white" href={route('reader')} active={route().current('reader')}>
+                                <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('reader')} active={route().current('reader')}>
                                     {__("Reader")}
                                 </NavLink>
                             </div>
@@ -50,7 +51,7 @@ export default function Authenticated({ user, header, children, role }) {
                                         <span className="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center px-3 py-2 border border-transparent 4xl:text-lg 3xl:text-base 2xl:text-sm text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
+                                                className="inline-flex items-center px-3 py-2 border border-transparent 4xl:text-lg 2xl:text-base xl:text-sm text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
                                             >
                                                 {user.name}
 

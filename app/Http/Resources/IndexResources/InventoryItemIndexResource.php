@@ -3,6 +3,7 @@
 namespace App\Http\Resources\IndexResources;
 
 use App\Http\Resources\ItemTypeResource;
+use App\Models\InventoryItem;
 use App\Http\Resources\LaboratoryResource;
 use App\Http\Resources\UserResource;
 use Carbon\Carbon;
@@ -28,6 +29,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property datetime $updated_at;
  * @property BelongsTo $createdBy;
  * @property BelongsTo $updatedBy;
+ * @method getStatusAttribute()
  */
 class InventoryItemIndexResource extends JsonResource
 {
@@ -46,7 +48,7 @@ class InventoryItemIndexResource extends JsonResource
             'name_eng' => $this->name_eng,
             'provider' => $this->provider,
             'total_amount' => $this->total_count,
-            'critical_amount' => $this->critical_amount,
+            'inventory_status' => $this->getStatusAttribute(),
             'url_to_provider_site' =>$this->url_to_provider,
             'laboratory' => (new LaboratoryResource($this->belongsToLaboratory))->name ?? '',
             'cupboard' => $this->cupboard,

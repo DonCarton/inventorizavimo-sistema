@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head} from '@inertiajs/react';
 import {__} from '@/Libs/Lang.jsx';
-import {FaBarcode, FaTable, FaUser, FaQrcode} from "react-icons/fa";
+import {FaTable, FaUser} from "react-icons/fa";
 import {MdOutlineQrCode2} from "react-icons/md";
 
 export default function Dashboard({auth, role}) {
@@ -28,6 +28,14 @@ export default function Dashboard({auth, role}) {
                                     <p className="text-sm">{__("User management")}.</p>
                                 </div>
                             </a>)}
+                            <a href={route("inventoryItems.myLaboratory")}
+                               className="w-full flex items-center h-24 bg-gray-100 p-4 rounded-lg shadow-md group hover:bg-rose-800 active:bg-pink-900 transition ease-in-out duration-150">
+                                <FaTable className="w-16 h-16 text-4xl text-gray-700 group-hover:text-white"/>
+                                <div className="ml-4 group-hover:text-white">
+                                    <h2 className="text-lg font-semibold">{__("My inventory")}</h2>
+                                    <p className="text-sm">{__("My inventory management")}.</p>
+                                </div>
+                            </a>
                             <a href={route("inventoryItems.index")}
                                className="w-full flex items-center h-24 bg-gray-100 p-4 rounded-lg shadow-md group hover:bg-rose-800 active:bg-pink-900 transition ease-in-out duration-150">
                                 <FaTable className="w-16 h-16 text-4xl text-gray-700 group-hover:text-white"/>

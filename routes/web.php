@@ -42,6 +42,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::get('/reader/{barcode}', [BarcodesController::class, 'query'])->name('reader.query');
         Route::get('/process-scan/{barcode}',[BarcodesController::class, 'getUrl'])->name('processScan');
         Route::get('exportInventoryItems', [InventoryItemController::class, 'export'])->name('exportInventoryItems');
+        Route::get('/myLaboratory', [InventoryItemController::class, 'userOwnInventory'])->name('inventoryItems.myLaboratory');
     });
 });
 

@@ -5,24 +5,44 @@ namespace App\Exports;
 use App\Models\InventoryItem;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
 class InventoryExports implements FromCollection, WithMapping, WithHeadings
 {
-    private string $data;
-    public function __construct(string $data)
+    private array $data;
+
+    public function __construct(array $data = [])
     {
-        $this->data = $data;
+        $this->data = array_diff_key($data, array_flip(['sort_direction', 'sort_field']));
     }
+
     /**
-    * @return Collection
-    */
+     * @return Collection
+     */
     public function collection(): Collection
     {
-        return InventoryItem::query()->where('local_name','like','%'.$this->data.'%')->get();
-        //return InventoryItem::all();
+        $query = InventoryItem::query();
+        if (!empty($this->data)) {
+            foreach ($this->data as $column => $value) {
+                if ($column !== 'inventory_type') {
+                    $query->where($column, 'LIKE', "%{$value}%");
+                }
+            }
+            if (isset($this->data['inventory_type'])) {
+                $query->whereHas('itemType', function ($query) {
+                    $query->where('name', 'like', '%' . $this->data['inventory_type'] . '%');
+                });
+            }
+            if (isset($this->data['laboratory'])) {
+                $query->whereHas('belongsToLaboratory', function ($query) {
+                    $query->where('name', 'like', '%' . $this->data['laboratory'] . '%');
+                });
+            }
+        }
+        return $query->get();
     }
 
     /**
