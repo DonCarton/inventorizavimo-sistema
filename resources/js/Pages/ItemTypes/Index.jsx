@@ -66,8 +66,8 @@ export default function InventoryTypes({auth, itemTypes, role, success, warning}
                                                 {itemType.name}
                                             </Link>
                                         </td>
-                                        <td className="px-3 py-2">{itemType.updated_at}</td>
-                                        <td className="px-3 py-2">{itemType.updated_by.email}</td>
+                                        <td className="px-3 py-2">{itemType.updatedAt}</td>
+                                        <td className="px-3 py-2">{itemType.updatedBy.email}</td>
                                         <td className="flex justify-start mt-1 px-2 py-1">
                                             <Link href={route("itemTypes.edit", itemType.id)}
                                                   className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">

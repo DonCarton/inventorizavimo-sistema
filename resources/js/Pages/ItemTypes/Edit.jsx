@@ -9,10 +9,10 @@ import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
 export default function Edit({ auth, itemType, role, previousUrl }) {
     const [previousUrlPage] = useState(previousUrl);
-    const [checked, setChecked] = useState(itemType.data.change_acc_amount);
+    const [checked, setChecked] = useState(itemType.data.changeAccAmount);
     const {data, setData, put, errors, processing} = useForm({
         name: itemType.data.name || '',
-        change_acc_amount: itemType.data.change_acc_amount,
+        change_acc_amount: itemType.data.changeAccAmount || false,
     })
     const onSubmit = (e) => {
         e.preventDefault();

@@ -3,8 +3,8 @@ import {Head, Link} from "@inertiajs/react";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import {__} from "@/Libs/Lang.jsx";
-import {Capitalize} from "@/Libs/Capitalize.jsx";
 import {useState} from "react";
+import StringHelper from "@/Libs/StringHelper.jsx";
 
 export default function Show({auth, user, role, userRole, roles, laboratories, previousUrl}) {
     const [previousUrlPage] = useState(previousUrl);
@@ -43,7 +43,7 @@ export default function Show({auth, user, role, userRole, roles, laboratories, p
                                 <InputLabel htmlFor="user_role" value={__("Role")}/>
                                 <select id="user_role" name="role" disabled={true} className="disabled:bg-gray-400 disabled:text-white border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={userRole[0].name}>
                                     <option>{__("Choose a value")}</option>
-                                    {roles.map((role) => (<option key={role.id} value={role.name}>{__(Capitalize(role.name))}</option>))}
+                                    {roles.map((role) => (<option key={role.id} value={role.name}>{StringHelper.__(StringHelper.Capitalize(role.name))}</option>))}
                                 </select>
                             </div>
                             <div className="mt-4">

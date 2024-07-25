@@ -18,11 +18,11 @@ class ItemTypeResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'change_acc_amount' => (bool)$this->change_acc_amount,
-            'created_at' => (new Carbon($this->created_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
-            'updated_at' => (new Carbon($this->created_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
-            'created_by' => new UserResource($this->createdBy),
-            'updated_by' => new UserResource($this->updatedBy),
+            'changeAccAmount' => (bool)$this->change_acc_amount,
+            'createdAt' => (new Carbon($this->created_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
+            'updatedAt' => (new Carbon($this->created_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
+            'createdBy' => new UserResource($this->createdBy),
+            'updatedBy' => new UserResource($this->updatedBy),
         ];
     }
 }

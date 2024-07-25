@@ -22,7 +22,7 @@ class StoreItemTypeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|min:3|max:50',
+            'name' => 'required|min:3|max:100',
             'change_acc_amount' => 'required|boolean',
             'created_by' => 'required|exists:users,id',
             'updated_by' => 'required|exists:users,id'

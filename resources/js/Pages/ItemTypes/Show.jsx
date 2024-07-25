@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
-import {Head, Link, useForm} from "@inertiajs/react";
+import {Head, Link} from "@inertiajs/react";
 import {__} from '@/Libs/Lang.jsx';
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
@@ -30,7 +30,7 @@ export default function Show({ auth, itemType, role, previousUrl }) {
                                             disabled={true}
                                             className="mr-2 rounded w-6 h-6 disabled:text-white disabled:bg-gray-400 disabled:hover:bg-gray-500"
                                             type="checkbox"
-                                            checked={itemType.data.change_acc_amount}
+                                            checked={itemType.data.changeAccAmount}
                                         />
                                         {__("Can change literal amount")}?
                                     </label>
