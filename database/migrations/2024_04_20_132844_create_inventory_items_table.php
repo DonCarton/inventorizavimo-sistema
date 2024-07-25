@@ -31,10 +31,8 @@ return new class extends Migration
             $table->double('average_consumption')->nullable();
             $table->boolean('multiple_locations')->nullable();
             $table->foreignId('laboratory')->nullable()->constrained('laboratories');
-//            $table->foreignId('cupboard')->nullable()->constrained('cupboards');
-//            $table->foreignId('shelf')->nullable()->constrained('shelves');
-            $table->foreignId('cupboard')->nullable()->constrained('inventory_items');
-            $table->foreignId('shelf')->nullable()->constrained('inventory_items');
+            $table->foreignId('cupboard')->nullable()->constrained('cupboards');
+            $table->foreignId('shelf')->nullable()->constrained('shelves');
             $table->longText('storage_conditions')->nullable();
             $table->string('asset_number')->nullable();
             $table->longText('used_for')->nullable();

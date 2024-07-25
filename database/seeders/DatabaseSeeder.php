@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\InventoryItem;
 use App\Models\ItemType;
+use App\Models\Laboratory;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -62,6 +63,17 @@ class DatabaseSeeder extends Seeder
 
         $regularUser->assignRole('user');
 
+        $laboratory = Laboratory::factory()->create([
+            'name' => 'Bazinė',
+            'created_by' => $adminUser->id,
+            'updated_by' => $adminUser->id
+        ]);
+
+        $adminUser->laboratory = $laboratory->id;
+        $adminUser->save();
+        $regularUser->laboratory = $laboratory->id;
+        $regularUser->save();
+
         ItemType::factory()->create([
             'name' => 'Atsargos (kitos sunaudojamos atsargos)',
             'change_acc_amount' => 1,
@@ -96,5 +108,7 @@ class DatabaseSeeder extends Seeder
             'created_by' => 1,
             'updated_by' => 1
         ]);
+
+        $regularUser->save(['laboratory' => 1]);
     }
 }
