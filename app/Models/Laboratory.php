@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static create(array $all)
  * @method static where(string $string, mixed $laboratory)
  * @method static findOrFail(int $id)
+ * @method static find(int $id)
  */
 class Laboratory extends Model
 {

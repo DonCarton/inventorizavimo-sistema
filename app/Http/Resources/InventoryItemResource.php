@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use DateTime;
-use Carbon\Carbon;
+use DateTimeZone;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -74,8 +74,8 @@ class InventoryItemResource extends JsonResource
             'assetNumber' => $this->asset_number,
             'usedFor' => $this->used_for,
             'comments' => $this->comments,
-            'created_at' => (new Carbon($this->created_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
-            'updated_at' => (new Carbon($this->updated_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
+            'created_at' => $this->created_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
             'created_by' => (new UserResource($this->createdBy))->email,
             'updated_by' => (new UserResource($this->updatedBy))->email,
         ];

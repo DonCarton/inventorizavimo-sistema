@@ -3,11 +3,10 @@
 namespace App\Http\Resources\IndexResources;
 
 use App\Http\Resources\ItemTypeResource;
-use App\Models\InventoryItem;
 use App\Http\Resources\LaboratoryResource;
 use App\Http\Resources\UserResource;
-use Carbon\Carbon;
 use DateTime;
+use DateTimeZone;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -53,8 +52,8 @@ class InventoryItemIndexResource extends JsonResource
             'laboratory' => (new LaboratoryResource($this->belongsToLaboratory))->name ?? '',
             'cupboard' => $this->cupboard,
             'shelf' => $this->shelf,
-            'createdAt' => (new Carbon($this->created_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
-            'updatedAt' => (new Carbon($this->updated_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
+            'created_at' => $this->created_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
             'createdBy' => (new UserResource($this->createdBy))->email,
             'updatedBy' => (new UserResource($this->updatedBy))->email,
         ];

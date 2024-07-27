@@ -2,9 +2,42 @@
 
 namespace App\Http\Resources;
 
+use DateTime;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property int $id
+ * @property string $local_name
+ * @property int $inventory_type
+ * @property string $name
+ * @property string $name_eng
+ * @property string $formula
+ * @property string $cas_nr
+ * @property string $user_guide
+ * @property string $provider
+ * @property string $product_code
+ * @property string $barcode
+ * @property string $url_to_provider
+ * @property string $alt_url_to_provider
+ * @property double $total_amount
+ * @property double $critical_amount
+ * @property double $to_order_amount
+ * @property double $average_consumption
+ * @property boolean $multiple_locations
+ * @property int $laboratory
+ * @property int $cupboard
+ * @property int $shelf
+ * @property string $storage_conditions
+ * @property string $asset_number
+ * @property string $used_for
+ * @property string $comments
+ * @property DateTime $created_at
+ * @property DateTime $updated_at
+ * @property BelongsTo $createdBy
+ * @property BelongsTo $updatedBy
+ */
 class RichInventoryItemResource extends JsonResource
 {
     /**

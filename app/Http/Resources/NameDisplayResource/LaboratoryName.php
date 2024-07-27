@@ -5,6 +5,9 @@ namespace App\Http\Resources\NameDisplayResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property string $name
+ */
 class LaboratoryName extends JsonResource
 {
     //public static $wrap = false;

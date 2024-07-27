@@ -5,9 +5,22 @@ namespace App\Http\Resources;
 use App\Http\Resources\NameDisplayResource\LaboratoryName;
 use App\Http\Resources\SelectObjectResources\ItemTypeForSelect;
 use App\Models\Laboratory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+
+/**
+ * @property int $id
+ * @property string $local_name
+ * @property BelongsTo $itemType
+ * @property int $laboratory
+ * @property string $name
+ * @property string $name_eng
+ * @property double $total_amount
+ * @property double $critical_amount
+ * @property BelongsTo $createdBy
+ */
 class CRUDInventoryItemResource extends JsonResource
 {
     public static $wrap = false;
