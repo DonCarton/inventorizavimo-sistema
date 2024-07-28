@@ -4,38 +4,21 @@ import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
 import {useState} from "react";
-import {Accordion, AccordionBody, AccordionHeader} from "@material-tailwind/react";
 import {__} from "@/Libs/Lang.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
 import {measureOptions, labPrefixOptions} from "@/Configurations/SelectConfigurations.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
-import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import FlexibleSelect from "@/Components/Forms/FlexibleSelect.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 
-function Icon({id, open}) {
-    return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className={`${id === open ? "rotate-180" : ""} h-5 w-5 transition-transform`}
-        >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
-        </svg>
-    );
-}
-
-export default function Create({auth, previousUrl, role, laboratories, itemTypes}) {
+export default function Create({auth, previousUrl, role, itemTypes}) {
     const [previousUrlPage] = useState(previousUrl);
     const [postNumber, setPostNumber] = useState(null);
     const [activeTab, setActiveTab] = useState(1);
     const [selectedPrefix, setSelectedPrefix] = useState('BIN');
     const [selectedMeasurement, setSelectedMeasurement] = useState('');
-    const {data, formData, setData, post, processing, errors} = useForm({
+    const {data, setData, post, processing, errors} = useForm({
         local_name: postNumber || '',
         inventory_type: '',
         name: '',
@@ -56,7 +39,6 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
         cupboard: '',
         shelf: '',
         storage_conditions: '',
-        asset_number_required: false,
         asset_number: '',
         used_for: '',
         comments: ''
@@ -109,7 +91,6 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
 
         post(route('inventoryItems.store'));
     }
-    console.log(data.inventory_type);
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -197,12 +178,12 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                                                 />
                                                 <InputError message={errors.inventory_type} className="mt-2"/>
                                             </div>
-                                            <div className={assetNumberShown ? "mt-1 w-full" : "hidden"}>
+                                            <div className="mt-1 w-full">
                                                 <InputLabel
                                                     htmlFor="inventoryItems_asset_number">{__("Asset number")}</InputLabel>
                                                 <TextInputExtra id="inventoryItems_asset_number" name="asset_number"
-                                                                className="w-full"
-                                                                type="text"
+                                                                className={assetNumberShown ? "w-full" : "w-full bg-gray-400 text-white"}
+                                                                type="text" disabled={!assetNumberShown} readOnly={!assetNumberShown}
                                                                 onChange={e => setData('asset_number', e.target.value)}>
                                                 </TextInputExtra>
                                                 <InputError message={errors.asset_number} className="mt-2"/>
@@ -434,36 +415,6 @@ export default function Create({auth, previousUrl, role, laboratories, itemTypes
                                             </div>
                                         </div>
                                     </AccordionWithManualIndex>
-                                    {/*<Accordion open={open === 1} icon={<Icon id={1} open={open}/>}>*/}
-                                    {/*    <AccordionHeader*/}
-                                    {/*        onClick={() => handleOpen(1)}>{__("Inventory information")}</AccordionHeader>*/}
-                                    {/*    <AccordionBody>*/}
-                                    {/*    </AccordionBody>*/}
-                                    {/*</Accordion>*/}
-                                    {/*<Accordion open={open2} icon={<Icon id={2} open={open2}/>}>*/}
-                                    {/*    <AccordionHeader onClick={() => handleOpen2(2)}>{__("Order information")}</AccordionHeader>*/}
-                                    {/*    <AccordionBody>*/}
-                                    {/*    </AccordionBody>*/}
-                                    {/*</Accordion>*/}
-                                    {/*<Accordion open={open3} icon={<Icon id={3} open={open3}/>}>*/}
-                                    {/*    <AccordionHeader onClick={() => handleOpen3(3)}>{__("Amount")}</AccordionHeader>*/}
-                                    {/*    <AccordionBody>*/}
-
-                                    {/*    </AccordionBody>*/}
-                                    {/*</Accordion>*/}
-                                    {/*<Accordion open={open4} icon={<Icon id={4} open={open4}/>}>*/}
-                                    {/*    <AccordionHeader*/}
-                                    {/*        onClick={() => handleOpen4(4)}>{__("Location")}</AccordionHeader>*/}
-                                    {/*    <AccordionBody>*/}
-                                    {/*    </AccordionBody>*/}
-                                    {/*</Accordion>*/}
-                                    {/*<Accordion open={open5} icon={<Icon id={5} open={open5}/>}>*/}
-                                    {/*    <AccordionHeader*/}
-                                    {/*        onClick={() => handleOpen5(5)}>{__("Additional information")}</AccordionHeader>*/}
-                                    {/*    <AccordionBody>*/}
-
-                                    {/*    </AccordionBody>*/}
-                                    {/*</Accordion>*/}
                                 </div>
                                 <div>
                                     <Link href={previousUrlPage}

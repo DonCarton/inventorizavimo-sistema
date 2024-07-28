@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static create(\Illuminate\Http\Request $request)
  * @method static where(string $string, mixed $inventory_type)
  * @method static findOrFail(int $id)
+ * @method static find(int $id)
+ * @property string $name
+ * @property bool $change_acc_amount
  */
 class ItemType extends Model
 {

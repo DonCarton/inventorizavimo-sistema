@@ -2,10 +2,22 @@
 
 namespace App\Http\Resources;
 
-use Carbon\Carbon;
+use DateTime;
+use DateTimeZone;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+
+/**
+ * @property int $inventory_item_id
+ * @property BelongsTo $inventoryItem
+ * @property string $action
+ * @property double $amount
+ * @property string $comment
+ * @property BelongsTo $createdBy
+ * @property DateTime $created_at
+ */
 class AmountLogResource extends JsonResource
 {
     public static $withoutWrapping = true;
@@ -24,7 +36,7 @@ class AmountLogResource extends JsonResource
             'amount_handled' => $this->amount,
             'comment' => $this->comment,
             'created_by' => new UserResource($this->createdBy),
-            'created_at' => (new Carbon($this->created_at))->setTimezone('Europe/Vilnius')->format('Y-m-d H:m'),
+            'created_at' => $this->created_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i'),
         ];
     }
 }

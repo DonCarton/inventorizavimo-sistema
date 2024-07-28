@@ -5,6 +5,10 @@ namespace App\Http\Resources\SelectObjectResources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property int $id
+ * @property string $name
+ */
 class LaboratoryResourceForMulti extends JsonResource
 {
     public static $wrap = false;

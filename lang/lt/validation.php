@@ -31,10 +31,10 @@ return [
         'numeric' => 'The :attribute field must be between :min and :max.',
         'string' => 'The :attribute field must be between :min and :max characters.',
     ],
-    'boolean' => 'The :attribute field must be true or false.',
+    'boolean' => ':Attribute laukelis turi būti pažymėtas.',
     'can' => 'The :attribute field contains an unauthorized value.',
     'confirmed' => 'The :attribute field confirmation does not match.',
-    'current_password' => 'The password is incorrect.',
+    'current_password' => 'Slaptažodis neteisingas.',
     'date' => 'The :attribute field must be a valid date.',
     'date_equals' => 'The :attribute field must be a date equal to :date.',
     'date_format' => 'The :attribute field must match the format :format.',
@@ -95,16 +95,16 @@ return [
         'array' => 'The :attribute field must not have more than :max items.',
         'file' => 'The :attribute field must not be greater than :max kilobytes.',
         'numeric' => 'The :attribute field must not be greater than :max.',
-        'string' => ':attribute privalo būti mažesnis nei :max simbolių.',
+        'string' => ':Attribute privalo būti mažesnis nei :max simbolių.',
     ],
     'max_digits' => 'The :attribute field must not have more than :max digits.',
     'mimes' => 'The :attribute field must be a file of type: :values.',
     'mimetypes' => 'The :attribute field must be a file of type: :values.',
     'min' => [
         'array' => 'The :attribute field must have at least :min items.',
-        'file' => ':attribute laukas turi būti :min kilobaitų.',
+        'file' => ':Attribute laukas turi būti :min kilobaitų.',
         'numeric' => 'The :attribute field must be at least :min.',
-        'string' => ':attribute privalo būti daugiau nei :min simboliai.',
+        'string' => ':Attribute privalo būti daugiau nei :min simboliai.',
     ],
     'min_digits' => 'The :attribute field must have at least :min digits.',
     'missing' => 'The :attribute field must be missing.',
@@ -133,7 +133,7 @@ return [
     'prohibited_unless' => 'The :attribute field is prohibited unless :other is in :values.',
     'prohibits' => 'The :attribute field prohibits :other from being present.',
     'regex' => 'The :attribute field format is invalid.',
-    'required' => ':attribute yra privalomas laukas.',
+    'required' => ':Attribute yra privalomas laukas.',
     'required_array_keys' => 'The :attribute field must contain entries for: :values.',
     'required_if' => ':attribute yra privalomas jeigu :other yra :value.',
     'required_if_accepted' => 'The :attribute field is required when :other is accepted.',
@@ -155,7 +155,7 @@ return [
     'timezone' => 'The :attribute field must be a valid timezone.',
     'unique' => 'The :attribute has already been taken.',
     'uploaded' => 'The :attribute failed to upload.',
-    'uppercase' => 'The :attribute field must be uppercase.',
+    'uppercase' => ':Attribute turi būti didžiosimis raidėmis.',
     'url' => 'The :attribute field must be a valid URL.',
     'ulid' => 'The :attribute field must be a valid ULID.',
     'uuid' => 'The :attribute field must be a valid UUID.',
@@ -172,9 +172,26 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'asset_number' => [
+            'custom_asset_validation' => ':Attribute negali būti tuščias, jeigu pasirinktas tipas yra \':Name.\'',
+            'custom_asset_still_exists' => ':Attribute turi būti tuščias, jeigu pasirinktas tipas yra \':Name.\'',
         ],
+        'name' => [
+            'required' => 'Pavadinimas yra privalomas.',
+        ],
+        'name_eng' => [
+            'required' => 'Angliškas pavadinimas (:Attribute) yra privalomas.',
+        ],
+        'cupboard' => [
+            'exists' => 'Pasirinkta spinta nėra tinkamas objektas šitam laukeliui.'
+        ],
+        'shelf' => [
+            'exists' => 'Pasirinkta lentyna nėra tinkamas objektas šitam laukeliui.'
+        ],
+        'inventory_type' => [
+            'required' => 'Pasirinkti inventoriaus tipą yra privaloma.',
+        ],
+
     ],
 
     /*
@@ -189,34 +206,37 @@ return [
     */
 
     'attributes' => [
-        'local_name' => 'Vietinis pavadinimas',
-        'inventory_type' => 'Tipas',
-        'name' => 'Pavadinimas',
-        'name_eng' => 'Pavadinimas ENG',
-        'formula' => 'Formulė',
+        'local_name' => 'vietinis pavadinimas',
+        'inventory_type' => 'tipas',
+        'name' => 'pavadinimas',
+        'name_eng' => 'pavadinimas ENG',
+        'formula' => 'formulė',
         'cas_nr' => 'CAS NR',
-        'user_guide' => 'SDL/Naudojimo instrukcijos',
-        'provider' => 'Tiekėjas',
-        'product_code' => 'Prekės kodas',
-        'barcode' => 'Barkodas',
-        'total_count' => 'Kiekis',
-        'critical_amount' => 'Kritinis kiekis',
-        'multiple_locations' => 'Keliose vietose?',
-        'storage_conditions' => 'Laikymo sąlygos',
-        'asset_number' => 'Turto numeris',
-        'used_for' => 'Naudojimas',
-        'comments' => 'Komentarai',
-        'amount_removed' => 'Išimamas kiekis',
-        'amount_added' => 'Įdedamas kiekis',
-        'amount' => 'Kiekis',
-        'laboratory_id' => 'Laboratorija',
-        'first_name' => 'Vardas',
-        'last_name' => 'Pavardė',
-        'email' => 'El. paštas',
-        'laboratory' => 'Laboratorija',
-        'selectedRole' => 'Rolė',
-        'comment' => 'Komentaras',
-        'change_acc_amount' => 'Gali literaliai keisti likutį?'
+        'user_guide' => 'SDL/naudojimo instrukcijos',
+        'provider' => 'tiekėjas',
+        'product_code' => 'prekės kodas',
+        'barcode' => 'barkodas',
+        'total_amount' => 'kiekis',
+        'critical_amount' => 'kritinis kiekis',
+        'to_order_amount' => 'užsakyti',
+        'multiple_locations' => 'keliose vietose?',
+        'storage_conditions' => 'laikymo sąlygos',
+        'asset_number' => 'turto numeris',
+        'used_for' => 'naudojimas',
+        'comments' => 'komentarai',
+        'amount_removed' => 'išimamas kiekis',
+        'amount_added' => 'įdedamas kiekis',
+        'amount' => 'kiekis',
+        'laboratory_id' => 'laboratorija',
+        'first_name' => 'vardas',
+        'last_name' => 'pavardė',
+        'email' => 'el. paštas',
+        'laboratory' => 'laboratorija',
+        'selectedRole' => 'rolė',
+        'comment' => 'komentaras',
+        'change_acc_amount' => 'gali literaliai keisti likutį?',
+        'cupboard' => 'spinta',
+        'shelf' => 'lentyna'
     ],
 
 ];
