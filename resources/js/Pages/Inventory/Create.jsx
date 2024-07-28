@@ -39,7 +39,6 @@ export default function Create({auth, previousUrl, role, itemTypes}) {
         cupboard: '',
         shelf: '',
         storage_conditions: '',
-        asset_number_required: false,
         asset_number: '',
         used_for: '',
         comments: ''
@@ -179,12 +178,12 @@ export default function Create({auth, previousUrl, role, itemTypes}) {
                                                 />
                                                 <InputError message={errors.inventory_type} className="mt-2"/>
                                             </div>
-                                            <div className={assetNumberShown ? "mt-1 w-full" : "hidden"}>
+                                            <div className="mt-1 w-full">
                                                 <InputLabel
                                                     htmlFor="inventoryItems_asset_number">{__("Asset number")}</InputLabel>
                                                 <TextInputExtra id="inventoryItems_asset_number" name="asset_number"
-                                                                className="w-full"
-                                                                type="text"
+                                                                className={assetNumberShown ? "w-full" : "w-full bg-gray-400 text-white"}
+                                                                type="text" disabled={!assetNumberShown} readOnly={!assetNumberShown}
                                                                 onChange={e => setData('asset_number', e.target.value)}>
                                                 </TextInputExtra>
                                                 <InputError message={errors.asset_number} className="mt-2"/>

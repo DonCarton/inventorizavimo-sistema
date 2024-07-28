@@ -172,9 +172,26 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'asset_number' => [
+            'custom_asset_validation' => ':Attribute can\'t be empty, because the chosen type is \':Name.\'',
+            'custom_asset_still_exists' => ':Attribute must be empty, because the chosen type is \':Name.\'',
         ],
+        'name' => [
+            'required' => 'Name is a required field.',
+        ],
+        'name_eng' => [
+            'required' => 'Name ENG is a required field.',
+        ],
+        'cupboard' => [
+            'exists' => 'The chosen cupboard is not the correct object for this field.'
+        ],
+        'shelf' => [
+            'exists' => 'The chosen shelf is not the correct object for this field.'
+        ],
+        'inventory_type' => [
+            'required' => 'An inventory type must be selected.',
+        ],
+
     ],
 
     /*
