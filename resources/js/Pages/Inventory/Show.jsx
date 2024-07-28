@@ -3,13 +3,14 @@ import {Head, Link} from "@inertiajs/react";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import {__} from "@/Libs/Lang.jsx";
-import { FaDownload } from 'react-icons/fa';
+import {FaDownload} from 'react-icons/fa';
 import SelectForSingleItem from "@/Components/Forms/SelectForSingleItem.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 import React, {useState} from "react";
 import ClickableUrlInput from "@/Components/Forms/ClickableUrlInput.jsx";
+import HistoryLog from "@/Components/Forms/HistoryLog.jsx";
 
 
 export default function Show({auth, inventoryItem, role, laboratories, itemTypes}) {
@@ -24,9 +25,19 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                 <div className="flex justify-between items-center">
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Show")} - {inventoryItem.data.name}</h2>
                     {/*<a href={route("getBarcodePng", inventoryItem.data.localName)} className="inline-flex items-center px-4 py-2 bg-pink-800 text-white font-semibold text-sm rounded-lg hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75"><FaDownload className="mr-2"/>{__("Local barcode")}</a>*/}
-                    <button onClick={toggleAllAccordions} title={__("Toggle if the form should be fully expanded or collapsed") + '.'} className="px-4 py-2 bg-pink-800 text-white rounded hover:bg-pink-700" >
-                        {openAll ? __("Collapse form") : __("Expand form")}
-                    </button>
+                    <div>
+                        {/*<HistoryLog*/}
+                        {/*    objectId={inventoryItem.data.id}*/}
+                        {/*    objectType="inventory_item"*/}
+                        {/*    nameOfButton={__("History")}*/}
+                        {/*    nameOfCloseButton={__("Close")}*/}
+                        {/*></HistoryLog>*/}
+                        <button onClick={toggleAllAccordions}
+                                title={__("Toggle if the form should be fully expanded or collapsed") + '.'}
+                                className="px-4 py-2 bg-pink-800 text-white rounded hover:bg-pink-700">
+                            {openAll ? __("Collapse form") : __("Expand form")}
+                        </button>
+                    </div>
                 </div>
             }
             role={role}
@@ -34,10 +45,11 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
             <Head title={__("Show") + ' - ' + inventoryItem.data.name}/>
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                             <div className="pb-6">
-                                <AccordionWithManualIndex expandedByDefault={openAll} indexOfAcc={1} headerName={__("Inventory information")}>
+                                <AccordionWithManualIndex expandedByDefault={openAll} indexOfAcc={1}
+                                                          headerName={__("Inventory information")}>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div className="mt-4">
                                             <InputLabel
@@ -82,18 +94,25 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_formula">{__("Formula")}</InputLabel>
-                                            <TextInput id="inventoryItems_formula" type="text" name="formula" disabled={true} readOnly={true}
-                                                       value={inventoryItem.data.formula} className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            <TextInput id="inventoryItems_formula" type="text" name="formula"
+                                                       disabled={true} readOnly={true}
+                                                       value={inventoryItem.data.formula}
+                                                       className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_cas_nr">{__("CAS NR")}</InputLabel>
-                                            <TextInput id="inventoryItems_cas_nr" type="text" name="cas_nr" disabled={true} readOnly={true}
-                                                       value={inventoryItem.data.casNr} className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            <TextInput id="inventoryItems_cas_nr" type="text" name="cas_nr"
+                                                       disabled={true} readOnly={true}
+                                                       value={inventoryItem.data.casNr}
+                                                       className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel
                                                 htmlFor="inventoryItems_user_guide">{__("User guide")}</InputLabel>
-                                            <TextInput id="inventoryItems_user_guide" type="text" name="user_guide" disabled={true} readOnly={true} value={inventoryItem.data.userGuide} className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            <TextInput id="inventoryItems_user_guide" type="text" name="user_guide"
+                                                       disabled={true} readOnly={true}
+                                                       value={inventoryItem.data.userGuide}
+                                                       className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                     </div>
                                 </AccordionWithManualIndex>
@@ -104,7 +123,7 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                             <InputLabel htmlFor="inventoryItems_total_amount" value={__("Count")}/>
                                             <TextInput id="inventoryItems_total_amount" type="text" disabled={true}
                                                        readOnly={true} name="total_amount"
-                                                       value={inventoryItem.data.totalAmount}
+                                                       value={inventoryItem.data.totalAmount || ''}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4 w-full">
@@ -113,14 +132,14 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                             <TextInput id="inventoryItems_critical_amount" type="text"
                                                        disabled={true} readOnly={true}
                                                        name="critical_amount"
-                                                       value={inventoryItem.data.criticalAmount}
+                                                       value={inventoryItem.data.criticalAmount || ''}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4 w-full">
                                             <InputLabel htmlFor="inventoryItems_to_order" value={__("To order")}/>
                                             <TextInput id="inventoryItems_to_order" type="text" disabled={true}
                                                        readOnly={true} name="to_order"
-                                                       value={inventoryItem.data.toOrderAmount}
+                                                       value={inventoryItem.data.toOrderAmount || ''}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4 w-full">
@@ -129,41 +148,50 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                             <TextInput id="inventoryItems_average_consumption" type="text"
                                                        disabled={true} readOnly={true}
                                                        name="average_consumption"
-                                                       value={inventoryItem.data.averageConsumption}
+                                                       value={inventoryItem.data.averageConsumption || ''}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                     </div>
                                 </AccordionWithManualIndex>
-                                <AccordionWithManualIndex expandedByDefault={openAll} indexOfAcc={2} headerName={__("Order information")}>
+                                <AccordionWithManualIndex expandedByDefault={openAll} indexOfAcc={2}
+                                                          headerName={__("Order information")}>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_product_code"
                                                         value={__("Product code")}/>
                                             <TextInput id="inventoryItems_product_code" type="text" disabled={true}
                                                        readOnly={true} name="product_code"
-                                                       value={inventoryItem.data.productCode}
+                                                       value={inventoryItem.data.productCode || ''}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_barcode" value={__("Barcode")}/>
-                                            <TextInput id="inventoryItems_barcode" type="text" name="barcode" disabled={true} readOnly={true} value={inventoryItem.data.barcode} className="mt-1 w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            <TextInput id="inventoryItems_barcode" type="text" name="barcode"
+                                                       disabled={true} readOnly={true}
+                                                       value={inventoryItem.data.barcode || ''}
+                                                       className="mt-1 w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_provider" value={__("Provider")}/>
                                             <TextInput id="inventoryItems_provider" type="text" disabled={true}
                                                        readOnly={true} name="provider"
-                                                       value={inventoryItem.data.provider}
+                                                       value={inventoryItem.data.provider || ''}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_provider_url"
                                                         value={__("Provider url")}/>
-                                            <ClickableUrlInput id="inventoryItems_provider_url" name="provider_url" url={inventoryItem.data.urlToProviderSite} className="mt-1 block w-full"/>
+                                            <ClickableUrlInput id="inventoryItems_provider_url" name="provider_url"
+                                                               url={inventoryItem.data.urlToProviderSite || ''}
+                                                               className="mt-1 block w-full"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_alt_url_to_provider"
                                                         value={__("Alt url to provider")}/>
-                                            <ClickableUrlInput id="inventoryItems_alt_url_to_provider" name="alt_url_to_provider" url={inventoryItem.data.altUrlToProviderSite} className="mt-1 block w-full"/>
+                                            <ClickableUrlInput id="inventoryItems_alt_url_to_provider"
+                                                               name="alt_url_to_provider"
+                                                               url={inventoryItem.data.altUrlToProviderSite || ''}
+                                                               className="mt-1 block w-full"/>
                                         </div>
                                     </div>
                                 </AccordionWithManualIndex>
@@ -173,7 +201,7 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                             <InputLabel htmlFor="inventoryItems_local_laboratory"
                                                         value={__("Laboratory")}/>
 
-                                            <SelectForSingleItem value={inventoryItem.data.laboratory}
+                                            <SelectForSingleItem value={inventoryItem.data.laboratory || ''}
                                                                  className="disabled:text-white disabled:bg-gray-500"
                                                                  options={laboratories.data} disabled={true}
                                                                  name="inventory_type"
@@ -184,14 +212,14 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                             <InputLabel htmlFor="inventoryItems_cupboard" value={__("Cupboard")}/>
                                             <TextInput id="inventoryItems_cupboard" type="text" disabled={true}
                                                        readOnly={true} name="cupboard"
-                                                       value={inventoryItem.data.cupboard}
+                                                       value={inventoryItem.data.cupboard || ''}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_shelf" value={__("Shelf")}/>
                                             <TextInput id="inventoryItems_shelf" type="text" disabled={true}
                                                        readOnly={true} name="shelf"
-                                                       value={inventoryItem.data.shelf}
+                                                       value={inventoryItem.data.shelf || ''}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4">
@@ -210,21 +238,21 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                                         value={__("Storage conditions")}/>
                                             <TextInputExtra id="inventoryItems_storage_conditions"
                                                             name="storage_conditions" type="textarea"
-                                                            disabled={true} readOnly={true}
+                                                            disabled={true} readOnly={true} value={inventoryItem.data.storageConditions || ''}
                                                             className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_used_for"
                                                         value={__("Used for")}/>
                                             <TextInputExtra id="inventoryItems_used_for" name="used_for"
-                                                            type="textarea" disabled={true} readOnly={true}
+                                                            type="textarea" disabled={true} readOnly={true} value={inventoryItem.data.usedFor || ''}
                                                             className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_comments"
                                                         value={__("Comments")}/>
                                             <TextInputExtra id="inventoryItems_comments" name="comments"
-                                                            type="textarea" disabled={true} readOnly={true}
+                                                            type="textarea" disabled={true} readOnly={true} value={inventoryItem.data.comments || ''}
                                                             className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                     </div>
