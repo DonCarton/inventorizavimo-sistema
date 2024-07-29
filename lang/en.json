@@ -9,6 +9,7 @@
     "Types": "Types",
     "Type": "Type",
     "Reader": "Reader",
+    "Close": "Close",
     "Current password": "Current password",
     "New password": "New password",
     "Confirm password": "Confirm password",
@@ -139,6 +140,7 @@
     "Are you sure you want to activate this user": "Are you sure you want to activate this user",
     "Admin": "Admin",
     "User": "User",
+    "History": "History",
     "Choose a laboratory": "Choose a laboratory",
     "Choose an inventory type": "Choose an inventory type"
 }

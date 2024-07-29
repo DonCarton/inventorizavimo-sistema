@@ -32,6 +32,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::get('exportLaboratories', [LaboratoryController::class, 'export'])->name('exportLaboratories');
         Route::post('importInventoryItems', [InventoryItemController::class, 'import'])->name('importInventoryItems');
         Route::post('importLaboratories', [LaboratoryController::class, 'import'])->name('importLaboratories');
+        Route::post('/queryObjectHistory', [InventoryItemController::class, 'queryObjectHistory'])->name('inventoryItems.queryObjectHistory');
     });
     Route::group(['middleware' => ['role:admin|user']], function (){
         Route::get('/download-barcode/{barcodeValue}', [BarcodesController::class, 'downloadBarcode'])->name('getBarcodePng');

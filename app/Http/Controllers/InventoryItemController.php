@@ -377,4 +377,14 @@ class InventoryItemController extends Controller
         Excel::import(new InventoryImport(), $file);
         return to_route('inventoryItems.index')->with('success', __('actions.uploaded', ['name' => $fileName]) . '.');
     }
+
+    public  function queryObjectHistory(Request $request): JsonResponse
+    {
+        $objectId = $request->input('object_id');
+        $objectType = $request->input('object_type');
+        $query = InventoryItem::query();
+//        $query = $query->where('id', $objectId)->get();
+        $query = $query->skip(2)->limit(2)->get();
+        return response()->json($query->toArray());
+    }
 }

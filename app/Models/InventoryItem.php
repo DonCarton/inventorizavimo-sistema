@@ -52,40 +52,72 @@ class InventoryItem extends Model
         'created_by',
         'updated_by',
     ];
+
+    /*
+     * @param InventoryItem
+     * @return BelongsTo
+     */
     public function itemType(): BelongsTo
     {
         return $this->belongsTo(ItemType::class, 'inventory_type');
     }
+
+    /*
+     * @param InventoryItem
+     * @return string
+     */
     public function getStatusAttribute(): string
     {
-        $itemType = ItemType::where('id',$this->inventory_type)->select('change_acc_amount')->first();
-        if ($itemType){
-            $canChangeAmount = $itemType->change_acc_amount;
-            if(!$canChangeAmount && $this->amountLogs()->count() > 0){
-                return InventoryStatusEnum::TAKEN;
-            }
-            else if($canChangeAmount && $this->total_amount <= $this->critical_amount){
-                return InventoryStatusEnum::CRITICAL;
-            }
-        }
+        if ($this->total_amount <= 0 ||
+            $this->total_amount === null ||
+            $this->total_amount <= $this->critical_amount)
+        { return InventoryStatusEnum::CRITICAL; }
+
+        if ($this->amountLogs()->count() > 0)
+        { return InventoryStatusEnum::TAKEN; }
+
         return InventoryStatusEnum::NORMAL;
     }
+
+    /*
+     * @param InventoryItem
+     * @return HasMany
+     */
     public function manyLaboratories(): HasMany
     {
         return $this->hasMany(Laboratory::class, 'id');
     }
+
+    /*
+     * @param InventoryItem
+     * @return BelongsTo
+     */
     public function belongsToLaboratory(): BelongsTo
     {
         return $this->belongsTo(Laboratory::class, 'laboratory');
     }
+
+    /*
+     * @param InventoryItem
+     * @return BelongsTo
+     */
     public  function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    /*
+     * @param InventoryItem
+     * @return BelongsTo
+     */
     public  function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    /*
+     * @return HasMany
+     */
     public function amountLogs(): HasMany
     {
         return $this->hasMany(AmountLog::class, 'inventory_item_id');

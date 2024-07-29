@@ -9,6 +9,7 @@
     "Types": "Tipai",
     "Type": "Tipas",
     "Reader": "Skaitytuvas",
+    "Close": "Uždaryti",
     "Current password": "Dabartinis slaptažodis",
     "New password": "Naujas slaptažodis",
     "Confirm password": "Pakartotinis įvedimas naujo slaptažodžio",
@@ -140,6 +141,7 @@
     "Are you sure you want to activate this user": "Ar tikrai norite atblokuoti šį naudotoją",
     "Admin": "Administratorius",
     "User": "Naudotojas",
+    "History": "Istorija",
     "Choose a laboratory": "Pasirinkti laboratoriją",
     "Choose an inventory type": "Pasirinkti inventoriaus tipą"
 }
