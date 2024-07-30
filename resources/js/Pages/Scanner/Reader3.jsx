@@ -16,10 +16,11 @@ export default function Reader3({auth, role, success, failure}) {
             fps: 5,
             rememberLastUsedCamera: true,
             videoConstraints: {
-                facingMode: "environment"
+                facingMode: {
+                    exact: "back",
+                }
             }
-        },
-            true);
+        });
         scanner.render(fetchOrFail, error);
         function fetchOrFail(result){
             scanner.clear();
