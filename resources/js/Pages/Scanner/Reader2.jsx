@@ -7,56 +7,22 @@ import FailureMessage from "@/Components/FailureMessage.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 
 export default function Reader2({auth, role, success, failure}) {
-    // useEffect(() => {
-    //     const scanner = new Html5QrcodeScanner('reader', {
-    //         qrbox: {
-    //             width: 250,
-    //             height: 250,
-    //         },
-    //         fps: 5,
-    //     });
-    //     scanner.render(fetchOrFail, error);
-    //     function fetchOrFail(result){
-    //         scanner.clear();
-    //         router.get(route('processScan', result));
-    //     }
-    //     function error(err) {
-    //         console.log(err);
-    //     }
-    // }, []);
     useEffect(() => {
-        // Function to start the scanner with the back camera
-        const startScanner = (cameraId) => {
-            const scanner = new Html5Qrcode("reader");
-            const config = { fps: 5, qrbox: { width: 250, height: 250 } };
-
-            scanner.start(
-                cameraId,
-                config,
-                (decodedText, decodedResult) => {
-                    // Handle the scanned result here
-                    console.log(`Code matched = ${decodedText}`, decodedResult);
-                    scanner.clear();
-                    router.get(route('processScan', decodedText));
-                },
-                (error) => {
-                    // Handle scan errors or failures here
-                    console.warn(`Code scan error = ${error}`);
-                }
-            );
-        };
-
-        // Fetch the list of cameras and select the back camera
-        Html5Qrcode.getCameras().then((devices) => {
-            if (devices && devices.length) {
-                // Find the back camera
-                const backCamera = devices.find(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('environment'));
-                const cameraId = backCamera ? backCamera.id : devices[0].id;
-                startScanner(cameraId);
-            }
-        }).catch(err => {
-            console.error(err);
+        const scanner = new Html5QrcodeScanner('reader', {
+            qrbox: {
+                width: 250,
+                height: 250,
+            },
+            fps: 5,
         });
+        scanner.render(fetchOrFail, error);
+        function fetchOrFail(result){
+            scanner.clear();
+            router.get(route('processScan', result));
+        }
+        function error(err) {
+            console.log(err);
+        }
     }, []);
     return (
         <AuthenticatedLayout
