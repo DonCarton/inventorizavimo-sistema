@@ -29,27 +29,6 @@ class BarcodesController extends Controller
     }
 
     /**
-     * @return \Inertia\Response
-     */
-    public function generate2(): \Inertia\Response
-    {
-        return Inertia::render('Scanner/Reader',[
-            'success' => session('success'),
-            'failure' => session('failure')
-        ]);
-    }
-    /**
-     * @return \Inertia\Response
-     */
-    public function generate3(): \Inertia\Response
-    {
-        return Inertia::render('Scanner/Reader3',[
-            'success' => session('success'),
-            'failure' => session('failure')
-        ]);
-    }
-
-    /**
      * @param string $barcode
      * @return RedirectResponse
      */
