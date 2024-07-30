@@ -47,7 +47,6 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::patch('/inventoryItems/{inventoryItem}/updateAmount', [InventoryItemController::class, 'updateAmount'])->middleware('includeUserId')->name('inventoryItems.updateAmount');
         Route::patch('/inventoryItems/{inventoryItem}/takeOutAmountLog', [InventoryItemController::class, 'takeOutAmountLog'])->middleware('includeUserId')->name('inventoryItems.takeOutAmountLog');
         Route::get('reader', [BarcodesController::class, 'generate'])->name('reader');
-        Route::get('reader2', [BarcodesController::class, 'generate2'])->name('reader2');
         Route::get('/reader/{barcode}', [BarcodesController::class, 'query'])->name('reader.query');
         Route::get('/process-scan/{barcode}',[BarcodesController::class, 'getUrl'])->name('processScan');
         Route::get('exportInventoryItems', [InventoryItemController::class, 'export'])->name('exportInventoryItems');

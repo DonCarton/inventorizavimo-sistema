@@ -1,18 +1,17 @@
 import {Html5Qrcode} from 'html5-qrcode';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.jsx';
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {Head, router} from "@inertiajs/react";
 import {__} from "@/Libs/Lang.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 
 export default function Reader({auth, role, success, failure}) {
-    const [foundDevices, setFoundDevices] = useState(null);
     useEffect(() => {
         // Function to start the scanner with the back camera
         const startScanner = (cameraId) => {
             const scanner = new Html5Qrcode("reader");
-            const config = { fps: 5, qrbox: { width: 250, height: 250 } };
+            const config = { fps: 15, qrbox: { width: 250, height: 250 } };
 
             scanner.start(
                 cameraId,
@@ -33,9 +32,7 @@ export default function Reader({auth, role, success, failure}) {
         // Fetch the list of cameras and select the back camera
         Html5Qrcode.getCameras().then((devices) => {
             if (devices && devices.length) {
-                // Find the back camera
                 const backCamera = devices.find(device => device.label.toLowerCase().includes('0, facing back') || device.label.toLowerCase().includes('environment'));
-                setFoundDevices(backCamera);
                 const cameraId = backCamera ? backCamera.id : devices[3].id;
                 startScanner(cameraId);
             }
@@ -55,7 +52,6 @@ export default function Reader({auth, role, success, failure}) {
                 <div className="max-w-2xl mx-auto sm:px-6 lg:px-8">
                     {success && (<SuccessMessage message={success}/>)}
                     {failure && (<FailureMessage message={failure}/>)}
-                    {foundDevices !== null && <pre>{JSON.stringify(foundDevices, undefined, 2)}</pre>}
                     <div id='reader'/>
                 </div>
             </div>
