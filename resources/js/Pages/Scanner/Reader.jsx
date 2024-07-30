@@ -34,9 +34,9 @@ export default function Reader({auth, role, success, failure}) {
         Html5Qrcode.getCameras().then((devices) => {
             if (devices && devices.length) {
                 // Find the back camera
-                const backCamera = devices.find(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('environment'));
+                const backCamera = devices.find(device => device.label.toLowerCase().includes('0, facing back') || device.label.toLowerCase().includes('environment'));
                 setFoundDevices(devices);
-                const cameraId = backCamera ? devices[2].id :  backCamera.id;
+                const cameraId = backCamera ? backCamera.id : devices[3].id;
                 startScanner(cameraId);
             }
         }).catch(err => {
