@@ -35,7 +35,7 @@ export default function Reader({auth, role, success, failure}) {
             if (devices && devices.length) {
                 // Find the back camera
                 const backCamera = devices.find(device => device.label.toLowerCase().includes('0, facing back') || device.label.toLowerCase().includes('environment'));
-                setFoundDevices(devices);
+                setFoundDevices(backCamera);
                 const cameraId = backCamera ? backCamera.id : devices[3].id;
                 startScanner(cameraId);
             }
