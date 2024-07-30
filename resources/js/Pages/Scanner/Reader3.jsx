@@ -16,9 +16,7 @@ export default function Reader3({auth, role, success, failure}) {
             fps: 5,
             rememberLastUsedCamera: true,
             videoConstraints: {
-                facingMode: {
-                    exact: "environment"
-                }
+                facingMode: "environment"
             }
         },
             true);
