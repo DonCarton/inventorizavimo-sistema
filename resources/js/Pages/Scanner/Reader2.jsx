@@ -24,18 +24,14 @@ export default function Reader2({auth, role, success, failure}) {
     //         console.log(err);
     //     }
     // }, []);
-    const cameraConfig = {
-        facingMode: "environment",
-    }
     useEffect(() => {
         // Function to start the scanner with the back camera
         const startScanner = (cameraId) => {
             const scanner = new Html5Qrcode("reader");
-            const config = { fps: 5, qrbox: { width: 'auto', height: 250 } };
+            const config = { fps: 5, qrbox: { width: 250, height: 250 } };
 
             scanner.start(
-                // cameraId,
-                cameraConfig,
+                cameraId,
                 config,
                 (decodedText, decodedResult) => {
                     // Handle the scanned result here
