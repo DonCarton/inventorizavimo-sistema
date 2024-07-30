@@ -8,28 +8,23 @@ import SuccessMessage from "@/Components/SuccessMessage.jsx";
 
 export default function Reader({auth, role, success, failure}) {
     useEffect(() => {
-        // Function to start the scanner with the back camera
         const startScanner = (cameraId) => {
             const scanner = new Html5Qrcode("reader");
             const config = { fps: 15, qrbox: { width: 250, height: 250 } };
 
+            const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+                scanner.clear();
+                router.get(route('processScan', decodedText));
+            }
             scanner.start(
                 cameraId,
                 config,
-                (decodedText, decodedResult) => {
-                    // Handle the scanned result here
-                    console.log(`Code matched = ${decodedText}`, decodedResult);
-                    scanner.clear();
-                    router.get(route('processScan', decodedText));
-                },
+                qrCodeSuccessCallback,
                 (error) => {
-                    // Handle scan errors or failures here
                     console.warn(`Code scan error = ${error}`);
                 }
             );
         };
-
-        // Fetch the list of cameras and select the back camera
         Html5Qrcode.getCameras().then((devices) => {
             if (devices && devices.length) {
                 const backCamera = devices.find(device => device.label.toLowerCase().includes('0, facing back') || device.label.toLowerCase().includes('environment'));

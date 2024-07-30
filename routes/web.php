@@ -15,6 +15,8 @@ use Inertia\Inertia;
 Route::middleware(['auth', 'verified'])->group(function (){
     Route::get('/', function (){return Inertia::render('Dashboard');})->name('dashboard');
     Route::group(['middleware' => ['role:admin']], function () {
+        Route::get('reader2', [BarcodesController::class, 'generate2'])->name('reader2');
+        Route::get('reader3', [BarcodesController::class, 'generate3'])->name('reader3');
         Route::resource('inventoryItems', InventoryItemController::class)->middleware('includeUserId');
         Route::get('/inventoryItems/{inventoryItem}/editRaw', [InventoryItemController::class, 'editRaw'])->name('inventoryItems.editRaw')->middleware('includeUserId');
         Route::resource('itemTypes', ItemTypeController::class)->middleware('includeUserId');
