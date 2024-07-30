@@ -7,6 +7,7 @@ import FailureMessage from "@/Components/FailureMessage.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 
 export default function Reader({auth, role, success, failure}) {
+    const [foundDevices, setFoundDevices] = useState(null);
     useEffect(() => {
         // Function to start the scanner with the back camera
         const startScanner = (cameraId) => {
@@ -34,7 +35,8 @@ export default function Reader({auth, role, success, failure}) {
             if (devices && devices.length) {
                 // Find the back camera
                 const backCamera = devices.find(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('environment'));
-                const cameraId = backCamera ? devices[0].id :  backCamera.id;
+                setFoundDevices(devices);
+                const cameraId = backCamera ? devices[2].id :  backCamera.id;
                 startScanner(cameraId);
             }
         }).catch(err => {
@@ -53,6 +55,7 @@ export default function Reader({auth, role, success, failure}) {
                 <div className="max-w-2xl mx-auto sm:px-6 lg:px-8">
                     {success && (<SuccessMessage message={success}/>)}
                     {failure && (<FailureMessage message={failure}/>)}
+                    {foundDevices !== null && <pre>{JSON.stringify(foundDevices, undefined, 2)}</pre>}
                     <div id='reader'/>
                 </div>
             </div>
