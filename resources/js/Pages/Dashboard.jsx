@@ -19,7 +19,7 @@ export default function Dashboard({auth, role}) {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div
-                            className="flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0 sm:space-x-4 p-8">
+                            className="grid xl:grid-cols-2 sm:grid-cols-1 gap-4 p-8">
                             {role === "admin" && (<a href={route("users.index")}
                                                      className="w-full flex items-center h-24 bg-gray-100 p-4 rounded-lg shadow-md group hover:bg-rose-800 active:bg-pink-900 transition ease-in-out duration-150">
                                 <FaUser className="w-16 h-16 text-4xl text-gray-700 group-hover:text-white"/>

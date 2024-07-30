@@ -26,7 +26,7 @@ export default function HistoryLog({objectId, objectType, nameOfButton, nameOfCl
         <div>
             <button onClick={() => fetchLogs(objectId, objectType)}>{nameOfButton}</button>
             <div>
-                <Modal show={showModal} closeable>
+                <Modal show={showModal} closeable maxWidth="4xl">
                     <div className="p-6">
                         <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                             {__("Current object history")}

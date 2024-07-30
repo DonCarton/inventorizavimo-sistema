@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\AmountRunningLow;
 use App\Exports\InventoryExports;
+use App\Http\Requests\ExportRequests\InventoryItemExportRequest;
 use App\Http\Requests\StoreRequests\AdjustInventoryAmountViaLog;
 use App\Http\Requests\StoreRequests\StoreInventoryItemRequest;
 use App\Http\Requests\UpdateRequests\ChangeAmountInventoryItemRequest;
@@ -359,11 +360,11 @@ class InventoryItemController extends Controller
     /**
      * @return BinaryFileResponse
      */
-    public function export(): BinaryFileResponse
+    public function export(InventoryItemExportRequest $exportRequest): BinaryFileResponse
     {
-        $data = request()->query();
+        $validateData = $exportRequest->validated();
         $dateTimeNow = Carbon::now()->toDateTimeString();
-        return Excel::download(new InventoryExports($data), $dateTimeNow . '_inventory.xlsx');
+        return Excel::download(new InventoryExports($validateData), $dateTimeNow . '_inventory.xlsx');
     }
 
     /**

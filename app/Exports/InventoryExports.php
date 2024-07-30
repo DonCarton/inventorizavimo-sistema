@@ -3,9 +3,8 @@
 namespace App\Exports;
 
 use App\Models\InventoryItem;
-use Carbon\Carbon;
+use DateTimeZone;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -61,12 +60,13 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings
     public function map($row): array
     {
         return [
-            $row->id,
             $row->local_name,
             $row->name,
             $row->name_eng,
-            (new Carbon($row->created_at))->format('Y-m-d H:m'),
-            (new Carbon($row->updated_at))->format('Y-m-d H:m')
+//            (new Carbon($row->created_at))->format('Y-m-d H:m'),
+//            (new Carbon($row->updated_at))->format('Y-m-d H:m'),
+            $row->created_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
+            $row->updated_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s')
         ];
     }
 
@@ -76,7 +76,6 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings
     public function headings(): array
     {
         return [
-            'ID',
             'Code',
             'Name',
             'NameENG',

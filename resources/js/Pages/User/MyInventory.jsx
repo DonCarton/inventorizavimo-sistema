@@ -200,22 +200,22 @@ export default function MyInventory({auth, inventoryItems, role, queryParams = n
                                     </thead>
                                     <tbody>
                                     {inventoryItems.data.map(inventoryItem => (
-                                        <tr key={inventoryItem.id} className={inventoryItem.inventory_status === "critical" ?
+                                        <tr key={inventoryItem.id} className={inventoryItem.inventoryStatus === "critical" ?
                                             "bg-red-300 border-b dark:bg-red-300 dark:border-red-700" :
-                                            inventoryItem.inventory_status === "taken" ?
+                                            inventoryItem.inventoryStatus === "taken" ?
                                                 "bg-yellow-300 border-b dark:bg-yellow-300 dark:border-yellow-200" :
                                                 "bg-white border-b dark:bg-gray-800 dark:border-gray-700"}>
                                             <td className="px-3 py-2">
                                                 <Link href={route("inventoryItems.show", inventoryItem.id)}
                                                       className="font-medium text-gray-700 dark:text-white hover:underline mx-1">
-                                                    {inventoryItem.local_name}
+                                                    {inventoryItem.localName}
                                                 </Link>
                                             </td>
                                             <td className="px-3 py-2">{inventoryItem.name}</td>
-                                            <td className="px-3 py-2">{inventoryItem.name_eng}</td>
-                                            <td className="px-3 py-2">{inventoryItem.total_amount}</td>
-                                            <td className="px-3 py-2">{inventoryItem.inventory_type}</td>
-                                            <td className="px-3 py-2">{inventoryItem.updated_by}</td>
+                                            <td className="px-3 py-2">{inventoryItem.nameEng}</td>
+                                            <td className="px-3 py-2">{inventoryItem.totalAmount}</td>
+                                            <td className="px-3 py-2">{inventoryItem.inventoryType}</td>
+                                            <td className="px-3 py-2">{inventoryItem.updatedBy}</td>
                                             <td className="flex justify-start mt-1 px-2 py-1">
                                                 <Link href={route("inventoryItems.editRaw", inventoryItem.id)}
                                                       className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
