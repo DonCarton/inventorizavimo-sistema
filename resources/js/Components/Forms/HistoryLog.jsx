@@ -51,27 +51,66 @@ export default function HistoryLog({objectId, objectType, nameOfButton, nameOfCl
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td className="pl-2 text-right">Dominykas</td>
+                                    <td></td>
                                 </tr>
                                 </tbody>
                             </table>
                             {logs.length > 0 &&
                                 <div>
-                                    {logs.map(
-                                        (log, index) => (
-                                            <div>
-                                                <button onClick={() => setShowContent(!showContent)} className="px-2 border-2 border-gray-400 focus:ring-indigo-500">Press it</button>
-                                                <ul key={index} className={showContent ? "w-32" : "hidden"}>
-                                                    {
-                                                        Object.entries(log).map(
-                                                            ([key, value], index) => (
-                                                                <li key={key}>{value}</li>
-                                                            )
-                                                        )
-                                                    }
-                                                </ul>
-                                            </div>)
-                                    )}
+                                    <table>
+                                        <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {logs.map(
+                                            (log, index) => (
+                                                <tr>
+                                                    <td>
+                                                        <button onClick={() => setShowContent(!showContent)} className="px-2 border-2 border-gray-400 focus:ring-indigo-500">Press it</button>
+                                                    </td>
+                                                    <td>
+                                                        <ul key={index} className={showContent ? "w-full" : "hidden"}>
+                                                            {
+                                                                Object.entries(log).map(
+                                                                    ([key, value], index) => (
+                                                                        <li key={key}>{key}</li>
+                                                                    )
+                                                                )
+                                                            }
+                                                        </ul>
+                                                    </td>
+                                                    <td>
+                                                        <ul key={index} className={showContent ? "w-full" : "hidden"}>
+                                                            {
+                                                                Object.entries(log).map(
+                                                                    ([key, value], index) => (
+                                                                        <li key={key}>{value}</li>
+                                                                    )
+                                                                )
+                                                            }
+                                                        </ul>
+                                                    </td>
+                                                    <td>
+                                                        <ul key={index} className={showContent ? "w-full" : "hidden"}>
+                                                            {
+                                                                Object.entries(log).map(
+                                                                    ([key, value], index) => (
+                                                                        <li key={key}>{value}</li>
+                                                                    )
+                                                                )
+                                                            }
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        )}
+                                        </tbody>
+                                    </table>
                                 </div>}
                         </div>
                         <div className="mt-6 flex justify-start">

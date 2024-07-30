@@ -7,6 +7,7 @@ use App\Http\Controllers\BarcodesController;
 use App\Http\Controllers\ItemTypeController;
 use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\UserController;
+use App\Models\InventoryItem;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -33,6 +34,12 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::post('importInventoryItems', [InventoryItemController::class, 'import'])->name('importInventoryItems');
         Route::post('importLaboratories', [LaboratoryController::class, 'import'])->name('importLaboratories');
         Route::post('/queryObjectHistory', [InventoryItemController::class, 'queryObjectHistory'])->name('inventoryItems.queryObjectHistory');
+        Route::get('/playground/{id}', function (int $id){
+            $inventoryItem = InventoryItem::findOrFail($id);
+            return Inertia::render('Playground', [
+                'inventoryItem' => $inventoryItem,
+            ]);
+        })->name('inventoryItems.playground');
     });
     Route::group(['middleware' => ['role:admin|user']], function (){
         Route::get('/download-barcode/{barcodeValue}', [BarcodesController::class, 'downloadBarcode'])->name('getBarcodePng');

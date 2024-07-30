@@ -26,10 +26,14 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings
     {
         $query = InventoryItem::query();
         if (!empty($this->data)) {
-            foreach ($this->data as $column => $value) {
-                if ($column !== 'inventory_type') {
-                    $query->where($column, 'LIKE', "%{$value}%");
-                }
+            if (isset($this->data['local_name'])) {
+                $query->where('local_name', 'like', '%' . $this->data['local_name'] . '%');
+            }
+            if (isset($this->data['name'])) {
+                $query->where('name', 'like', '%' . $this->data['name'] . '%');
+            }
+            if (isset($this->data['name_eng'])) {
+                $query->where('name_eng', 'like', '%' . $this->data['name_eng'] . '%');
             }
             if (isset($this->data['inventory_type'])) {
                 $query->whereHas('itemType', function ($query) {
@@ -37,8 +41,13 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings
                 });
             }
             if (isset($this->data['laboratory'])) {
-                $query->whereHas('manyLaboratories', function ($query) {
+                $query->whereHas('belongsToLaboratory', function ($query) {
                     $query->where('name', 'like', '%' . $this->data['laboratory'] . '%');
+                });
+            }
+            if (isset($this->data['updated_by'])) {
+                $query->whereHas('updatedBy', function ($query) {
+                    $query->where('email', 'like', '%' . $this->data['updated_by'] . '%');
                 });
             }
         }
