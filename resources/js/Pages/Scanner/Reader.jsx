@@ -34,7 +34,7 @@ export default function Reader({auth, role, success, failure}) {
             if (devices && devices.length) {
                 // Find the back camera
                 const backCamera = devices.find(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('environment'));
-                const cameraId = backCamera ? backCamera.id : devices[1].id;
+                const cameraId = backCamera ? devices[0].id :  backCamera.id;
                 startScanner(cameraId);
             }
         }).catch(err => {
