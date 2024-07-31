@@ -35,9 +35,15 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::post('importLaboratories', [LaboratoryController::class, 'import'])->name('importLaboratories');
         Route::post('/queryObjectHistory', [InventoryItemController::class, 'queryObjectHistory'])->name('inventoryItems.queryObjectHistory');
         Route::get('/playground/{id}', function (int $id){
+            $query = InventoryItem::query();
+            $query = $query->skip(2)->limit(2)->get();
+            $data = [
+                'data' => $query,
+            ];
             $inventoryItem = InventoryItem::findOrFail($id);
             return Inertia::render('Playground', [
                 'inventoryItem' => $inventoryItem,
+                'query' => $data,
             ]);
         })->name('inventoryItems.playground');
     });
