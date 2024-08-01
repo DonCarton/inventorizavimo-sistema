@@ -383,9 +383,11 @@ class InventoryItemController extends Controller
     {
         $objectId = $request->input('object_id');
         $objectType = $request->input('object_type');
+        $perPage = $request->input('per_page');
         $query = InventoryItem::query();
-//        $query = $query->where('id', $objectId)->get();
-        $query = $query->skip(2)->limit(2)->get();
-        return response()->json($query->toArray());
+        // $perPage = 10;
+        // $query = $query->where('id', $objectId)->get();
+        // $query = $query->skip(2)->limit(2)->get();
+        return response()->json($query->paginate($perPage));
     }
 }

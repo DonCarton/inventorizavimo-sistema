@@ -46,6 +46,26 @@ Route::middleware(['auth', 'verified'])->group(function (){
                 'query' => $data,
             ]);
         })->name('inventoryItems.playground');
+        Route::prefix('playgrounds')->group(function () {
+            Route::get('/v1/{id}', function (int $id) {
+                if (strcasecmp(config('app.env'), 'Local') != 0) {abort(404);}
+                $query = InventoryItem::query()->limit(3)->get();
+                $inventoryItem = InventoryItem::findOrFail($id);
+                return Inertia::render('Playground', [
+                    'inventoryItem' => $inventoryItem,
+                    'data' => $query,
+                ]);
+            })->name('firstPlayground');
+            Route::get('/v2/{id}', function (int $id) {
+                if (strcasecmp(config('app.env'), 'Local') != 0) {abort(404);}
+                $inventoryItem = InventoryItem::findOrFail($id);
+                $data = InventoryItem::query()->limit(3)->get();
+                return Inertia::render('PlaygroundV2', [
+                    'inventoryItem' => $inventoryItem,
+                    'data' => $data,
+                ]);
+            })->name('secondPlayground');
+        });
     });
     Route::group(['middleware' => ['role:admin|user']], function (){
         Route::get('/download-barcode/{barcodeValue}', [BarcodesController::class, 'downloadBarcode'])->name('getBarcodePng');
