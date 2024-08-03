@@ -12,8 +12,9 @@ import TextInput from "@/Components/TextInput.jsx";
 import {TbArrowsUpDown, TbEdit} from "react-icons/tb";
 import Pagination from "@/Components/Pagination.jsx";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
+import SteamDropdown from "@/Components/SteamDropdown";
 
-export default function MyInventory({auth, inventoryItems, role, queryParams = null, success, failure}) {
+export default function MyLaboratory({auth, inventoryItems, itemTypes, role, queryParams = null, success, failure}) {
     queryParams = queryParams || {};
     const [modalOpen, setModalOpen] = useState(false);
     const {setData, post} = useForm({
@@ -182,12 +183,13 @@ export default function MyInventory({auth, inventoryItems, role, queryParams = n
                                                 onKeyPress={e => onKeyPress('name_eng', e)}/>
                                         </th>
                                         <th className="px-3 py-2"></th>
-                                        <th className="px-3 py-2">
-                                            <TextInput
+                                            <th className="px-3 py-2">
+                                            <SteamDropdown name="inventory_type_query_select" className="w-full text-sm text-gray-500" value={queryParams.inventory_type} options={itemTypes.data} onChange={e => searchFieldChanged('inventory_type', e.target.value)} />
+                                            {/* <TextInput
                                                 className="w-full text-sm"
                                                 defaultValue={queryParams.inventory_type}
                                                 placeholder={StringHelper.__("Type")}
-                                                onKeyPress={e => onKeyPress('inventory_type', e)}/>
+                                                onKeyPress={e => onKeyPress('inventory_type', e)}/> */}
                                         </th>
                                         <th className="px-3 py-2">
                                             <TextInput className="w-full text-sm" placeholder={StringHelper.__("Updated by")}
@@ -199,7 +201,7 @@ export default function MyInventory({auth, inventoryItems, role, queryParams = n
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {inventoryItems.data.map(inventoryItem => (
+                                        {inventoryItems.data.map(inventoryItem => (
                                         <tr key={inventoryItem.id} className={inventoryItem.inventoryStatus === "critical" ?
                                             "bg-red-300 border-b dark:bg-red-300 dark:border-red-700" :
                                             inventoryItem.inventoryStatus === "taken" ?

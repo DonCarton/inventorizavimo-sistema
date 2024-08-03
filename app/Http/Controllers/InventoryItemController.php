@@ -94,9 +94,7 @@ class InventoryItemController extends Controller
             $query->where('name_eng', 'like', '%' . request('name_eng') . '%');
         }
         if (request('inventory_type')) {
-            $query->whereHas('itemType', function ($query) {
-                $query->where('name', 'like', '%' . request('inventory_type') . '%');
-            });
+            $query->where('inventory_type', '=', request('inventory_type'));
         }
         if (request('updated_by')) {
             $query->whereHas('updatedBy', function ($query) {
@@ -106,8 +104,10 @@ class InventoryItemController extends Controller
         $inventoryItems = $query
             ->orderBy($sortField, $sortDirection)->paginate(50)
             ->withQueryString()->onEachSide(1);
-        return Inertia::render('User/MyInventory', [
+        $itemTypes = ItemType::query()->get();
+        return Inertia::render('User/MyLaboratory', [
             'inventoryItems' => InventoryItemIndexResource::collection($inventoryItems),
+            'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
             'failure' => session('failure')
@@ -391,9 +391,6 @@ class InventoryItemController extends Controller
         $objectType = $request->input('object_type');
         $perPage = $request->input('per_page');
         $query = InventoryItem::query();
-        // $perPage = 10;
-        // $query = $query->where('id', $objectId)->get();
-        // $query = $query->skip(2)->limit(2)->get();
         return response()->json($query->paginate($perPage));
     }
 }

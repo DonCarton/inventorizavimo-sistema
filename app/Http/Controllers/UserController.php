@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\UserCreated;
 use App\Exports\UserExports;
+use App\Http\Requests\ExportRequests\UserExportRequest;
 use App\Http\Resources\SelectObjectResources\LaboratoriesForSelect;
 use App\Http\Resources\SelectObjectResources\RolesForSelect;
 use App\Http\Resources\UserResource;
@@ -183,9 +184,10 @@ class UserController extends Controller
     /**
      * @return BinaryFileResponse
      */
-    public function export(): BinaryFileResponse
+    public function export(UserExportRequest $userExportRequest): BinaryFileResponse
     {
-        $dateTimeNow = Carbon::now()->toDateTimeString();
-        return Excel::download(new UserExports(), $dateTimeNow . '_users.xlsx');
+        $validateData = $userExportRequest->validated();
+        $dateTimeNow = Carbon::now('Europe/Vilnius')->toDateTimeString();
+        return Excel::download(new UserExports($validateData),'export.xlsx');
     }
 }
