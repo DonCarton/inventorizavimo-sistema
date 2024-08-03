@@ -1,11 +1,16 @@
 <?php
 
-namespace App\Http\Resources\HistoryLogs;
+namespace App\Http\Resources\SelectObjectResources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class InventoryItemHistoryResource extends JsonResource
+/**
+ * Summary of RolesForSelect
+ * @property int $id
+ * @property string $name
+ */
+class RolesForSelect extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,12 +19,9 @@ class InventoryItemHistoryResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // TODO: Define this to output history
-        // return parent::toArray($request);
-        dd($request);
         return [
-            'id' => $this->id,
-            'local_name' => $this->item_id,
+            'value' => $this->id,
+            'label' => $this->name,
         ];
     }
 }

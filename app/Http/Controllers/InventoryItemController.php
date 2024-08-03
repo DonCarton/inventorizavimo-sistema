@@ -51,9 +51,10 @@ class InventoryItemController extends Controller
             $query->where('name_eng', 'like', '%' . request('name_eng') . '%');
         }
         if (request('inventory_type')) {
-            $query->whereHas('itemType', function ($query) {
-               $query->where('name', 'like', '%' . request('inventory_type') . '%');
-            });
+            $query->where('inventory_type', '=', request('inventory_type'));
+            // $query->whereHas('itemType', function ($query) {
+            //    $query->where('name', 'like', '%' . request('inventory_type') . '%');
+            // });
         }
         if (request('laboratory')) {
             $query->whereHas('belongsToLaboratory', function ($query) {
@@ -68,8 +69,10 @@ class InventoryItemController extends Controller
         $inventoryItems = $query
             ->orderBy($sortField, $sortDirection)->paginate(50)
             ->withQueryString()->onEachSide(1);
+        $itemTypes = ItemType::query()->get();
         return Inertia::render('Inventory/Index', [
             'inventoryItems' => InventoryItemIndexResource::collection($inventoryItems),
+            'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
             'failure' => session('failure')
@@ -363,8 +366,11 @@ class InventoryItemController extends Controller
     public function export(InventoryItemExportRequest $exportRequest): BinaryFileResponse
     {
         $validateData = $exportRequest->validated();
-        $dateTimeNow = Carbon::now()->toDateTimeString();
-        return Excel::download(new InventoryExports($validateData), $dateTimeNow . '_inventory.xlsx');
+        if (str_ends_with($exportRequest->url(),'myLaboratory')) {
+            $validateData['laboratory'] = auth()->user()->laboratory;
+        }
+        $dateTimeNow = Carbon::now('Europe/Vilnius')->toDateTimeString();
+        return Excel::download(new InventoryExports($validateData), $dateTimeNow . '_inventory_export.xlsx');
     }
 
     /**

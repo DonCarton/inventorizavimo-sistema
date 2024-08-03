@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\UserCreated;
 use App\Exports\UserExports;
 use App\Http\Resources\SelectObjectResources\LaboratoriesForSelect;
+use App\Http\Resources\SelectObjectResources\RolesForSelect;
 use App\Http\Resources\UserResource;
 use App\Models\Laboratory;
 use App\Models\User;
@@ -57,10 +58,10 @@ class UserController extends Controller
      */
     public function create(): Response
     {
-        $roles = Role::all()->toArray();
+        $roles = Role::query()->get();
         $laboratories = Laboratory::query()->get();
         return Inertia::render('Users/Create', [
-            'roles' => $roles,
+            'roles' => RolesForSelect::collection($roles),
             'laboratories' => LaboratoriesForSelect::collection($laboratories)
         ]);
     }
@@ -77,16 +78,14 @@ class UserController extends Controller
             'last_name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'laboratory' => 'required',
-            'selectedRole' => 'required',
+            'selectedRole' => 'required|exists:roles,id',
         ]);
         $password = Str::random(10);
         $request['is_disabled'] = false;
         $request['locale'] = env('APP_LOCALE');
         $request['password'] = Hash::make($password);
         $request['name'] = $request['first_name'] . ' ' . $request['last_name'];
-        $newUser = User::create($request->all());
-        $role = $request['selectedRole'];
-        $newUser->assignRole($role);
+        $newUser = User::create($request->all())->assignRole(Role::findById($request['selectedRole'])->name);
         event(new UserCreated($newUser, $password));
         return redirect()->route('users.index')->with('success', __('actions.user.created', ['email' => $newUser->email]) . '.');
     }
@@ -98,13 +97,13 @@ class UserController extends Controller
      */
     public function show(User $user): Response
     {
-        $query = Role::all()->toArray();
-        $roleName = $user->roles()->select('name')->get()->toArray();
+        $roles = Role::query()->get();
+        $roleName = $user->roles()->select('id')->get()->toArray();
         $laboratories = Laboratory::all()->toArray();
         return Inertia::render('Users/Show', [
             'user' => new UserResource($user),
-            'userRole' => $roleName,
-            'roles' => $query,
+            'userRole' => $roleName ? $roleName[0]['id'] : '',
+            'roles' => RolesForSelect::collection($roles),
             'laboratories' => $laboratories,
         ]);
     }
@@ -116,13 +115,13 @@ class UserController extends Controller
      */
     public function edit(User $user): Response
     {
-        $query = Role::all()->toArray();
-        $roleName = $user->roles()->select('name')->get()->toArray();
+        $roles = Role::query()->get();
+        $roleName = $user->roles()->select('id')->get()->toArray();
         $laboratories = Laboratory::all()->select('id', 'name')->toArray();
         return Inertia::render('Users/Edit', [
             'user' => new UserResource($user),
-            'userRole' => $roleName,
-            'roles' => $query,
+            'userRole' => $roleName ? $roleName[0]['id'] : '',
+            'roles' => RolesForSelect::collection($roles),
             'laboratories' => $laboratories
         ]);
     }
@@ -140,11 +139,11 @@ class UserController extends Controller
             'last_name' => 'required',
             'email' => 'required',
             'laboratory' => 'required|integer',
-            'role' => 'required',
+            'role' => 'required|exists:roles,id',
             'updated_by' => 'required'
         ]);
         $user->roles()->detach();
-        $user->assignRole($data['role']);
+        $user->assignRole(Role::findById($data['role'])->name);
         $user->update($data);
         return Redirect::route('users.index')->with('success', __('actions.user.updated', ['email' => $user->email]) . '.');
     }

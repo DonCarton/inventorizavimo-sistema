@@ -21,7 +21,7 @@ class InventoryItemExportRequest extends FormRequest
             'local_name' => 'nullable|string',
             'name' => 'nullable|string',
             'name_eng' => 'nullable|string',
-            'inventory_type' => 'nullable|string',
+            'inventory_type' => 'nullable|integer|string',
             'laboratory' => 'nullable|string',
             'updated_by' => 'nullable|string',
         ];

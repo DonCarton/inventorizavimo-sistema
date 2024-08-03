@@ -191,6 +191,10 @@ return [
         'inventory_type' => [
             'required' => 'An inventory type must be selected.',
         ],
+        'per_page' => [
+            'min' => 'The requested amount per page has to be equal or more than :min.',
+            'max' => 'The requested amount per page has to be equal or less than :max.'
+        ]
 
     ],
 

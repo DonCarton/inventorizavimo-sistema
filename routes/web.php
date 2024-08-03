@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FetchDataToSelect;
+use App\Http\Controllers\HistoryQueryController;
 use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BarcodesController;
@@ -34,6 +35,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::post('importInventoryItems', [InventoryItemController::class, 'import'])->name('importInventoryItems');
         Route::post('importLaboratories', [LaboratoryController::class, 'import'])->name('importLaboratories');
         Route::post('/queryObjectHistory', [InventoryItemController::class, 'queryObjectHistory'])->name('inventoryItems.queryObjectHistory');
+        Route::post('/queryObjectHistoryTest', [HistoryQueryController::class, 'getLogs'])->name('queryObjectHistoryTest');
         Route::get('/playground/{id}', function (int $id){
             $query = InventoryItem::query();
             $query = $query->skip(2)->limit(2)->get();
@@ -75,7 +77,11 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::get('reader', [BarcodesController::class, 'generate'])->name('reader');
         Route::get('/reader/{barcode}', [BarcodesController::class, 'query'])->name('reader.query');
         Route::get('/process-scan/{barcode}',[BarcodesController::class, 'getUrl'])->name('processScan');
-        Route::get('exportInventoryItems', [InventoryItemController::class, 'export'])->name('exportInventoryItems');
+        Route::prefix('exports')->name('exports.')->group(function () {
+            Route::get('/inventoryItems', [InventoryItemController::class, 'export'])->name('inventoryItems');
+            Route::get('/myLaboratory', [InventoryItemController::class, 'export'])->name('myLaboratoryInventoryItems');
+        });
+        // Route::get('exportInventoryItems', [InventoryItemController::class, 'export'])->name('exportInventoryItems');
         Route::get('/myLaboratory', [InventoryItemController::class, 'userOwnInventory'])->name('inventoryItems.myLaboratory');
     });
 });

@@ -4,7 +4,7 @@ import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import {__} from "@/Libs/Lang.jsx";
 import {useState} from "react";
-import StringHelper from "@/Libs/StringHelper.jsx";
+import SteamDropdown from "@/Components/SteamDropdown";
 
 export default function Show({auth, user, role, userRole, roles, laboratories, previousUrl}) {
     const [previousUrlPage] = useState(previousUrl);
@@ -16,7 +16,7 @@ export default function Show({auth, user, role, userRole, roles, laboratories, p
         >
             <Head title={__("Show") + " - " + user.data.email}/>
 
-            <div className="py-12">
+        <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
@@ -41,10 +41,7 @@ export default function Show({auth, user, role, userRole, roles, laboratories, p
                             </div>
                             <div className="mt-4">
                                 <InputLabel htmlFor="user_role" value={__("Role")}/>
-                                <select id="user_role" name="role" disabled={true} className="disabled:bg-gray-400 disabled:text-white border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={userRole[0].name}>
-                                    <option>{__("Choose a value")}</option>
-                                    {roles.map((role) => (<option key={role.id} value={role.name}>{StringHelper.__(StringHelper.Capitalize(role.name))}</option>))}
-                                </select>
+                                <SteamDropdown name="role" className="mt-1 block w-full disabled:text-white disabled:bg-gray-400" value={userRole} options={roles.data} disabled={true}/>
                             </div>
                             <div className="mt-4">
                                 <Link href={previousUrlPage}
