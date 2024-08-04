@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 /**
  * @property int $id
@@ -23,7 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class InventoryItem extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
     protected $fillable = [
         'local_name',
         'inventory_type',
@@ -77,6 +79,16 @@ class InventoryItem extends Model
         { return InventoryStatusEnum::TAKEN; }
 
         return InventoryStatusEnum::NORMAL;
+    }
+
+    protected static $recordEvents = ['created','updated'];
+
+    public function getActivitylogOptions(): logOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
     }
 
     /*

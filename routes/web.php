@@ -34,41 +34,19 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::get('exportLaboratories', [LaboratoryController::class, 'export'])->name('exportLaboratories');
         Route::post('importInventoryItems', [InventoryItemController::class, 'import'])->name('importInventoryItems');
         Route::post('importLaboratories', [LaboratoryController::class, 'import'])->name('importLaboratories');
-        Route::post('/queryObjectHistory', [InventoryItemController::class, 'queryObjectHistory'])->name('inventoryItems.queryObjectHistory');
-        Route::post('/queryObjectHistoryTest', [HistoryQueryController::class, 'getLogs'])->name('queryObjectHistoryTest');
-        Route::get('/playground/{id}', function (int $id){
-            $query = InventoryItem::query();
-            $query = $query->skip(2)->limit(2)->get();
-            $data = [
-                'data' => $query,
-            ];
-            $inventoryItem = InventoryItem::findOrFail($id);
-            return Inertia::render('Playground', [
-                'inventoryItem' => $inventoryItem,
-                'query' => $data,
-            ]);
-        })->name('inventoryItems.playground');
+
         Route::prefix('playgrounds')->group(function () {
             Route::get('/v1/{id}', function (int $id) {
                 if (strcasecmp(config('app.env'), 'Local') != 0) {abort(404);}
-                $query = InventoryItem::query()->limit(3)->get();
                 $inventoryItem = InventoryItem::findOrFail($id);
+                $logs = $inventoryItem->activities;
                 return Inertia::render('Playground', [
-                    'inventoryItem' => $inventoryItem,
-                    'data' => $query,
+                    'data' => $logs,
                 ]);
             })->name('firstPlayground');
-            Route::get('/v2/{id}', function (int $id) {
-                if (strcasecmp(config('app.env'), 'Local') != 0) {abort(404);}
-                $inventoryItem = InventoryItem::findOrFail($id);
-                $data = InventoryItem::query()->limit(3)->get();
-                return Inertia::render('PlaygroundV2', [
-                    'inventoryItem' => $inventoryItem,
-                    'data' => $data,
-                ]);
-            })->name('secondPlayground');
         });
     });
+
     Route::group(['middleware' => ['role:admin|user']], function (){
         Route::get('/download-barcode/{barcodeValue}', [BarcodesController::class, 'downloadBarcode'])->name('getBarcodePng');
         Route::resource('inventoryItems', InventoryItemController::class)->only('index','show','edit');
@@ -81,7 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
             Route::get('/inventoryItems', [InventoryItemController::class, 'export'])->name('inventoryItems');
             Route::get('/myLaboratory', [InventoryItemController::class, 'export'])->name('myLaboratoryInventoryItems');
         });
-        // Route::get('exportInventoryItems', [InventoryItemController::class, 'export'])->name('exportInventoryItems');
+        Route::post('/queryObjectHistory', [HistoryQueryController::class, 'getLogs'])->name('queryObjectHistory');
         Route::get('/myLaboratory', [InventoryItemController::class, 'userOwnInventory'])->name('inventoryItems.myLaboratory');
     });
 });

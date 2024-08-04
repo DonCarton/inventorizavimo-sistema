@@ -2,7 +2,7 @@ import { useState } from "react";
 import Modal from "@/Components/Modal.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import StringHelper from "@/Libs/StringHelper";
-import PlaygroundV2 from "@/Pages/PlaygroundV2.jsx";
+import HistoryTable from "@/Components/Tables/HistoryTable";
 import { useEffect } from "react";
 import PerPageSelect from "../PerPageSelector";
 
@@ -14,8 +14,6 @@ export default function HistoryLog({
 }) {
     const [logs, setLogs] = useState([]);
     const [perPage, setPerPage] = useState(10);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
     const [showModal, setShowModal] = useState(false);
     const [fetchTrigger, setFetchTrigger] = useState(false);
     const [linksFromCall, setLinksFromCall] = useState(null);
@@ -24,8 +22,7 @@ export default function HistoryLog({
     const fetchData = async (value, type, page = 1) => {
         if (value !== "") {
             try {
-                // const response = await axios.post("/queryObjectHistory", {
-                const response = await axios.post("/queryObjectHistoryTest", {
+                const response = await axios.post("/queryObjectHistory", {
                     object_id: value,
                     object_type: type,
                     page: page,
@@ -33,8 +30,6 @@ export default function HistoryLog({
                 });
                 setShowModal(true);
                 setLogs(response.data.data);
-                setCurrentPage(response.data.current_page);
-                setTotalPages(response.data.last_page);
                 setLinksFromCall(response.data.links);
                 setShowPerPageSelect(response.data.last_page > 1);
             } catch (error) {
@@ -79,9 +74,8 @@ export default function HistoryLog({
                             {StringHelper.__("History description")}
                         </p>
                         <div className="mt-6 w-full h-96 overflow-auto">
-                            <PlaygroundV2 data={logs} />
+                            <HistoryTable data={logs} />
                         </div>
-                        {/* <div className="mt-6 flex justify-start"> */}
                         <div className="mt-6 flex justify-between">
                             <SecondaryButton
                                 onClick={() => setShowModal(false)}
@@ -102,34 +96,6 @@ export default function HistoryLog({
         </div>
     );
 }
-
-const Pagination = ({
-    currentPage,
-    totalPages,
-    onPageChange,
-    className = "",
-}) => {
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-    }
-    return (
-        <div className={"text-center mt-1 " + className}>
-            {pages.map((page) => (
-                <button
-                    className={
-                        "ml-1 inline py-2 px-3 rounded-lg text-gray-950 text-xs bg-gray-400 disabled:!text-white disabled:cursor-not-allowed hover:bg-gray-400"
-                    }
-                    key={page}
-                    onClick={() => onPageChange(page)}
-                    disabled={page === currentPage ? true : false}
-                >
-                    {page}
-                </button>
-            ))}
-        </div>
-    );
-};
 
 const PaginationWithLinks = ({ links, onLinkChange, className = '' }) => {
     return (

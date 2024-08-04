@@ -15,11 +15,16 @@ class InventoryItemHistoryResource extends JsonResource
     public function toArray(Request $request): array
     {
         // TODO: Define this to output history
-        // return parent::toArray($request);
         dd($request);
         return [
-            'id' => $this->id,
-            'local_name' => $this->item_id,
+            __('Code') => $this->local_name,
+            __('Name') => $this->name,
+            __('Name_end') => $this->name_eng,
+            __('Inventory_type') => $this->inventory_type,
+            __('Laboratory') => $this->laboratory,
+            __('Asset number') => $this->asset_nr,
+            __('Used for') => $this->used_for,
+            __('Comments') => $this->comments,
         ];
     }
 }

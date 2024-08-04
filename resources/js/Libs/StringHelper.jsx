@@ -11,6 +11,12 @@ const StringHelper = {
     },
     Capitalize(str) {
         return str.charAt(0).toUpperCase() + str.slice(1);
+    },
+    ShortenLength(str, length) {
+        if (str.length > length) {
+            return str.slice(0, length);
+        }
+        return str;
     }
 };
 
