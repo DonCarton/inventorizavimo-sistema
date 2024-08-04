@@ -6,6 +6,11 @@ use App\Enums\ModelTypeValid;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @property int $per_page
+ * @property int $object_id
+ * @property string $object_type
+ */
 class HistoryLogRequest extends FormRequest
 {
     /**

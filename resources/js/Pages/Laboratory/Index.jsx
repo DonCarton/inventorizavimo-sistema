@@ -88,7 +88,7 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                                     <a onClick={() => setModalOpen(true)}>{__("Import")}</a></div>
                                 <div id="export-entries" title="Export all data from the database or export a specific set with the defined search paramters in the table."
                                      className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                    <a href={route("exportLaboratories", queryParams)}>{__("Export")}</a></div></>
+                                    <a href={route("adminExports.laboratories", queryParams)}>{__("Export")}</a></div></>
                         }
                     </GroupButtonDropdown>
                 </div>

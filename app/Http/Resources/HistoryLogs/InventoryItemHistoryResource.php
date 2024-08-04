@@ -5,8 +5,15 @@ namespace App\Http\Resources\HistoryLogs;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property array $properties
+ * @property string $description
+ */
 class InventoryItemHistoryResource extends JsonResource
 {
+    protected array $fields;
+    protected array $newPropertiesOfHistory;
+    protected array $oldPropertiesOfHistory;
     /**
      * Transform the resource into an array.
      *
@@ -14,17 +21,31 @@ class InventoryItemHistoryResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // TODO: Define this to output history
-        dd($request);
+        $this->newPropertiesOfHistory = $this->properties['attributes'];
+        foreach ($this->newPropertiesOfHistory as $property => $value) {
+            $this->fields[] = $property;
+        }
+        if (str_contains($this->description,'updated')){
+            $this->oldPropertiesOfHistory = $this->properties['old'];
+        } else {
+            foreach ($this->newPropertiesOfHistory as $property => $value){
+                $this->oldPropertiesOfHistory[$property] = '-';
+            }
+        }
         return [
-            __('Code') => $this->local_name,
-            __('Name') => $this->name,
-            __('Name_end') => $this->name_eng,
-            __('Inventory_type') => $this->inventory_type,
-            __('Laboratory') => $this->laboratory,
-            __('Asset number') => $this->asset_nr,
-            __('Used for') => $this->used_for,
-            __('Comments') => $this->comments,
+            'fields' => $this->fields,
+            'new_values' => $this->newPropertiesOfHistory,
+            'old_values' => $this->oldPropertiesOfHistory,
         ];
+    }
+    /**
+     * Get the translated attribute name.
+     *
+     * @param string $attribute
+     * @return string
+     */
+    protected function getTranslatedAttribute(string $attribute): string
+    {
+        return __('inventory_item.' . $attribute);
     }
 }

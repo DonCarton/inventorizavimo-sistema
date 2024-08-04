@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateRequests\UpdateLaboratoryRequest;
 use App\Http\Resources\LaboratoryResource;
 use App\Imports\LaboratoryImport;
 use App\Models\Laboratory;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -113,7 +114,8 @@ class LaboratoryController extends Controller
      */
     public function export(): BinaryFileResponse
     {
-        return Excel::download(new LaboratoryExports(), 'laboratories.xlsx');
+        $dateTimeNow = Carbon::now('Europe/Vilnius')->toDateTimeString();
+        return Excel::download(new LaboratoryExports(), $dateTimeNow .  '_laboratories_export.xlsx');
     }
 
     /**
