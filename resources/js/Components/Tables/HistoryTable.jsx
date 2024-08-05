@@ -22,10 +22,10 @@ export default function HistoryTable({ data }) {
                             </button>
                         </span>
                     </td>
-                    <td>Date</td>
-                    <td>Object</td>
-                    <td>Action</td>
-                    <td>Who</td>
+                    <td>{object.definitionOfChanges.created_at}</td>
+                    <td>{object.definitionOfChanges.object}</td>
+                    <td>{object.definitionOfChanges.action}</td>
+                    <td>{object.definitionOfChanges.causeUser}</td>
                 </tr>
                 {isRowExpanded && (
                     <tr key={index + "history-log"}>
@@ -68,20 +68,13 @@ export default function HistoryTable({ data }) {
                                 <div>
                                     <table className="w-full">
                                         <tbody>
-                                            <pre>{JSON.stringify(object, undefined, 2)}</pre>
-                                            {Object.entries(object).map(
-                                                ([key, value]) => (
-                                                    <tr key={key + "-historicalEntryField"}>
-                                                        <td key={key} className="w-64">{key}</td>
-                                                        <td key={key + "-historicalEntryOldValue"} title={value} className="w-64">
-                                                            {value !== null && typeof value === "string" ? StringHelper.ShortenLength(value,40)  : "-"}
-                                                        </td>
-                                                        <td key={key + "-historicalEntryNewValue"} title={value} className="w-64">
-                                                            {value !== null && typeof value === "string" ? StringHelper.ShortenLength(value,40)  : "-"}
-                                                        </td>
-                                                    </tr>
-                                                )
-                                            )}
+                                            {object.changesForObject.fields.map((field, indexField) => (
+                                                <tr key={`${indexField}-${index}`}>
+                                                    <td className="w-64">{field}</td>
+                                                    <td className="w-64">{object.changesForObject.old_values[indexField]}</td>
+                                                    <td className="w-64">{object.changesForObject.new_values[indexField]}</td>
+                                                </tr>
+                                            ))}
                                         </tbody>
                                     </table>
                                 </div>

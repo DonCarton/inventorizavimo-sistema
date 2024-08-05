@@ -19,26 +19,6 @@ export default function HistoryLog({
     const [linksFromCall, setLinksFromCall] = useState(null);
     const [showPerPageSelect, setShowPerPageSelect] = useState(false);
 
-    const fetchData = async (value, type, page = 1) => {
-        if (value !== "") {
-            try {
-                const response = await axios.post("/queryObjectHistory", {
-                    object_id: value,
-                    object_type: type,
-                    page: page,
-                    per_page: perPage,
-                });
-                setShowModal(true);
-                setLogs(response.data.data);
-                setLinksFromCall(response.data.links);
-                setShowPerPageSelect(response.data.last_page > 1);
-            } catch (error) {
-                alert("Error fetching logs: " + error);
-                console.error("Error fetching logs:", error);
-            }
-        }
-    };
-
     const getFetchData = async (value, type, page = 1) => {
         if (value !== "") {
             try {
@@ -63,10 +43,6 @@ export default function HistoryLog({
     const handlePerPageChange = (event) => {
         setPerPage(Number(event.target.value));
         setFetchTrigger(true);
-    };
-    const handleFetchData = () => {
-        setFetchTrigger(true);
-        fetchData(objectId, objectType, 1);
     };
     const handleGetData = () => {
         setFetchTrigger(true);

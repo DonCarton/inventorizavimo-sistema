@@ -4,8 +4,6 @@ namespace App\Http\Resources\HistoryLogs;
 
 use Carbon\Carbon;
 use DateTime;
-use DateTimeZone;
-use IntlDateFormatter;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 class InventoryItemHistoryResource extends ResourceCollection
@@ -20,21 +18,45 @@ class InventoryItemHistoryResource extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        // Carbon::setLocale('lt');
         return [
             'data' => $this->collection->transform(function ($entry) {
+                $tempNewPropertiesOfHistory = [];
+                $tempOldPropertiesOfHistory = [];
+                $tempFields = [];
+                if (count($entry->properties) !== 0 && str_contains($entry->description, 'created')) {
+                    foreach ($entry->properties['attributes'] as $property => $value){
+                        $tempFields[] = $property;
+                        $tempNewPropertiesOfHistory[] = $value;
+                        $tempOldPropertiesOfHistory[] = '-';
+                    }
+                } else if (str_contains($entry->description, 'updated')) {
+                    foreach ($entry->properties['attributes'] as $property => $value){
+                        $tempFields[] = $property;
+                        $tempNewPropertiesOfHistory[] = $value;
+                    }
+                    foreach ($entry->properties['old'] as $property => $value){
+                        $tempOldPropertiesOfHistory[] = $value;
+                    }
+                }
+
                 return [
-                    'description' => $entry->description,
-                    'causer_type' => \App\Models\User::find($entry->causer_id)->email,
-                    // 'updatedAt' => $entry->updated_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-M-d H:i:s'),
-                    'updatedAt' => $entry->updated_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('l j F Y'),
-                    'updated_at' => $this->setUserFriendlyDateCarbon($entry->updated_at),
+                    'definitionOfChanges' => [
+                        'created_at' => $this->setUserFriendlyDateCarbon($entry->created_at),
+                        'object' => $entry->subject_id,
+                        'action' => $entry->description,
+                        'causeUser' => $entry->causer_id,
+                    ],
+                    'changesForObject' => [
+                        'fields' => $tempFields,
+                        'old_values' => $tempOldPropertiesOfHistory,
+                        'new_values' => $tempNewPropertiesOfHistory,
+                    ]
                 ];
             }),
         ];
     }
 
-    private function setUserFriendlyDateCarbon(DateTime $dateTime, string $locale = null, $timezone = 'Europe/Vilnius', $pattern = 'l j F Y H:i:s'): string
+    private function setUserFriendlyDateCarbon(DateTime $dateTime, string $locale = null, string $timezone = 'Europe/Vilnius', string $pattern = 'l j F Y H:i:s'): string
     {
         if (!$dateTime instanceof Carbon) {
             $dateTime = Carbon::parse($dateTime);
@@ -45,31 +67,9 @@ class InventoryItemHistoryResource extends ResourceCollection
             Carbon::setLocale($locale);
         }
 
-        $formattedDate = $dateTime->translatedFormat($pattern);
+        $formattedDate = $dateTime->setTimezone($timezone)->translatedFormat($pattern);
 
         return $formattedDate;
 
-    }
-
-    private function setUserFriendlyDate(DateTime $dateTime, string $locale = null, $timezone = 'Europe/Vilnius', $pattern = 'EEEE d MMMM yyyy HH:mm:ss'): string
-    {
-        if (!$dateTime instanceof Carbon) {
-            $dateTime = Carbon::parse($dateTime);
-        }
-
-        if (is_null($locale)){
-            $locale = auth()->user()->locale ?? config('app.locale');
-        }
-
-        $formatter = new IntlDateFormatter(
-            $locale,
-            IntlDateFormatter::FULL,
-            IntlDateFormatter::FULL,
-            $timezone,
-            IntlDateFormatter::GREGORIAN,
-            $pattern
-        );
-
-        return $formatter->format($dateTime);
     }
 }
