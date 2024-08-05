@@ -2,9 +2,9 @@ import { useState } from "react";
 import Modal from "@/Components/Modal.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import StringHelper from "@/Libs/StringHelper";
-import HistoryTable from "@/Components/Tables/HistoryTable";
 import { useEffect } from "react";
 import PerPageSelect from "../PerPageSelector";
+import HistoryTable from "@/Components/Tables/HistoryTable.jsx";
 
 export default function HistoryLog({
     objectId,

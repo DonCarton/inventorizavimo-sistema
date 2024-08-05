@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 class InventoryItemHistoryResource extends ResourceCollection
 {
+    protected array $fields;
+    protected array $newPropertiesOfHistory;
+    protected array $oldPropertiesOfHistory;
     /**
      * Transform the resource into an array.
      *

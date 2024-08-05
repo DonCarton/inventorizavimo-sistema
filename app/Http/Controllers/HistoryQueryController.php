@@ -22,6 +22,7 @@ class HistoryQueryController extends Controller
             return response()->json(['error' => 'Object not found'], 404);
         }
 
+        $query = $model->query();
         $perPage = $request->per_page;
         $query = $model->query()->paginate($perPage);
 

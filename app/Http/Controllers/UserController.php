@@ -188,6 +188,6 @@ class UserController extends Controller
     {
         $validateData = $userExportRequest->validated();
         $dateTimeNow = Carbon::now('Europe/Vilnius')->toDateTimeString();
-        return Excel::download(new UserExports($validateData),'export.xlsx');
+        return Excel::download(new UserExports($validateData), $dateTimeNow . '_users_export.xlsx');
     }
 }

@@ -2,8 +2,6 @@
 
 namespace App\Exports;
 
-use App\Models\InventoryItem;
-use App\Models\ItemType;
 use App\Models\Laboratory;
 use App\Models\User;
 use DateTimeZone;
@@ -17,8 +15,6 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use Maatwebsite\Excel\Events\AfterSheet;
-
-// TODO: For some reason the user export just doesn't want to work after some changes, to be investigated
 
 class UserExports implements FromCollection, WithMapping, WithHeadings, WithStyles, WithEvents, ShouldAutoSize
 {
@@ -53,7 +49,8 @@ class UserExports implements FromCollection, WithMapping, WithHeadings, WithStyl
             $row->first_name,
             $row->last_name,
             $row->email,
-            $row->laboratory ? Laboratory::where('id', $row->laboratory) : '-',
+            $row->laboratory ? Laboratory::where('id', $row->laboratory)->first()->name : '-',
+            $row->created_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -67,9 +64,9 @@ class UserExports implements FromCollection, WithMapping, WithHeadings, WithStyl
             'Pavardė',
             'Paštas',
             'Laboratorija',
+            'Sukurta',
         ];
     }
-
     public function styles(Worksheet $sheet)
     {
         return [

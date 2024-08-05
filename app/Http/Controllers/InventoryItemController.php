@@ -39,7 +39,7 @@ class InventoryItemController extends Controller
     public function index(): Response
     {
         $query = InventoryItem::query();//->orderByRaw("CASE WHEN total_count < critical_amount THEN 0 ELSE 1 END");
-        $sortField = request("sort_field", 'created_at');
+        $sortField = request("sort_field", 'updated_at');
         $sortDirection = request("sort_direction", 'desc');
         if (request('local_name')) {
             $query->where('local_name', 'like', '%' . request('local_name') . '%');
