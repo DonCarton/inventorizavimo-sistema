@@ -29,7 +29,13 @@ class HistoryQueryController extends Controller
         return response()->json($query);
     }
     public function getObjectHistory(HistoryLogRequest $request){
-        $query = \App\Models\InventoryItem::query()->paginate($request->per_page);
-        return new InventoryItemHistoryResource($query);
+
+        $modelClass = '\\App\\Models\\' . ModelTypeValid::from($request->object_type)->name;
+
+        $model = $modelClass::find($request->object_id);
+
+        $logs = $model->activities()->paginate($request->per_page);
+
+        return new InventoryItemHistoryResource($logs);
     }
 }

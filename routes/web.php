@@ -43,37 +43,39 @@ Route::middleware(['auth', 'verified'])->group(function (){
             Route::post('laboratories', [LaboratoryController::class, 'import'])->name('laboratories');
         });
 
-        Route::post('/queryObjectHistory', [HistoryQueryController::class, 'getLogs'])->name('queryObjectHistoryTest');
-
         Route::prefix('playgrounds')->group(function () {
             Route::get('/v1/{id}', function (int $id) {
                 if (strcasecmp(config('app.env'), 'Local') != 0) {abort(404);}
                 $inventoryItem = InventoryItem::findOrFail($id);
                 $logs = $inventoryItem->activities()->paginate(10);
                 return Inertia::render('Playground', [
-                    'data' => \App\Http\Resources\HistoryLogs\InventoryItemHistoryResource::collection($logs),
-//                    'data' => $logs,
+                   'data' => $logs,
                 ]);
             })->name('firstPlayground');
         });
     });
 
     Route::group(['middleware' => ['role:admin|user']], function (){
+
         Route::get('/download-barcode/{barcodeValue}', [BarcodesController::class, 'downloadBarcode'])->name('getBarcodePng');
         Route::resource('inventoryItems', InventoryItemController::class)->only('index','show','edit');
+
         Route::patch('/inventoryItems/{inventoryItem}/updateAmount', [InventoryItemController::class, 'updateAmount'])->middleware('includeUserId')->name('inventoryItems.updateAmount');
         Route::patch('/inventoryItems/{inventoryItem}/takeOutAmountLog', [InventoryItemController::class, 'takeOutAmountLog'])->middleware('includeUserId')->name('inventoryItems.takeOutAmountLog');
+
         Route::get('reader', [BarcodesController::class, 'generate'])->name('reader');
         Route::get('/reader/{barcode}', [BarcodesController::class, 'query'])->name('reader.query');
         Route::get('/process-scan/{barcode}',[BarcodesController::class, 'getUrl'])->name('processScan');
+
         Route::get('/myLaboratory', [InventoryItemController::class, 'userOwnInventory'])->name('inventoryItems.myLaboratory');
+
         Route::prefix('exports')->name('exports.')->group(function () {
             Route::get('/inventoryItems', [InventoryItemController::class, 'export'])->name('inventoryItems');
             Route::get('/myLaboratory', [InventoryItemController::class, 'export'])->name('myLaboratoryInventoryItems');
         });
+
         Route::post('/queryObjectHistory', [HistoryQueryController::class, 'getLogs'])->name('queryObjectHistory');
         Route::get('/getObjectHistory', [HistoryQueryController::class,'getObjectHistory'])->name('getObjectHistory');
-        Route::get('/myLaboratory', [InventoryItemController::class, 'userOwnInventory'])->name('inventoryItems.myLaboratory');
     });
 });
 

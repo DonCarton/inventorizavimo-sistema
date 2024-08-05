@@ -68,6 +68,7 @@ export default function HistoryTable({ data }) {
                                 <div>
                                     <table className="w-full">
                                         <tbody>
+                                            <pre>{JSON.stringify(object, undefined, 2)}</pre>
                                             {Object.entries(object).map(
                                                 ([key, value]) => (
                                                     <tr key={key + "-historicalEntryField"}>
