@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\ModelTypeValid;
 use App\Http\Requests\HistoryLogRequest;
+use App\Http\Resources\HistoryLogs\InventoryItemHistoryResource;
 
 class HistoryQueryController extends Controller
 {
@@ -21,9 +22,13 @@ class HistoryQueryController extends Controller
             return response()->json(['error' => 'Object not found'], 404);
         }
 
-        $query = $model->query();
         $perPage = $request->per_page;
+        $query = $model->query()->paginate($perPage);
 
-        return response()->json($query->paginate($perPage));
+        return response()->json($query);
+    }
+    public function getObjectHistory(HistoryLogRequest $request){
+        $query = \App\Models\InventoryItem::query()->paginate($request->per_page);
+        return new InventoryItemHistoryResource($query);
     }
 }

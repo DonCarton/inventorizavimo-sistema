@@ -3,9 +3,8 @@
 namespace App\Http\Resources\HistoryLogs;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
-
-class InventoryItemHistoryResource extends JsonResource
+use Illuminate\Http\Resources\Json\ResourceCollection;
+class InventoryItemHistoryResource extends ResourceCollection
 {
     /**
      * Transform the resource into an array.
@@ -14,17 +13,13 @@ class InventoryItemHistoryResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // TODO: Define this to output history
-        dd($request);
         return [
-            __('Code') => $this->local_name,
-            __('Name') => $this->name,
-            __('Name_end') => $this->name_eng,
-            __('Inventory_type') => $this->inventory_type,
-            __('Laboratory') => $this->laboratory,
-            __('Asset number') => $this->asset_nr,
-            __('Used for') => $this->used_for,
-            __('Comments') => $this->comments,
+            'data' => $this->collection->transform(function ($entry) {
+                return [
+                    'local_name' => $entry->local_name,
+                    'name' => $entry->name,
+                ];
+            }),
         ];
     }
 }

@@ -38,8 +38,27 @@ export default function HistoryLog({
             }
         }
     };
-    const handlePageChange = (page) => {
-        fetchData(objectId, objectType, page);
+
+    const getFetchData = async (value, type, page = 1) => {
+        if (value !== "") {
+            try {
+                const getResponse = await axios.get("/getObjectHistory", {
+                    params: {
+                        object_id: value,
+                        object_type: type,
+                        page: page,
+                        per_page: perPage,
+                    }
+                });
+                setShowModal(true);
+                setLogs(getResponse.data.data);
+                setLinksFromCall(getResponse.data.meta.links);
+                setShowPerPageSelect(getResponse.data.meta.last_page > 1);
+            }
+            catch (error) {
+                console.log("Error getting logs:",error);
+            }
+        }
     };
     const handlePerPageChange = (event) => {
         setPerPage(Number(event.target.value));
@@ -49,20 +68,24 @@ export default function HistoryLog({
         setFetchTrigger(true);
         fetchData(objectId, objectType, 1);
     };
+    const handleGetData = () => {
+        setFetchTrigger(true);
+        getFetchData(objectId, objectType, 1);
+    };
     const handleLinkChange = (url) => {
         const params = new URL(url).searchParams;
         const page = params.get('page');
-        fetchData(objectId, objectType, page);
+        getFetchData(objectId, objectType, page);
     }
     useEffect(() => {
         if (fetchTrigger) {
-            fetchData(objectId, objectType, 1);
+            getFetchData(objectId, objectType, 1);
             setFetchTrigger(false);
         }
     }, [perPage, fetchTrigger]);
     return (
         <div>
-            <button onClick={handleFetchData}>{nameOfButton}</button>
+            <button onClick={handleGetData}>{nameOfButton}</button>
             <div>
                 <Modal show={showModal} closeable maxWidth="7xl" className="w-full">
                     <div className="p-6">

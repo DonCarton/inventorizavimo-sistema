@@ -60,6 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
             Route::get('/myLaboratory', [InventoryItemController::class, 'export'])->name('myLaboratoryInventoryItems');
         });
         Route::post('/queryObjectHistory', [HistoryQueryController::class, 'getLogs'])->name('queryObjectHistory');
+        Route::get('/getObjectHistory', [HistoryQueryController::class,'getObjectHistory'])->name('getObjectHistory');
         Route::get('/myLaboratory', [InventoryItemController::class, 'userOwnInventory'])->name('inventoryItems.myLaboratory');
     });
 });
