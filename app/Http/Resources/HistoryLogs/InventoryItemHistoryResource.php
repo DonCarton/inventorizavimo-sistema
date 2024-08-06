@@ -25,26 +25,26 @@ class InventoryItemHistoryResource extends ResourceCollection
                 $tempFields = [];
                 if (count($entry->properties) !== 0 && str_contains($entry->description, 'created')) {
                     foreach ($entry->properties['attributes'] as $property => $value){
-                        $tempFields[] = $property;
+
+                        $tempFields[] = __("inventory_item.{$property}");
                         $tempNewPropertiesOfHistory[] = $value;
                         $tempOldPropertiesOfHistory[] = '-';
                     }
                 } else if (str_contains($entry->description, 'updated')) {
                     foreach ($entry->properties['attributes'] as $property => $value){
-                        $tempFields[] = $property;
+                        $tempFields[] = __("inventory_item.{$property}");
                         $tempNewPropertiesOfHistory[] = $value;
                     }
                     foreach ($entry->properties['old'] as $property => $value){
                         $tempOldPropertiesOfHistory[] = $value;
                     }
                 }
-
                 return [
                     'definitionOfChanges' => [
                         'created_at' => $this->setUserFriendlyDateCarbon($entry->created_at),
-                        'object' => $entry->subject_id,
+                        'object' => optional($entry->subject)->name ?? $entry->subject_id,
                         'action' => $entry->description,
-                        'causeUser' => $entry->causer_id,
+                        'causeUser' => optional($entry->causer)->email ?? $entry->causer_id,
                     ],
                     'changesForObject' => [
                         'fields' => $tempFields,

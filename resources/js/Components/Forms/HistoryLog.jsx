@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { TbHistory } from "react-icons/tb";
 import Modal from "@/Components/Modal.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import StringHelper from "@/Libs/StringHelper";
 import { useEffect } from "react";
 import PerPageSelect from "../PerPageSelector";
 import HistoryTable from "@/Components/Tables/HistoryTable.jsx";
+import ActionButton from "./ActionButton";
 
 export default function HistoryLog({
     objectId,
@@ -61,8 +63,7 @@ export default function HistoryLog({
     }, [perPage, fetchTrigger]);
     return (
         <div>
-            <button onClick={handleGetData}>{nameOfButton}</button>
-            <div>
+            <ActionButton onClick={handleGetData} className="h-full text-lg">{nameOfButton}<TbHistory className="ml-1"/></ActionButton>
                 <Modal show={showModal} closeable maxWidth="7xl" className="w-full">
                     <div className="p-6">
                         <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
@@ -91,7 +92,6 @@ export default function HistoryLog({
                         </div>
                     </div>
                 </Modal>
-            </div>
         </div>
     );
 }

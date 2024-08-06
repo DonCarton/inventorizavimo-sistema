@@ -7,7 +7,7 @@ export default function HistoryTable({ data }) {
         let [isRowExpanded, setIsRowExpanded] = useState(false);
         return (
             <>
-                <tr className="text-center">
+                <tr className="text-center border-b-2 border-gray-500">
                     <td>
                         <span
                             className={`flex justify-center transform transition-transform duration-150 ${
@@ -23,8 +23,8 @@ export default function HistoryTable({ data }) {
                         </span>
                     </td>
                     <td>{object.definitionOfChanges.created_at}</td>
-                    <td>{object.definitionOfChanges.object}</td>
-                    <td>{object.definitionOfChanges.action}</td>
+                    <td><strong>[{object.definitionOfChanges.object}]</strong></td>
+                    <td>{StringHelper.__(object.definitionOfChanges.action)}</td>
                     <td>{object.definitionOfChanges.causeUser}</td>
                 </tr>
                 {isRowExpanded && (
@@ -44,7 +44,7 @@ export default function HistoryTable({ data }) {
                                 <div>
                                     <table className="w-full">
                                         <thead>
-                                            <tr>
+                                            <tr className="bg-gray-50 uppercase">
                                                 <th className="w-64 text-left">
                                                     {StringHelper.__("Field")}
                                                 </th>
@@ -69,7 +69,7 @@ export default function HistoryTable({ data }) {
                                     <table className="w-full">
                                         <tbody>
                                             {object.changesForObject.fields.map((field, indexField) => (
-                                                <tr key={`${indexField}-${index}`}>
+                                                <tr key={`${indexField}-${index}`} className="hover:bg-gray-300 hover:animate-pulse border-b">
                                                     <td className="w-64">{field}</td>
                                                     <td className="w-64">{object.changesForObject.old_values[indexField]}</td>
                                                     <td className="w-64">{object.changesForObject.new_values[indexField]}</td>
@@ -86,7 +86,7 @@ export default function HistoryTable({ data }) {
         );
     }
     return (
-        <div className="max-w-screen-3xl">
+        <div className="max-w-screen-3xl overflow-auto">
             <table className="min-w-full">
                 <thead className="text-md text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                     <tr>
@@ -108,7 +108,7 @@ export default function HistoryTable({ data }) {
                         <th className="text-left w-64"></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="bg-white">
                     {data.map((entry, index) => (
                         <TableRow key={index} object={entry} index={index} />
                     ))}

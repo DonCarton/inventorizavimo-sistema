@@ -11,6 +11,7 @@ import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualInde
 import React, {useState} from "react";
 import ClickableUrlInput from "@/Components/Forms/ClickableUrlInput.jsx";
 import HistoryLog from "@/Components/Forms/HistoryLog.jsx";
+import ActionButton from '@/Components/Forms/ActionButton';
 
 
 export default function Show({auth, inventoryItem, role, laboratories, itemTypes}) {
@@ -24,19 +25,14 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
             header={
                 <div className="flex justify-between items-center">
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Show")} - {inventoryItem.data.name}</h2>
-                    {/*<a href={route("getBarcodePng", inventoryItem.data.localName)} className="inline-flex items-center px-4 py-2 bg-pink-800 text-white font-semibold text-sm rounded-lg hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75"><FaDownload className="mr-2"/>{StringHelper.__("Local barcode")}</a>*/}
-                    <div>
+                    <div className="flex space-x-2 h-12">
                         <HistoryLog
                             objectId={inventoryItem.data.id}
                             objectType="inventory_item"
                             nameOfButton={StringHelper.__("History")}
                             nameOfCloseButton={StringHelper.__("Close")}
                         ></HistoryLog>
-                        <button onClick={toggleAllAccordions}
-                                title={StringHelper.__("Toggle if the form should be fully expanded or collapsed") + '.'}
-                                className="px-4 py-2 bg-pink-800 text-white rounded hover:bg-pink-700">
-                            {openAll ? StringHelper.__("Collapse form") : StringHelper.__("Expand form")}
-                        </button>
+                        <ActionButton onClick={toggleAllAccordions} title={StringHelper.__("Toggle if the form should be fully expanded or collapsed") + '.'} className="text-lg">{openAll ? StringHelper.__("Collapse form") : StringHelper.__("Expand form")}</ActionButton>
                     </div>
                 </div>
             }

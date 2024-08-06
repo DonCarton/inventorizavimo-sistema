@@ -8,13 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\LogOptions;
 
 /**
  * @property int $id
  * @property int $inventory_type
  * @property int $amountLogs
- * @property int $itemType
+ * @property BelongsTo $itemType
  * @property string $local_name
  * @property int $laboratory
  * @property double $total_amount
@@ -83,12 +84,18 @@ class InventoryItem extends Model
 
     protected static $recordEvents = ['created','updated'];
 
+    public function activities()
+    {
+        return $this->morphMany(Activity::class,'subject')->orderBy('created_at', 'desc');
+    }
+
     public function getActivitylogOptions(): logOptions
     {
         return LogOptions::defaults()
             ->logAll()
+            ->logExcept(['created_at','updated_at','created_by','updated_by'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
+            ->setDescriptionForEvent(fn(string $eventName) => "{$eventName}");
     }
 
     /*

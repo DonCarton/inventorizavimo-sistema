@@ -30,11 +30,11 @@ class HistoryQueryController extends Controller
     }
     public function getObjectHistory(HistoryLogRequest $request){
 
+        // TODO: Better define the export, but we're almost there. Establish more relations
         $modelClass = '\\App\\Models\\' . ModelTypeValid::from($request->object_type)->name;
 
         $model = $modelClass::find($request->object_id);
-
-        $logs = $model->activities()->paginate($request->per_page);
+        $logs = $model->activities()->with(['subject','causer'])->paginate($request->per_page);
 
         return new InventoryItemHistoryResource($logs);
     }
