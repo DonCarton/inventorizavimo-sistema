@@ -8,7 +8,7 @@ use App\Http\Resources\HistoryLogs\InventoryItemHistoryResource;
 
 class HistoryQueryController extends Controller
 {
-    public function getLogs(HistoryLogRequest $request)
+    public function getLogs(HistoryLogRequest $request): \Illuminate\Http\JsonResponse
     {
         $modelClass = '\\App\\Models\\' . ModelTypeValid::from($request->object_type)->name;
 
@@ -28,14 +28,16 @@ class HistoryQueryController extends Controller
 
         return response()->json($query);
     }
-    public function getObjectHistory(HistoryLogRequest $request){
+    public function getObjectHistory(HistoryLogRequest $request): InventoryItemHistoryResource
+    {
 
         // TODO: Better define the export, but we're almost there. Establish more relations
         $modelClass = '\\App\\Models\\' . ModelTypeValid::from($request->object_type)->name;
 
         $model = $modelClass::find($request->object_id);
-        $logs = $model->activities()->with(['subject','causer'])->paginate($request->per_page);
-
+        $logs = $model->activities()
+            ->with(['subject','causer'])
+            ->paginate($request->per_page);
         return new InventoryItemHistoryResource($logs);
     }
 }

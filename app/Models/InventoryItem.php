@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\LogOptions;
@@ -98,7 +99,7 @@ class InventoryItem extends Model
             ->logAll()
             ->logExcept(['created_at','updated_at','created_by','updated_by'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn(string $eventName) => "{$eventName}");
+            ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
     }
 
     /*

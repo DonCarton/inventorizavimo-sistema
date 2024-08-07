@@ -5,13 +5,19 @@ import TextInput from "@/Components/TextInput.jsx";
 import {__} from "@/Libs/Lang.jsx";
 import {useState} from "react";
 import SteamDropdown from "@/Components/SteamDropdown";
+import HistoryLog from "@/Components/Forms/HistoryLog.jsx";
 
 export default function Show({auth, user, role, userRole, roles, laboratories, previousUrl}) {
     const [previousUrlPage] = useState(previousUrl);
     return (<AuthenticatedLayout
             user={auth.user}
-            header={<h2
-                className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Show")} - {user.data.email}</h2>}
+            header={
+                <div className="flex justify-between items-center">
+                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Show")} - {user.data.email}</h2>
+                    <div className="flex space-x-2 h-12">
+                        <HistoryLog objectId={user.data.id} objectType="User" nameOfButton={__("History")} nameOfCloseButton={__("Close")}/>
+                    </div>
+                </div>}
             role={role}
         >
             <Head title={__("Show") + " - " + user.data.email}/>

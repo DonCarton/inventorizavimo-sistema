@@ -70,11 +70,6 @@ class User extends Authenticatable
         ];
     }
 
-    public function activities()
-    {
-        return $this->morphMany(Activity::class, 'causer');
-    }
-
     public function getActivitylogOptions(): logOptions
     {
         return LogOptions::defaults()
