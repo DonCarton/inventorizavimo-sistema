@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 class InventoryItemHistoryResource extends ResourceCollection
 {
-    protected array $fields;
-    protected array $newPropertiesOfHistory;
-    protected array $oldPropertiesOfHistory;
+//    protected array $fields;
+//    protected array $newPropertiesOfHistory;
+//    protected array $oldPropertiesOfHistory;
     /**
      * Transform the resource into an array.
      *
@@ -20,23 +20,23 @@ class InventoryItemHistoryResource extends ResourceCollection
     {
         return [
             'data' => $this->collection->transform(function ($entry) {
-                $tempNewPropertiesOfHistory = [];
-                $tempOldPropertiesOfHistory = [];
-                $tempFields = [];
+                $newPropertiesOfHistory = [];
+                $oldPropertiesOfHistory = [];
+                $fields = [];
                 if (count($entry->properties) !== 0 && str_contains($entry->description, 'created')) {
                     foreach ($entry->properties['attributes'] as $property => $value){
 
-                        $tempFields[] = __("inventory_item.{$property}");
-                        $tempNewPropertiesOfHistory[] = $value;
-                        $tempOldPropertiesOfHistory[] = '-';
+                        $fields[] = __("inventory_item.{$property}");
+                        $newPropertiesOfHistory[] = $value;
+                        $oldPropertiesOfHistory[] = '-';
                     }
                 } else if (str_contains($entry->description, 'updated')) {
                     foreach ($entry->properties['attributes'] as $property => $value){
-                        $tempFields[] = __("inventory_item.{$property}");
-                        $tempNewPropertiesOfHistory[] = $value;
+                        $fields[] = __("inventory_item.{$property}");
+                        $newPropertiesOfHistory[] = $value;
                     }
                     foreach ($entry->properties['old'] as $property => $value){
-                        $tempOldPropertiesOfHistory[] = $value;
+                        $oldPropertiesOfHistory[] = $value;
                     }
                 }
                 return [
@@ -47,15 +47,22 @@ class InventoryItemHistoryResource extends ResourceCollection
                         'causeUser' => optional($entry->causer)->email ?? $entry->causer_id,
                     ],
                     'changesForObject' => [
-                        'fields' => $tempFields,
-                        'old_values' => $tempOldPropertiesOfHistory,
-                        'new_values' => $tempNewPropertiesOfHistory,
+                        'fields' => $fields,
+                        'old_values' => $oldPropertiesOfHistory,
+                        'new_values' => $newPropertiesOfHistory,
                     ]
                 ];
             }),
         ];
     }
 
+    /**
+     * @param DateTime $dateTime
+     * @param string|null $locale
+     * @param string $timezone
+     * @param string $pattern
+     * @return string
+     */
     private function setUserFriendlyDateCarbon(DateTime $dateTime, string $locale = null, string $timezone = 'Europe/Vilnius', string $pattern = 'l j F Y H:i:s'): string
     {
         if (!$dateTime instanceof Carbon) {
@@ -67,9 +74,7 @@ class InventoryItemHistoryResource extends ResourceCollection
             Carbon::setLocale($locale);
         }
 
-        $formattedDate = $dateTime->setTimezone($timezone)->translatedFormat($pattern);
-
-        return $formattedDate;
+        return $dateTime->setTimezone($timezone)->translatedFormat($pattern);
 
     }
 }

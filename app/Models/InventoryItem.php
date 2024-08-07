@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\InventoryStatusEnum;
+use App\Observers\InventoryItemObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,6 +26,7 @@ use Spatie\Activitylog\LogOptions;
  * @method static create(mixed $data)
  * @method static where(string $string, string $string1, mixed $prefixOptionId)
  */
+#[ObservedBy(InventoryItemObserver::class)]
 class InventoryItem extends Model
 {
     use HasFactory, LogsActivity;
