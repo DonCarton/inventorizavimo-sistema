@@ -19,11 +19,17 @@ class InventoryItemObserver implements ShouldHandleEventsAfterCommit
 
     /**
      * Handle the InventoryItem "updated" event.
+     * @param InventoryItem $inventoryItem
+     * @return void
      */
     public function updated(InventoryItem $inventoryItem): void
     {
-        if ($inventoryItem->total_amount <= $inventoryItem->critical_amount){
-            event(new AmountRunningLow($inventoryItem, false));
+        if ($inventoryItem->isDirty('total_amount')){
+
+            if ($inventoryItem->total_amount <= $inventoryItem->critical_amount){
+                event(new AmountRunningLow($inventoryItem, false));
+            }
+
         }
     }
 

@@ -15,7 +15,7 @@ export default function Show({auth, user, role, userRole, roles, laboratories, p
                 <div className="flex justify-between items-center">
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Show")} - {user.data.email}</h2>
                     <div className="flex space-x-2 h-12">
-                        <HistoryLog objectId={user.data.id} objectType="User" nameOfButton={__("History")} nameOfCloseButton={__("Close")}/>
+                        <HistoryLog objectId={user.data.id} objectType="user" nameOfButton={__("History")} nameOfCloseButton={__("Close")}/>
                     </div>
                 </div>}
             role={role}
