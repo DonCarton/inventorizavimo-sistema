@@ -20,16 +20,16 @@ export default function Edit({auth, inventoryItem, role, itemTypes, redirectToRe
     const [addingAllowed, setAddingAllowed] = useState(true);
     const [removingAllowed, setRemovingAllowed] = useState(true);
     const handleAmountChangeForAdding = (e) =>{
-        if (removingAllowed){
-            setRemovingAllowed(false);
-        }
-        setData('amount_added',e.target.value);
+        const value = e.target.value;
+        setData('amount_added',value);
+        if (value) { setRemovingAllowed(false); }
+        else { setRemovingAllowed(true); }
     }
     const handleAmountChangeForRemoving = (e) =>{
-        if (addingAllowed){
-            setAddingAllowed(false);
-        }
-        setData('amount_removed',e.target.value);
+        const value = e.target.value;
+        setData('amount_removed',value);
+        if (value) { setAddingAllowed(false); }
+        else { setAddingAllowed(true); }
     }
     const onSubmit = (e) => {
         e.preventDefault();
@@ -39,6 +39,8 @@ export default function Edit({auth, inventoryItem, role, itemTypes, redirectToRe
         if (e.which < 48 || e.which > 57)
         { e.preventDefault(); }
     }
+    console.log('Amount added',data.amount_added);
+    console.log('Amount removed',data.amount_removed);
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -64,7 +66,8 @@ export default function Edit({auth, inventoryItem, role, itemTypes, redirectToRe
                                                        className="mt-1 block w-full disabled:bg-gray-400 text-white"
                                                        readOnly={true} disabled={true}/>
                                         </div>
-                                        <div className={removingAllowed ? "mt-4 w-full" : "hidden"}>
+                                        {/*<div className={removingAllowed ? "mt-4 w-full" : "hidden"}>*/}
+                                        <div className="mt-4 w-full">
                                             <InputLabel
                                                 htmlFor="inventoryItems_amount_removed">{__("Amount being taken out")}</InputLabel>
                                             <div className="flex justify-between">
@@ -89,7 +92,8 @@ export default function Edit({auth, inventoryItem, role, itemTypes, redirectToRe
                                                        className="mt-1 block w-full disabled:bg-gray-400 text-white"
                                                        readOnly={true} disabled={true}/>
                                         </div>
-                                        <div className={addingAllowed ? "mt-4 w-full" : "hidden"}>
+                                        {/*<div className={addingAllowed ? "mt-4 w-full" : "hidden"}>*/}
+                                        <div className="mt-4 w-full">
                                             <InputLabel
                                                 htmlFor="inventoryItems_amount_added">{__("Amount being added")}</InputLabel>
                                             <div className="flex justify-between">

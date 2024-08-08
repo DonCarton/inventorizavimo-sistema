@@ -6,7 +6,7 @@ import InputError from "@/Components/InputError.jsx";
 import {__} from "@/Libs/Lang.jsx";
 import {useState} from "react";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
-import StringHelper from "@/Libs/StringHelper.jsx";
+import SteamDropdown from "@/Components/SteamDropdown";
 
 export default function Edit({auth, user, role, userRole, roles, laboratories, previousUrl}) {
     const [previousUrlPage] = useState(previousUrl);
@@ -15,7 +15,7 @@ export default function Edit({auth, user, role, userRole, roles, laboratories, p
         last_name: user.data.last_name || '',
         email: user.data.email || '',
         laboratory: user.data.laboratory,
-        role: userRole[0].name,
+        role: userRole,
     })
     const onSubmit = (e) => {
         e.preventDefault();
@@ -30,7 +30,7 @@ export default function Edit({auth, user, role, userRole, roles, laboratories, p
         >
             <Head title={__("Edit") + " - " + user.data.email}/>
 
-            <div className="py-12">
+        <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <form onSubmit={onSubmit} className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
@@ -69,13 +69,8 @@ export default function Edit({auth, user, role, userRole, roles, laboratories, p
                                 <InputError message={errors.laboratory} className="mt-2"/>
                             </div>
                             <div className="mt-4">
-                                <InputLabel htmlFor="user_role">{__("Role")}<span className="text-red-500">*</span></InputLabel>
-                                <select id="user_role" name="role"
-                                        className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
-                                        value={data.role} onChange={e => setData('role', e.target.value)}>
-                                    {roles.map((role) => (
-                                        <option key={role.id} value={role.name}>{StringHelper.__(StringHelper.Capitalize(role.name))}</option>))}
-                                </select>
+                            <InputLabel htmlFor="user_role">{__("Role")}<span className="text-red-500">*</span></InputLabel>
+                            <SteamDropdown name="inventory_type_query_select" className="mt-1 block w-full" value={data.role} options={roles.data} onChange={e => setData('role', e.target.value)} />
                                 <InputError message={errors.role} className="mt-2"/>
                             </div>
                             <div className="mt-4">

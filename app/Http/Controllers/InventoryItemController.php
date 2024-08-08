@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\AmountRunningLow;
 use App\Exports\InventoryExports;
+use App\Http\Requests\ExportRequests\InventoryItemExportRequest;
 use App\Http\Requests\StoreRequests\AdjustInventoryAmountViaLog;
 use App\Http\Requests\StoreRequests\StoreInventoryItemRequest;
 use App\Http\Requests\UpdateRequests\ChangeAmountInventoryItemRequest;
@@ -37,9 +38,10 @@ class InventoryItemController extends Controller
      */
     public function index(): Response
     {
-        $query = InventoryItem::query();//->orderByRaw("CASE WHEN total_count < critical_amount THEN 0 ELSE 1 END");
-        $sortField = request("sort_field", 'created_at');
+        $query = InventoryItem::query();
+        $sortField = request("sort_field", 'updated_at');
         $sortDirection = request("sort_direction", 'desc');
+
         if (request('local_name')) {
             $query->where('local_name', 'like', '%' . request('local_name') . '%');
         }
@@ -50,9 +52,7 @@ class InventoryItemController extends Controller
             $query->where('name_eng', 'like', '%' . request('name_eng') . '%');
         }
         if (request('inventory_type')) {
-            $query->whereHas('itemType', function ($query) {
-               $query->where('name', 'like', '%' . request('inventory_type') . '%');
-            });
+            $query->where('inventory_type', '=', request('inventory_type'));
         }
         if (request('laboratory')) {
             $query->whereHas('belongsToLaboratory', function ($query) {
@@ -64,11 +64,18 @@ class InventoryItemController extends Controller
                $query->where('email', 'like', '%' . request('updated_by') . '%');
             });
         }
+
         $inventoryItems = $query
-            ->orderBy($sortField, $sortDirection)->paginate(50)
+            ->orderByRaw('total_amount <= critical_amount DESC')
+            ->orderBy($sortField, $sortDirection)
+            ->paginate(50)
             ->withQueryString()->onEachSide(1);
+
+        $itemTypes = ItemType::query()->get();
+
         return Inertia::render('Inventory/Index', [
             'inventoryItems' => InventoryItemIndexResource::collection($inventoryItems),
+            'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
             'failure' => session('failure')
@@ -78,8 +85,9 @@ class InventoryItemController extends Controller
     public function userOwnInventory(): Response
     {
         $query = InventoryItem::query()->where('laboratory', auth()->user()->laboratory);
-        $sortField = request("sort_field", 'created_at');
+        $sortField = request("sort_field", 'updated_at');
         $sortDirection = request("sort_direction", 'desc');
+
         if (request('local_name')) {
             $query->where('local_name', 'like', '%' . request('local_name') . '%');
         }
@@ -90,9 +98,7 @@ class InventoryItemController extends Controller
             $query->where('name_eng', 'like', '%' . request('name_eng') . '%');
         }
         if (request('inventory_type')) {
-            $query->whereHas('itemType', function ($query) {
-                $query->where('name', 'like', '%' . request('inventory_type') . '%');
-            });
+            $query->where('inventory_type', '=', request('inventory_type'));
         }
         if (request('updated_by')) {
             $query->whereHas('updatedBy', function ($query) {
@@ -100,10 +106,16 @@ class InventoryItemController extends Controller
             });
         }
         $inventoryItems = $query
-            ->orderBy($sortField, $sortDirection)->paginate(50)
+            ->orderByRaw('total_amount <= critical_amount DESC')
+            ->orderBy($sortField, $sortDirection)
+            ->paginate(50)
             ->withQueryString()->onEachSide(1);
-        return Inertia::render('User/MyInventory', [
+
+        $itemTypes = ItemType::query()->get();
+
+        return Inertia::render('User/MyLaboratory', [
             'inventoryItems' => InventoryItemIndexResource::collection($inventoryItems),
+            'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
             'failure' => session('failure')
@@ -359,11 +371,14 @@ class InventoryItemController extends Controller
     /**
      * @return BinaryFileResponse
      */
-    public function export(): BinaryFileResponse
+    public function export(InventoryItemExportRequest $exportRequest): BinaryFileResponse
     {
-        $data = request()->query();
-        $dateTimeNow = Carbon::now()->toDateTimeString();
-        return Excel::download(new InventoryExports($data), $dateTimeNow . '_inventory.xlsx');
+        $validateData = $exportRequest->validated();
+        if (str_ends_with($exportRequest->url(),'myLaboratory')) {
+            $validateData['laboratory'] = auth()->user()->laboratory;
+        }
+        $dateTimeNow = Carbon::now('Europe/Vilnius')->toDateTimeString();
+        return Excel::download(new InventoryExports($validateData), $dateTimeNow . '_inventory_export.xlsx');
     }
 
     /**
@@ -382,9 +397,8 @@ class InventoryItemController extends Controller
     {
         $objectId = $request->input('object_id');
         $objectType = $request->input('object_type');
+        $perPage = $request->input('per_page');
         $query = InventoryItem::query();
-//        $query = $query->where('id', $objectId)->get();
-        $query = $query->skip(2)->limit(2)->get();
-        return response()->json($query->toArray());
+        return response()->json($query->paginate($perPage));
     }
 }

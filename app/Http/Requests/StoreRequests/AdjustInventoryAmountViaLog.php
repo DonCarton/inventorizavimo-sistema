@@ -5,6 +5,15 @@ namespace App\Http\Requests\StoreRequests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+/**
+ * @property string $action
+ * @property float $amount
+ * @property int $laboratory_id
+ * @property string $comment
+ * @property int $created_by
+ * @property int $updated_by
+ * @property boolean $urlToRedirect
+ */
 class AdjustInventoryAmountViaLog extends FormRequest
 {
     /**

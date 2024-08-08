@@ -3,14 +3,21 @@
 namespace App\Exports;
 
 use App\Models\InventoryItem;
-use Carbon\Carbon;
+use App\Models\ItemType;
+use App\Models\Laboratory;
+use DateTimeZone;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use Maatwebsite\Excel\Events\AfterSheet;
 
-class InventoryExports implements FromCollection, WithMapping, WithHeadings
+class InventoryExports implements FromCollection, WithMapping, WithHeadings, WithStyles, WithEvents, ShouldAutoSize
 {
     private array $data;
 
@@ -26,19 +33,30 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings
     {
         $query = InventoryItem::query();
         if (!empty($this->data)) {
-            foreach ($this->data as $column => $value) {
-                if ($column !== 'inventory_type') {
-                    $query->where($column, 'LIKE', "%{$value}%");
-                }
+            if (isset($this->data['local_name'])) {
+                $query->where('local_name', 'like', '%' . $this->data['local_name'] . '%');
+            }
+            if (isset($this->data['name'])) {
+                $query->where('name', 'like', '%' . $this->data['name'] . '%');
+            }
+            if (isset($this->data['name_eng'])) {
+                $query->where('name_eng', 'like', '%' . $this->data['name_eng'] . '%');
             }
             if (isset($this->data['inventory_type'])) {
-                $query->whereHas('itemType', function ($query) {
-                    $query->where('name', 'like', '%' . $this->data['inventory_type'] . '%');
-                });
+                $query->where('inventory_type', '=', $this->data['inventory_type']);
             }
             if (isset($this->data['laboratory'])) {
-                $query->whereHas('manyLaboratories', function ($query) {
-                    $query->where('name', 'like', '%' . $this->data['laboratory'] . '%');
+                $query->whereHas('belongsToLaboratory', function ($query) {
+                    if (gettype($this->data['laboratory']) === "integer"){
+                        $query->where('id', '=', $this->data['laboratory']);
+                    } else {
+                        $query->where('name', 'like', '%' . $this->data['laboratory'] . '%');
+                    }
+                });
+            }
+            if (isset($this->data['updated_by'])) {
+                $query->whereHas('updatedBy', function ($query) {
+                    $query->where('email', 'like', '%' . $this->data['updated_by'] . '%');
                 });
             }
         }
@@ -52,12 +70,26 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings
     public function map($row): array
     {
         return [
-            $row->id,
             $row->local_name,
             $row->name,
             $row->name_eng,
-            (new Carbon($row->created_at))->format('Y-m-d H:m'),
-            (new Carbon($row->updated_at))->format('Y-m-d H:m')
+            $row->inventory_type ? ItemType::where('id', $row->inventory_type)->first()->name : '-',
+            $row->laboratory ? Laboratory::where('id', $row->laboratory)->first()->name : '-',
+            $row->formula,
+            $row->cas_nr,
+            $row->provider,
+            $row->barcode,
+            $row->url_to_provider,
+            $row->alt_url_to_provider,
+            $row->total_amount,
+            $row->critical_amount,
+            $row->to_order_amount,
+            $row->multiple_locations,
+            $row->asset_number,
+            $row->used_for,
+            $row->comments,
+            $row->created_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
+            $row->updated_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s')
         ];
     }
 
@@ -67,12 +99,64 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings
     public function headings(): array
     {
         return [
-            'ID',
-            'Code',
-            'Name',
-            'NameENG',
-            'CreateTime',
-            'UpdateTime',
+            'Kodas',
+            'Pavadinimas',
+            'Pavadinimas ENG',
+            'Tipas',
+            'Laboratorija',
+            'Formulė',
+            'CAS nr',
+            'Tiekėjas',
+            'Barkodas',
+            'Tiekėjo nuoroda',
+            'Alternatyvi tiekėjo nuoroda',
+            'Kiekis',
+            'Kritinis kiekis',
+            'Užsakyti',
+            'Keliose vietose',
+            'VU turto numeris',
+            'Paskirtis',
+            'Komentarai',
+            'Sukurta',
+            'Paskutinį kartą pakeistas',
+        ];
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            1 => [
+                'font' => ['bold' => true],
+                'borders' => [
+                    'outline' => [
+                        'borderStyle' => Border::BORDER_MEDIUM,
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $sheet = $event->sheet->getDelegate();
+                $highestRow = $sheet->getHighestRow();
+                $highestColumn = $sheet->getHighestColumn();
+
+                $sheet->getStyle("A1:{$highestColumn}{$highestRow}")
+                    ->getBorders()
+                    ->getAllBorders()
+                    ->setBorderStyle(Border::BORDER_THIN);
+
+                $sheet->getStyle("A1:{$highestColumn}1")
+                    ->getBorders()
+                    ->getAllBorders()
+                    ->setBorderStyle(Border::BORDER_MEDIUM);
+            },
         ];
     }
 }

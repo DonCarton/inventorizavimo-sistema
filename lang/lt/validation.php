@@ -191,7 +191,10 @@ return [
         'inventory_type' => [
             'required' => 'Pasirinkti inventoriaus tipą yra privaloma.',
         ],
-
+        'per_page' => [
+            'min' => 'Norimas gauti kiekis įrašų turi būti lygus arba didesnis nei :min.',
+            'max' => 'Norimas gauti kiekis įrašų turi būti lygus arba mažesnis nei :max.'
+        ]
     ],
 
     /*
@@ -236,7 +239,9 @@ return [
         'comment' => 'komentaras',
         'change_acc_amount' => 'gali literaliai keisti likutį?',
         'cupboard' => 'spinta',
-        'shelf' => 'lentyna'
+        'shelf' => 'lentyna',
+        'per_page' => 'įrašų kiekis per puslapį',
+        'object_type' => 'objekto tipas',
     ],
 
 ];

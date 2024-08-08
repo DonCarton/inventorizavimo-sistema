@@ -82,11 +82,11 @@ const FlexibleSelect = ({
         const fetchItemTypes = async () => {
             try {
                 const response = await axios.get(fetchUrlPath);
-                const itemTypes = response.data.map(item => ({
+                const returnedData = response.data.map(item => ({
                     value: item.id,
                     label: item.name
                 }));
-                setOptions(itemTypes);
+                setOptions(returnedData);
             } catch (error) {
                 console.error('Error fetching item types:', error);
             }

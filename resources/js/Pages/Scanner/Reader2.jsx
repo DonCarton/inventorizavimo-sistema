@@ -1,4 +1,4 @@
-import {Html5QrcodeScanner} from 'html5-qrcode';
+import {Html5Qrcode, Html5QrcodeScanner} from 'html5-qrcode';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.jsx';
 import {useEffect} from "react";
 import {Head, router} from "@inertiajs/react";

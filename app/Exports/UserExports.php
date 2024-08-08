@@ -4,20 +4,39 @@ namespace App\Exports;
 
 use App\Models\Laboratory;
 use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
-use Maatwebsite\Excel\Concerns\FromQuery;
+use DateTimeZone;
+use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use Maatwebsite\Excel\Events\AfterSheet;
 
-class UserExports implements FromQuery, WithMapping, WithHeadings
+class UserExports implements FromCollection, WithMapping, WithHeadings, WithStyles, WithEvents, ShouldAutoSize
 {
-    /**
-    * @return Builder
-     */
-    public function query(): Builder
+    private array $data;
+
+    public function __construct(array $data = [])
     {
-        return User::query();
+        $this->data = array_diff_key($data, array_flip(['sort_direction', 'sort_field']));
+    }
+
+    /**
+     * @return Collection
+     */
+    public function collection(): Collection
+    {
+        $query = User::query();
+        if (!empty($this->data)) {
+            if (isset($this->data['email'])) {
+                $query->where('email', 'like', '%' . $this->data['email'] . '%');
+            }
+        }
+        return $query->get();
     }
 
     /**
@@ -26,14 +45,12 @@ class UserExports implements FromQuery, WithMapping, WithHeadings
      */
     public function map($row): array
     {
-        $laboratory = Laboratory::query()->get()->where('id','=',$row->laboratory)->last()->toArray();
         return [
-            $row->id,
             $row->first_name,
             $row->last_name,
             $row->email,
-            $laboratory['name'],
-            (new Carbon($row->updated_at))->format('Y-m-d H:m')
+            $row->laboratory ? Laboratory::where('id', $row->laboratory)->first()->name : '-',
+            $row->created_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -43,12 +60,48 @@ class UserExports implements FromQuery, WithMapping, WithHeadings
     public function headings(): array
     {
         return [
-            'ID',
-            'FirstName',
-            'LastName',
-            'Email',
-            'Laboratory',
-            'CreateTime'
+            'Vardas',
+            'Pavardė',
+            'Paštas',
+            'Laboratorija',
+            'Sukurta',
+        ];
+    }
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            1 => [
+                'font' => ['bold' => true],
+                'borders' => [
+                    'outline' => [
+                        'borderStyle' => Border::BORDER_MEDIUM,
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $sheet = $event->sheet->getDelegate();
+                $highestRow = $sheet->getHighestRow();
+                $highestColumn = $sheet->getHighestColumn();
+
+                $sheet->getStyle("A1:{$highestColumn}{$highestRow}")
+                    ->getBorders()
+                    ->getAllBorders()
+                    ->setBorderStyle(Border::BORDER_THIN);
+
+                $sheet->getStyle("A1:{$highestColumn}1")
+                    ->getBorders()
+                    ->getAllBorders()
+                    ->setBorderStyle(Border::BORDER_MEDIUM);
+            },
         ];
     }
 }

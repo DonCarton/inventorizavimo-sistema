@@ -3,16 +3,22 @@
 namespace App\Models;
 
 use App\Enums\InventoryStatusEnum;
+use App\Observers\InventoryItemObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\LogOptions;
 
 /**
  * @property int $id
  * @property int $inventory_type
  * @property int $amountLogs
- * @property int $itemType
+ * @property BelongsTo $itemType
  * @property string $local_name
  * @property int $laboratory
  * @property double $total_amount
@@ -21,9 +27,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static create(mixed $data)
  * @method static where(string $string, string $string1, mixed $prefixOptionId)
  */
+#[ObservedBy(InventoryItemObserver::class)]
 class InventoryItem extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
     protected $fillable = [
         'local_name',
         'inventory_type',
@@ -77,6 +84,22 @@ class InventoryItem extends Model
         { return InventoryStatusEnum::TAKEN; }
 
         return InventoryStatusEnum::NORMAL;
+    }
+
+    protected static $recordEvents = ['created','updated'];
+
+    public function activities()
+    {
+        return $this->morphMany(Activity::class,'subject')->orderBy('created_at', 'desc');
+    }
+
+    public function getActivitylogOptions(): logOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logExcept(['created_at','updated_at','created_by','updated_by'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
     }
 
     /*

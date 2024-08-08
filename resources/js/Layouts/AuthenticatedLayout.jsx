@@ -5,10 +5,12 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
 import { __ } from '@/Libs/Lang.jsx';
 import ApplicationLogoWhite from "@/Components/ApplicationLogoWhite.jsx";
+import MegaMenuNavLink from "@/Components/MegaMenuNavLink.jsx";
+import {ChevronDownIcon} from "@heroicons/react/24/solid/index.js";
 
 export default function Authenticated({ user, header, children, role }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-
+    const [showMegaMenuDropdown, setShowMegaMenuDropdown] = useState(false);
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
             <nav className="bg-pink-800 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
@@ -29,16 +31,41 @@ export default function Authenticated({ user, header, children, role }) {
                                     <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('users.index')} active={route().current('users*')}>
                                     {__("Users")}</NavLink>
                                 }
-                                <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('inventoryItems.index')} active={route().current('inventoryItems*')}>
+                                <button type="button" onClick={() => setShowMegaMenuDropdown(!showMegaMenuDropdown)} onMouseEnter={() => setShowMegaMenuDropdown(true)} onMouseLeave={() => setShowMegaMenuDropdown(false)}
+                                        className={`inline-flex items-center 4xl:text-xl 2xl:text-lg xl:text-base text-white px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none hover:border-b-2 hover:border-b-indigo-400 border-transparent dark:text-gray-400 hover:text-teal-100 dark:hover:text-gray-300 hover:border-indigo-500 dark:hover:border-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700 ${route().current('inventoryItems*') ? 'border-b-indigo-400 bg-pink-700' : ''}`}>
                                     {__("Inventory")}
-                                </NavLink>
-                                {role ==="admin" && <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('itemTypes.index')} active={route().current('itemTypes*')}>
-                                    {__("Types")}
-                                </NavLink>}
-                                {role ==="admin" && <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('laboratories.index')} active={route().current('laboratories*')}>
-                                    {__("Laboratories")}
-                                </NavLink>}
-                                <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('reader')} active={route().current('reader')}>
+                                    <ChevronDownIcon className="ml-1 w-5 h-5"/>
+                                    {showMegaMenuDropdown &&
+                                        <div className="absolute z-10 grid w-auto mt-40 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 dark:bg-gray-700">
+                                            <div className="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
+                                                <ul className="space-y-4" aria-labelledby="mega-menu-dropdown-button">
+                                                    <li>
+                                                        <MegaMenuNavLink className="4xl:text-xl 2xl:text-lg xl:text-base" href={route('inventoryItems.index')} active={route().current('inventoryItems.index') && !route().current('inventoryItems.myLaboratory')}>
+                                                            {__("Inventory")}
+                                                        </MegaMenuNavLink>
+                                                    </li>
+                                                    <li>
+                                                        <MegaMenuNavLink className="4xl:text-xl 2xl:text-lg xl:text-base" href={route('inventoryItems.myLaboratory')} active={route().current('inventoryItems.myLaboratory')}>
+                                                            {__("My inventory")}
+                                                        </MegaMenuNavLink>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>}
+                                </button>
+                                {role === "admin" &&
+                                    <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white"
+                                             href={route('itemTypes.index')} active={route().current('itemTypes*')}>
+                                        {__("Types")}
+                                    </NavLink>}
+                                {role === "admin" &&
+                                    <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white"
+                                             href={route('laboratories.index')}
+                                             active={route().current('laboratories*')}>
+                                        {__("Laboratories")}
+                                    </NavLink>}
+                                <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white"
+                                         href={route('reader')} active={route().current('reader')}>
                                     {__("Reader")}
                                 </NavLink>
                             </div>
@@ -82,7 +109,7 @@ export default function Authenticated({ user, header, children, role }) {
                         </div>
 
                         <div className="-me-2 flex items-center sm:hidden">
-                            <button
+                        <button
                                 onClick={() => setShowingNavigationDropdown((previousState) => !previousState)}
                                 className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-pink-700 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out"
                             >
@@ -117,6 +144,9 @@ export default function Authenticated({ user, header, children, role }) {
                         </ResponsiveNavLink>}
                         <ResponsiveNavLink className="text-white" href={route('inventoryItems.index')} active={route().current('inventoryItems.index')}>
                             {__("Inventory")}
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink className="text-white" href={route('inventoryItems.myLaboratory')} active={route().current('inventoryItems.myLaboratory')}>
+                            {__("My inventory")}
                         </ResponsiveNavLink>
                         {role ==="admin" && <ResponsiveNavLink className="text-white" href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
                             {__("Types")}
