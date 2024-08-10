@@ -73,10 +73,15 @@ class User extends Authenticatable
         ];
     }
 
+    public function activities()
+    {
+        return $this->morphMany(Activity::class,'subject')->orderBy('created_at', 'desc');
+    }
+
     public function getActivitylogOptions(): logOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['first_name','last_name','email'])
+            ->logOnly(['first_name','last_name','email','laboratory'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
     }

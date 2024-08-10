@@ -361,7 +361,7 @@ class InventoryItemController extends Controller
         $inventoryItem = InventoryItem::findOrFail($id);
         $logs = $inventoryItem->amountLogs;
         if (!$logs->isEmpty()){
-            return redirect()->route('inventoryItems.index')->with('failure',__('inventory_item.logBound'));
+            return redirect()->route('inventoryItems.index')->with('failure',__('model_attributes.inventory_item.logBound'));
         }
         $inventoryItem->delete();
         return redirect()->route('inventoryItems.index')
