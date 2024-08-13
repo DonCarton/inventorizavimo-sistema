@@ -6,11 +6,11 @@ import InputError from "@/Components/InputError.jsx";
 import {useState} from "react";
 import {__} from "@/Libs/Lang.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
-import SelectForSingleItem from "@/Components/Forms/SelectForSingleItem.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
+import NumericInput from "@/Components/Forms/NumericInput.jsx";
 
-export default function Edit({auth, inventoryItem, role, itemTypes, redirectToReader}) {
+export default function Edit({auth, inventoryItem, role, redirectToReader, queryParams}) {
     const {data, setData, patch, errors, processing} = useForm({
         total_amount: inventoryItem.total_amount,
         amount_added: '',
@@ -33,14 +33,8 @@ export default function Edit({auth, inventoryItem, role, itemTypes, redirectToRe
     }
     const onSubmit = (e) => {
         e.preventDefault();
-        patch(route('inventoryItems.updateAmount', inventoryItem.id));
+        patch(route('inventoryItems.updateAmount', {inventoryItem: inventoryItem.id, query: queryParams}));
     }
-    const handleNumericInput = (e) =>{
-        if (e.which < 48 || e.which > 57)
-        { e.preventDefault(); }
-    }
-    console.log('Amount added',data.amount_added);
-    console.log('Amount removed',data.amount_removed);
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -57,7 +51,7 @@ export default function Edit({auth, inventoryItem, role, itemTypes, redirectToRe
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg space-y-6">
                         <form onSubmit={onSubmit} className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                             <div className="pb-6">
-                                <AccordionWithManualIndex indexOfAcc={1} headerName={__("Amount")}>
+                                <AccordionWithManualIndex indexOfAcc={1} headerName={__("Amount")} expandedByDefault={true}>
                                         <div className="grid grid-cols-2 gap-2">
                                         <div className="mt-4 w-full">
                                             <InputLabel htmlFor="inventoryItems_total_amount" value={__("Count")}/>
@@ -66,18 +60,12 @@ export default function Edit({auth, inventoryItem, role, itemTypes, redirectToRe
                                                        className="mt-1 block w-full disabled:bg-gray-400 text-white"
                                                        readOnly={true} disabled={true}/>
                                         </div>
-                                        {/*<div className={removingAllowed ? "mt-4 w-full" : "hidden"}>*/}
                                         <div className="mt-4 w-full">
                                             <InputLabel
                                                 htmlFor="inventoryItems_amount_removed">{__("Amount being taken out")}</InputLabel>
                                             <div className="flex justify-between">
-                                                <TextInput id="inventoryItems_amount_removed" type="text"
-                                                           name="amount_removed"
-                                                           className="mt-1 block w-full bg-red-400 text-white disabled:bg-gray-400"
-                                                           onChange={handleAmountChangeForRemoving}
-                                                           disabled={!removingAllowed}
-                                                           onKeyPress={handleNumericInput}
-                                                />
+                                                <NumericInput id="inventoryItems_amount_removed" name="amount_removed" className="mt-1 block w-full bg-red-400 text-white disabled:bg-gray-400"
+                                                onChange={handleAmountChangeForRemoving} disabled={!removingAllowed}/>
                                                 <InformationIconToolTip classname="bg-black"
                                                                         content={__("In this field, the amount which will be removed is specified") + '.'}
                                                                         color="black"/>
@@ -92,17 +80,12 @@ export default function Edit({auth, inventoryItem, role, itemTypes, redirectToRe
                                                        className="mt-1 block w-full disabled:bg-gray-400 text-white"
                                                        readOnly={true} disabled={true}/>
                                         </div>
-                                        {/*<div className={addingAllowed ? "mt-4 w-full" : "hidden"}>*/}
                                         <div className="mt-4 w-full">
                                             <InputLabel
                                                 htmlFor="inventoryItems_amount_added">{__("Amount being added")}</InputLabel>
                                             <div className="flex justify-between">
-                                                <TextInput id="inventoryItems_amount_added" type="text"
-                                                           name="amount_added"
-                                                           className="mt-1 block w-full bg-emerald-500 text-white disabled:bg-gray-400"
-                                                           onChange={handleAmountChangeForAdding}
-                                                           disabled={!addingAllowed}
-                                                           onKeyPress={handleNumericInput}/>
+                                                <NumericInput id="inventoryItems_amount_added" name="amount_added" className="mt-1 block w-full bg-emerald-500 text-white disabled:bg-gray-400"
+                                                              onChange={handleAmountChangeForAdding} disabled={!addingAllowed}/>
                                                 <InformationIconToolTip classname="bg-black"
                                                                         content={__("In this field, the amount which will be added is specified") + '.'}
                                                                         color="black"/>
@@ -130,10 +113,6 @@ export default function Edit({auth, inventoryItem, role, itemTypes, redirectToRe
                                                        type="text" name="type"
                                                        value={inventoryItem.inventory_type.label}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
-                                            {/*<SelectForSingleItem id="inventoryItems_type"*/}
-                                            {/*                     value={inventoryItem.inventory_type}*/}
-                                            {/*                     options={itemTypes.data} disabled={true}*/}
-                                            {/*                     className="disabled:text-white disabled:bg-gray-500"/>*/}
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_name" value="Pavadinimas"/>
@@ -156,7 +135,7 @@ export default function Edit({auth, inventoryItem, role, itemTypes, redirectToRe
                                                               className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                     >
                                         {__("Cancel")}
-                                    </Link> : <Link href={route('inventoryItems.index')}
+                                    </Link> : <Link href={route('inventoryItems.index', queryParams)}
                                                     className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                     >
                                         {__("Cancel")}

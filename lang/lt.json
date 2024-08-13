@@ -77,6 +77,7 @@
     "Comment" : "Komentaras",
     "Comments" : "Komentarai",
     "Edit" : "Redaguoti",
+    "Edit amount" : "Keisti inventoriaus kiekį ar sukurti įrašą, kur jis perkeltas ar iš kur grąžintas",
     "Change amount": "Pakeisti kiekį",
     "Create" : "Sukurti",
     "Delete" : "Ištrinti",
@@ -88,6 +89,7 @@
     "Return" : "Grąžinti",
     "RETURN" : "GRĄŽINTA",
     "Email": "El. paštas",
+    "Must be a url": "Ši reikšmė turi būti URL formato",
     "First name": "Vardas",
     "Last name": "Pavardė",
     "Password": "Slaptažodis",
@@ -104,8 +106,9 @@
     "Kilograms": "Kilogramai",
     "Packs": "Pakuotės",
     "Fetching options": "Pasirinkimai kraunami",
-    "No item types found": "Tipai nerasti",
-    "No laboratories found": "Laboratorijos kraunami",
+    "No item types found": "Tipai pagal pateiktą paiešką nerasti",
+    "No laboratories found": "Laboratorijos pagal paiešką nerastos",
+    "No inventory item found": "Inventoriaus įrašai pagal paiešką nerasti",
     "Chosen file": "Pasiriktas failas",
     "Import Excel of data": "Importuoti Excel failą su duomenimis",
     "Export Excel of data": "Eksportuoti Excel failą su duomenimis",
@@ -151,5 +154,9 @@
     "User": "Naudotojas",
     "History": "Istorija",
     "Choose a laboratory": "Pasirinkti laboratoriją",
-    "Choose an inventory type": "Pasirinkti inventoriaus tipą"
+    "Choose an inventory type": "Pasirinkti inventoriaus tipą",
+    "Choose a cupboard": "Pasirinkti spintą",
+    "Choose a shelf": "Pasirinkti lentyną",
+    "Current object history" : "Pasirinkto įrašo :value istorinei pakeitimai",
+    "History description": "Šiame lange pateikiama išklotinė įrašo, su visais registruotais pakeitimais, visi pakeitimų įrašai saugomi iki 12 mėnesių"
 }

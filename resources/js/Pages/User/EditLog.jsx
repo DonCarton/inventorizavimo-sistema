@@ -18,8 +18,7 @@ import {FaQrcode} from "react-icons/fa";
 import {MdClose} from "react-icons/md";
 import LogsTable from "@/Components/Forms/LogsTable.jsx";
 
-export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse, laboratories, previousUrl, redirectToReader}) {
-    const [previousUrlPage] = useState(previousUrl);
+export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse, laboratories, redirectToReader, queryParams}) {
     const [actionFromUser, setActionFromUser] = useState('REMOVE');
     const {data, setData, patch, errors} = useForm({
         total_amount: inventoryItem.total_amount,
@@ -33,23 +32,17 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
     const [modalOpen, setModalOpen] = useState(false);
     const [open, setOpen] = useState(1);
     const [open2, setOpen2] = useState(2);
-    const [labInfo, setLabInfo] = useState([]);
     const handleOpen = (value) => setOpen(open === value ? 0 : value);
     const handleOpen2 = (value) => setOpen2(open2 === value ? 0 : value);
     const onSubmit2 = (e) => {
         e.preventDefault();
-        patch(route('inventoryItems.takeOutAmountLog', inventoryItem.id));
+        patch(route('inventoryItems.takeOutAmountLog', {inventoryItem: inventoryItem.id, query: queryParams}));
     }
-    const closeModal = (e) =>{
+    const closeModal = () =>{
         setModalOpen(false);
     }
-    const openModal = (e) =>{
+    const openModal = () =>{
         setModalOpen(true);
-    }
-    const handleNumericInput = (e) => {
-        if (e.which < 48 || e.which > 57) {
-            e.preventDefault();
-        }
     }
     return (
         <AuthenticatedLayout
@@ -66,9 +59,8 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg space-y-6">
 
-                        <Modal closeable="sm" show={modalOpen} onClose={closeModal}>
-                            <div
-                                className="flex justify-between items-center p-4 bg-gray-100 border-b dark:bg-gray-800 dark:border-gray-700">
+                        <Modal closeable show={modalOpen} onClose={closeModal}>
+                            <div className="flex justify-between items-center p-4 bg-gray-100 border-b dark:bg-gray-800 dark:border-gray-700">
                                 <h4 className="text-lg font-medium">
                                     {inventoryItem.laboratory === null ? __("Base location undefined") : __("Base amount is located") + ' ' + inventoryItem.laboratory.name}
                                 </h4>
@@ -78,7 +70,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                 </button>
                             </div>
                             <form className="p-6" onSubmit={onSubmit2}>
-                                <div className="grid grid-cols-2 gap-x-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6">
                                     <div className="mt-4">
                                         <InputLabel htmlFor="inventoryItems_laboratory_id">{__("Laboratory")}<span
                                             className="text-red-500">*</span></InputLabel>
@@ -204,7 +196,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                 </Accordion>
                                 <div className="mt-4 flex items-center">
                                     <Link
-                                        href={previousUrlPage}
+                                        href={route('inventoryItems.index', queryParams)}
                                         className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150 mr-2"
                                     >
                                         {__("Previous page")}

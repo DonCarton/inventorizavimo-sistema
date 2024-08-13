@@ -9,6 +9,7 @@ import HistoryTable from "@/Components/Tables/HistoryTable.jsx";
 import ActionButton from "./ActionButton";
 
 export default function HistoryLog({
+    nameOfObject,
     objectId,
     objectType,
     nameOfButton,
@@ -66,12 +67,12 @@ export default function HistoryLog({
             <ActionButton onClick={handleGetData} className="h-full text-lg">{nameOfButton}<TbHistory className="ml-1"/></ActionButton>
                 <Modal show={showModal} closeable maxWidth="7xl" className="w-full">
                     <div className="p-6">
-                        <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                            {StringHelper.__("Current object history")}
+                        <h2 className="text-xl font-medium text-gray-900 dark:text-gray-100">
+                            {StringHelper.__("Current object history", {value: nameOfObject})}
                         </h2>
 
-                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                            {StringHelper.__("History description")}
+                        <p className="mt-1 text-base text-gray-600 dark:text-gray-400">
+                            {StringHelper.__("History description")+'.'}
                         </p>
                         <div className="mt-6 w-full h-96 overflow-auto">
                             <HistoryTable data={logs} />

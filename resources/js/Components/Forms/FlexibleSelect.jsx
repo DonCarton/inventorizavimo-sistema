@@ -69,6 +69,7 @@ const FlexibleSelect = ({
                             name,
                             value,
                             onChange,
+                            defaultValue,
                             fetchUrlPath,
                             customPlaceHolder = '',
                             customNoOptionsMessage = 'No options available',
@@ -120,6 +121,7 @@ const FlexibleSelect = ({
             isClearable
             isDisabled={customIsDisabled}
             value={getValue()}
+            defaultValue={defaultValue}
             onChange={handleChange}
             styles={customStyles}
             classNamePrefix="react-select"

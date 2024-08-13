@@ -1,7 +1,7 @@
 <x-mail::message xmlns:x-mail="http://www.w3.org/1999/html">
 Sveiki {{$user->first_name}},
 
-**Štai jūsų prisijungimu duomenys prie sistemos** <br>
+**Štai jūsų prisijungimo duomenys prie sistemos** <br>
 El. paštas: {{$user->email}}<br>
 Slaptaždois: {{$password}}
 

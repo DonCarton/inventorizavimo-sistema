@@ -6,6 +6,7 @@ use App\Models\ItemType;
 use App\Models\Laboratory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 /**
  * Pirminis valdiklio panaudojimas, ištraukti informaciją iš
@@ -18,9 +19,44 @@ class FetchDataToSelect extends Controller
         $itemTypes = ItemType::select('id', 'name')->get();
         return response()->json($itemTypes);
     }
+
     public function listLaboratories(): JsonResponse
     {
         $laboratories = Laboratory::select('id', 'name')->get();
         return response()->json($laboratories);
+    }
+
+    public function listCupboards(): ResourceCollection
+    {
+        $cupboards = \App\Models\InventoryItem::where('name', 'like', request('search') . '%')
+            ->select('id','name','local_name')
+            ->paginate(10);
+        return \App\Http\Resources\SelectObjectResources\CupboardsForSelect::collection($cupboards);
+    }
+    public function getCupboard(int $id): JsonResponse
+    {
+        $cupboard = \App\Models\InventoryItem::findOrFail($id);
+        $data = [
+            'id' => $cupboard->id,
+            'name' => $cupboard->name . ' [' . $cupboard->local_name . ']'
+        ];
+        return response()->json($data);
+    }
+
+    public function listShelves(): ResourceCollection
+    {
+        $shelves = \App\Models\InventoryItem::where('name', 'like', request('search') . '%')
+            ->select('id','name','local_name')
+            ->paginate(10);
+        return \App\Http\Resources\SelectObjectResources\ShelvesForSelect::collection($shelves);
+    }
+    public function getShelf(int $id): JsonResponse
+    {
+        $shelf = \App\Models\InventoryItem::findOrFail($id);
+        $data = [
+            'id' => $shelf->id,
+            'name' => $shelf->name . ' [' . $shelf->local_name . ']'
+        ];
+        return response()->json($data);
     }
 }

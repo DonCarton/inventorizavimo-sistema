@@ -194,6 +194,11 @@ return [
         'per_page' => [
             'min' => 'The requested amount per page has to be equal or more than :min.',
             'max' => 'The requested amount per page has to be equal or less than :max.'
+        ],
+        'amount_removed' => [
+            'lt' => [
+                'numeric' => 'The :attribute must be less than the available amount in the inventory (:value).',
+            ]
         ]
 
     ],

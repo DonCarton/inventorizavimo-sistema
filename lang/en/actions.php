@@ -30,7 +30,9 @@ return [
         'updated' => 'Type :name has been updated',
         'deleted' => 'Type :name cannot be deleted right now'
     ],
-    'noItemFound' => 'Code recognized (:name), but entry not found'
+    'noItemFound' => 'Code recognized (:name), but entry not found',
+    'true' => 'True',
+    'false' => 'False',
 
 
 ];

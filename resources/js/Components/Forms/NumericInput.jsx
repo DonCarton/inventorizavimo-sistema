@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef } from 'react';
+import {forwardRef, useEffect, useRef} from 'react';
 
 export default forwardRef(function TextInput({ type = 'text', className = '', isFocused = false, ...props }, ref) {
     const input = ref ? ref : useRef();
@@ -9,20 +9,29 @@ export default forwardRef(function TextInput({ type = 'text', className = '', is
         }
     }, []);
     const handleNumericInput = (e) => {
+
+        const currentValue = e.target.value;
+        const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Tab'];
+        const isNumber = e.key >= '0' && e.key <= '9';
+        const isDotOrComma = e.key === '.' || e.key === ',';
+
         if (
-            !(e.key >= '0' && e.key <= '9') &&
-            e.key !== 'Backspace' &&
-            e.key !== 'Delete' &&
-            e.key !== 'ArrowLeft' &&
-            e.key !== 'ArrowRight' &&
-            e.key !== 'Home' &&
-            e.key !== 'End' &&
-            e.key !== 'Tab'
+            !isNumber &&
+            !allowedKeys.includes(e.key) &&
+            !isDotOrComma &&
+            !e.ctrlKey
         ) {
             e.preventDefault();
         }
+        if (isDotOrComma) {
+            if (currentValue.includes('.') || currentValue.includes(',')) {
+                e.preventDefault();
+            } else {
+                e.preventDefault();
+                e.target.value = currentValue + '.';
+            }
+        }
     };
-
     return (
         <input
             {...props}
@@ -33,7 +42,7 @@ export default forwardRef(function TextInput({ type = 'text', className = '', is
             }
             ref={input}
             onKeyDown={handleNumericInput}
-            pattern="[0-9]*"
+            pattern="[0-9,.]*"
         />
     );
 });

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\InventoryItem;
 use DateTime;
 use DateTimeZone;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -68,8 +69,8 @@ class InventoryItemResource extends JsonResource
             'averageConsumption' => $this->average_consumption,
             'multipleLocations' => $this->multiple_locations,
             'laboratory' => $this->laboratory,
-            'cupboard' => $this->cupboard,
-            'shelf' => $this->shelf,
+            'cupboard' => (int)$this->cupboard,
+            'shelf' => (int)$this->shelf,
             'storageConditions' => $this->storage_conditions,
             'assetNumber' => $this->asset_number,
             'usedFor' => $this->used_for,

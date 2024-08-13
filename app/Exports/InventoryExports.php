@@ -84,7 +84,7 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
             $row->total_amount,
             $row->critical_amount,
             $row->to_order_amount,
-            $row->multiple_locations,
+            (bool)$row->multiple_locations,
             $row->asset_number,
             $row->used_for,
             $row->comments,

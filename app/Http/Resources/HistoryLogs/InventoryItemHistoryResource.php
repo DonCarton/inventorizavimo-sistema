@@ -2,20 +2,25 @@
 
 namespace App\Http\Resources\HistoryLogs;
 
+use App\Enums\ModelTypeValid;
 use App\Models\ItemType;
 use App\Models\Laboratory;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Log;
+
 class InventoryItemHistoryResource extends ResourceCollection
 {
-//    protected array $fields;
-//    protected array $newPropertiesOfHistory;
-//    protected array $oldPropertiesOfHistory;
+    protected ModelTypeValid $modelType;
+    public function __construct($resource, ModelTypeValid $modelType)
+    {
+        $this->modelType = $modelType;
+        parent::__construct($resource);
+    }
     /**
      * Transform the resource into an array.
-     *
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -25,46 +30,24 @@ class InventoryItemHistoryResource extends ResourceCollection
                 $newPropertiesOfHistory = [];
                 $oldPropertiesOfHistory = [];
                 $fields = [];
-                if (count($entry->properties) !== 0 && str_contains($entry->description, 'created')) {
-                    foreach ($entry->properties['attributes'] as $property => $value){
+                if (count($entry->properties['attributes']) !== 0) {
+                    foreach ($entry->properties['attributes'] as $property => $value) {
+                        $translatedProperty = __($this->getTranslationKey($property));
+                        if ($translatedProperty === $this->getTranslationKey($property)) {
+                            $translatedProperty = ucfirst($property);
+                        }
+                        $fields[] = $translatedProperty;
+                        $newPropertiesOfHistory[] = $this->transformValue($property, $value);
+                    }
 
-                        $fields[] = __("inventory_item.{$property}");
-//                        $newPropertiesOfHistory[] = $value;
-                        $newPropertiesOfHistory[] = $this->transformValue($property, $value);
-                        $oldPropertiesOfHistory[] = '-';
-                    }
-                } else if (str_contains($entry->description, 'updated')) {
-                    foreach ($entry->properties['attributes'] as $property => $value){
-                        $fields[] = __("inventory_item.{$property}");
-//                        $newPropertiesOfHistory[] = $value;
-                        $newPropertiesOfHistory[] = $this->transformValue($property, $value);
-                    }
-                    foreach ($entry->properties['old'] as $property => $value){
-//                        $oldPropertiesOfHistory[] = $value;
-                        $oldPropertiesOfHistory[] = $this->transformValue($property, $value);
+                    if (str_contains($entry->description, 'updated')) {
+                        foreach ($entry->properties['old'] as $property => $value) {
+                            $oldPropertiesOfHistory[] = $this->transformValue($property, $value);
+                        }
+                    } else {
+                        $oldPropertiesOfHistory = array_fill(0, count($newPropertiesOfHistory), '-');
                     }
                 }
-//                if (count($entry->properties) !== 0) {
-//                    // Process 'created' and 'updated' actions
-//                    foreach ($entry->properties['attributes'] as $property => $value) {
-//                        $translatedProperty = __("inventory_item.{$property}", [], 'en');
-//                        if ($translatedProperty === "inventory_item.{$property}") {
-//                            $translatedProperty = ucfirst($property); // Fallback to original property
-//                        }
-//                        $tempFields[] = $translatedProperty;
-//                        $tempNewPropertiesOfHistory[] = $value;
-//                    }
-//
-//                    // For 'updated' actions, also handle old values
-//                    if (str_contains($entry->description, 'updated')) {
-//                        foreach ($entry->properties['old'] as $property => $value) {
-//                            $tempOldPropertiesOfHistory[] = $value;
-//                        }
-//                    } else {
-//                        // Default for 'created' actions
-//                        $tempOldPropertiesOfHistory = array_fill(0, count($tempNewPropertiesOfHistory), '-');
-//                    }
-//                }
                 return [
                     'definitionOfChanges' => [
                         'created_at' => $this->setUserFriendlyDateCarbon($entry->created_at),
@@ -81,6 +64,14 @@ class InventoryItemHistoryResource extends ResourceCollection
             }),
         ];
     }
+    /**
+     * @param string $property
+     * @return string
+     */
+    private function getTranslationKey(string $property): string
+    {
+        return "model_attributes.{$this->modelType->value}.{$property}";
+    }
 
     private function transformValue(string $property, mixed $value)
     {
@@ -89,6 +80,15 @@ class InventoryItemHistoryResource extends ResourceCollection
         }
         if ($property === 'laboratory'){
             return optional(Laboratory::find($value))->name ?? $value;
+        }
+        if ($property === 'cupboard'){
+            return optional(\App\Models\InventoryItem::find($value))->name ?? $value;
+        }
+        if ($property === 'shelf'){
+            return optional(\App\Models\InventoryItem::find($value))->name ?? $value;
+        }
+        if ($property === 'multiple_locations'){
+            return $value == 1 ? __('actions.true') : __('actions.false');
         }
         return $value;
     }

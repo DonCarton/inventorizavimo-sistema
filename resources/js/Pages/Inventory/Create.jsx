@@ -11,6 +11,7 @@ import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import FlexibleSelect from "@/Components/Forms/FlexibleSelect.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
+import FlexibleAsyncSelect from "@/Components/Forms/FlexibleAsyncSelect.jsx";
 
 export default function Create({auth, previousUrl, role, itemTypes}) {
     const [previousUrlPage] = useState(previousUrl);
@@ -81,6 +82,12 @@ export default function Create({auth, previousUrl, role, itemTypes}) {
     }
     const handleLaboratoryChoice = (e) => {
         setData('laboratory', e);
+    }
+    const handleCupboardChange = (e) => {
+        setData('cupboard', e);
+    }
+    const handleShelfChange = (e) => {
+        setData('shelf', e);
     }
     const handleInventoryTypeChange = (e) => {
         if (itemTypes.data[e-1].assetRequired === false){ setAssetNumberShown(true); setData('asset_number_required', true) } else {setAssetNumberShown(false); setData('asset_number_required', false)}
@@ -282,8 +289,10 @@ export default function Create({auth, previousUrl, role, itemTypes}) {
                                                 />
                                                 <TextInput
                                                     id="inventoryItems_url_to_provider"
-                                                    type="text"
+                                                    type="url"
+                                                    title={__("Must be a url")}
                                                     name="url_to_provider"
+                                                    pattern="https?://.+"
                                                     value={data.url_to_provider}
                                                     className="mt-1 block w-full"
                                                     onChange={e => setData('url_to_provider', e.target.value)}
@@ -295,8 +304,10 @@ export default function Create({auth, previousUrl, role, itemTypes}) {
                                                 </InputLabel>
                                                 <TextInput
                                                     id="inventoryItems_alt_url_to_provider"
-                                                    type="text"
+                                                    type="url"
+                                                    title={__("Must be a url")}
                                                     name="alt_url_to_provider"
+                                                    pattern="https?://.+"
                                                     value={data.alt_url_to_provider}
                                                     className="mt-1 block w-full"
                                                     onChange={e => setData('alt_url_to_provider', e.target.value)}
@@ -371,14 +382,26 @@ export default function Create({auth, previousUrl, role, itemTypes}) {
                                                 <InputLabel
                                                     htmlFor="inventoryItems_local_cupboard">{__("Cupboard")}<span
                                                     className="text-red-500">*</span></InputLabel>
-                                                <TextInput id="inventoryItems_local_cupboard" name="local_cupboard" className="w-full" onChange={e => setData('cupboard', e.target.value)}/>
+                                                <FlexibleAsyncSelect id="inventoryItems_local_cupboard"
+                                                                     name="local_cupboard"
+                                                                     fetchUrlPath="/select/cupboards"
+                                                                     customIsMulti={false}  customLoadingMessage={__("Fetching options") + "..."} customPlaceHolder={__("Choose a cupboard")} customNoOptionsMessage={__("No inventory item found")}
+                                                                     value={data.cupboard}
+                                                                     onChange={handleCupboardChange}
+                                                />
                                                 <InputError message={errors.cupboard} className="mt-2"/>
                                             </div>
                                             <div>
                                                 <InputLabel
                                                     htmlFor="inventoryItems_local_shelf">{__("Shelf")}<span
                                                     className="text-red-500">*</span></InputLabel>
-                                                <TextInput id="inventoryItems_local_shelf" name="local_shelf" className="w-full" onChange={e => setData('shelf', e.target.value)}/>
+                                                <FlexibleAsyncSelect id="inventoryItems_local_shelf"
+                                                                     name="local_shelf"
+                                                                     fetchUrlPath="/select/shelves"
+                                                                     customIsMulti={false} customLoadingMessage={__("Fetching options") + "..."} customPlaceHolder={__("Choose a shelf")} customNoOptionsMessage={__("No inventory item found")}
+                                                                     value={data.shelf}
+                                                                     onChange={handleShelfChange}
+                                                />
                                                 <InputError message={errors.shelf} className="mt-2"/>
                                             </div>
                                         </div>

@@ -30,6 +30,8 @@ return [
         'updated' => 'Tipas :name atnaujintas',
         'deleted' => 'Tipas :name šiuo metu negali būti ištrintas'
     ],
-    'noItemFound' => 'Kodas atpažintas (:name), bet įrašas nerastas'
+    'noItemFound' => 'Kodas atpažintas (:name), bet įrašas nerastas',
+    'true' => 'Taip',
+    'false' => 'Ne',
 
 ];
