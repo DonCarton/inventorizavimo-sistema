@@ -26,8 +26,15 @@ class InventoryItemObserver implements ShouldHandleEventsAfterCommit
     {
         if ($inventoryItem->isDirty('total_amount')){
 
-            if ($inventoryItem->total_amount <= $inventoryItem->critical_amount){
+            $criticalAmount = $inventoryItem->critical_amount;
+            if ($inventoryItem->total_amount <= $criticalAmount && is_null($inventoryItem->critical_amount_notified_at)){
                 event(new AmountRunningLow($inventoryItem, false));
+                $inventoryItem->critical_amount_notified_at = now();
+                $inventoryItem->save();
+            }
+            else if ($inventoryItem->total_amount > $criticalAmount && !is_null($inventoryItem->critical_amount_notified_at)){
+                $inventoryItem->critical_amount_notified_at = null;
+                $inventoryItem->save();
             }
 
         }

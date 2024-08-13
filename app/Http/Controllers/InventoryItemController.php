@@ -172,16 +172,18 @@ class InventoryItemController extends Controller
      * @param InventoryItem $inventoryItem
      * @return Response
      */
-    public function editRaw(InventoryItem $inventoryItem): Response
+    public function editRaw(InventoryItem $inventoryItem, Request $request): Response
     {
         $amountLogs = $inventoryItem->amountLogs;
         $laboratories = Laboratory::query()->get()->all();
         $itemTypes = ItemType::query()->get();
+        $queryParams = $request->query('query');
         return Inertia::render('Inventory/Edit', [
             'inventoryItem' => new InventoryItemResource($inventoryItem),
             'logsForItem' => AmountLogResource::collection($amountLogs),
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
-            'itemTypes' => ItemTypeForSelect::collection($itemTypes)
+            'itemTypes' => ItemTypeForSelect::collection($itemTypes),
+            'queryParams' => $queryParams
         ]);
 
     }
@@ -198,11 +200,12 @@ class InventoryItemController extends Controller
         $extraData = $request->except(array_keys($validatedData));
         $data = array_merge($validatedData, $extraData);
         $inventoryItem->update($data);
+        unset($data['query']);
         $changedData = array_diff_assoc($data, $originalData);
         if (!empty($changedData)){
-            return Redirect::route('inventoryItems.index')->with('success', __('actions.inventoryItem.updated', ['local_name' => $data['local_name']]) . '.');
+            return Redirect::route('inventoryItems.index', $request->query('query'))->with('success', __('actions.inventoryItem.updated', ['local_name' => $data['local_name']]) . '.');
         }
-        return Redirect::route('inventoryItems.index');
+        return Redirect::route('inventoryItems.index', $request->query('query'));
     }
 
     /**
@@ -245,12 +248,14 @@ class InventoryItemController extends Controller
     }
 
     /**
+     * @param Request $request
      * @param InventoryItem $inventoryItem
      * @return Response
      */
-    public function edit(InventoryItem $inventoryItem): Response
+    public function edit(Request $request, InventoryItem $inventoryItem): Response
     {
         $redirectToReader = false;
+        $queryParams = $request->query('query');
         if (request('urlForReader')) { $redirectToReader = true; }
         $laboratories = Laboratory::query()->whereNotIn('id',[$inventoryItem->laboratory])->get();
         $itemTypes = ItemType::query()->get();
@@ -259,7 +264,8 @@ class InventoryItemController extends Controller
                 'inventoryItem' => new CRUDInventoryItemResource($inventoryItem),
                 'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
                 'itemTypes' => ItemTypeForSelect::collection($itemTypes),
-                'redirectToReader' => $redirectToReader
+                'redirectToReader' => $redirectToReader,
+                'queryParams' => $queryParams
             ]);
         } else {
             $amountLogs = $inventoryItem->amountLogs;
@@ -270,8 +276,8 @@ class InventoryItemController extends Controller
                 'logsForItem' => AmountLogResource::collection($amountLogs),
                 'totalInUse' => $inventoryItem->total_amount - $totalTaken + $totalReturned,
                 'laboratories' => LaboratoryResource::collection($laboratories),
-                'previousUrl' => url()->previous(),
-                'redirectToReader' => $redirectToReader
+                'redirectToReader' => $redirectToReader,
+                'queryParams' => $queryParams
             ]);
         }
     }
@@ -341,14 +347,16 @@ class InventoryItemController extends Controller
      * @param InventoryItem $inventoryItem
      * @return Response
      */
-    public function show(InventoryItem $inventoryItem): Response
+    public function show(Request $request, InventoryItem $inventoryItem): Response
     {
         $laboratories = Laboratory::query()->get()->all();
         $itemTypes = ItemType::query()->get();
+        $queryParams = $request->query('query');
         return Inertia::render('Inventory/Show', [
             'inventoryItem' => new InventoryItemResource($inventoryItem),
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
-            'itemTypes' => ItemTypeForSelect::collection($itemTypes)
+            'itemTypes' => ItemTypeForSelect::collection($itemTypes),
+            'queryParams' => $queryParams
         ]);
     }
 

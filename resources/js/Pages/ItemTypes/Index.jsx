@@ -32,7 +32,7 @@ export default function InventoryTypes({auth, itemTypes, role, success, warning}
                                      <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={__("Actions")}>
                                          {role === 'admin' && <>
                                              <div id="create-new-entry" title="Create a new entry in the current page."
-                                                  className="px-2 py-1 bg-white border-2 rounded-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                                  className="px-2 py-1 bg-white border-2 rounded-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
                                                  <a href={route("itemTypes.create")}>{__("Create")}</a></div></>
                                          }
                                      </GroupButtonDropdown>
@@ -59,7 +59,7 @@ export default function InventoryTypes({auth, itemTypes, role, success, warning}
                                 </thead>
                                 <tbody>
                                 {itemTypes.data.map(itemType => (
-                                    <tr key={itemType.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                    <tr key={itemType.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 sm:text-base">
                                         <td className="px-3 py-2">
                                             <Link href={route("itemTypes.show", itemType.id)}
                                                   className="font-medium text-gray-700 dark:text-white hover:underline mx-1">
@@ -72,11 +72,11 @@ export default function InventoryTypes({auth, itemTypes, role, success, warning}
                                             <Link href={route("itemTypes.edit", itemType.id)}
                                                   className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
                                                 <TbEdit
-                                                    className="w-6 h-6 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
+                                                    className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
                                             </Link>
                                             <a type="button"
                                                onClick={() => handleDestory(itemType.id)}><RiDeleteBin6Line
-                                                className="w-6 h-6 text-red-500 hover:text-red-700 hover:animate-pulse hover:bg-gray-50"/></a>
+                                                className="w-8 h-8 text-red-500 hover:text-red-700 hover:animate-pulse hover:bg-gray-50"/></a>
                                         </td>
                                     </tr>
                                 ))}

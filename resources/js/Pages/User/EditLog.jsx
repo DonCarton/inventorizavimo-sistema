@@ -18,8 +18,7 @@ import {FaQrcode} from "react-icons/fa";
 import {MdClose} from "react-icons/md";
 import LogsTable from "@/Components/Forms/LogsTable.jsx";
 
-export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse, laboratories, previousUrl, redirectToReader}) {
-    const [previousUrlPage] = useState(previousUrl);
+export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse, laboratories, redirectToReader, queryParams}) {
     const [actionFromUser, setActionFromUser] = useState('REMOVE');
     const {data, setData, patch, errors} = useForm({
         total_amount: inventoryItem.total_amount,
@@ -204,7 +203,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                 </Accordion>
                                 <div className="mt-4 flex items-center">
                                     <Link
-                                        href={previousUrlPage}
+                                        href={route('inventoryItems.index', queryParams)}
                                         className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150 mr-2"
                                     >
                                         {__("Previous page")}

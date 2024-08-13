@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import Select from 'react-select';
 import axios from 'axios';
+import AsyncSelect from "react-select/async";
 
 const customStyles = {
     control: (provided, state) => ({
@@ -64,12 +64,11 @@ const customStyles = {
     })
 };
 
-const FlexibleSelect = ({
+const FlexibleAsyncSelect = ({
                             id,
                             name,
                             value,
                             onChange,
-                            defaultValue,
                             fetchUrlPath,
                             customPlaceHolder = '',
                             customNoOptionsMessage = 'No options available',
@@ -78,23 +77,50 @@ const FlexibleSelect = ({
                             customIsDisabled = false
                         }) => {
     const [options, setOptions] = useState([]);
-
+    const [defaultOptions, setDefaultOptions] = useState([]);
     useEffect(() => {
-        const fetchItemTypes = async () => {
+        const fetchDefaultOptions = async () => {
             try {
-                const response = await axios.get(fetchUrlPath);
-                const returnedData = response.data.map(item => ({
-                    value: item.id,
-                    label: item.name
+                const response = await axios.get('/select/cupboards', {
+                    params: {
+                        page: 1,
+                    },
+                });
+
+                const cupboards = response.data.data.map(cupboard => ({
+                    value: cupboard.id,
+                    label: cupboard.name,
                 }));
-                setOptions(returnedData);
+
+                setDefaultOptions(cupboards);
             } catch (error) {
-                console.error('Error fetching item types:', error);
+                console.error("There was an error fetching the default cupboards!", error);
             }
         };
 
-        fetchItemTypes();
-    }, [fetchUrlPath]);
+        fetchDefaultOptions();
+    }, []);
+    const loadOptions = async (inputValue, callback) => {
+        try {
+            const response = await axios.get(fetchUrlPath, {
+                params: {
+                    search: inputValue,
+                    page: 1,
+                },
+            });
+
+            const returnedData = response.data.data.map(item => ({
+                value: item.id,
+                label: item.name,
+            }));
+
+            callback(returnedData);
+
+        } catch (error) {
+            console.error("There was an error fetching the cupboards!", error);
+            callback([]);
+        }
+    };
 
     const handleChange = selectedOption => {
         if (customIsMulti) {
@@ -113,18 +139,19 @@ const FlexibleSelect = ({
     };
 
     return (
-        <Select
+        <AsyncSelect
             id={id}
             name={name}
-            options={options}
+            loadOptions={loadOptions}
             isMulti={customIsMulti}
             isClearable
             isDisabled={customIsDisabled}
-            value={getValue()}
-            defaultValue={defaultValue}
             onChange={handleChange}
+            value={getValue()}
+            defaultOptions={defaultOptions}
+            cacheOptions
             styles={customStyles}
-            classNamePrefix="react-select"
+            classNamePrefix="react-async-select"
             noOptionsMessage={() => customNoOptionsMessage}
             placeholder={customPlaceHolder}
             loadingMessage={() => customLoadingMessage}
@@ -133,4 +160,4 @@ const FlexibleSelect = ({
     );
 };
 
-export default FlexibleSelect;
+export default FlexibleAsyncSelect;

@@ -89,6 +89,9 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/select/itemTypes', [FetchDataToSelect::class, 'listItemTypes'])->name('select.itemTypes');
     Route::get('/select/laboratories', [FetchDataToSelect::class, 'listLaboratories'])->name('select.laboratories');
+    Route::get('/select/cupboards', [FetchDataToSelect::class, 'listCupboards'])->name('select.cupboards');
+    Route::get('/select/cupboards/{id}', [FetchDataToSelect::class, 'getCupboard'])->name('select.cupboards.specific');
+    Route::get('/select/shelves', [FetchDataToSelect::class, 'listShelves'])->name('select.shelves');
 });
 
 require __DIR__.'/auth.php';

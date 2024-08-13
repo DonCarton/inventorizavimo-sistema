@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\InventoryStatusEnum;
 use App\Observers\InventoryItemObserver;
+use DateTime;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,6 +24,7 @@ use Spatie\Activitylog\LogOptions;
  * @property int $laboratory
  * @property double $total_amount
  * @property double $critical_amount
+ * @property DateTime $critical_amount_notified_at
  * @method static findOrFail(int $id)
  * @method static create(mixed $data)
  * @method static where(string $string, string $string1, mixed $prefixOptionId)
@@ -56,6 +58,7 @@ class InventoryItem extends Model
         'asset_number',
         'used_for',
         'comments',
+        'critical_amount_notified_at',
         'created_by',
         'updated_by',
     ];
@@ -97,7 +100,7 @@ class InventoryItem extends Model
     {
         return LogOptions::defaults()
             ->logAll()
-            ->logExcept(['created_at','updated_at','created_by','updated_by'])
+            ->logExcept(['created_at','updated_at','created_by','updated_by','critical_amount_notified_at'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
     }

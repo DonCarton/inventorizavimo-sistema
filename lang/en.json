@@ -77,6 +77,7 @@
     "Comment" : "Comment",
     "Comments" : "Comments",
     "Edit" : "Edit",
+    "Edit amount" : "Edit amount of an item or state if it's being taken somewhere or returned",
     "Change amount": "Change amount",
     "Create" : "Create",
     "Delete" : "Delete",
@@ -88,6 +89,7 @@
     "Return" : "Return",
     "RETURN" : "RETURN",
     "Email": "Email",
+    "Must be a url": "This must be in a format of a URL link",
     "First name": "First name",
     "Last name": "Last name",
     "Password": "Password",
@@ -106,6 +108,7 @@
     "Fetching options": "Fetching options",
     "No item types found": "No item types found",
     "No laboratories found": "No laboratories found",
+    "No inventory item found": "No inventory item found",
     "Chosen file": "Chosen file",
     "Import Excel of data": "Import Excel of data",
     "Export Excel of data": "Export Excel of data",
@@ -150,5 +153,7 @@
     "User": "User",
     "History": "History",
     "Choose a laboratory": "Choose a laboratory",
-    "Choose an inventory type": "Choose an inventory type"
+    "Choose an inventory type": "Choose an inventory type",
+    "Choose a cupboard": "Choose a cupboard",
+    "Choose a shelf": "Choose a shelf"
 }

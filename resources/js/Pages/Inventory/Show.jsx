@@ -4,6 +4,7 @@ import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import StringHelper from '@/Libs/StringHelper';
 import {FaDownload} from 'react-icons/fa';
+import { FaCopy } from "react-icons/fa";
 import SelectForSingleItem from "@/Components/Forms/SelectForSingleItem.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
@@ -14,7 +15,7 @@ import HistoryLog from "@/Components/Forms/HistoryLog.jsx";
 import ActionButton from '@/Components/Forms/ActionButton';
 
 
-export default function Show({auth, inventoryItem, role, laboratories, itemTypes}) {
+export default function Show({auth, inventoryItem, role, laboratories, itemTypes, queryParams}) {
     const [openAll, setOpenAll] = useState(true);
     const toggleAllAccordions = () => {
         setOpenAll(!openAll);
@@ -46,7 +47,7 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                             <div className="pb-6">
                                 <AccordionWithManualIndex expandedByDefault={openAll} indexOfAcc={1}
                                                           headerName={StringHelper.__("Inventory information")}>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <div className="mt-4">
                                             <InputLabel
                                                 htmlFor="inventoryItems_local_name">{StringHelper.__("Local name")}</InputLabel>
@@ -114,7 +115,7 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                 </AccordionWithManualIndex>
                                 <AccordionWithManualIndex expandedByDefault={openAll} indexOfAcc={3}
                                                           headerName={StringHelper.__("Amount")}>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <div className="mt-4 w-full">
                                             <InputLabel htmlFor="inventoryItems_total_amount" value={StringHelper.__("Count")}/>
                                             <TextInput id="inventoryItems_total_amount" type="text" disabled={true}
@@ -151,7 +152,7 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                 </AccordionWithManualIndex>
                                 <AccordionWithManualIndex expandedByDefault={openAll} indexOfAcc={2}
                                                           headerName={StringHelper.__("Order information")}>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 px-1">
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_product_code"
                                                         value={StringHelper.__("Product code")}/>
@@ -181,7 +182,7 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                                                url={inventoryItem.data.urlToProviderSite || ''}
                                                                className="mt-1 block w-full"/>
                                         </div>
-                                        <div className="mt-4">
+                                        <div className="mt-2">
                                             <InputLabel htmlFor="inventoryItems_alt_url_to_provider"
                                                         value={StringHelper.__("Alt url to provider")}/>
                                             <ClickableUrlInput id="inventoryItems_alt_url_to_provider"
@@ -191,8 +192,9 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                         </div>
                                     </div>
                                 </AccordionWithManualIndex>
-                                <AccordionWithManualIndex expandedByDefault={openAll} indexOfAcc={4} headerName={StringHelper.__("Location")}>
-                                    <div className="grid grid-cols-2 gap-2">
+                                <AccordionWithManualIndex expandedByDefault={openAll} indexOfAcc={4}
+                                                          headerName={StringHelper.__("Location")}>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_local_laboratory"
                                                         value={StringHelper.__("Laboratory")}/>
@@ -228,7 +230,7 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                     </div>
                                 </AccordionWithManualIndex>
                                 <AccordionWithManualIndex expandedByDefault={openAll} indexOfAcc={5} headerName={StringHelper.__("Additional information")}>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_storage_conditions"
                                                         value={StringHelper.__("Storage conditions")}/>
@@ -254,7 +256,7 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                                     </div>
                                 </AccordionWithManualIndex>
                                 <div className="mt-4">
-                                    <Link href={route('inventoryItems.index')}
+                                    <Link href={route('inventoryItems.index', queryParams)}
                                           className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                     >
                                         {StringHelper.__("Cancel")}
