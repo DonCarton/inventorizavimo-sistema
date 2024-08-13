@@ -32,23 +32,17 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
     const [modalOpen, setModalOpen] = useState(false);
     const [open, setOpen] = useState(1);
     const [open2, setOpen2] = useState(2);
-    const [labInfo, setLabInfo] = useState([]);
     const handleOpen = (value) => setOpen(open === value ? 0 : value);
     const handleOpen2 = (value) => setOpen2(open2 === value ? 0 : value);
     const onSubmit2 = (e) => {
         e.preventDefault();
-        patch(route('inventoryItems.takeOutAmountLog', inventoryItem.id));
+        patch(route('inventoryItems.takeOutAmountLog', {inventoryItem: inventoryItem.id, query: queryParams}));
     }
-    const closeModal = (e) =>{
+    const closeModal = () =>{
         setModalOpen(false);
     }
-    const openModal = (e) =>{
+    const openModal = () =>{
         setModalOpen(true);
-    }
-    const handleNumericInput = (e) => {
-        if (e.which < 48 || e.which > 57) {
-            e.preventDefault();
-        }
     }
     return (
         <AuthenticatedLayout
@@ -65,9 +59,8 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg space-y-6">
 
-                        <Modal closeable="sm" show={modalOpen} onClose={closeModal}>
-                            <div
-                                className="flex justify-between items-center p-4 bg-gray-100 border-b dark:bg-gray-800 dark:border-gray-700">
+                        <Modal closeable show={modalOpen} onClose={closeModal}>
+                            <div className="flex justify-between items-center p-4 bg-gray-100 border-b dark:bg-gray-800 dark:border-gray-700">
                                 <h4 className="text-lg font-medium">
                                     {inventoryItem.laboratory === null ? __("Base location undefined") : __("Base amount is located") + ' ' + inventoryItem.laboratory.name}
                                 </h4>
@@ -77,7 +70,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                 </button>
                             </div>
                             <form className="p-6" onSubmit={onSubmit2}>
-                                <div className="grid grid-cols-2 gap-x-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6">
                                     <div className="mt-4">
                                         <InputLabel htmlFor="inventoryItems_laboratory_id">{__("Laboratory")}<span
                                             className="text-red-500">*</span></InputLabel>

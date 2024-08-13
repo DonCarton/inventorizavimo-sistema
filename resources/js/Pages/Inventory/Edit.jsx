@@ -13,7 +13,7 @@ import LogsTable from "@/Components/Forms/LogsTable.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
-import FlexibleSelect from "@/Components/Forms/FlexibleSelect.jsx";
+import AsyncCustom from "@/Components/Forms/AsyncCustom.jsx";
 
 export default function Edit({auth, inventoryItem, logsForItem, role, laboratories, itemTypes, queryParams}) {
     const handleConfirmMessage = __("Are you sure you want to delete this item") + '?';
@@ -55,10 +55,10 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
         put(route('inventoryItems.update', {inventoryItem: inventoryItem.data.id, query: queryParams}));
     }
     const handleCupboardChange = (e) => {
-        setData('cupboard',e);
+        setData('cupboard',e.value);
     }
     const handleShelfChange = (e) => {
-        setData('shelf',e);
+        setData('shelf',e.value);
     }
     return (
         <AuthenticatedLayout
@@ -77,7 +77,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                         <form onSubmit={onSubmit} className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                             <div className="pb-6">
                                 <AccordionWithManualIndex expandedByDefault={true} indexOfAcc={3} headerName={__("Inventory information")}>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <div className="mt-4">
                                             <InputLabel
                                                 htmlFor="inventoryItems_local_name">{__("Local name")}</InputLabel>
@@ -146,7 +146,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                 </AccordionWithManualIndex>
                                 <AccordionWithManualIndex expandedByDefault={true} indexOfAcc={1}
                                                           headerName={__("Amount")}>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <div className="mt-4 w-full">
                                             <InputLabel htmlFor="inventoryItems_total_amount" value={__("Amount")}/>
                                             <NumericInput id="inventoryItems_total_amount" type="text"
@@ -185,7 +185,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                     </div>
                                 </AccordionWithManualIndex>
                                 <AccordionWithManualIndex expandedByDefault={false} indexOfAcc={4} headerName={__("Order information")}>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_product_code"
                                                         value={__("Product code")}/>
@@ -235,7 +235,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                     </div>
                                 </AccordionWithManualIndex>
                                 <AccordionWithManualIndex expandedByDefault={false} indexOfAcc={2} headerName={__("Location")}>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_local_laboratory"
                                                         value={__("Laboratory")}/>
@@ -248,29 +248,15 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_cupboard" value={__("Cupboard")} className="mb-1"/>
-                                            <FlexibleSelect id="inventoryItems_cupboard" name="cupboard"
-                                                            customPlaceHolder={__("Choose a cupboard")}
-                                                            value={data.cupboard}
-                                                            onChange={handleCupboardChange}
-                                                            fetchUrlPath="/select/cupboards"
-                                                            customNoOptionsMessage={__("No inventory item found")}
-                                                            customLoadingMessage={__("Fetching options") + "..."}
-                                                            customIsMulti={false}
+                                            <AsyncCustom itemId={data.cupboard} fetchUrlPath="/select/cupboards" onChange={handleCupboardChange}
+                                                         customNoOptionsMessage={__("No inventory item found")} customLoadingMessage={__("Fetching options") + "..."} customPlaceHolder={__("Choose a cupboard")}
                                             />
                                             <InputError message={errors.cupboard} className="mt-2"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_shelf" value={__("Shelf")} className="mb-1"/>
-                                            <FlexibleSelect id="inventoryItems_cupboard" name="cupboard"
-                                                            customPlaceHolder={__("Choose a shelf")}
-                                                            value={data.shelf}
-                                                            defaultValue={data.shelf}
-                                                            onChange={handleShelfChange}
-                                                            fetchUrlPath="/select/shelves"
-                                                            customNoOptionsMessage={__("No inventory item found")}
-                                                            customLoadingMessage={__("Fetching options") + "..."}
-                                                            customIsMulti={false}
-                                            />
+                                            <AsyncCustom itemId={data.shelf} fetchUrlPath="/select/shelves" onChange={handleShelfChange}
+                                                         customNoOptionsMessage={__("No inventory item found")} customLoadingMessage={__("Fetching options") + "..."} customPlaceHolder={__("Choose a shelf")}/>
                                             <InputError message={errors.shelf} className="mt-2"/>
                                         </div>
                                         <div className="mt-4">
@@ -283,7 +269,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                     </div>
                                 </AccordionWithManualIndex>
                                 <AccordionWithManualIndex expandedByDefault={false} indexOfAcc={5} headerName={__("Additional information")}>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_storage_conditions"
                                                         value={__("Storage conditions")}/>

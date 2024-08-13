@@ -81,7 +81,7 @@ return [
     'lt' => [
         'array' => 'The :attribute field must have less than :value items.',
         'file' => 'The :attribute field must be less than :value kilobytes.',
-        'numeric' => ':attribute turi būti mažesnis negu :value.',
+        'numeric' => ':Attribute turi būti mažesnis negu :value.',
         'string' => 'The :attribute field must be less than :value characters.',
     ],
     'lte' => [
@@ -141,7 +141,7 @@ return [
     'required_unless' => 'The :attribute field is required unless :other is in :values.',
     'required_with' => 'The :attribute field is required when :values is present.',
     'required_with_all' => 'The :attribute field is required when :values are present.',
-    'required_without' => ':attribute yra privalomas, jeigu :values nėra įvestas.',
+    'required_without' => ':Attribute yra privalomas, jeigu :values nėra įvestas.',
     'required_without_all' => 'The :attribute field is required when none of :values are present.',
     'same' => 'The :attribute field must match :other.',
     'size' => [
@@ -194,6 +194,11 @@ return [
         'per_page' => [
             'min' => 'Norimas gauti kiekis įrašų turi būti lygus arba didesnis nei :min.',
             'max' => 'Norimas gauti kiekis įrašų turi būti lygus arba mažesnis nei :max.'
+        ],
+        'amount_removed' => [
+            'lt' => [
+                'numeric' => ':Attribute turi būti mažesnis negu esamas kiekis inventoriuje (:value).',
+            ]
         ]
     ],
 
@@ -242,6 +247,7 @@ return [
         'shelf' => 'lentyna',
         'per_page' => 'įrašų kiekis per puslapį',
         'object_type' => 'objekto tipas',
+        'critical_amount_notified_at' => 'pranešimas apie stygių išsiųstas laiku'
     ],
 
 ];

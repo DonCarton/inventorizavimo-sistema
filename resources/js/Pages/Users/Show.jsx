@@ -5,7 +5,6 @@ import TextInput from "@/Components/TextInput.jsx";
 import {__} from "@/Libs/Lang.jsx";
 import {useState} from "react";
 import SteamDropdown from "@/Components/SteamDropdown";
-import HistoryLog from "@/Components/Forms/HistoryLog.jsx";
 
 export default function Show({auth, user, role, userRole, roles, laboratories, previousUrl}) {
     const [previousUrlPage] = useState(previousUrl);
@@ -14,9 +13,6 @@ export default function Show({auth, user, role, userRole, roles, laboratories, p
             header={
                 <div className="flex justify-between items-center">
                     <h2 className="font-semibold xl:text-xl text-base truncate text-gray-800 dark:text-gray-200 leading-tight" title={__("Show") + ' - ' + user.data.email}>{__("Show")} - {user.data.email}</h2>
-                    <div className="flex space-x-2 h-12">
-                        <HistoryLog objectId={user.data.id} objectType="user" nameOfButton={__("History")} nameOfCloseButton={__("Close")}/>
-                    </div>
                 </div>}
             role={role}
         >

@@ -32,6 +32,7 @@ return [
         'updated_at' => 'Last updated',
         'created_by' => 'Created by',
         'updated_by' => 'Updated by',
+        'critical_amount_notified_at' => 'Critical amount notified at',
         'logBound' => 'This record cannot be deleted until existing inventory has been returned to the base storage.'
     ],
     'user' => [

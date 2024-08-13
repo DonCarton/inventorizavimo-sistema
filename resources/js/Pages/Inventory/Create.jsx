@@ -12,7 +12,6 @@ import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import FlexibleSelect from "@/Components/Forms/FlexibleSelect.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 import FlexibleAsyncSelect from "@/Components/Forms/FlexibleAsyncSelect.jsx";
-import SelectForSingleItem from "@/Components/Forms/SelectForSingleItem.jsx";
 
 export default function Create({auth, previousUrl, role, itemTypes}) {
     const [previousUrlPage] = useState(previousUrl);

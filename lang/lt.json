@@ -156,5 +156,7 @@
     "Choose a laboratory": "Pasirinkti laboratoriją",
     "Choose an inventory type": "Pasirinkti inventoriaus tipą",
     "Choose a cupboard": "Pasirinkti spintą",
-    "Choose a shelf": "Pasirinkti lentyną"
+    "Choose a shelf": "Pasirinkti lentyną",
+    "Current object history" : "Pasirinkto įrašo :value istorinei pakeitimai",
+    "History description": "Šiame lange pateikiama išklotinė įrašo, su visais registruotais pakeitimais, visi pakeitimų įrašai saugomi iki 12 mėnesių"
 }

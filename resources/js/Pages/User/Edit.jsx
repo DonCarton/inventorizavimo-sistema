@@ -8,6 +8,7 @@ import {__} from "@/Libs/Lang.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
+import NumericInput from "@/Components/Forms/NumericInput.jsx";
 
 export default function Edit({auth, inventoryItem, role, redirectToReader, queryParams}) {
     const {data, setData, patch, errors, processing} = useForm({
@@ -32,14 +33,8 @@ export default function Edit({auth, inventoryItem, role, redirectToReader, query
     }
     const onSubmit = (e) => {
         e.preventDefault();
-        patch(route('inventoryItems.updateAmount', inventoryItem.id));
+        patch(route('inventoryItems.updateAmount', {inventoryItem: inventoryItem.id, query: queryParams}));
     }
-    const handleNumericInput = (e) =>{
-        if (e.which < 48 || e.which > 57)
-        { e.preventDefault(); }
-    }
-    console.log('Amount added',data.amount_added);
-    console.log('Amount removed',data.amount_removed);
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -69,13 +64,8 @@ export default function Edit({auth, inventoryItem, role, redirectToReader, query
                                             <InputLabel
                                                 htmlFor="inventoryItems_amount_removed">{__("Amount being taken out")}</InputLabel>
                                             <div className="flex justify-between">
-                                                <TextInput id="inventoryItems_amount_removed" type="text"
-                                                           name="amount_removed"
-                                                           className="mt-1 block w-full bg-red-400 text-white disabled:bg-gray-400"
-                                                           onChange={handleAmountChangeForRemoving}
-                                                           disabled={!removingAllowed}
-                                                           onKeyPress={handleNumericInput}
-                                                />
+                                                <NumericInput id="inventoryItems_amount_removed" name="amount_removed" className="mt-1 block w-full bg-red-400 text-white disabled:bg-gray-400"
+                                                onChange={handleAmountChangeForRemoving} disabled={!removingAllowed}/>
                                                 <InformationIconToolTip classname="bg-black"
                                                                         content={__("In this field, the amount which will be removed is specified") + '.'}
                                                                         color="black"/>
@@ -94,12 +84,8 @@ export default function Edit({auth, inventoryItem, role, redirectToReader, query
                                             <InputLabel
                                                 htmlFor="inventoryItems_amount_added">{__("Amount being added")}</InputLabel>
                                             <div className="flex justify-between">
-                                                <TextInput id="inventoryItems_amount_added" type="text"
-                                                           name="amount_added"
-                                                           className="mt-1 block w-full bg-emerald-500 text-white disabled:bg-gray-400"
-                                                           onChange={handleAmountChangeForAdding}
-                                                           disabled={!addingAllowed}
-                                                           onKeyPress={handleNumericInput}/>
+                                                <NumericInput id="inventoryItems_amount_added" name="amount_added" className="mt-1 block w-full bg-emerald-500 text-white disabled:bg-gray-400"
+                                                              onChange={handleAmountChangeForAdding} disabled={!addingAllowed}/>
                                                 <InformationIconToolTip classname="bg-black"
                                                                         content={__("In this field, the amount which will be added is specified") + '.'}
                                                                         color="black"/>

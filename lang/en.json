@@ -155,5 +155,7 @@
     "Choose a laboratory": "Choose a laboratory",
     "Choose an inventory type": "Choose an inventory type",
     "Choose a cupboard": "Choose a cupboard",
-    "Choose a shelf": "Choose a shelf"
+    "Choose a shelf": "Choose a shelf",
+    "Current object history" : "Current history records of :value",
+    "History description": "In this window you can view the historical changes to the currently viewed object, all historical changes are stored up to 12 months"
 }

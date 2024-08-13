@@ -32,6 +32,7 @@ return [
         'updated_at' => 'Atnaujintas',
         'created_by' => 'Sukūrė',
         'updated_by' => 'Atnaujino',
+        'critical_amount_notified_at' => 'Pranešimas apie stygių išsiųstas laiku',
         'logBound' => 'Šis įrašas negali būti ištrintas, nes šiuo metu tam tikras inventorius yra išdėstytas kitose vietose.'
     ],
     'user' => [

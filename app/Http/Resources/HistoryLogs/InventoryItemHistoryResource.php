@@ -81,6 +81,12 @@ class InventoryItemHistoryResource extends ResourceCollection
         if ($property === 'laboratory'){
             return optional(Laboratory::find($value))->name ?? $value;
         }
+        if ($property === 'cupboard'){
+            return optional(\App\Models\InventoryItem::find($value))->name ?? $value;
+        }
+        if ($property === 'shelf'){
+            return optional(\App\Models\InventoryItem::find($value))->name ?? $value;
+        }
         if ($property === 'multiple_locations'){
             return $value == 1 ? __('actions.true') : __('actions.false');
         }

@@ -169,11 +169,13 @@ class InventoryItemController extends Controller
     }
 
     /**
-     * @param InventoryItem $inventoryItem
+     * @param int|string $identifier
+     * @param Request $request
      * @return Response
      */
-    public function editRaw(InventoryItem $inventoryItem, Request $request): Response
+    public function editRaw(int|string $identifier, Request $request): Response
     {
+        $inventoryItem = InventoryItem::where('id','=',$identifier)->orWhere('local_name', $identifier)->firstOrFail();
         $amountLogs = $inventoryItem->amountLogs;
         $laboratories = Laboratory::query()->get()->all();
         $itemTypes = ItemType::query()->get();
@@ -215,6 +217,7 @@ class InventoryItemController extends Controller
      */
     public function updateAmount(ChangeAmountInventoryItemRequest $request, InventoryItem $inventoryItem): RedirectResponse
     {
+        $queryParams = $request->query('query');
         if ($request['amount_removed'] > 0) {
             $data = $request->validate([
                 'amount_removed' => 'numeric|lt:total_amount',
@@ -240,7 +243,7 @@ class InventoryItemController extends Controller
                     ) . '.');
         }
         else {
-            return to_route('inventoryItems.index')
+            return to_route('inventoryItems.index', $queryParams)
                 ->with('success', __('actions.inventoryItem.updated', [
                             'local_name' => $inventoryItem->local_name]
                     ) . '.');
@@ -249,11 +252,12 @@ class InventoryItemController extends Controller
 
     /**
      * @param Request $request
-     * @param InventoryItem $inventoryItem
+     * @param int|string $identifier
      * @return Response
      */
-    public function edit(Request $request, InventoryItem $inventoryItem): Response
+    public function edit(Request $request, int|string $identifier): Response
     {
+        $inventoryItem = InventoryItem::where('id','=',$identifier)->orWhere('local_name', $identifier)->firstOrFail();
         $redirectToReader = false;
         $queryParams = $request->query('query');
         if (request('urlForReader')) { $redirectToReader = true; }
@@ -289,6 +293,7 @@ class InventoryItemController extends Controller
      */
     public function takeOutAmountLog(AdjustInventoryAmountViaLog $request, InventoryItem $inventoryItem): RedirectResponse
     {
+        $queryParams = $request->query('query');
         $request->validated();
         if ($request->action === 'REMOVE') {
             $request->validate([
@@ -338,17 +343,19 @@ class InventoryItemController extends Controller
             return redirect()->route('reader')
                 ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
         } else {
-            return redirect()->route('inventoryItems.index')
+            return redirect()->route('inventoryItems.index',$queryParams)
                 ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
         }
     }
 
     /**
-     * @param InventoryItem $inventoryItem
+     * @param Request $request
+     * @param int|string $identifier
      * @return Response
      */
-    public function show(Request $request, InventoryItem $inventoryItem): Response
+    public function show(Request $request, int|string $identifier): Response
     {
+        $inventoryItem = InventoryItem::where('id','=',$identifier)->orWhere('local_name', $identifier)->firstOrFail();
         $laboratories = Laboratory::query()->get()->all();
         $itemTypes = ItemType::query()->get();
         $queryParams = $request->query('query');
@@ -399,14 +406,5 @@ class InventoryItemController extends Controller
         $fileName = $request->file('file')->getClientOriginalName();
         Excel::import(new InventoryImport(), $file);
         return to_route('inventoryItems.index')->with('success', __('actions.uploaded', ['name' => $fileName]) . '.');
-    }
-
-    public  function queryObjectHistory(Request $request): JsonResponse
-    {
-        $objectId = $request->input('object_id');
-        $objectType = $request->input('object_type');
-        $perPage = $request->input('per_page');
-        $query = InventoryItem::query();
-        return response()->json($query->paginate($perPage));
     }
 }
