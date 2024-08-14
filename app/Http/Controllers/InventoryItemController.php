@@ -146,15 +146,18 @@ class InventoryItemController extends Controller
     }
 
     /**
+     * @param Request $request
      * @return Response
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
+        $queryParams = $request->query();
         $laboratories = Laboratory::query()->get();
         $itemTypes = ItemType::query()->get();
         return Inertia::render('Inventory/Create', [
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
-            'itemTypes' => ItemTypeForSelect::collection($itemTypes)
+            'itemTypes' => ItemTypeForSelect::collection($itemTypes),
+            'queryParams' => $queryParams,
         ]);
     }
 

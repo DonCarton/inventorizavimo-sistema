@@ -27,7 +27,7 @@ use Spatie\Activitylog\LogOptions;
  * @property DateTime $critical_amount_notified_at
  * @method static findOrFail(int $id)
  * @method static create(mixed $data)
- * @method static where(string $string, string $string1, mixed $prefixOptionId)
+ * @method static where(string $string, string $operator, mixed $value)
  */
 #[ObservedBy(InventoryItemObserver::class)]
 class InventoryItem extends Model
