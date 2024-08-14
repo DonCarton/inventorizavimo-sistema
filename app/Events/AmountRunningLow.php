@@ -17,9 +17,11 @@ class AmountRunningLow
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public InventoryItem $inventoryItem;
     public bool $readerOrigin;
+
     /**
      * Create a new event instance.
      * @param InventoryItem $inventoryItem
+     * @param bool $readerOrigin
      */
     public function __construct(InventoryItem $inventoryItem, bool $readerOrigin)
     {

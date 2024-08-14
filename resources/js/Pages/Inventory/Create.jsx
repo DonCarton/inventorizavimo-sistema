@@ -13,7 +13,7 @@ import FlexibleSelect from "@/Components/Forms/FlexibleSelect.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 import FlexibleAsyncSelect from "@/Components/Forms/FlexibleAsyncSelect.jsx";
 
-export default function Create({auth, previousUrl, role, itemTypes, queryParams}) {
+export default function Create({auth, role, itemTypes, queryParams}) {
     const [postNumber, setPostNumber] = useState(null);
     const [activeTab, setActiveTab] = useState(1);
     const [selectedPrefix, setSelectedPrefix] = useState('BIN');
@@ -89,7 +89,9 @@ export default function Create({auth, previousUrl, role, itemTypes, queryParams}
         setData('shelf', e);
     }
     const handleInventoryTypeChange = (e) => {
-        if (itemTypes.data[e-1].assetRequired === false){ setAssetNumberShown(true); setData('asset_number_required', true) } else {setAssetNumberShown(false); setData('asset_number_required', false)}
+        if (e !== null){
+            if (itemTypes.data[e-1].assetRequired === false){ setAssetNumberShown(true); setData('asset_number_required', true) } else {setAssetNumberShown(false); setData('asset_number_required', false)}
+        }
         setData('inventory_type', e);
     }
     const onSubmit = (e) => {

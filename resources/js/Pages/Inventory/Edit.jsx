@@ -15,9 +15,9 @@ import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
 import AsyncCustom from "@/Components/Forms/AsyncCustom.jsx";
 
-export default function Edit({auth, inventoryItem, logsForItem, role, laboratories, itemTypes, queryParams}) {
+export default function Edit({auth, inventoryItem, logsForItem, role, laboratories, itemTypes, queryParams, referrer}) {
     const handleConfirmMessage = __("Are you sure you want to delete this item") + '?';
-    const {data, setData, put, errors, reset, processing} = useForm({
+    const {data, setData, put, errors, processing} = useForm({
         local_name: inventoryItem.data.localName || '',
         inventory_type: inventoryItem.data.inventoryType || '',
         name: inventoryItem.data.name || '',
@@ -52,7 +52,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
     }
     const onSubmit = (e) => {
         e.preventDefault();
-        put(route('inventoryItems.update', {inventoryItem: inventoryItem.data.id, query: queryParams}));
+        put(route('inventoryItems.update', {inventoryItem: inventoryItem.data.id, query: queryParams, referrer: referrer}));
     }
     const handleCupboardChange = (e) => {
         setData('cupboard',e.value);
@@ -295,7 +295,8 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                 </AccordionWithManualIndex>
                                 <div className="flex justify-between mt-4">
                                     <div>
-                                        <Link href={route('inventoryItems.index', queryParams)}
+                                        <Link
+                                                href={route(`inventoryItems.${referrer ? referrer : 'index'}`, queryParams)}
                                               className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                         >
                                             {__("Cancel")}

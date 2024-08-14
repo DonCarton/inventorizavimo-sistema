@@ -24,15 +24,15 @@ export default function Authenticated({ user, header, children, role }) {
                             </div>
 
                             <div className="hidden space-x-8 lg:-my-px lg:ms-10 lg:flex">
-                                <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('dashboard')} active={route().current('dashboard')}>
+                                <NavLink className="2xl:text-lg xl:text-base text-white" href={route('dashboard')} active={route().current('dashboard')}>
                                     {__("Dashboard")}
                                 </NavLink>
                                 {role === "admin" &&
-                                    <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white" href={route('users.index')} active={route().current('users*')}>
+                                    <NavLink className="2xl:text-lg xl:text-base text-white" href={route('users.index')} active={route().current('users*')}>
                                     {__("Users")}</NavLink>
                                 }
                                 <button type="button" onClick={() => setShowMegaMenuDropdown(!showMegaMenuDropdown)} onMouseEnter={() => setShowMegaMenuDropdown(true)} onMouseLeave={() => setShowMegaMenuDropdown(false)}
-                                        className={`inline-flex items-center 4xl:text-xl 2xl:text-lg xl:text-base text-white px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none hover:border-b-2 hover:border-b-indigo-400 border-transparent dark:text-gray-400 hover:text-teal-100 dark:hover:text-gray-300 hover:border-indigo-500 dark:hover:border-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700 ${route().current('inventoryItems*') ? 'border-b-indigo-400 bg-pink-700' : ''}`}>
+                                        className={`inline-flex items-center 2xl:text-lg xl:text-base text-white px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none hover:border-b-2 hover:border-b-indigo-400 border-transparent dark:text-gray-400 hover:text-teal-100 dark:hover:text-gray-300 hover:border-indigo-500 dark:hover:border-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700 ${route().current('inventoryItems*') ? 'border-b-indigo-400 bg-pink-700' : ''}`}>
                                     {__("Inventory")}
                                     <ChevronDownIcon className="ml-1 w-5 h-5"/>
                                     {showMegaMenuDropdown &&
@@ -40,12 +40,12 @@ export default function Authenticated({ user, header, children, role }) {
                                             <div className="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
                                                 <ul className="space-y-4" aria-labelledby="mega-menu-dropdown-button">
                                                     <li>
-                                                        <MegaMenuNavLink className="4xl:text-xl 2xl:text-lg xl:text-base" href={route('inventoryItems.index')} active={route().current('inventoryItems.index') && !route().current('inventoryItems.myLaboratory')}>
+                                                        <MegaMenuNavLink className="2xl:text-lg xl:text-base" href={route('inventoryItems.index')} active={route().current('inventoryItems.index') && !route().current('inventoryItems.myLaboratory')}>
                                                             {__("Inventory")}
                                                         </MegaMenuNavLink>
                                                     </li>
                                                     <li>
-                                                        <MegaMenuNavLink className="4xl:text-xl 2xl:text-lg xl:text-base" href={route('inventoryItems.myLaboratory')} active={route().current('inventoryItems.myLaboratory')}>
+                                                        <MegaMenuNavLink className="2xl:text-lg xl:text-base" href={route('inventoryItems.myLaboratory')} active={route().current('inventoryItems.myLaboratory')}>
                                                             {__("My inventory")}
                                                         </MegaMenuNavLink>
                                                     </li>
@@ -54,17 +54,17 @@ export default function Authenticated({ user, header, children, role }) {
                                         </div>}
                                 </button>
                                 {role === "admin" &&
-                                    <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white"
+                                    <NavLink className="2xl:text-lg xl:text-base text-white"
                                              href={route('itemTypes.index')} active={route().current('itemTypes*')}>
                                         {__("Types")}
                                     </NavLink>}
                                 {role === "admin" &&
-                                    <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white"
+                                    <NavLink className="2xl:text-lg xl:text-base text-white"
                                              href={route('laboratories.index')}
                                              active={route().current('laboratories*')}>
                                         {__("Laboratories")}
                                     </NavLink>}
-                                <NavLink className="4xl:text-xl 2xl:text-lg xl:text-base text-white"
+                                <NavLink className="2xl:text-lg xl:text-base text-white"
                                          href={route('reader')} active={route().current('reader')}>
                                     {__("Reader")}
                                 </NavLink>
@@ -166,8 +166,8 @@ export default function Authenticated({ user, header, children, role }) {
                         </div>
 
                         <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink className="4xl:text-xl text-white" href={route('profile.edit')}>{__("Profile")}</ResponsiveNavLink>
-                            <ResponsiveNavLink className="4xl:text-xl text-white" method="post" href={route('logout')} as="button">
+                            <ResponsiveNavLink className="text-white" href={route('profile.edit')}>{__("Profile")}</ResponsiveNavLink>
+                            <ResponsiveNavLink className="text-white" method="post" href={route('logout')} as="button">
                                 {__("Log out")}
                             </ResponsiveNavLink>
                         </div>

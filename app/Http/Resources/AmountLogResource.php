@@ -11,7 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @property int $inventory_item_id
- * @property BelongsTo $inventoryItem
+ * @property BelongsTo $laboratory
  * @property string $action
  * @property double $amount
  * @property string $comment
@@ -31,7 +31,7 @@ class AmountLogResource extends JsonResource
         return [
             'id' => $this->id,
             'inventory_item_id' => $this->inventory_item_id,
-            'laboratory' => new LaboratoryResource($this->inventoryItem),
+            'laboratory' => new LaboratoryResource($this->laboratory),
             'action_taken' => $this->action,
             'amount_handled' => $this->amount,
             'comment' => $this->comment,

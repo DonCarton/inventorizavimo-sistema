@@ -20,6 +20,7 @@ export default function MyLaboratory({auth, inventoryItems, itemTypes, role, que
     const {setData, post} = useForm({
         title: '',
         file: null,
+        referrer: 'myLaboratory'
     });
     const searchFieldChanged = (name, value) => {
         if (value) {
@@ -51,7 +52,7 @@ export default function MyLaboratory({auth, inventoryItems, itemTypes, role, que
     };
 
     function handleSubmit2() {
-        post(route("importInventoryItems"));
+        post(route("adminImports.inventoryItems"));
         setModalOpen(false);
         setData("title", "");
         setData("file", null);
@@ -77,14 +78,14 @@ export default function MyLaboratory({auth, inventoryItems, itemTypes, role, que
                                          nameOfDropdownButton={StringHelper.__("Actions")}>
                         {role === 'admin' ? <>
                                 <div id="create-new-entry" title="Create a new entry in the current page."
-                                     className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                     className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
                                     <a href={route("inventoryItems.create")}>{StringHelper.__("Create")}</a></div>
                                 <div id="import-entries" title="Import an existing Excel sheet of data."
-                                     className="px-2 py-1 bg-white border-2 border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                     className="px-2 py-1 bg-white border-2 border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
                                     <a onClick={() => setModalOpen(true)}>{StringHelper.__("Import")}</a></div>
                                 <div id="export-entries"
                                      title="Export all data from the database or export a specific set with the defined search paramters in the table."
-                                     className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center 4xl:text-2xl xl:text-lg text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                     className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
                                     <a
                                         href={route("exports.myLaboratoryInventoryItems", queryParams)}
                                     >
@@ -107,7 +108,7 @@ export default function MyLaboratory({auth, inventoryItems, itemTypes, role, que
                              selectFileText={StringHelper.__("Chosen file")} isOpen={modalOpen} onClose={closeModal}
                              onFileSelect={handleFileSelect} onSubmit={handleSubmit2}/>
             <div className="py-12">
-                <div className="3xl:max-w-screen-3xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="3xl:max-w-screen-4xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {success && <SuccessMessage message={success}/>}
                     {failure && <FailureMessage message={failure}/>}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -116,7 +117,7 @@ export default function MyLaboratory({auth, inventoryItems, itemTypes, role, que
                                 <table
                                     className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                     <thead
-                                        className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
+                                        className="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                     <tr className="text-nowrap">
                                         <TableHeader
                                             name="local_name"
@@ -162,7 +163,7 @@ export default function MyLaboratory({auth, inventoryItems, itemTypes, role, que
                                     <tr className="text-nowrap">
                                         <th className="px-3 py-2">
                                             <TextInput
-                                                className="w-full text-sm"
+                                                className="w-full 3xl:text-base text-sm"
                                                 defaultValue={queryParams.local_name}
                                                 placeholder={StringHelper.__("Item search")}
                                                 onKeyPress={e => onKeyPress('local_name', e)}
@@ -170,29 +171,28 @@ export default function MyLaboratory({auth, inventoryItems, itemTypes, role, que
                                         </th>
                                         <th className="px-3 py-2">
                                             <TextInput
-                                                className="w-full text-sm"
+                                                className="w-full 3xl:text-base text-sm"
                                                 defaultValue={queryParams.name}
                                                 placeholder={StringHelper.__("Name")}
                                                 onKeyPress={e => onKeyPress('name', e)}/>
                                         </th>
                                         <th className="px-3 py-2">
                                             <TextInput
-                                                className="w-full text-sm"
+                                                className="w-full 3xl:text-base text-sm"
                                                 defaultValue={queryParams.name_eng}
                                                 placeholder={StringHelper.__("Name ENG")}
                                                 onKeyPress={e => onKeyPress('name_eng', e)}/>
                                         </th>
                                         <th className="px-3 py-2"></th>
-                                            <th className="px-3 py-2">
-                                            <SteamDropdown name="inventory_type_query_select" className="w-full text-sm text-gray-500" value={queryParams.inventory_type} options={itemTypes.data} onChange={e => searchFieldChanged('inventory_type', e.target.value)} />
-                                            {/* <TextInput
-                                                className="w-full text-sm"
-                                                defaultValue={queryParams.inventory_type}
-                                                placeholder={StringHelper.__("Type")}
-                                                onKeyPress={e => onKeyPress('inventory_type', e)}/> */}
+                                        <th className="px-3 py-2">
+                                            <SteamDropdown name="inventory_type_query_select"
+                                                           className="w-full 3xl:text-base text-sm text-gray-500"
+                                                           value={queryParams.inventory_type} options={itemTypes.data}
+                                                           onChange={e => searchFieldChanged('inventory_type', e.target.value)}/>
                                         </th>
                                         <th className="px-3 py-2">
-                                            <TextInput className="w-full text-sm" placeholder={StringHelper.__("Updated by")}
+                                            <TextInput className="w-full 3xl:text-base text-sm"
+                                                       placeholder={StringHelper.__("Updated by")}
                                                        defaultValue={queryParams.updated_by}
                                                        onBlur={e => searchFieldChanged('updated_by', e.target.value)}
                                                        onKeyPress={e => onKeyPress('updated_by', e)}/>
@@ -201,14 +201,19 @@ export default function MyLaboratory({auth, inventoryItems, itemTypes, role, que
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        {inventoryItems.data.map(inventoryItem => (
-                                        <tr key={inventoryItem.id} className={inventoryItem.inventoryStatus === "critical" ?
-                                            "sm:text-base bg-red-300 border-b dark:bg-red-300 dark:border-red-700" :
-                                            inventoryItem.inventoryStatus === "taken" ?
-                                                "sm:text-base bg-yellow-300 border-b dark:bg-yellow-300 dark:border-yellow-200" :
-                                                "sm:text-base bg-white border-b dark:bg-gray-800 dark:border-gray-700"}>
+                                    {inventoryItems.data.map(inventoryItem => (
+                                        <tr key={inventoryItem.id}
+                                            className={inventoryItem.inventoryStatus === "critical" ?
+                                                "sm:text-base bg-red-300 border-b dark:bg-red-300 dark:border-red-700" :
+                                                inventoryItem.inventoryStatus === "taken" ?
+                                                    "sm:text-base bg-yellow-300 border-b dark:bg-yellow-300 dark:border-yellow-200" :
+                                                    "sm:text-base bg-white border-b dark:bg-gray-800 dark:border-gray-700"}>
                                             <td className="px-3 py-2">
-                                                <Link href={route("inventoryItems.show", {inventoryItem: inventoryItem.id, query: queryParams})}
+                                                <Link href={route("inventoryItems.show", {
+                                                    inventoryItem: inventoryItem.id,
+                                                    query: queryParams,
+                                                    referrer: 'myLaboratory'
+                                                })}
                                                       className="font-medium text-gray-700 dark:text-white hover:underline mx-1">
                                                     {inventoryItem.localName}
                                                 </Link>
@@ -219,12 +224,20 @@ export default function MyLaboratory({auth, inventoryItems, itemTypes, role, que
                                             <td className="px-3 py-2">{inventoryItem.inventoryType}</td>
                                             <td className="px-3 py-2">{inventoryItem.updatedBy}</td>
                                             <td className="flex justify-start mt-1 px-2 py-1">
-                                                <Link href={route("inventoryItems.editRaw", {inventoryItem: inventoryItem.id, query: queryParams})}
+                                                <Link href={route("inventoryItems.editRaw", {
+                                                    inventoryItem: inventoryItem.id,
+                                                    query: queryParams,
+                                                    referrer: 'myLaboratory'
+                                                })}
                                                       className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
                                                     <TbEdit
                                                         className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
                                                 </Link>
-                                                <Link href={route("inventoryItems.edit", {inventoryItem: inventoryItem.id, query: queryParams})}
+                                                <Link href={route("inventoryItems.edit", {
+                                                    inventoryItem: inventoryItem.id,
+                                                    query: queryParams,
+                                                    referrer: 'myLaboratory'
+                                                })}
                                                       className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
                                                     <TbArrowsUpDown
                                                         className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>

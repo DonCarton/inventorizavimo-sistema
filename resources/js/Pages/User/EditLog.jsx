@@ -18,7 +18,7 @@ import {FaQrcode} from "react-icons/fa";
 import {MdClose} from "react-icons/md";
 import LogsTable from "@/Components/Forms/LogsTable.jsx";
 
-export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse, laboratories, redirectToReader, queryParams}) {
+export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse, laboratories, redirectToReader, queryParams, referrer}) {
     const [actionFromUser, setActionFromUser] = useState('REMOVE');
     const {data, setData, patch, errors} = useForm({
         total_amount: inventoryItem.total_amount,
@@ -36,7 +36,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
     const handleOpen2 = (value) => setOpen2(open2 === value ? 0 : value);
     const onSubmit2 = (e) => {
         e.preventDefault();
-        patch(route('inventoryItems.takeOutAmountLog', {inventoryItem: inventoryItem.id, query: queryParams}));
+        patch(route('inventoryItems.takeOutAmountLog', {inventoryItem: inventoryItem.id, query: queryParams, referrer: referrer}));
     }
     const closeModal = () =>{
         setModalOpen(false);
@@ -131,7 +131,6 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                     </div>
                                 </a>
                             </div>
-                            {/*<div>*/}
                                 <Accordion open={open === 1} icon={<Icon id={1} open={open}/>}>
                                     <AccordionHeader onClick={() => handleOpen(1)}>{__("Amount")}</AccordionHeader>
                                     <AccordionBody>
@@ -196,7 +195,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                 </Accordion>
                                 <div className="mt-4 flex items-center">
                                     <Link
-                                        href={route('inventoryItems.index', queryParams)}
+                                        href={route(`inventoryItems.${referrer ? referrer : 'index'}`, queryParams)}
                                         className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150 mr-2"
                                     >
                                         {__("Previous page")}
@@ -209,7 +208,6 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                         {__("Scanner")}
                                     </Link>
                                 </div>
-                            {/*</div>*/}
                         </div>
                         {logsForItem.data.length > 0 && <LogsTable logsForItem={logsForItem}/>}
                     </div>
