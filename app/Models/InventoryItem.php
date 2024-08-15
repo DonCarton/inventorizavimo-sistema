@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\LogOptions;
@@ -19,7 +20,7 @@ use Spatie\Activitylog\LogOptions;
  * @property int $id
  * @property int $inventory_type
  * @property int $amountLogs
- * @property BelongsTo $itemType
+ * @property ItemType $itemType
  * @property string $local_name
  * @property int $laboratory
  * @property double $total_amount
@@ -27,7 +28,7 @@ use Spatie\Activitylog\LogOptions;
  * @property DateTime $critical_amount_notified_at
  * @method static findOrFail(int $id)
  * @method static create(mixed $data)
- * @method static where(string $string, string $string1, mixed $prefixOptionId)
+ * @method static where(string $string, string $operator, mixed $value)
  */
 #[ObservedBy(InventoryItemObserver::class)]
 class InventoryItem extends Model
@@ -78,9 +79,12 @@ class InventoryItem extends Model
      */
     public function getStatusAttribute(): string
     {
-        if ($this->total_amount <= 0 ||
-            $this->total_amount === null ||
-            $this->total_amount <= $this->critical_amount)
+        $amountRemoved = $this->amountLogs()->where('action','=','REMOVE')->sum('amount');
+        $amountReturned = $this->amountLogs()->where('action','=','RETURN')->sum('amount');
+
+        $totalPseudoAmount = $this->total_amount - ($amountRemoved - $amountReturned);
+
+        if ($this->total_amount <= 0 || $this->total_amount === null || $this->total_amount <= $this->critical_amount || $totalPseudoAmount <= $this->critical_amount)
         { return InventoryStatusEnum::CRITICAL; }
 
         if ($this->amountLogs()->count() > 0)

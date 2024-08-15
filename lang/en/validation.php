@@ -195,10 +195,19 @@ return [
             'min' => 'The requested amount per page has to be equal or more than :min.',
             'max' => 'The requested amount per page has to be equal or less than :max.'
         ],
+        'amount' => [
+            'min' => [
+                'numeric' => 'The amount must be equal to or greater than :min.',
+            ],
+            'lte'  => [
+                'numeric' => 'The current amount in the base location is less than the amount being removed. Available amount: :value.',
+            ],
+        ],
         'amount_removed' => [
             'lt' => [
                 'numeric' => 'The :attribute must be less than the available amount in the inventory (:value).',
-            ]
+            ],
+            'non_negative' => ':Attribute cannot exceed the existing amount, otherwise it would be negative.'
         ]
 
     ],

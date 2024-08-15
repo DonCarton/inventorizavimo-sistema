@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\AmountRunningLow;
 use App\Exports\InventoryExports;
 use App\Http\Requests\ExportRequests\InventoryItemExportRequest;
 use App\Http\Requests\StoreRequests\AdjustInventoryAmountViaLog;
@@ -21,6 +20,7 @@ use App\Models\AmountLog;
 use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
+use App\Rules\NonNegativeAmount;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -130,31 +130,62 @@ class InventoryItemController extends Controller
     {
         $prefixOptionId = $request->input('prefix_option_id');
         $prefixOptionIdToFetch = $prefixOptionId . '%';
-        $latestPost = InventoryItem::where('local_name', 'like', $prefixOptionIdToFetch)->latest()->first();
-        if ($latestPost == null) {
-            $newIdentifier = $prefixOptionId . '001';
-            return response()->json(['post_number' => $newIdentifier]);
+
+        $existingPosts = InventoryItem::where('local_name', 'like', $prefixOptionIdToFetch)
+            ->orderBy('local_name')
+            ->pluck('local_name')
+            ->toArray();
+
+        $numericParts = array_map(function($localName) use ($prefixOptionId) {
+            return (int) str_replace($prefixOptionId, '', $localName);
+        }, $existingPosts);
+
+        sort($numericParts);
+        $newNumericPart = 1;
+
+        foreach ($numericParts as $part) {
+            if ($part != $newNumericPart) {
+                break;
+            }
+            $newNumericPart++;
         }
-        $numericPart = (int)preg_replace('/[^0-9]/', '', $latestPost->local_name);
-        if ($numericPart < 999) {
-            $numericPart++;
-        } else {
-            $numericPart = 1;
-        }
-        $newIdentifier = $prefixOptionId . str_pad($numericPart, 3, '0', STR_PAD_LEFT);
+
+        $newIdentifier = $prefixOptionId . str_pad($newNumericPart, 3, '0', STR_PAD_LEFT);
+
         return response()->json(['post_number' => $newIdentifier]);
     }
+//    public function fetchPostNumber(Request $request): JsonResponse
+//    {
+//        $prefixOptionId = $request->input('prefix_option_id');
+//        $prefixOptionIdToFetch = $prefixOptionId . '%';
+//        $latestPost = InventoryItem::where('local_name', 'like', $prefixOptionIdToFetch)->latest('local_name')->first();
+//        if ($latestPost == null) {
+//            $newIdentifier = $prefixOptionId . '001';
+//            return response()->json(['post_number' => $newIdentifier]);
+//        }
+//        $numericPart = (int)preg_replace('/[^0-9]/', '', $latestPost->local_name);
+//        if ($numericPart < 999) {
+//            $numericPart++;
+//        } else {
+//            $numericPart = 1;
+//        }
+//        $newIdentifier = $prefixOptionId . str_pad($numericPart, 3, '0', STR_PAD_LEFT);
+//        return response()->json(['post_number' => $newIdentifier]);
+//    }
 
     /**
+     * @param Request $request
      * @return Response
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
+        $queryParams = $request->query();
         $laboratories = Laboratory::query()->get();
         $itemTypes = ItemType::query()->get();
         return Inertia::render('Inventory/Create', [
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
-            'itemTypes' => ItemTypeForSelect::collection($itemTypes)
+            'itemTypes' => ItemTypeForSelect::collection($itemTypes),
+            'queryParams' => $queryParams,
         ]);
     }
 
@@ -185,7 +216,8 @@ class InventoryItemController extends Controller
             'logsForItem' => AmountLogResource::collection($amountLogs),
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
-            'queryParams' => $queryParams
+            'queryParams' => $queryParams,
+            'referrer' => $request->query('referrer'),
         ]);
 
     }
@@ -197,17 +229,21 @@ class InventoryItemController extends Controller
      */
     public function update(UpdateInventoryItemRequest $request, InventoryItem $inventoryItem): RedirectResponse
     {
+        $queryParams = $request->query('query');
         $originalData = $inventoryItem->toArray();
         $validatedData = $request->validated();
         $extraData = $request->except(array_keys($validatedData));
         $data = array_merge($validatedData, $extraData);
         $inventoryItem->update($data);
-        unset($data['query']);
+        unset($data['query'],$data['referrer']);
         $changedData = array_diff_assoc($data, $originalData);
+
+        $redirectDestination = $request->query('referrer', 'index');
+
         if (!empty($changedData)){
-            return Redirect::route('inventoryItems.index', $request->query('query'))->with('success', __('actions.inventoryItem.updated', ['local_name' => $data['local_name']]) . '.');
+            return Redirect::route("inventoryItems.${redirectDestination}", $queryParams)->with('success', __('actions.inventoryItem.updated', ['local_name' => $data['local_name']]) . '.');
         }
-        return Redirect::route('inventoryItems.index', $request->query('query'));
+        return Redirect::route("inventoryItems.${redirectDestination}", $queryParams);
     }
 
     /**
@@ -218,9 +254,10 @@ class InventoryItemController extends Controller
     public function updateAmount(ChangeAmountInventoryItemRequest $request, InventoryItem $inventoryItem): RedirectResponse
     {
         $queryParams = $request->query('query');
+        $redirectDestination = $request->query('referrer', 'index');
         if ($request['amount_removed'] > 0) {
             $data = $request->validate([
-                'amount_removed' => 'numeric|lt:total_amount',
+                'amount_removed' => ['numeric', new NonNegativeAmount($inventoryItem->total_amount)],
                 'total_amount' => 'numeric',
                 'updated_by' => 'required'
             ]);
@@ -233,9 +270,6 @@ class InventoryItemController extends Controller
             'total_amount' => $data['total_amount'],
             'updated_by' => $data['updated_by']
         ]);
-        if ($inventoryItem['total_count'] <= $inventoryItem['critical_amount'] && $request['amount_removed']) {
-            event(new AmountRunningLow($inventoryItem, $request['urlToRedirect']));
-        }
         if ($request['urlToRedirect']){
             return to_route('reader')
                 ->with('success', __('actions.inventoryItem.updated', [
@@ -243,7 +277,7 @@ class InventoryItemController extends Controller
                     ) . '.');
         }
         else {
-            return to_route('inventoryItems.index', $queryParams)
+            return to_route("inventoryItems.${redirectDestination}", $queryParams)
                 ->with('success', __('actions.inventoryItem.updated', [
                             'local_name' => $inventoryItem->local_name]
                     ) . '.');
@@ -269,7 +303,8 @@ class InventoryItemController extends Controller
                 'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
                 'itemTypes' => ItemTypeForSelect::collection($itemTypes),
                 'redirectToReader' => $redirectToReader,
-                'queryParams' => $queryParams
+                'queryParams' => $queryParams,
+                'referrer' => $request->query('referrer'),
             ]);
         } else {
             $amountLogs = $inventoryItem->amountLogs;
@@ -281,7 +316,8 @@ class InventoryItemController extends Controller
                 'totalInUse' => $inventoryItem->total_amount - $totalTaken + $totalReturned,
                 'laboratories' => LaboratoryResource::collection($laboratories),
                 'redirectToReader' => $redirectToReader,
-                'queryParams' => $queryParams
+                'queryParams' => $queryParams,
+                'referrer' => $request->query('referrer'),
             ]);
         }
     }
@@ -343,7 +379,8 @@ class InventoryItemController extends Controller
             return redirect()->route('reader')
                 ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
         } else {
-            return redirect()->route('inventoryItems.index',$queryParams)
+            $redirectTo = $request->query('referrer', 'index');
+            return redirect()->route("inventoryItems.${redirectTo}",$queryParams)
                 ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
         }
     }
@@ -363,7 +400,8 @@ class InventoryItemController extends Controller
             'inventoryItem' => new InventoryItemResource($inventoryItem),
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
-            'queryParams' => $queryParams
+            'queryParams' => $queryParams,
+            'referrer' => $request->query('referrer')
         ]);
     }
 
@@ -384,6 +422,7 @@ class InventoryItemController extends Controller
     }
 
     /**
+     * @param InventoryItemExportRequest $exportRequest
      * @return BinaryFileResponse
      */
     public function export(InventoryItemExportRequest $exportRequest): BinaryFileResponse
@@ -402,9 +441,10 @@ class InventoryItemController extends Controller
      */
     public function import(Request $request): RedirectResponse
     {
+        $referrer = $request['referrer'] ?? 'index';
         $file = $request->file('file');
         $fileName = $request->file('file')->getClientOriginalName();
         Excel::import(new InventoryImport(), $file);
-        return to_route('inventoryItems.index')->with('success', __('actions.uploaded', ['name' => $fileName]) . '.');
+        return to_route("inventoryItems.${referrer}")->with('success', __('actions.uploaded', ['name' => $fileName]) . '.');
     }
 }

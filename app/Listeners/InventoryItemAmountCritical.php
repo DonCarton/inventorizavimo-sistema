@@ -7,6 +7,7 @@ use App\Mail\InventoryItemCriticalAmountReached;
 use App\Mail\UserCreatedNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 
@@ -30,6 +31,7 @@ class InventoryItemAmountCritical
             Mail::to($adminUser->email)->send(new InventoryItemCriticalAmountReached($event->inventoryItem, $adminUser));
         }
         if($event->readerOrigin){
+            Log::debug("Hey yo");
             return to_route('reader')
                 ->with('success', __('actions.inventoryItem.updated', [
                             'local_name' => $event->inventoryItem->local_name]

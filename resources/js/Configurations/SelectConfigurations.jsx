@@ -11,7 +11,7 @@ const labPrefixOptions = [
     {value: 'FAB', label: 'Skaitmeninės gamybos - FabLab (FAB)'},
     {value: 'PRO', label: 'Vizualaus programavimo (PRO)'},
     {value: 'ROB', label: 'Mobiliųjų technologijų (ROB)'},
-    {value: 'SVI', label: 'Šviesos technologijų (SVI)'},
+    {value: 'ŠVIE', label: 'Šviesos technologijų (SVI)'},
     {value: 'INZ', label: 'Inžinerijos (INZ)'},
     {value: 'BEN', label: 'STEAM bendrosios priemonės (BEN)'},
 ]

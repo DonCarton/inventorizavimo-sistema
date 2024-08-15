@@ -2,15 +2,14 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head, Link, router} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
 import {__} from "@/Libs/Lang.jsx";
-import {TbEdit, TbTablePlus} from "react-icons/tb";
-import {RiFileExcel2Line, RiLockUnlockLine, RiLockLine} from "react-icons/ri";
+import {TbEdit} from "react-icons/tb";
+import {RiLockUnlockLine, RiLockLine} from "react-icons/ri";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import React from "react";
 import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
-import DownloadButton from "@/Components/Actions/DownloadButton.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 
 export default function Users({auth, users, role, queryParams = null, success, failure}) {
@@ -88,7 +87,7 @@ export default function Users({auth, users, role, queryParams = null, success, f
                             <div className="overflow-auto">
                             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead
-                                    className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
+                                    className="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                 <tr className="text-nowrap">
                                     <th className="px-3 py-2">{__("First name")}</th>
                                     <th className="px-3 py-2">{__("Last name")}</th>
@@ -110,7 +109,7 @@ export default function Users({auth, users, role, queryParams = null, success, f
                                     <th className="px-3 py-2"></th>
                                     <th className="px-3 py-2">
                                         <TextInput
-                                            className="w-full text-sm"
+                                            className="w-full 3xl:text-base text-sm"
                                             defaultValue={queryParams.email}
                                             placeholder={__("Email")}
                                             onBlur={e => searchFieldChanged('email', e.target.value)}

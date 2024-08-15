@@ -10,7 +10,7 @@ import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 import NumericInput from "@/Components/Forms/NumericInput.jsx";
 
-export default function Edit({auth, inventoryItem, role, redirectToReader, queryParams}) {
+export default function Edit({auth, inventoryItem, role, redirectToReader, queryParams, referrer}) {
     const {data, setData, patch, errors, processing} = useForm({
         total_amount: inventoryItem.total_amount,
         amount_added: '',
@@ -33,7 +33,7 @@ export default function Edit({auth, inventoryItem, role, redirectToReader, query
     }
     const onSubmit = (e) => {
         e.preventDefault();
-        patch(route('inventoryItems.updateAmount', {inventoryItem: inventoryItem.id, query: queryParams}));
+        patch(route('inventoryItems.updateAmount', {inventoryItem: inventoryItem.id, query: queryParams, referrer: referrer}));
     }
     return (
         <AuthenticatedLayout
@@ -135,7 +135,7 @@ export default function Edit({auth, inventoryItem, role, redirectToReader, query
                                                               className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                     >
                                         {__("Cancel")}
-                                    </Link> : <Link href={route('inventoryItems.index', queryParams)}
+                                    </Link> : <Link href={route(`inventoryItems.${referrer ? referrer : 'index'}`, queryParams)}
                                                     className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                     >
                                         {__("Cancel")}

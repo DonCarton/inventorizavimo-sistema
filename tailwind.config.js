@@ -19,7 +19,6 @@ export default {
             screens:{
                 '4xl': '2160px',
                 '3xl': '1600px',
-                '2xl': '1080px',
                 'sm': '480px',
                 'sub-480' : '256px'
             },

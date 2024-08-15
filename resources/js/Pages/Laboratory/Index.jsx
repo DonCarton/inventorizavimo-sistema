@@ -5,15 +5,13 @@ import {__} from "@/Libs/Lang.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
-import {TbEdit, TbTablePlus} from "react-icons/tb";
-import {RiDeleteBin6Line, RiFileExcel2Line} from "react-icons/ri";
+import {TbEdit} from "react-icons/tb";
+import {RiDeleteBin6Line} from "react-icons/ri";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import React, {useState} from "react";
 import WarningMessage from "@/Components/WarningMessage.jsx";
-import {FiUpload} from "react-icons/fi";
 import FileUploadModal from "@/Components/FileUploadModal.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
-import DownloadButton from "@/Components/Actions/DownloadButton.jsx";
 
 export default function Index({auth, laboratories, role, queryParams = null, success, warning}) {
     queryParams = queryParams || {};
@@ -57,7 +55,7 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
         setData('file', file);
     };
     function handleSubmit2() {
-        post(route("importLaboratories"));
+        post(route("adminImports.laboratories"));
         setModalOpen(false);
         setData("title", "");
         setData("file", null);
@@ -112,7 +110,7 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                                 <table
                                     className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                     <thead
-                                        className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
+                                        className="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                     <tr className="text-nowrap">
                                         <TableHeader
                                             name="name"
@@ -138,7 +136,7 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                                     <tr className="text-nowrap">
                                         <th className="px-3 py-2">
                                             <TextInput
-                                                className="w-full text-sm"
+                                                className="w-full 3xl:text-base text-sm"
                                                 defaultValue={queryParams.name}
                                                 placeholder={__("Name")}
                                                 onBlur={e => searchFieldChanged('name', e.target.value)}
@@ -147,7 +145,7 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                                         <th className="px-3 py-2"></th>
                                         <th className="px-3 py-2"></th>
                                         <th className="px-3 py-2">
-                                            <TextInput className="w-full text-sm" placeholder={__("Updated by")}
+                                            <TextInput className="w-full 3xl:text-base text-sm" placeholder={__("Updated by")}
                                                        defaultValue={queryParams.updated_by}
                                                        onBlur={e => searchFieldChanged('updated_by', e.target.value)}
                                                        onKeyPress={e => onKeyPress('updated_by', e)}/>

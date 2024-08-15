@@ -195,10 +195,19 @@ return [
             'min' => 'Norimas gauti kiekis įrašų turi būti lygus arba didesnis nei :min.',
             'max' => 'Norimas gauti kiekis įrašų turi būti lygus arba mažesnis nei :max.'
         ],
+        'amount' => [
+            'min' => [
+                'numeric' => 'Kiekis turi būti lygus arba didesnis nei :min.',
+            ],
+            'lte'  => [
+                'numeric' => 'Turimas kiekis bazinėje vietoje yra mažesnis nei bandoma išimti. Prieinamas kiekis: :value.',
+            ],
+        ],
         'amount_removed' => [
             'lt' => [
                 'numeric' => ':Attribute turi būti mažesnis negu esamas kiekis inventoriuje (:value).',
-            ]
+            ],
+            'non_negative' => ':Attribute negali viršyti esamo kiekio, jog jis taptų neigiamas.'
         ]
     ],
 

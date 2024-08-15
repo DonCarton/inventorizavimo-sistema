@@ -13,8 +13,7 @@ import FlexibleSelect from "@/Components/Forms/FlexibleSelect.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 import FlexibleAsyncSelect from "@/Components/Forms/FlexibleAsyncSelect.jsx";
 
-export default function Create({auth, previousUrl, role, itemTypes}) {
-    const [previousUrlPage] = useState(previousUrl);
+export default function Create({auth, role, itemTypes, queryParams}) {
     const [postNumber, setPostNumber] = useState(null);
     const [activeTab, setActiveTab] = useState(1);
     const [selectedPrefix, setSelectedPrefix] = useState('BIN');
@@ -90,7 +89,9 @@ export default function Create({auth, previousUrl, role, itemTypes}) {
         setData('shelf', e);
     }
     const handleInventoryTypeChange = (e) => {
-        if (itemTypes.data[e-1].assetRequired === false){ setAssetNumberShown(true); setData('asset_number_required', true) } else {setAssetNumberShown(false); setData('asset_number_required', false)}
+        if (e !== null){
+            if (itemTypes.data[e-1].assetRequired === false){ setAssetNumberShown(true); setData('asset_number_required', true) } else {setAssetNumberShown(false); setData('asset_number_required', false)}
+        }
         setData('inventory_type', e);
     }
     const onSubmit = (e) => {
@@ -145,7 +146,7 @@ export default function Create({auth, previousUrl, role, itemTypes}) {
                                     </select>
                                 </div>
                                 <div>
-                                    <Link href={previousUrlPage}
+                                    <Link href={route('inventoryItems.index')}
                                           className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                     >
                                         {__("Cancel")}
@@ -440,7 +441,7 @@ export default function Create({auth, previousUrl, role, itemTypes}) {
                                     </AccordionWithManualIndex>
                                 </div>
                                 <div>
-                                    <Link href={previousUrlPage}
+                                    <Link href={route('inventoryItems.index')}
                                           className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                     >
                                         {__("Cancel")}
