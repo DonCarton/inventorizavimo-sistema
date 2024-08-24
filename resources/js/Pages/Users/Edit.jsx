@@ -1,7 +1,8 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
-import {Head, Link, useForm} from "@inertiajs/react";
+import {Head, Link, router, useForm} from "@inertiajs/react";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
+import {RiDeleteBin6Line} from "react-icons/ri";
 import InputError from "@/Components/InputError.jsx";
 import {__} from "@/Libs/Lang.jsx";
 import {useState} from "react";
@@ -9,6 +10,7 @@ import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import SteamDropdown from "@/Components/SteamDropdown";
 
 export default function Edit({auth, user, role, userRole, roles, laboratories, previousUrl}) {
+    const handleConfirmMessage = __("Are you sure you want to delete this item") + '?';
     const [previousUrlPage] = useState(previousUrl);
     const {data, setData, put, errors, processing} = useForm({
         first_name: user.data.first_name || '',
@@ -21,6 +23,13 @@ export default function Edit({auth, user, role, userRole, roles, laboratories, p
         e.preventDefault();
 
         put(route('users.update', user.data.id));
+    }
+    const handleDestroy = (value) => {
+        if (window.confirm(handleConfirmMessage)) {
+            router.delete(route('users.destroy', value), {
+                preserveScroll: true
+            })
+        }
     }
     return (<AuthenticatedLayout
             user={auth.user}
@@ -73,13 +82,19 @@ export default function Edit({auth, user, role, userRole, roles, laboratories, p
                             <SteamDropdown name="inventory_type_query_select" className="mt-1 block w-full" value={data.role} options={roles.data} onChange={e => setData('role', e.target.value)} />
                                 <InputError message={errors.role} className="mt-2"/>
                             </div>
-                            <div className="mt-4">
-                                <Link href={previousUrlPage}
+                            <div className="flex justify-between mt-4">
+                            <div>
+                            <Link href={previousUrlPage}
                                       className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                 >
                                     {__("Cancel")}
                                 </Link>
-                                <PrimaryButton className="ml-2" disabled={processing}>{__("Save")}</PrimaryButton>
+                            <PrimaryButton className="ml-2" disabled={processing}>{__("Save")}</PrimaryButton>
+                            </div>
+                            <a type="button" onClick={() => handleDestroy(user.data.id)}
+                                       className="inline-flex items-center px-4 py-2 hover:cursor-pointer bg-pink-500 dark:bg-pink-500 border border-pink-500 hover:border-pink-800 dark:border-pink-500 rounded-md font-semibold text-xs text-white dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-rose-800 dark:hover:bg-rose-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">{__("Delete")}
+                                        <RiDeleteBin6Line className="ml-1 w-5 h-5 text-white"/>
+                                    </a>
                             </div>
                         </form>
                     </div>

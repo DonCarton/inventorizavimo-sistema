@@ -88,7 +88,7 @@ class UserController extends Controller
         $request['name'] = $request['first_name'] . ' ' . $request['last_name'];
         $newUser = User::create($request->all())->assignRole(Role::findById($request['selectedRole'])->name);
         event(new UserCreated($newUser, $password));
-        return redirect()->route('users.index')->with('success', __('actions.user.created', ['email' => $newUser->email]) . '.');
+        return redirect()->route('users.index')->with('success', __('actions.user.created', ['email' => $newUser->email]));
     }
 
     /**
@@ -146,7 +146,7 @@ class UserController extends Controller
         $user->roles()->detach();
         $user->assignRole(Role::findById($data['role'])->name);
         $user->update($data);
-        return Redirect::route('users.index')->with('success', __('actions.user.updated', ['email' => $user->email]) . '.');
+        return Redirect::route('users.index')->with('success', __('actions.user.updated', ['email' => $user->email]));
     }
 
     /**
@@ -162,7 +162,7 @@ class UserController extends Controller
         }
         $user = User::findOrFail($id);
         $user->delete();
-        return to_route('users.index')->with('success', __('actions.user.deleted', ['email' => $user->email]) . '.');
+        return to_route('users.index')->with('success', __('actions.user.deleted', ['email' => $user->email]));
     }
 
     public function activate(User $user): RedirectResponse
@@ -170,7 +170,7 @@ class UserController extends Controller
         $user->update([
             'is_disabled' => false
         ]);
-        return to_route('users.index')->with('success', __('actions.user.activated', ['email' => $user->email]) . '.');
+        return to_route('users.index')->with('success', __('actions.user.activated', ['email' => $user->email]));
     }
 
     public function deactivate(User $user): RedirectResponse
@@ -178,7 +178,7 @@ class UserController extends Controller
         $user->update([
             'is_disabled' => true
         ]);
-        return to_route('users.index')->with('success', __('actions.user.deactivated', ['email' => $user->email]) . '.');
+        return to_route('users.index')->with('success', __('actions.user.deactivated', ['email' => $user->email]));
     }
 
     /**
