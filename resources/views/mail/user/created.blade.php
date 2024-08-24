@@ -1,8 +1,9 @@
 <x-mail::message xmlns:x-mail="http://www.w3.org/1999/html">
-Sveiki {{$user->first_name}},
+<!-- Sveiki {{$user->first_name}}, -->
+{{ __('messages.Hello', ['name' => $user->first_name]) }},
 
-**Štai jūsų prisijungimo duomenys prie sistemos** <br>
-El. paštas: {{$user->email}}<br>
+**{{ __('messages.Here are your login credentials for the system') }}** <br>
+{{ __('messages.Email to login', ['email' => $user->email]) }}<br>
 Slaptaždois: {{$password}}
 
 

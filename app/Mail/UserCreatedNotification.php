@@ -9,17 +9,24 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\App;
 
 class UserCreatedNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public User $user;
+    public string $password;
+
     /**
      * Create a new message instance.
      */
-    public function __construct(public User $user, public string $password)
+    public function __construct(User $user, string $password)
     {
-        //
+        $this->user = $user;
+        $this->password = $password;
+
+        App::setLocale($this->user->locale);
     }
 
     /**
@@ -27,7 +34,8 @@ class UserCreatedNotification extends Mailable
      */
     public function envelope(): Envelope
     {
-        $subject = "Your account credentials are the following";
+        // $subject = "Your account credentials are the following";
+        $subject = __('messages.Subject');
         return new Envelope(
             subject: $subject,
         );
@@ -40,6 +48,10 @@ class UserCreatedNotification extends Mailable
     {
         return new Content(
             markdown: 'mail.user.created',
+            with: [
+                'user' => $this->user,
+                'password' => $this->password,
+            ]
         );
     }
 
