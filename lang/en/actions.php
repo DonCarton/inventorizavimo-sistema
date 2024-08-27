@@ -8,10 +8,11 @@ return [
     'saved' => 'Saved',
     'uploaded' => 'File :name has been successfully uploaded',
     'user' => [
-        'created' => 'New user :email has been created',
-        'updated' => 'User :email has been updated',
-        'activated' => 'User :email activated',
-        'deactivated' => 'User :email deactivated'
+        'created' => 'New user :email has been created.',
+        'updated' => 'User :email has been updated.',
+        'activated' => 'User :email activated.',
+        'deactivated' => 'User :email deactivated.',
+        'deleted' => 'User :email has been deleted.'
     ],
     'laboratory' => [
         'created' => 'New location :name has been created',

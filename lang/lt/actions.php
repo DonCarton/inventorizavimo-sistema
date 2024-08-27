@@ -8,10 +8,11 @@ return [
     'saved' => 'Išsaugotas',
     'uploaded' => 'Failas :name buvo sėkmingai importuotas',
     'user' => [
-        'created' => 'Naujas naudotojas :email sukurtas',
-        'updated' => 'Naudotojas :email atnaujintas',
-        'activated' => 'Naudotojas :email atblokuotas',
-        'deactivated' => 'Naudotojas :email užblokuotas'
+        'created' => 'Naujas naudotojas :email sukurtas.',
+        'updated' => 'Naudotojas :email atnaujintas.',
+        'activated' => 'Naudotojas :email atblokuotas.',
+        'deactivated' => 'Naudotojas :email užblokuotas.',
+        'deleted' => 'Naudotojas :email sėkmingai ištrintas.'
     ],
     'laboratory' => [
         'created' => 'Nauja lokacija :name sukurta',

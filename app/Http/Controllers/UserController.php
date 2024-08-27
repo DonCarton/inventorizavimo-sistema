@@ -16,6 +16,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
@@ -75,9 +76,9 @@ class UserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
+            'first_name' => 'required|string|max:50',
+            'last_name' => 'required|string|max:50',
+            'email' => 'required|string|lowercase|email|max:60|unique:' . User::class,
             'laboratory' => 'required',
             'selectedRole' => 'required|exists:roles,id',
         ]);
@@ -88,7 +89,7 @@ class UserController extends Controller
         $request['name'] = $request['first_name'] . ' ' . $request['last_name'];
         $newUser = User::create($request->all())->assignRole(Role::findById($request['selectedRole'])->name);
         event(new UserCreated($newUser, $password));
-        return redirect()->route('users.index')->with('success', __('actions.user.created', ['email' => $newUser->email]) . '.');
+        return redirect()->route('users.index')->with('success', __('actions.user.created', ['email' => $newUser->email]));
     }
 
     /**
@@ -136,17 +137,17 @@ class UserController extends Controller
     public function update(Request $request, User $user): RedirectResponse
     {
         $data = $request->validate([
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required',
-            'laboratory' => 'required|integer',
+            'first_name' => ['required','string','max:50'],
+            'last_name' => ['required','string','max:50'],
+            'email' => ['required','string','lowercase','email','max:60',Rule::unique('users')->ignore($user->id)],
+            'laboratory' => ['required','integer','exists:laboratories,id'],
             'role' => 'required|exists:roles,id',
-            'updated_by' => 'required'
+            'updated_by' => ['required']
         ]);
         $user->roles()->detach();
         $user->assignRole(Role::findById($data['role'])->name);
         $user->update($data);
-        return Redirect::route('users.index')->with('success', __('actions.user.updated', ['email' => $user->email]) . '.');
+        return Redirect::route('users.index')->with('success', __('actions.user.updated', ['email' => $user->email]));
     }
 
     /**
@@ -162,7 +163,7 @@ class UserController extends Controller
         }
         $user = User::findOrFail($id);
         $user->delete();
-        return to_route('users.index')->with('success', __('actions.user.deleted', ['email' => $user->email]) . '.');
+        return to_route('users.index')->with('success', __('actions.user.deleted', ['email' => $user->email]));
     }
 
     public function activate(User $user): RedirectResponse
@@ -170,7 +171,7 @@ class UserController extends Controller
         $user->update([
             'is_disabled' => false
         ]);
-        return to_route('users.index')->with('success', __('actions.user.activated', ['email' => $user->email]) . '.');
+        return to_route('users.index')->with('success', __('actions.user.activated', ['email' => $user->email]));
     }
 
     public function deactivate(User $user): RedirectResponse
@@ -178,7 +179,7 @@ class UserController extends Controller
         $user->update([
             'is_disabled' => true
         ]);
-        return to_route('users.index')->with('success', __('actions.user.deactivated', ['email' => $user->email]) . '.');
+        return to_route('users.index')->with('success', __('actions.user.deactivated', ['email' => $user->email]));
     }
 
     /**

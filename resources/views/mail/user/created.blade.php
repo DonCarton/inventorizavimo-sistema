@@ -1,15 +1,15 @@
 <x-mail::message xmlns:x-mail="http://www.w3.org/1999/html">
-Sveiki {{$user->first_name}},
+{{ __('messages.Hello', ['name' => $user->first_name]) }},
 
-**Štai jūsų prisijungimo duomenys prie sistemos** <br>
-El. paštas: {{$user->email}}<br>
-Slaptaždois: {{$password}}
+**{{ __('messages.Users.Here are your login credentials for the system') }}** <br><br>
+{{ __('messages.Users.Email to login') }}: **{{$user->email}}**<br>
+{{ __('messages.Users.Password to login') }}: **{{$password}}**
 
 
 <x-mail::button url="{{ route('login') }}">
-Prisijungti
+{{ __('messages.Users.Login') }}
 </x-mail::button>
 
-Dėkojame, <br>
+{{ __('messages.Regards') }}, <br>
 {{config('app.name')}}
 </x-mail::message>
