@@ -53,6 +53,8 @@ Route::middleware(['auth', 'verified'])->group(function (){
                 ]);
             })->name('firstPlayground');
         });
+
+        Route::resource('/systemConfigurations', App\Http\Controllers\Admin\SystemConfigurationController::class)->only(['index','update'])->middleware('includeUserId');
     });
 
     Route::group(['middleware' => ['role:admin|user']], function (){
