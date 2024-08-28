@@ -76,9 +76,9 @@ class UserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'first_name' => 'required|string|max:50',
-            'last_name' => 'required|string|max:50',
-            'email' => 'required|string|lowercase|email|max:60|unique:' . User::class,
+            'first_name' => ['required','string','max:50'],
+            'last_name' => ['required','string','max:50'],
+            'email' => ['required','string','lowercase','email','max:60',Rule::unique('users')->whereNull('deleted_at')],
             'laboratory' => 'required',
             'selectedRole' => 'required|exists:roles,id',
         ]);
@@ -139,7 +139,7 @@ class UserController extends Controller
         $data = $request->validate([
             'first_name' => ['required','string','max:50'],
             'last_name' => ['required','string','max:50'],
-            'email' => ['required','string','lowercase','email','max:60',Rule::unique('users')->ignore($user->id)],
+            'email' => ['required','string','lowercase','email','max:60',Rule::unique('users')->ignore($user->id)->whereNull('deleted_at')],
             'laboratory' => ['required','integer','exists:laboratories,id'],
             'role' => 'required|exists:roles,id',
             'updated_by' => ['required']
@@ -162,8 +162,9 @@ class UserController extends Controller
             return to_route('users.index')->with('failure', 'The record could not be deleted as there will be no users left.');
         }
         $user = User::findOrFail($id);
+        $email = $user->email;
         $user->delete();
-        return to_route('users.index')->with('success', __('actions.user.deleted', ['email' => $user->email]));
+        return to_route('users.index')->with('success', __('actions.user.deleted', ['email' => $email]));
     }
 
     public function activate(User $user): RedirectResponse
