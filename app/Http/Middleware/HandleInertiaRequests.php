@@ -45,7 +45,9 @@ class HandleInertiaRequests extends Middleware
                 }
             },
             'flash' => [
-                'message' => fn () => $request->session()->get('message')
+                'success' => fn () => $request->session()->get('success'),
+                'failure' => fn () => $request->session()->get('failure'),
+                'warning' => fn () => $request->session()->get('warning')
             ],
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [

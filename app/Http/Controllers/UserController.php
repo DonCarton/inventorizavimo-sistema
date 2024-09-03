@@ -124,7 +124,8 @@ class UserController extends Controller
             'user' => new UserResource($user),
             'userRole' => $roleName ? $roleName[0]['id'] : '',
             'roles' => RolesForSelect::collection($roles),
-            'laboratories' => $laboratories
+            'laboratories' => $laboratories,
+            'failure' => session('failure')
         ]);
     }
 
@@ -157,11 +158,14 @@ class UserController extends Controller
      */
     public function destroy(int $id): RedirectResponse
     {
+        $user = User::findOrFail($id);
         $userCount = User::query()->count();
         if ($userCount <= 1) {
-            return to_route('users.index')->with('failure', 'The record could not be deleted as there will be no users left.');
+            return to_route('users.edit',$user)->with('failure',__('actions.user.noUsersLeft'));
         }
-        $user = User::findOrFail($id);
+        if ($id == auth()->user()->id){
+            return to_route('users.edit',$user)->with('failure',__('actions.user.selfDelete'));
+        }
         $email = $user->email;
         $user->delete();
         return to_route('users.index')->with('success', __('actions.user.deleted', ['email' => $email]));

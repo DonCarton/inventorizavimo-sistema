@@ -34,8 +34,13 @@ class HistoryQueryController extends Controller
 
         $model = $modelClass::find($request->object_id);
         $logs = $model->activities()
-            ->with(['subject','causer'])
-            ->paginate($request->per_page);
+            ->with([
+                'subject',
+                'causer' => function ($query) {
+                    $query->withTrashed();
+                }
+            ])
+        ->paginate($request->per_page);
         return new InventoryItemHistoryResource($logs, ModelTypeValid::from($request->object_type));
     }
 }
