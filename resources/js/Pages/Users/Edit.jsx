@@ -8,8 +8,9 @@ import {__} from "@/Libs/Lang.jsx";
 import {useState} from "react";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import SteamDropdown from "@/Components/SteamDropdown";
+import FailureMessage from "@/Components/FailureMessage.jsx";
 
-export default function Edit({auth, user, role, userRole, roles, laboratories, previousUrl}) {
+export default function Edit({auth, user, role, userRole, roles, laboratories, previousUrl, flash}) {
     const handleConfirmMessage = __("Are you sure you want to delete this item") + '?';
     const [previousUrlPage] = useState(previousUrl);
     const {data, setData, put, errors, processing} = useForm({
@@ -41,6 +42,7 @@ export default function Edit({auth, user, role, userRole, roles, laboratories, p
 
         <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                {flash.failure && <FailureMessage message={flash.failure}/>}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <form onSubmit={onSubmit} className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                             <div className="mt-4">
