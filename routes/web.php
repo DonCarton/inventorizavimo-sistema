@@ -8,6 +8,7 @@ use App\Http\Controllers\BarcodesController;
 use App\Http\Controllers\ItemTypeController;
 use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Admin\SystemConfigurationController;
 use App\Models\InventoryItem;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -53,6 +54,9 @@ Route::middleware(['auth', 'verified'])->group(function (){
                 ]);
             })->name('firstPlayground');
         });
+
+        Route::get('/systemConfigurations', [SystemConfigurationController::class, 'edit'])->middleware('includeUserId')->name('systemConfigurations.edit');
+        Route::patch('/systemConfigurations', [SystemConfigurationController::class, 'update'])->middleware('includeUserId')->name('systemConfigurations.update');
     });
 
     Route::group(['middleware' => ['role:admin|user']], function (){
