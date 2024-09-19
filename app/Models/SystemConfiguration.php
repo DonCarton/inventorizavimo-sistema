@@ -14,4 +14,8 @@ class SystemConfiguration extends Model
         'name',
         'boolean_value'
     ];
+
+    protected $casts = [
+        'boolean_value' => 'boolean',
+    ];
 }

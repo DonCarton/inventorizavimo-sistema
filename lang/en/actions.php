@@ -34,6 +34,6 @@ return [
     'noItemFound' => 'Code recognized (:name), but entry not found',
     'true' => 'True',
     'false' => 'False',
-
+    'denied' => 'Action is denied',
 
 ];

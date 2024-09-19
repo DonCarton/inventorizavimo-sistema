@@ -56,7 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
         });
 
         Route::get('/systemConfigurations', [SystemConfigurationController::class, 'edit'])->middleware('includeUserId')->name('systemConfigurations.edit');
-        Route::patch('/systemConfigurations', [SystemConfigurationController::class, 'updated'])->middleware('includeUserId')->name('systemConfigurations.update');
+        Route::patch('/systemConfigurations', [SystemConfigurationController::class, 'update'])->middleware('includeUserId')->name('systemConfigurations.update');
     });
 
     Route::group(['middleware' => ['role:admin|user']], function (){
