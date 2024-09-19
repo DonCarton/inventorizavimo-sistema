@@ -12,7 +12,10 @@ return [
         'updated' => 'User :email has been updated.',
         'activated' => 'User :email activated.',
         'deactivated' => 'User :email deactivated.',
-        'deleted' => 'User :email has been deleted.'
+        'deleted' => 'User :email has been deleted.',
+        'selfDelete' => 'You cannot delete your own account.',
+        'noUsersLeft' => 'The record could not be deleted as there will be no users left.',
+        'deletedUser' => 'Deleted user'
     ],
     'laboratory' => [
         'created' => 'New location :name has been created',

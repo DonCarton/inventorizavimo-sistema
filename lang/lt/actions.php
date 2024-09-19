@@ -12,7 +12,10 @@ return [
         'updated' => 'Naudotojas :email atnaujintas.',
         'activated' => 'Naudotojas :email atblokuotas.',
         'deactivated' => 'Naudotojas :email užblokuotas.',
-        'deleted' => 'Naudotojas :email sėkmingai ištrintas.'
+        'deleted' => 'Naudotojas :email sėkmingai ištrintas.',
+        'selfDelete' => 'Ištrinti savo paskyros negalima.',
+        'noUsersLeft' => 'Ištrinti paskutinio naudotojo, nes nebeliks aktyvių naudotojų.',
+        'deletedUser' => 'Ištrintas naudotojas'
     ],
     'laboratory' => [
         'created' => 'Nauja lokacija :name sukurta',
