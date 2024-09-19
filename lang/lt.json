@@ -158,5 +158,8 @@
     "Choose a cupboard": "Pasirinkti spintą",
     "Choose a shelf": "Pasirinkti lentyną",
     "Current object history" : "Pasirinkto įrašo :value istorinei pakeitimai",
-    "History description": "Šiame lange pateikiama išklotinė įrašo, su visais registruotais pakeitimais, visi pakeitimų įrašai saugomi iki 12 mėnesių"
+    "History description": "Šiame lange pateikiama išklotinė įrašo, su visais registruotais pakeitimais, visi pakeitimų įrašai saugomi iki 12 mėnesių",
+    "User configurations": "Naudotojų nustatymai",
+    "Email configurations": "Pašto nustatymai",
+    "General configurations": "Bendri nustatymai"
 }

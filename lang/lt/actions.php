@@ -37,5 +37,6 @@ return [
     'noItemFound' => 'Kodas atpažintas (:name), bet įrašas nerastas',
     'true' => 'Taip',
     'false' => 'Ne',
+    'denied' => 'Veiksmas neleistinas.',
 
 ];

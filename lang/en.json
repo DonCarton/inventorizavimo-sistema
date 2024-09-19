@@ -157,5 +157,8 @@
     "Choose a cupboard": "Choose a cupboard",
     "Choose a shelf": "Choose a shelf",
     "Current object history" : "Current history records of :value",
-    "History description": "In this window you can view the historical changes to the currently viewed object, all historical changes are stored up to 12 months"
+    "History description": "In this window you can view the historical changes to the currently viewed object, all historical changes are stored up to 12 months",
+    "User configurations": "User configurations",
+    "Email configurations": "Email configurations",
+    "General configurations": "General configurations"
 }
