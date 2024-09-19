@@ -53,7 +53,7 @@ class InventoryItemHistoryResource extends ResourceCollection
                         'created_at' => $this->setUserFriendlyDateCarbon($entry->created_at),
                         'object' => optional($entry->subject)->name ?? $entry->subject_id,
                         'action' => $entry->event,
-                        'causeUser' => optional($entry->causer)->email ?? $entry->causer_id,
+                        'causeUser' => optional($entry->causer)->email ?? __('actions.user.deletedUser'),
                     ],
                     'changesForObject' => [
                         'fields' => $fields,
