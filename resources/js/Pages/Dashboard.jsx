@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head} from '@inertiajs/react';
+import {Link, Head} from '@inertiajs/react';
 import {__} from '@/Libs/Lang.jsx';
 import {FaTable, FaUser} from "react-icons/fa";
 import {MdOutlineQrCode2} from "react-icons/md";
@@ -20,38 +20,37 @@ export default function Dashboard({auth, role}) {
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div
                             className="grid xl:grid-cols-2 sm:grid-cols-1 gap-4 p-8">
-                            {role === "admin" && (<a href={route("users.index")}
-                                                     className="w-full flex items-center h-24 bg-gray-100 p-4 rounded-lg shadow-md group hover:bg-rose-800 active:bg-pink-900 transition ease-in-out duration-150">
+                            {role === "admin" && (<Link href={route("users.index")} className="w-full flex items-center h-24 bg-gray-100 p-4 rounded-lg shadow-md group hover:bg-rose-800 active:bg-pink-900 transition ease-in-out duration-150">
                                 <FaUser className="w-16 h-16 text-4xl text-gray-700 group-hover:text-white"/>
                                 <div className="ml-4 group-hover:text-white">
                                     <h2 className="text-lg font-semibold">{__("Users")}</h2>
                                     <p className="text-sm">{__("User management")}.</p>
                                 </div>
-                            </a>)}
-                            <a href={route("inventoryItems.myLaboratory")}
-                               className="w-full flex items-center h-24 bg-gray-100 p-4 rounded-lg shadow-md group hover:bg-rose-800 active:bg-pink-900 transition ease-in-out duration-150">
+                            </Link>)}
+                            <Link href={route("inventoryItems.myLaboratory")}
+                                  className="w-full flex items-center h-24 bg-gray-100 p-4 rounded-lg shadow-md group hover:bg-rose-800 active:bg-pink-900 transition ease-in-out duration-150">
                                 <FaTable className="w-16 h-16 text-4xl text-gray-700 group-hover:text-white"/>
                                 <div className="ml-4 group-hover:text-white">
                                     <h2 className="text-lg font-semibold">{__("My inventory")}</h2>
                                     <p className="text-sm">{__("My inventory management")}.</p>
                                 </div>
-                            </a>
-                            <a href={route("inventoryItems.index")}
-                               className="w-full flex items-center h-24 bg-gray-100 p-4 rounded-lg shadow-md group hover:bg-rose-800 active:bg-pink-900 transition ease-in-out duration-150">
+                            </Link>
+                            <Link href={route("inventoryItems.index")}
+                                  className="w-full flex items-center h-24 bg-gray-100 p-4 rounded-lg shadow-md group hover:bg-rose-800 active:bg-pink-900 transition ease-in-out duration-150">
                                 <FaTable className="w-16 h-16 text-4xl text-gray-700 group-hover:text-white"/>
                                 <div className="ml-4 group-hover:text-white">
                                     <h2 className="text-lg font-semibold">{__("Inventory")}</h2>
                                     <p className="text-sm">{__("Inventory management")}.</p>
                                 </div>
-                            </a>
-                            <a href={route("reader")}
-                               className="w-full flex items-center h-24 bg-gray-100 p-4 rounded-lg shadow-md group hover:bg-rose-800 active:bg-pink-900 transition ease-in-out duration-150">
+                            </Link>
+                            <Link href={route("reader")}
+                                  className="w-full flex items-center h-24 bg-gray-100 p-4 rounded-lg shadow-md group hover:bg-rose-800 active:bg-pink-900 transition ease-in-out duration-150">
                                 <MdOutlineQrCode2 className="w-16 h-16 text-4xl text-gray-700 group-hover:text-white"/>
                                 <div className="ml-4 group-hover:text-white">
                                     <h2 className="text-lg font-semibold">{__("Reader")}</h2>
                                     <p className="text-sm">{__("Reader interface")}.</p>
                                 </div>
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>
