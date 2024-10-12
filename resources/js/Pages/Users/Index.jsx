@@ -65,12 +65,14 @@ export default function Users({auth, users, role, queryParams = null, success, f
                     </div>
                     <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={__("Actions")}>
                         {role === 'admin' && <>
-                                <div id="create-new-entry" title="Create a new entry in the current page."
-                                     className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                    <a href={route("users.create")}>{__("Create")}</a></div>
-                                <div id="export-entries" title="Export all data from the database or export a specific set with the defined search paramters in the table."
-                                     className="px-2 py-1 bg-white border-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                    <a href={route("adminExports.users", queryParams)}>{__("Export")}</a></div></>
+                            <div id="create-new-entry" title="Create a new entry in the current page."
+                                 className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                <Link href={route("users.create")}>
+                                    {__("Create")}
+                                </Link></div>
+                            <div id="export-entries" title="Export all data from the database or export a specific set with the defined search paramters in the table."
+                                 className="px-2 py-1 bg-white border-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                <a href={route("adminExports.users", queryParams)}>{__("Export")}</a></div></>
                         }
                     </GroupButtonDropdown>
                 </div>
@@ -85,72 +87,72 @@ export default function Users({auth, users, role, queryParams = null, success, f
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <div className="overflow-auto">
-                            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                <thead
-                                    className="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
-                                <tr className="text-nowrap">
-                                    <th className="px-3 py-2">{__("First name")}</th>
-                                    <th className="px-3 py-2">{__("Last name")}</th>
-                                    <TableHeader
-                                        name="email"
-                                        sort_field={queryParams.sort_field}
-                                        sort_direction={queryParams.sort_direction}
-                                        sortChanged={sortChanged}
-                                        children={__("Email")}
-                                    />
-                                    <th className="px-3 py-2">{__("Created by")}</th>
-                                    <th className="px-3 py-2">{__("Actions")}</th>
-                                </tr>
-                                </thead>
-                                <thead
-                                    className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
-                                <tr className="text-nowrap">
-                                    <th className="px-3 py-2"></th>
-                                    <th className="px-3 py-2"></th>
-                                    <th className="px-3 py-2">
-                                        <TextInput
-                                            className="w-full 3xl:text-base text-sm"
-                                            defaultValue={queryParams.email}
-                                            placeholder={__("Email")}
-                                            onBlur={e => searchFieldChanged('email', e.target.value)}
-                                            onKeyPress={e => onKeyPress('email', e)}/>
-                                    </th>
-                                    <th className="px-3 py-2"></th>
-                                    <th className="px-3 py-2"></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {users.data.map(user => (
-                                    <tr key={user.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 sm:text-base">
-                                        <th className="px-3 py-2">{user.first_name}</th>
-                                        <th className="px-3 py-2">{user.last_name}</th>
-                                        <td className="px-3 py-2">
-                                            <Link href={route("users.show", user.id)}
-                                                  className="font-medium text-gray-700 dark:text-white hover:underline mx-1">
-                                                {user.email}
-                                            </Link>
-                                        </td>
-                                        <th className="px-3 py-2">{user.created_by}</th>
-                                        <td className="flex justify-start mt-1 px-2 py-1">
-                                            <Link href={route("users.edit", user.id)}
-                                                  className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
-                                                <TbEdit
-                                                    className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
-                                            </Link>
-                                            {
-                                                user.is_disabled ?
-                                                <a type="button" onClick={() => handleEnable(user.id)}>
-                                                    <RiLockUnlockLine className="w-8 h-8 text-blue-500 hover:text-blue-500 hover:animate-pulse hover:bg-gray-50"/>
-                                                </a> :
-                                                <a type="button" onClick={() => handleDisable(user.id)}>
-                                                    <RiLockLine className="w-8 h-8 text-red-500 hover:text-red-500 hover:animate-pulse hover:bg-gray-50"/>
-                                                </a>
-                                            }
-                                        </td>
+                                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                    <thead
+                                        className="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
+                                    <tr className="text-nowrap">
+                                        <th className="px-3 py-2">{__("First name")}</th>
+                                        <th className="px-3 py-2">{__("Last name")}</th>
+                                        <TableHeader
+                                            name="email"
+                                            sort_field={queryParams.sort_field}
+                                            sort_direction={queryParams.sort_direction}
+                                            sortChanged={sortChanged}
+                                            children={__("Email")}
+                                        />
+                                        <th className="px-3 py-2">{__("Created by")}</th>
+                                        <th className="px-3 py-2">{__("Actions")}</th>
                                     </tr>
+                                    </thead>
+                                    <thead
+                                        className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
+                                    <tr className="text-nowrap">
+                                        <th className="px-3 py-2"></th>
+                                        <th className="px-3 py-2"></th>
+                                        <th className="px-3 py-2">
+                                            <TextInput
+                                                className="w-full 3xl:text-base text-sm"
+                                                defaultValue={queryParams.email}
+                                                placeholder={__("Email")}
+                                                onBlur={e => searchFieldChanged('email', e.target.value)}
+                                                onKeyPress={e => onKeyPress('email', e)}/>
+                                        </th>
+                                        <th className="px-3 py-2"></th>
+                                        <th className="px-3 py-2"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {users.data.map(user => (
+                                        <tr key={user.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 sm:text-base">
+                                            <th className="px-3 py-2">{user.first_name}</th>
+                                            <th className="px-3 py-2">{user.last_name}</th>
+                                            <td className="px-3 py-2">
+                                                <Link href={route("users.show", user.id)}
+                                                      className="font-medium text-gray-700 dark:text-white hover:underline mx-1">
+                                                    {user.email}
+                                                </Link>
+                                            </td>
+                                            <th className="px-3 py-2">{user.created_by}</th>
+                                            <td className="flex justify-start mt-1 px-2 py-1">
+                                                <Link href={route("users.edit", user.id)}
+                                                      className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
+                                                    <TbEdit
+                                                        className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
+                                                </Link>
+                                                {
+                                                    user.is_disabled ?
+                                                        <a type="button" onClick={() => handleEnable(user.id)}>
+                                                            <RiLockUnlockLine className="w-8 h-8 text-blue-500 hover:text-blue-500 hover:animate-pulse hover:bg-gray-50"/>
+                                                        </a> :
+                                                        <a type="button" onClick={() => handleDisable(user.id)}>
+                                                            <RiLockLine className="w-8 h-8 text-red-500 hover:text-red-500 hover:animate-pulse hover:bg-gray-50"/>
+                                                        </a>
+                                                }
+                                            </td>
+                                        </tr>
                                     ))}
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
                             </div>
                             <Pagination links={users.meta.links}></Pagination>
                         </div>

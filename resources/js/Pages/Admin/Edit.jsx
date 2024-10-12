@@ -13,19 +13,19 @@ export default function Edit({ auth, role, systemConfiguration, flash }) {
             <Head title="Profile"/>
 
             <div className="py-12">
-            {flash.failure && <FailureMessage message={flash.failure}/>}
+                {flash.failure && <FailureMessage message={flash.failure}/>}
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-                    <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                    {systemConfiguration.email && <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                         <UpdateConfiguration configurations={systemConfiguration.email} sectionName="Email configurations"/>
-                    </div>
+                    </div>}
 
-                    <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                    {systemConfiguration.users && <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                         <UpdateConfiguration configurations={systemConfiguration.users} sectionName="User configurations"/>
-                    </div>
+                    </div>}
 
-                    <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                    {systemConfiguration.general && <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                         <UpdateConfiguration configurations={systemConfiguration.general} sectionName="General configurations"/>
-                    </div>
+                    </div>}
                 </div>
             </div>
         </AuthenticatedLayout>
