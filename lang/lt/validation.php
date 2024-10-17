@@ -208,6 +208,9 @@ return [
                 'numeric' => ':Attribute turi būti mažesnis negu esamas kiekis inventoriuje (:value).',
             ],
             'non_negative' => ':Attribute negali viršyti esamo kiekio, jog jis taptų neigiamas.'
+        ],
+        'selectedRole' => [
+            'can' => 'Tik super administratoriai gali suteikti šią rolę.'
         ]
     ],
 

@@ -18,23 +18,23 @@ return [
         'deletedUser' => 'Ištrintas naudotojas'
     ],
     'laboratory' => [
-        'created' => 'Nauja lokacija :name sukurta',
-        'updated' => 'Lokacija :name atnaujinta',
-        'deleted' => 'Lokacija :name šiuo metu negali būti ištrinta'
+        'created' => 'Nauja laboratorija :name sukurta.',
+        'updated' => 'Laboratorija :name atnaujinta.',
+        'deleted' => 'Laboratorija :name sėkmingai ištrinta.'
     ],
     'inventoryItem' => [
-        'created' => 'Naujas įrašas :local_name sukurtas',
-        'logged' => 'Atskiras įrašas :local_name sekti inventorių sukurtas',
-        'updated' => 'Įrašas :local_name atnaujintas',
-        'deleted' => 'Įrašas :local_name ištrintas',
-        'volumeMismatch' => 'Pateiktas kiekis gražinti viršija konstatuotą faktą, kiek yra inventoriaus šioje lokacijoje'
+        'created' => 'Naujas įrašas :local_name sukurtas.',
+        'logged' => 'Atskiras įrašas :local_name sekti inventorių sukurtas.',
+        'updated' => 'Įrašas :local_name atnaujintas.',
+        'deleted' => 'Įrašas :local_name ištrintas.',
+        'volumeMismatch' => 'Pateiktas kiekis grąžinti viršija konstatuotą faktą, kiek yra inventoriaus šioje lokacijoje.'
     ],
     'itemType' => [
-        'created' => 'Naujas tipas :name sukurtas',
-        'updated' => 'Tipas :name atnaujintas',
-        'deleted' => 'Tipas :name šiuo metu negali būti ištrintas'
+        'created' => 'Naujas tipas :name sukurtas.',
+        'updated' => 'Tipas :name atnaujintas.',
+        'deleted' => 'Tipas :name sėkmingai ištrintas.'
     ],
-    'noItemFound' => 'Kodas atpažintas (:name), bet įrašas nerastas',
+    'noItemFound' => 'Kodas atpažintas (:name), bet įrašas nerastas.',
     'true' => 'Taip',
     'false' => 'Ne',
     'denied' => 'Veiksmas neleistinas.',

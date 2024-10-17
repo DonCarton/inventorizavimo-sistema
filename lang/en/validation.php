@@ -208,6 +208,9 @@ return [
                 'numeric' => 'The :attribute must be less than the available amount in the inventory (:value).',
             ],
             'non_negative' => ':Attribute cannot exceed the existing amount, otherwise it would be negative.'
+        ],
+        'selectedRole' => [
+            'can' => 'Only super admins are permitted to grant this role.'
         ]
 
     ],
