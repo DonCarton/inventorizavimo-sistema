@@ -32,7 +32,8 @@ return [
     'itemType' => [
         'created' => 'Naujas tipas :name sukurtas.',
         'updated' => 'Tipas :name atnaujintas.',
-        'deleted' => 'Tipas :name sėkmingai ištrintas.'
+        'deleted' => 'Tipas :name sėkmingai ištrintas.',
+        'still_related' => 'Tipas yra priskirtas inventoriaus įrašams (:count). Ištrinti negalima.'
     ],
     'noItemFound' => 'Kodas atpažintas (:name), bet įrašas nerastas.',
     'true' => 'Taip',

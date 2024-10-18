@@ -32,7 +32,8 @@ return [
     'itemType' => [
         'created' => 'New type :name has been created.',
         'updated' => 'Type :name has been updated.',
-        'deleted' => 'Type :name has been deleted successfully.'
+        'deleted' => 'Type :name has been deleted successfully.',
+        'still_related' => 'The type still has inventory items which use it as a definition, unable to delete.'
     ],
     'noItemFound' => 'Code recognized (:name), but entry not found.',
     'true' => 'True',

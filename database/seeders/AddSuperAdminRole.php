@@ -13,6 +13,7 @@ class AddSuperAdminRole extends Seeder
     public function run(): void
     {
         $superAdmin = [
+            'id' => 3,
             'name' => 'super-admin',
             'guard_name' => 'web',
         ];

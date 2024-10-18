@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @method static create(\Illuminate\Http\Request $request)
@@ -24,6 +25,16 @@ class ItemType extends Model
         'created_by',
         'updated_by'
     ];
+
+    public function inventoryItem(): HasMany
+    {
+        return $this->hasMany(InventoryItem::class,'inventory_type');
+    }
+
+    public function inventoryItemCount(): int
+    {
+        return $this->inventoryItem()->count();
+    }
 
     public function createdBy(): BelongsTo
     {

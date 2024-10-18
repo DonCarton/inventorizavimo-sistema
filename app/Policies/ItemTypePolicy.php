@@ -43,9 +43,9 @@ class ItemTypePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, ItemType $itemType): bool
+    public function delete(User $user, ItemType $itemType): Response
     {
-        return $user->hasRole('super-admin');
+        return $user->hasRole('super-admin') ? Response::allow() : Response::deny(__('validation.unauthorized_admin'));
     }
 
     /**

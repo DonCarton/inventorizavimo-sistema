@@ -28,9 +28,9 @@ class LaboratoryPolicy
         //
     }
 
-    public function delete(User $user, Laboratory $laboratory): bool
+    public function delete(User $user, Laboratory $laboratory): Response
     {
-        return $user->hasRole('super-admin');
+        return $user->hasRole('super-admin') ? Response::allow() : Response::deny(__('validation.unauthorized_admin'));
     }
 
     public function restore(User $user, Laboratory $laboratory): bool

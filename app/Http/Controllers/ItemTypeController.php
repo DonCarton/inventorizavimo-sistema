@@ -97,6 +97,10 @@ class ItemTypeController extends Controller
     {
         $itemType = ItemType::findOrFail($id);
         Gate::authorize('delete',$itemType);
-        return to_route('itemTypes.index')->with('warning',(__('actions.itemType.deleted', ['name' => $itemType['name']]).'.'));
+        if ($itemType->inventoryItemCount() > 0) {
+            return to_route('itemTypes.index')->with('warning',__('actions.itemType.still_related', ['count' => $itemType->inventoryItemCount()]));
+        }
+        $itemType->delete();
+        return to_route('itemTypes.index')->with('success',(__('actions.itemType.deleted', ['name' => $itemType['name']]).'.'));
     }
 }
