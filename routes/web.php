@@ -16,7 +16,7 @@ use Inertia\Inertia;
 
 Route::middleware(['auth', 'verified'])->group(function (){
     Route::get('/', function (){return Inertia::render('Dashboard');})->name('dashboard');
-    Route::group(['middleware' => ['role:admin']], function () {
+    Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
         Route::resource('inventoryItems', InventoryItemController::class)->middleware('includeUserId');
         Route::get('/inventoryItems/{inventoryItem}/editRaw', [InventoryItemController::class, 'editRaw'])->name('inventoryItems.editRaw')->middleware('includeUserId');

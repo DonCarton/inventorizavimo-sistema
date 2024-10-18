@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Events\UserCreated;
 use App\Exports\UserExports;
 use App\Http\Requests\ExportRequests\UserExportRequest;
+use App\Http\Requests\StoreRequests\StoreUserRequest;
+use App\Http\Requests\UpdateRequests\UpdateUserRequest;
 use App\Http\Resources\SelectObjectResources\LaboratoriesForSelect;
 use App\Http\Resources\SelectObjectResources\RolesForSelect;
 use App\Http\Resources\UserResource;
@@ -13,6 +15,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
@@ -70,18 +73,12 @@ class UserController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     * @param StoreUserRequest $request
      * @return RedirectResponse
      */
-    public function store(Request $request): RedirectResponse
+//    public function store(Request $request): RedirectResponse
+    public function store(StoreUserRequest $request): RedirectResponse
     {
-        $request->validate([
-            'first_name' => ['required','string','max:50'],
-            'last_name' => ['required','string','max:50'],
-            'email' => ['required','string','lowercase','email','max:60',Rule::unique('users')->whereNull('deleted_at')],
-            'laboratory' => 'required',
-            'selectedRole' => 'required|exists:roles,id',
-        ]);
         $password = Str::random(10);
         $request['is_disabled'] = false;
         $request['locale'] = env('APP_LOCALE');
@@ -131,23 +128,16 @@ class UserController extends Controller
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
+     * @param UpdateUserRequest $request
      * @param User $user
      * @return RedirectResponse
      */
-    public function update(Request $request, User $user): RedirectResponse
+//    public function update(Request $request, User $user): RedirectResponse
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $data = $request->validate([
-            'first_name' => ['required','string','max:50'],
-            'last_name' => ['required','string','max:50'],
-            'email' => ['required','string','lowercase','email','max:60',Rule::unique('users')->ignore($user->id)->whereNull('deleted_at')],
-            'laboratory' => ['required','integer','exists:laboratories,id'],
-            'role' => 'required|exists:roles,id',
-            'updated_by' => ['required']
-        ]);
         $user->roles()->detach();
-        $user->assignRole(Role::findById($data['role'])->name);
-        $user->update($data);
+        $user->assignRole(Role::findById($request['role'])->name);
+        $user->update($request->validated());
         return Redirect::route('users.index')->with('success', __('actions.user.updated', ['email' => $user->email]));
     }
 

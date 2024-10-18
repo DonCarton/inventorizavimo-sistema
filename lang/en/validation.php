@@ -12,7 +12,7 @@ return [
     | as the size rules. Feel free to tweak each of these messages here.
     |
     */
-
+    'unauthorized_admin' => 'Only super admins are permitted to execute this operation.',
     'accepted' => 'The :attribute field must be accepted.',
     'accepted_if' => 'The :attribute field must be accepted when :other is :value.',
     'active_url' => 'The :attribute field must be a valid URL.',
@@ -208,6 +208,9 @@ return [
                 'numeric' => 'The :attribute must be less than the available amount in the inventory (:value).',
             ],
             'non_negative' => ':Attribute cannot exceed the existing amount, otherwise it would be negative.'
+        ],
+        'selectedRole' => [
+            'can' => 'Only super admins are permitted to grant this role.'
         ]
 
     ],

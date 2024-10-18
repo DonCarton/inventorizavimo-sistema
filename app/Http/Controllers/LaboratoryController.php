@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -106,7 +107,8 @@ class LaboratoryController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         $laboratory = Laboratory::findOrFail($id);
-        return to_route('laboratories.index')->with('warning',(__('actions.laboratory.deleted', ['name' => $laboratory['name']]).'.'));
+        Gate::authorize('delete',$laboratory);
+        return to_route('laboratories.index')->with('success',(__('actions.laboratory.deleted', ['name' => $laboratory['name']]).'.'));
     }
 
     /**

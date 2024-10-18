@@ -9,6 +9,7 @@ use App\Models\ItemType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -95,6 +96,11 @@ class ItemTypeController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         $itemType = ItemType::findOrFail($id);
-        return to_route('itemTypes.index')->with('warning',(__('actions.itemType.deleted', ['name' => $itemType['name']]).'.'));
+        Gate::authorize('delete',$itemType);
+        if ($itemType->inventoryItemCount() > 0) {
+            return to_route('itemTypes.index')->with('warning',__('actions.itemType.still_related', ['count' => $itemType->inventoryItemCount()]));
+        }
+        $itemType->delete();
+        return to_route('itemTypes.index')->with('success',(__('actions.itemType.deleted', ['name' => $itemType['name']]).'.'));
     }
 }
