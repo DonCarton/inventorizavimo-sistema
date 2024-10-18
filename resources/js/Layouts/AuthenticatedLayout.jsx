@@ -27,7 +27,7 @@ export default function Authenticated({ user, header, children, role }) {
                                 <NavLink className="2xl:text-lg xl:text-base text-white" href={route('dashboard')} active={route().current('dashboard')}>
                                     {__("Dashboard")}
                                 </NavLink>
-                                {role === "admin" &&
+                                {role.includes('admin') &&
                                     <NavLink className="2xl:text-lg xl:text-base text-white" href={route('users.index')} active={route().current('users*')}>
                                     {__("Users")}</NavLink>
                                 }
@@ -53,12 +53,12 @@ export default function Authenticated({ user, header, children, role }) {
                                             </div>
                                         </div>}
                                 </button>
-                                {role === "admin" &&
+                                {role.includes('admin') &&
                                     <NavLink className="2xl:text-lg xl:text-base text-white"
                                              href={route('itemTypes.index')} active={route().current('itemTypes*')}>
                                         {__("Types")}
                                     </NavLink>}
-                                {role === "admin" &&
+                                {role.includes('admin') &&
                                     <NavLink className="2xl:text-lg xl:text-base text-white"
                                              href={route('laboratories.index')}
                                              active={route().current('laboratories*')}>

@@ -12,7 +12,7 @@ return [
     | as the size rules. Feel free to tweak each of these messages here.
     |
     */
-
+    'unauthorized_admin' => 'Tik super administratoriai gali atlikti šį veiksmą.',
     'accepted' => 'The :attribute field must be accepted.',
     'accepted_if' => 'The :attribute field must be accepted when :other is :value.',
     'active_url' => 'The :attribute field must be a valid URL.',
@@ -208,6 +208,9 @@ return [
                 'numeric' => ':Attribute turi būti mažesnis negu esamas kiekis inventoriuje (:value).',
             ],
             'non_negative' => ':Attribute negali viršyti esamo kiekio, jog jis taptų neigiamas.'
+        ],
+        'selectedRole' => [
+            'can' => 'Tik super administratoriai gali suteikti šią rolę.'
         ]
     ],
 
