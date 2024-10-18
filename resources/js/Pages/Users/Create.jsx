@@ -3,7 +3,6 @@ import {Head, Link, useForm} from "@inertiajs/react";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
-import {__} from "@/Libs/Lang.jsx";
 import SteamDropdown from "@/Components/SteamDropdown.jsx"
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import StringHelper from "@/Libs/StringHelper";
