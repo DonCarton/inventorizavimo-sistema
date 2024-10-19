@@ -13,13 +13,11 @@ use App\Http\Resources\UserResource;
 use App\Models\Laboratory;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
@@ -115,6 +113,7 @@ class UserController extends Controller
      */
     public function edit(User $user): Response
     {
+        Gate::authorize('edit',$user);
         $roles = Role::query()->get();
         $roleName = $user->roles()->select('id')->get()->toArray();
         $laboratories = Laboratory::all()->select('id', 'name')->toArray();
