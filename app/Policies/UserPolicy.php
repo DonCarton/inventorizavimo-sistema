@@ -10,9 +10,12 @@ class UserPolicy
 {
     public function edit(User $authUser, User $user): Response
     {
-        return $authUser->hasRole(RoleEnum::SUPER_ADMIN) || $authUser->hasRole(RoleEnum::ADMIN) ?
-            Response::allow() :
-            Response::deny(__('validation.unauthorized'));
+        if ($authUser->hasRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN])){
+            return Response::allow();
+        } else if ($authUser->id === $user->id){
+            return Response::allow();
+        }
+        return Response::deny(__('validation.unauthorized'));
     }
     public function update(User $authUser, User $targetUser): Response
     {
