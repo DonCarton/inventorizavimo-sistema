@@ -136,6 +136,9 @@ class UserController extends Controller
 //    public function update(Request $request, User $user): RedirectResponse
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
+        if ($user->hasRole('super-admin')){
+            Gate::authorize('update', $user);
+        }
         $user->roles()->detach();
         $user->assignRole(Role::findById($request['role'])->name);
         $user->update($request->validated());
@@ -151,6 +154,9 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $userCount = User::query()->count();
+        if ($user->hasRole('super-admin')){
+            Gate::authorize('delete',$user);
+        }
         if ($userCount <= 1) {
             return to_route('users.edit',$user)->with('failure',__('actions.user.noUsersLeft'));
         }
