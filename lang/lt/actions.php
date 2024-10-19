@@ -6,7 +6,7 @@ return [
     'updated' => 'Atnaujintas',
     'deleted' => 'Ištrintas',
     'saved' => 'Išsaugotas',
-    'uploaded' => 'Failas :name buvo sėkmingai importuotas',
+    'uploaded' => 'Failas :name buvo sėkmingai importuotas!',
     'user' => [
         'created' => 'Naujas naudotojas :email sukurtas.',
         'updated' => 'Naudotojas :email atnaujintas.',
@@ -39,5 +39,6 @@ return [
     'true' => 'Taip',
     'false' => 'Ne',
     'denied' => 'Veiksmas neleistinas.',
+    'invalidDelete' => 'Ištrinti šio įrašo negalima.'
 
 ];

@@ -42,7 +42,8 @@ class LaboratoryController extends Controller
             'laboratories' => LaboratoryResource::collection($laboratories),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
-            'warning' => session('warning')
+            'warning' => session('warning'),
+            'failure' => session('failure')
         ]);
     }
 
@@ -74,7 +75,7 @@ class LaboratoryController extends Controller
     {
         $data = $request->validated();
         Laboratory::create($data);
-        return redirect()->route('laboratories.index')->with('success', __('actions.laboratory.created', ['name' => $request['name']]) . '.');
+        return redirect()->route('laboratories.index')->with('success', __('actions.laboratory.created', ['name' => $request['name']]));
     }
 
     /**
@@ -87,7 +88,7 @@ class LaboratoryController extends Controller
     {
         $data = $request->validated();
         $laboratory->update($data);
-        return Redirect::route('laboratories.index')->with('success',(__('actions.laboratory.updated', ['name' => $request['name']]).'.'));
+        return Redirect::route('laboratories.index')->with('success',(__('actions.laboratory.updated', ['name' => $request['name']])));
     }
 
     /**
@@ -104,11 +105,18 @@ class LaboratoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(Laboratory $laboratory): RedirectResponse
     {
-        $laboratory = Laboratory::findOrFail($id);
         Gate::authorize('delete',$laboratory);
-        return to_route('laboratories.index')->with('success',(__('actions.laboratory.deleted', ['name' => $laboratory['name']]).'.'));
+        if ($laboratory->id == 1) { return to_route('laboratories.index')->with('failure', __('actions.invalidDelete')); }
+        if ($laboratory->inventoryItemsCount() >= 1 || $laboratory->userCount() >= 1) {
+            return to_route('laboratories.index')->with('failure', __('actions.invalidDelete')); }
+        $totalLaboratories = Laboratory::count();
+        if ($totalLaboratories <= 1) {
+            return to_route('laboratories.index')->with('failure', __('actions.invalidDelete'));
+        }
+        $laboratory->delete();
+        return to_route('laboratories.index')->with('success',(__('actions.laboratory.deleted', ['name' => $laboratory['name']])));
     }
 
     /**
@@ -131,6 +139,6 @@ class LaboratoryController extends Controller
         ]);
         $file = $request->file('file');
         Excel::import(new LaboratoryImport(), $file);
-        return to_route('laboratories.index')->with('success',__('actions.uploaded') . '!');
+        return to_route('laboratories.index')->with('success',__('actions.uploaded'));
     }
 }

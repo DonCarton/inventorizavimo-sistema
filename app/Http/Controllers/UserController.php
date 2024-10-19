@@ -76,7 +76,6 @@ class UserController extends Controller
      * @param StoreUserRequest $request
      * @return RedirectResponse
      */
-//    public function store(Request $request): RedirectResponse
     public function store(StoreUserRequest $request): RedirectResponse
     {
         $password = Str::random(10);
@@ -85,6 +84,8 @@ class UserController extends Controller
         $request['password'] = Hash::make($password);
         $request['name'] = $request['first_name'] . ' ' . $request['last_name'];
         $newUser = User::create($request->all())->assignRole(Role::findById($request['selectedRole'])->name);
+        $newUser->email_verified_at = now();
+        $newUser->save();
         event(new UserCreated($newUser, $password));
         return redirect()->route('users.index')->with('success', __('actions.user.created', ['email' => $newUser->email]));
     }

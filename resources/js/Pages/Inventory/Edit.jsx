@@ -34,7 +34,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
         critical_amount: inventoryItem.data.criticalAmount || 0,
         to_order_amount: inventoryItem.data.toOrderAmount || '',
         average_consumption: inventoryItem.data.averageConsumption || '',
-        multiple_locations: inventoryItem.data.multipleLocations,
+        multiple_locations: inventoryItem.data.multipleLocations || false,
         laboratory: inventoryItem.data.laboratory || '',
         cupboard: inventoryItem.data.cupboard || '',
         shelf: inventoryItem.data.shelf || '',

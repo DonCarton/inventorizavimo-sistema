@@ -6,7 +6,7 @@ return [
     'updated' => 'Updated',
     'deleted' => 'Deleted',
     'saved' => 'Saved',
-    'uploaded' => 'File :name has been successfully uploaded',
+    'uploaded' => 'File :name has been successfully uploaded!',
     'user' => [
         'created' => 'New user :email has been created.',
         'updated' => 'User :email has been updated.',
@@ -38,6 +38,7 @@ return [
     'noItemFound' => 'Code recognized (:name), but entry not found.',
     'true' => 'True',
     'false' => 'False',
-    'denied' => 'Action is denied',
+    'denied' => 'Action is denied.',
+    'invalidDelete' => 'You cannot delete this item.'
 
 ];

@@ -93,13 +93,14 @@ class ItemTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(ItemType $itemType): RedirectResponse
     {
-        $itemType = ItemType::findOrFail($id);
         Gate::authorize('delete',$itemType);
         if ($itemType->inventoryItemCount() > 0) {
             return to_route('itemTypes.index')->with('warning',__('actions.itemType.still_related', ['count' => $itemType->inventoryItemCount()]));
         }
+        $itemTypes = ItemType::count();
+        if ($itemTypes <= 1) { return to_route('itemTypes.index')->with('failure',__('actions.invalidDelete')); }
         $itemType->delete();
         return to_route('itemTypes.index')->with('success',(__('actions.itemType.deleted', ['name' => $itemType['name']]).'.'));
     }
