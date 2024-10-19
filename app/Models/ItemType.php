@@ -31,6 +31,10 @@ class ItemType extends Model
         return $this->hasMany(InventoryItem::class,'inventory_type');
     }
 
+    /**
+     * Get the total count of inventory items which are attached to the type
+     * @return int
+     */
     public function inventoryItemCount(): int
     {
         return $this->inventoryItem()->count();

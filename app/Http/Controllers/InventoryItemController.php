@@ -196,7 +196,7 @@ class InventoryItemController extends Controller
     public function store(StoreInventoryItemRequest $request): RedirectResponse
     {
         InventoryItem::create($request->all());
-        return to_route('inventoryItems.index')->with('success', __('actions.inventoryItem.created', ['local_name' => $request['local_name']]) . '.');
+        return to_route('inventoryItems.index')->with('success', __('actions.inventoryItem.created', ['local_name' => $request['local_name']]));
     }
 
     /**
@@ -241,7 +241,7 @@ class InventoryItemController extends Controller
         $redirectDestination = $request->query('referrer', 'index');
 
         if (!empty($changedData)){
-            return Redirect::route("inventoryItems.${redirectDestination}", $queryParams)->with('success', __('actions.inventoryItem.updated', ['local_name' => $data['local_name']]) . '.');
+            return Redirect::route("inventoryItems.${redirectDestination}", $queryParams)->with('success', __('actions.inventoryItem.updated', ['local_name' => $data['local_name']]));
         }
         return Redirect::route("inventoryItems.${redirectDestination}", $queryParams);
     }
@@ -274,13 +274,13 @@ class InventoryItemController extends Controller
             return to_route('reader')
                 ->with('success', __('actions.inventoryItem.updated', [
                             'local_name' => $inventoryItem->local_name]
-                    ) . '.');
+                    ));
         }
         else {
             return to_route("inventoryItems.${redirectDestination}", $queryParams)
                 ->with('success', __('actions.inventoryItem.updated', [
                             'local_name' => $inventoryItem->local_name]
-                    ) . '.');
+                    ));
         }
     }
 
@@ -377,11 +377,11 @@ class InventoryItemController extends Controller
         }
         if ($request->urlToRedirect) {
             return redirect()->route('reader')
-                ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
+                ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]));
         } else {
             $redirectTo = $request->query('referrer', 'index');
             return redirect()->route("inventoryItems.${redirectTo}",$queryParams)
-                ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
+                ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]));
         }
     }
 
@@ -418,7 +418,7 @@ class InventoryItemController extends Controller
         }
         $inventoryItem->delete();
         return redirect()->route('inventoryItems.index')
-            ->with('success', __('actions.inventoryItem.deleted', ['local_name' => $inventoryItem['local_name']]) . '.');
+            ->with('success', __('actions.inventoryItem.deleted', ['local_name' => $inventoryItem['local_name']]));
     }
 
     /**
@@ -445,6 +445,6 @@ class InventoryItemController extends Controller
         $file = $request->file('file');
         $fileName = $request->file('file')->getClientOriginalName();
         Excel::import(new InventoryImport(), $file);
-        return to_route("inventoryItems.${referrer}")->with('success', __('actions.uploaded', ['name' => $fileName]) . '.');
+        return to_route("inventoryItems.${referrer}")->with('success', __('actions.uploaded', ['name' => $fileName]));
     }
 }

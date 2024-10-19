@@ -12,8 +12,9 @@ import React, {useState} from "react";
 import WarningMessage from "@/Components/WarningMessage.jsx";
 import FileUploadModal from "@/Components/FileUploadModal.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
+import FailureMessage from "@/Components/FailureMessage.jsx";
 
-export default function Index({auth, laboratories, role, queryParams = null, success, warning}) {
+export default function Index({auth, laboratories, role, queryParams = null, success, warning, failure}) {
     queryParams = queryParams || {};
     const handleConfirmMessage = __("Are you sure you want to delete this item")+'?';
     const [modalOpen, setModalOpen] = useState(false);
@@ -104,6 +105,7 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                 <div className="3xl:max-w-screen-3xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {success && <SuccessMessage message={success}/>}
                     {warning && <WarningMessage message={warning}/> }
+                    {failure && <FailureMessage message={failure}/> }
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <div className="overflow-auto">
