@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -34,6 +35,27 @@ class Laboratory extends Model
             ->logOnly(['name'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
+    }
+
+    public function inventoryItems(): HasMany
+    {
+        return $this->hasMany(InventoryItem::class,'laboratory');
+    }
+
+    /**
+     * @return int
+     */
+    public function inventoryItemsCount():int
+    {
+        return $this->inventoryItems()->count();
+    }
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class,'laboratory');
+    }
+    public function userCount():int
+    {
+        return $this->users()->count();
     }
     public  function createdBy(): BelongsTo
     {

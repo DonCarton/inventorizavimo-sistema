@@ -59,7 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::patch('/systemConfigurations', [SystemConfigurationController::class, 'update'])->middleware('includeUserId')->name('systemConfigurations.update');
     });
 
-    Route::group(['middleware' => ['role:admin|user']], function (){
+    Route::group(['middleware' => ['role:super-admin|admin|user']], function (){
 
         Route::get('/download-barcode/{barcodeValue}', [BarcodesController::class, 'downloadBarcode'])->name('getBarcodePng');
         Route::resource('inventoryItems', InventoryItemController::class)->only('index','show','edit');

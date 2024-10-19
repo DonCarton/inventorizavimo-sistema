@@ -74,7 +74,7 @@ export default function Index({auth, inventoryItems, itemTypes, role, queryParam
                             classnameForIcon="w-5 h-5 ml-1 mt-1"/>
                     </div>
                     <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={StringHelper.__("Actions")}>
-                        {role === 'admin' ? <>
+                        {role.includes('admin') ? <>
                                 <div id="create-new-entry" title="Create a new entry in the current page."
                                      className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
                                     <Link href={route("inventoryItems.create")}>
