@@ -87,6 +87,12 @@ class User extends Authenticatable
             ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
     }
 
+    public function currentlyAssignedRole()
+    {
+        $role = $this->roles()->first();
+        return $role?->name;
+    }
+
     public function belongsToLaboratory(): BelongsTo
     {
         return $this->belongsTo(Laboratory::class, 'laboratory');
