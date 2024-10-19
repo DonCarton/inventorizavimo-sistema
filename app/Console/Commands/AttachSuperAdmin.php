@@ -34,6 +34,9 @@ class AttachSuperAdmin extends Command
 
         if (\Spatie\Permission\Models\Role::where('name', 'super-admin')->exists())
         {
+            if ($user->roles()->count() >= 1){
+                $user->roles()->detach();
+            }
             $user->assignRole('super-admin');
         } else {
             $this->error('The [super-admin] role was not found, please run migrations first.');
