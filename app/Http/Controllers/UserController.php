@@ -133,16 +133,18 @@ class UserController extends Controller
      * @param User $user
      * @return RedirectResponse
      */
-//    public function update(Request $request, User $user): RedirectResponse
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
         if ($user->hasRole('super-admin')){
             Gate::authorize('update', $user);
         }
-        $user->roles()->detach();
-        $user->assignRole(Role::findById($request['role'])->name);
+        $currentUserRole = $user->currentlyAssignedRole();
+        $user->syncRoles(Role::findById($request['role'])->name);
         $user->update($request->validated());
-        return Redirect::route('users.index')->with('success', __('actions.user.updated', ['email' => $user->email]));
+        if ($user->wasChanged() || $currentUserRole != Role::findById($request['role'])->name || $currentUserRole == null) {
+            return Redirect::route('users.index')->with('success', __('actions.user.updated', ['email' => $user->email]));
+        }
+        return Redirect::route('users.index');
     }
 
     /**
