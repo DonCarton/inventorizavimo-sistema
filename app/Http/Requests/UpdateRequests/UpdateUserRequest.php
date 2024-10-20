@@ -10,12 +10,16 @@ use Illuminate\Validation\ValidationException;
 
 class UpdateUserRequest extends FormRequest
 {
+    private bool $invalidRole = false;
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        if ($this->role != RoleEnum::SUPER_ADMIN) {
+        if ($this->user()->id == $this->route('user')->id && !$this->route('user')->hasRole($this->role) ) {
+            $this->invalidRole = true;
+            return false;
+        } else if ($this->role != RoleEnum::SUPER_ADMIN) {
             return true;
         } else {
             return $this->user()->can('overrule-all');
@@ -27,6 +31,11 @@ class UpdateUserRequest extends FormRequest
      */
     protected function failedAuthorization()
     {
+        if ($this->invalidRole) {
+            throw ValidationException::withMessages([
+               'role' => __('validation.custom.selectedRole.unauthorized_role_change')
+            ]);
+        }
         throw ValidationException::withMessages([
             'role' => __('validation.custom.selectedRole.can')
         ]);

@@ -139,9 +139,13 @@ class UserController extends Controller
             Gate::authorize('update', $user);
         }
         $currentUserRole = $user->currentlyAssignedRole();
-        $user->syncRoles(Role::findById($request['role'])->name);
+        if ($user->id != auth()->user()->id)
+        {
+            $user->syncRoles(Role::findById($request['role'])->name);
+        }
+        $roleChanged = $currentUserRole == $user->currentlyAssignedRole();
         $user->update($request->validated());
-        if ($user->wasChanged() || $currentUserRole != Role::findById($request['role'])->name || $currentUserRole == null) {
+        if ($user->wasChanged() || !$roleChanged) {
             return Redirect::route('users.index')->with('success', __('actions.user.updated', ['email' => $user->email]));
         }
         return Redirect::route('users.index');
