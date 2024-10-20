@@ -211,7 +211,8 @@ return [
             'non_negative' => ':Attribute negali viršyti esamo kiekio, jog jis taptų neigiamas.'
         ],
         'selectedRole' => [
-            'can' => 'Tik super administratoriai gali suteikti šią rolę.'
+            'can' => 'Tik super administratoriai gali suteikti šią rolę.',
+            'unauthorized_role_change' => 'Rolės pakeisti negalite.',
         ]
     ],
 
