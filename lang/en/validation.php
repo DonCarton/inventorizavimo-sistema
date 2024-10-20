@@ -210,7 +210,8 @@ return [
             'non_negative' => ':Attribute cannot exceed the existing amount, otherwise it would be negative.'
         ],
         'selectedRole' => [
-            'can' => 'Only super admins are permitted to grant this role.'
+            'can' => 'Only super admins are permitted to grant this role.',
+            'unauthorized_role_change' => 'You cannot change the role.',
         ]
 
     ],
