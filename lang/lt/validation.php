@@ -254,6 +254,7 @@ return [
         'last_name' => 'pavardė',
         'email' => 'el. paštas',
         'laboratory' => 'laboratorija',
+        'role' => 'rolė',
         'selectedRole' => 'rolė',
         'comment' => 'komentaras',
         'change_acc_amount' => 'gali literaliai keisti likutį?',
