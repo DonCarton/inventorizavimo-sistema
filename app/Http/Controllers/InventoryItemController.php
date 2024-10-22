@@ -25,6 +25,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -218,6 +219,10 @@ class InventoryItemController extends Controller
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'queryParams' => $queryParams,
             'referrer' => $request->query('referrer'),
+            'can' => [
+                'alterType' => $request->user()->hasRole('admin'),
+                'delete' => $request->user()->can('delete',$inventoryItem),
+            ]
         ]);
 
     }

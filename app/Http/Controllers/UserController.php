@@ -125,6 +125,9 @@ class UserController extends Controller
             'roles' => RolesForSelect::collection($roles),
             'laboratories' => $laboratories,
             'failure' => session('failure')
+//            'can' => [
+//                'changeRole' => auth()->user()->id === $user->id
+//            ]
         ]);
     }
 

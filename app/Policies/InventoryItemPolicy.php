@@ -3,25 +3,22 @@
 namespace App\Policies;
 
 use App\Enums\RoleEnum;
-use App\Models\ItemType;
+use App\Models\InventoryItem;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class ItemTypePolicy
+class InventoryItemPolicy
 {
-    /**
-     * Determine whether the user can create models.
-     */
     public function create(User $user): Response
     {
         return $user->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]) ?
             Response::allow() :
             Response::deny(__('validation.unauthorized'));
     }
-    public function delete(User $user, ItemType $itemType): Response
+    public function delete(User $user, InventoryItem $inventoryItem): Response
     {
-        return $user->hasRole(RoleEnum::SUPER_ADMIN) ?
+        return $user->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]) ?
             Response::allow() :
-            Response::deny(__('validation.unauthorized_admin'));
+            Response::deny(__('validation.unauthorized'));
     }
 }

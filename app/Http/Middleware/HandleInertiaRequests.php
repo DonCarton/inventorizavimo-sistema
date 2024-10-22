@@ -2,7 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\InventoryItem;
+use App\Models\ItemType;
+use App\Models\Laboratory;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
@@ -34,6 +39,14 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
+                'can' => $request->user() ? [
+                    'create' => [
+                        'user' => Auth::user()->can('create', User::class),
+                        'inventoryItem' => Auth::user()->can('create', InventoryItem::class),
+                        'itemType' => Auth::user()->can('create', ItemType::class),
+                        'laboratory' => Auth::user()->can('create', Laboratory::class),
+                    ]
+                ] : null
             ],
             'previousUrl' => function () {
               return url()->previous();

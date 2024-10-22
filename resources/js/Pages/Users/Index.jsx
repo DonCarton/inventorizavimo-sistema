@@ -64,7 +64,7 @@ export default function Users({auth, users, role, queryParams = null, success, f
                             classnameForIcon="w-5 h-5 ml-1 mt-1"/>
                     </div>
                     <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={__("Actions")}>
-                        {role.includes('admin') && <>
+                        {auth.can.create.user && <>
                             <div id="create-new-entry" title="Create a new entry in the current page."
                                  className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
                                 <Link href={route("users.create")}>
@@ -83,11 +83,12 @@ export default function Users({auth, users, role, queryParams = null, success, f
             <div className="py-12">
                 <div className="3xl:max-w-screen-3xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {success && <SuccessMessage message={success}/>}
-                    {failure && <FailureMessage message={failure}/> }
+                    {failure && <FailureMessage message={failure}/>}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <div className="overflow-auto">
-                                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <table
+                                    className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                     <thead
                                         className="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                     <tr className="text-nowrap">
@@ -123,7 +124,8 @@ export default function Users({auth, users, role, queryParams = null, success, f
                                     </thead>
                                     <tbody>
                                     {users.data.map(user => (
-                                        <tr key={user.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 sm:text-base">
+                                        <tr key={user.id}
+                                            className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 sm:text-base">
                                             <th className="px-3 py-2">{user.first_name}</th>
                                             <th className="px-3 py-2">{user.last_name}</th>
                                             <td className="px-3 py-2">
@@ -142,10 +144,12 @@ export default function Users({auth, users, role, queryParams = null, success, f
                                                 {
                                                     user.is_disabled ?
                                                         <a type="button" onClick={() => handleEnable(user.id)}>
-                                                            <RiLockLine className="w-8 h-8 text-red-500 hover:text-red-500 hover:animate-pulse hover:bg-gray-50"/>
+                                                            <RiLockLine
+                                                                className="w-8 h-8 text-red-500 hover:text-red-500 hover:animate-pulse hover:bg-gray-50"/>
                                                         </a> :
                                                         <a type="button" onClick={() => handleDisable(user.id)}>
-                                                            <RiLockUnlockLine className="w-8 h-8 text-blue-500 hover:text-blue-500 hover:animate-pulse hover:bg-gray-50"/>
+                                                            <RiLockUnlockLine
+                                                                className="w-8 h-8 text-blue-500 hover:text-blue-500 hover:animate-pulse hover:bg-gray-50"/>
                                                         </a>
                                                 }
                                             </td>

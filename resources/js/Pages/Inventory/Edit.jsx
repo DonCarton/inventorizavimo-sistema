@@ -15,7 +15,7 @@ import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
 import AsyncCustom from "@/Components/Forms/AsyncCustom.jsx";
 
-export default function Edit({auth, inventoryItem, logsForItem, role, laboratories, itemTypes, queryParams, referrer}) {
+export default function Edit({auth, inventoryItem, logsForItem, role, laboratories, itemTypes, queryParams, referrer, can}) {
     const handleConfirmMessage = __("Are you sure you want to delete this item") + '?';
     const {data, setData, put, errors, processing} = useForm({
         local_name: inventoryItem.data.localName || '',
@@ -55,7 +55,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
         put(route('inventoryItems.update', {inventoryItem: inventoryItem.data.id, query: queryParams, referrer: referrer}));
     }
     const handleInventoryTypeChange = (e) => {
-        if (role !== 'super-admin') { return; }
+        if (!can.alterType) { return; }
         setData('inventory_type',e.target.value);
     }
     const handleCupboardChange = (e) => {
@@ -94,7 +94,7 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                             <InputLabel
                                                 htmlFor="inventoryItems_inventory_type">{__("Type")}</InputLabel>
                                             <SelectForSingleItem
-                                                className="disabled:text-white disabled:bg-gray-400" disabled={role !== 'super-admin'}
+                                                className="disabled:text-white disabled:bg-gray-400" disabled={!can.alterType}
                                                 id="inventoryItems_inventory_type" name="inventory_type" onChange={handleInventoryTypeChange}//onChange={e => setData('inventory_type', e.target.value)}
                                                 value={data.inventory_type} options={itemTypes.data}
                                                 noValueText={__("Choose a value")}/>
