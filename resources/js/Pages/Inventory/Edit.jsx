@@ -54,6 +54,10 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
         e.preventDefault();
         put(route('inventoryItems.update', {inventoryItem: inventoryItem.data.id, query: queryParams, referrer: referrer}));
     }
+    const handleInventoryTypeChange = (e) => {
+        if (role !== 'super-admin') { return; }
+        setData('inventory_type',e.target.value);
+    }
     const handleCupboardChange = (e) => {
         setData('cupboard',e.value);
     }
@@ -90,8 +94,8 @@ export default function Edit({auth, inventoryItem, logsForItem, role, laboratori
                                             <InputLabel
                                                 htmlFor="inventoryItems_inventory_type">{__("Type")}</InputLabel>
                                             <SelectForSingleItem
-                                                className="disabled:text-white disabled:bg-gray-400" disabled={true}
-                                                id="inventoryItems_inventory_type" name="inventory_type"
+                                                className="disabled:text-white disabled:bg-gray-400" disabled={role !== 'super-admin'}
+                                                id="inventoryItems_inventory_type" name="inventory_type" onChange={handleInventoryTypeChange}//onChange={e => setData('inventory_type', e.target.value)}
                                                 value={data.inventory_type} options={itemTypes.data}
                                                 noValueText={__("Choose a value")}/>
                                             <InputError message={errors.inventory_type} className="mt-2"/>

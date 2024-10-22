@@ -13,13 +13,11 @@ use App\Http\Resources\UserResource;
 use App\Models\Laboratory;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
@@ -63,6 +61,7 @@ class UserController extends Controller
      */
     public function create(): Response
     {
+        Gate::authorize('create', User::class);
         $roles = Role::query()->get();
         $laboratories = Laboratory::query()->get();
         return Inertia::render('Users/Create', [
@@ -78,6 +77,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): RedirectResponse
     {
+        Gate::authorize('store', User::class);
         $password = Str::random(10);
         $request['is_disabled'] = false;
         $request['locale'] = env('APP_LOCALE');
@@ -115,6 +115,7 @@ class UserController extends Controller
      */
     public function edit(User $user): Response
     {
+        Gate::authorize('edit',$user);
         $roles = Role::query()->get();
         $roleName = $user->roles()->select('id')->get()->toArray();
         $laboratories = Laboratory::all()->select('id', 'name')->toArray();
@@ -135,9 +136,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        if ($user->hasRole('super-admin')){
-            Gate::authorize('update', $user);
-        }
+        Gate::authorize('update', $user);
         $currentUserRole = $user->currentlyAssignedRole();
         if ($user->id != auth()->user()->id)
         {
@@ -159,6 +158,7 @@ class UserController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         $user = User::findOrFail($id);
+        Gate::authorize('delete',$user);
         $userCount = User::query()->count();
         if ($user->hasRole('super-admin')){
             Gate::authorize('delete',$user);
@@ -176,6 +176,10 @@ class UserController extends Controller
 
     public function activate(User $user): RedirectResponse
     {
+        if ($user->id === auth()->user()->id) {
+            return to_route('users.index')->with('failure',__('actions.user.selfDeactivate'));
+        }
+        Gate::authorize('activate',$user);
         $user->update([
             'is_disabled' => false
         ]);
@@ -184,6 +188,10 @@ class UserController extends Controller
 
     public function deactivate(User $user): RedirectResponse
     {
+        if ($user->id === auth()->user()->id) {
+            return to_route('users.index')->with('failure',__('actions.user.selfDeactivate'));
+        }
+        Gate::authorize('deactivate',$user);
         $user->update([
             'is_disabled' => true
         ]);
@@ -191,6 +199,7 @@ class UserController extends Controller
     }
 
     /**
+     * @param UserExportRequest $userExportRequest
      * @return BinaryFileResponse
      */
     public function export(UserExportRequest $userExportRequest): BinaryFileResponse

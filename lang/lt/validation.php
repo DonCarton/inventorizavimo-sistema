@@ -13,6 +13,7 @@ return [
     |
     */
     'unauthorized_admin' => 'Tik super administratoriai gali atlikti šį veiksmą.',
+    'unauthorized' => 'Tik administratoriai gali atlikti šį veiksmą.',
     'accepted' => 'The :attribute field must be accepted.',
     'accepted_if' => 'The :attribute field must be accepted when :other is :value.',
     'active_url' => 'The :attribute field must be a valid URL.',
@@ -253,6 +254,7 @@ return [
         'last_name' => 'pavardė',
         'email' => 'el. paštas',
         'laboratory' => 'laboratorija',
+        'role' => 'rolė',
         'selectedRole' => 'rolė',
         'comment' => 'komentaras',
         'change_acc_amount' => 'gali literaliai keisti likutį?',

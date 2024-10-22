@@ -14,6 +14,7 @@ return [
         'deactivated' => 'User :email deactivated.',
         'deleted' => 'User :email has been deleted.',
         'selfDelete' => 'You cannot delete your own account.',
+        'selfDeactivate' => 'You cannot deactivate yourself.',
         'noUsersLeft' => 'The record could not be deleted as there will be no users left.',
         'deletedUser' => 'Deleted user.'
     ],

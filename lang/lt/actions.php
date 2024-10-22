@@ -14,6 +14,7 @@ return [
         'deactivated' => 'Naudotojas :email užblokuotas.',
         'deleted' => 'Naudotojas :email sėkmingai ištrintas.',
         'selfDelete' => 'Ištrinti savo paskyros negalima.',
+        'selfDeactivate' => 'Užblokuoti savęs negalite.',
         'noUsersLeft' => 'Ištrinti paskutinio naudotojo, nes nebeliks aktyvių naudotojų.',
         'deletedUser' => 'Ištrintas naudotojas'
     ],

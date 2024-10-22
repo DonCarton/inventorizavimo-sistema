@@ -142,10 +142,10 @@ export default function Users({auth, users, role, queryParams = null, success, f
                                                 {
                                                     user.is_disabled ?
                                                         <a type="button" onClick={() => handleEnable(user.id)}>
-                                                            <RiLockUnlockLine className="w-8 h-8 text-blue-500 hover:text-blue-500 hover:animate-pulse hover:bg-gray-50"/>
+                                                            <RiLockLine className="w-8 h-8 text-red-500 hover:text-red-500 hover:animate-pulse hover:bg-gray-50"/>
                                                         </a> :
                                                         <a type="button" onClick={() => handleDisable(user.id)}>
-                                                            <RiLockLine className="w-8 h-8 text-red-500 hover:text-red-500 hover:animate-pulse hover:bg-gray-50"/>
+                                                            <RiLockUnlockLine className="w-8 h-8 text-blue-500 hover:text-blue-500 hover:animate-pulse hover:bg-gray-50"/>
                                                         </a>
                                                 }
                                             </td>

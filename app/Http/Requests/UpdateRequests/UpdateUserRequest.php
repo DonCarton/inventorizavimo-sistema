@@ -11,12 +11,16 @@ use Illuminate\Validation\ValidationException;
 class UpdateUserRequest extends FormRequest
 {
     private bool $invalidRole = false;
+
     /**
      * Determine if the user is authorized to make this request.
+     * @throws ValidationException
      */
     public function authorize(): bool
     {
-        if ($this->user()->id == $this->route('user')->id && !$this->route('user')->hasRole($this->role) ) {
+        if ($this->role == null){
+            throw ValidationException::withMessages(['role'=>__('validation.required', ['attribute' => __('validation.attributes.role')])]);
+        } else if ($this->user()->id == $this->route('user')->id && !$this->route('user')->hasRole($this->role) ) {
             $this->invalidRole = true;
             return false;
         } else if ($this->role != RoleEnum::SUPER_ADMIN) {
