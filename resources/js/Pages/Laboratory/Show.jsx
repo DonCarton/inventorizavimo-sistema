@@ -6,9 +6,10 @@ import StringHelper from "@/Libs/StringHelper.jsx";
 import ShowForm from "@/Components/Forms/ShowForm.jsx";
 import HistoryLog from "@/Components/Forms/HistoryLog.jsx";
 
-export default function Show({auth, laboratory, role}) {
+export default function Show({auth, laboratory}) {
     return (<AuthenticatedLayout
         user={auth.user}
+        can={auth.can}
         header={
             <div className="flex justify-between items-center"><h2
                 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Show")} - {laboratory.name}</h2>
@@ -17,7 +18,6 @@ export default function Show({auth, laboratory, role}) {
                                 nameOfCloseButton={StringHelper.__("Close")}/>
                 </div>
             </div>}
-        role={role}
     >
         <Head title={StringHelper.__("Show") + " - " + laboratory.name}/>
 

@@ -5,7 +5,7 @@ import InputLabel from '@/Components/Forms/InputLabel.jsx';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, useForm } from '@inertiajs/react';
-import {__} from "@/Libs/Lang.jsx";
+import StringHelper from "@/Libs/StringHelper.jsx";
 
 export default function ResetPassword({ token, email }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -29,11 +29,11 @@ export default function ResetPassword({ token, email }) {
 
     return (
         <GuestLayout>
-            <Head title={__("Reset password")} />
+            <Head title={StringHelper.__("Reset password")} />
 
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel htmlFor="email" value={__("Email")} />
+                    <InputLabel htmlFor="email" value={StringHelper.__("Email")} />
 
                     <TextInput
                         id="email"
@@ -49,7 +49,7 @@ export default function ResetPassword({ token, email }) {
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="password" value={__("Password")} />
+                    <InputLabel htmlFor="password" value={StringHelper.__("Password")} />
 
                     <TextInput
                         id="password"
@@ -66,7 +66,7 @@ export default function ResetPassword({ token, email }) {
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="password_confirmation" value={__("Confirm password")} />
+                    <InputLabel htmlFor="password_confirmation" value={StringHelper.__("Confirm password")} />
 
                     <TextInput
                         type="password"

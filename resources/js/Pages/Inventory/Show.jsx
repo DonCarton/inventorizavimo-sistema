@@ -14,7 +14,7 @@ import ActionButton from '@/Components/Forms/ActionButton';
 import AsyncCustom from "@/Components/Forms/AsyncCustom.jsx";
 
 
-export default function Show({auth, inventoryItem, role, laboratories, itemTypes, queryParams}) {
+export default function Show({auth, inventoryItem, laboratories, itemTypes, queryParams}) {
     const [openAll, setOpenAll] = useState(true);
     const toggleAllAccordions = () => {
         setOpenAll(!openAll);
@@ -22,6 +22,7 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
     return (
         <AuthenticatedLayout
             user={auth.user}
+            can={auth.can}
             header={
                 <div className="flex justify-between items-center">
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Show")} - {inventoryItem.data.name}</h2>
@@ -37,7 +38,6 @@ export default function Show({auth, inventoryItem, role, laboratories, itemTypes
                     </div>
                 </div>
             }
-            role={role}
         >
             <Head title={StringHelper.__("Show") + ' - ' + inventoryItem.data.name}/>
             <div className="py-12">

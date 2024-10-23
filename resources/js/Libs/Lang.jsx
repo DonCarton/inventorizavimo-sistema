@@ -1,4 +1,6 @@
 import { usePage } from "@inertiajs/react";
+
+//TODO: CLEANUP THIS ITEM AT SOME POINT
 export function __(key, replace = {}) {
     const { language } = usePage().props;
     let translation = language[key] ? language[key] : key;

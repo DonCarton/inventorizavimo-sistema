@@ -124,10 +124,11 @@ class UserController extends Controller
             'userRole' => $roleName ? $roleName[0]['id'] : '',
             'roles' => RolesForSelect::collection($roles),
             'laboratories' => $laboratories,
-            'failure' => session('failure')
-//            'can' => [
-//                'changeRole' => auth()->user()->id === $user->id
-//            ]
+            'failure' => session('failure'),
+            'can' => [
+                'changeRole' => auth()->user()->can('changeRole', $user),
+                'deleteUser' => auth()->user()->can('delete', $user),
+            ]
         ]);
     }
 

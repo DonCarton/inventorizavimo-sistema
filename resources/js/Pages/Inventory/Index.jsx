@@ -14,7 +14,7 @@ import DownloadButton from "@/Components/Actions/DownloadButton.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import SteamDropdown from '@/Components/SteamDropdown';
 
-export default function Index({auth, inventoryItems, itemTypes, role, queryParams = null, success, failure}) {
+export default function Index({auth, inventoryItems, itemTypes, queryParams = null, success, failure}) {
     queryParams = queryParams || {};
     const [modalOpen, setModalOpen] = useState(false);
     const {setData, post} = useForm({
@@ -64,6 +64,7 @@ export default function Index({auth, inventoryItems, itemTypes, role, queryParam
     return (
         <AuthenticatedLayout
             user={auth.user}
+            can={auth.can}
             header={
                 <div className="flex justify-between items-center">
                     <div className="flex justify-between">
@@ -74,7 +75,7 @@ export default function Index({auth, inventoryItems, itemTypes, role, queryParam
                             classnameForIcon="w-5 h-5 ml-1 mt-1"/>
                     </div>
                     <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={StringHelper.__("Actions")}>
-                        {role.includes('admin') ? <>
+                        {auth.can.create.inventoryItem ? <>
                                 <div id="create-new-entry" title="Create a new entry in the current page."
                                      className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
                                     <Link href={route("inventoryItems.create")}>
@@ -91,7 +92,6 @@ export default function Index({auth, inventoryItems, itemTypes, role, queryParam
                     </GroupButtonDropdown>
                 </div>
             }
-            role={role}
         >
             <Head title={StringHelper.__("Inventory")}/>
             <FileUploadModal modalHeaderText={StringHelper.__("Import Excel of data")}

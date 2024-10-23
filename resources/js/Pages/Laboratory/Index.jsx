@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head, Link, router, useForm} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
-import {__} from "@/Libs/Lang.jsx";
+import StringHelper from "@/Libs/StringHelper.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
@@ -16,7 +16,7 @@ import FailureMessage from "@/Components/FailureMessage.jsx";
 
 export default function Index({auth, laboratories, role, queryParams = null, success, warning, failure}) {
     queryParams = queryParams || {};
-    const handleConfirmMessage = __("Are you sure you want to delete this item")+'?';
+    const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item")+'?';
     const [modalOpen, setModalOpen] = useState(false);
     const {setData, post} = useForm({
         title: '',
@@ -67,39 +67,40 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
     return (
         <AuthenticatedLayout
             user={auth.user}
+            can={auth.can}
             header={
                 <div className="flex justify-between items-center">
                     <div className="flex justify-between">
-                        <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Laboratories")}</h2>
+                        <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Laboratories")}</h2>
                         <InformationIconToolTip
-                            content={__("Here you can view all the available laboratory locations") + '.'}
+                            content={StringHelper.__("Here you can view all the available laboratory locations") + '.'}
                             placement="right-end" classname="bg-black" color="black"
                             classnameForIcon="w-5 h-5 ml-1 mt-1"/>
 
                     </div>
-                    <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={__("Actions")}>
+                    <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={StringHelper.__("Actions")}>
                         {auth.can.create.laboratory && <>
                             <div id="create-new-entry" title="Create a new entry in the current page."
                                  className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                <Link href={route("laboratories.create")}>{__("Create")}</Link></div>
+                                <Link href={route("laboratories.create")}>{StringHelper.__("Create")}</Link></div>
                             <div id="import-entries" title="Import an existing Excel sheet of data."
                                  className="px-2 py-1 bg-white border-2 border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                <a onClick={() => setModalOpen(true)}>{__("Import")}</a></div>
+                                <a onClick={() => setModalOpen(true)}>{StringHelper.__("Import")}</a></div>
                             <div id="export-entries" title="Export all data from the database or export a specific set with the defined search paramters in the table."
                                  className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                <a href={route("adminExports.laboratories", queryParams)}>{__("Export")}</a></div></>
+                                <a href={route("adminExports.laboratories", queryParams)}>{StringHelper.__("Export")}</a></div></>
                         }
                     </GroupButtonDropdown>
                 </div>
             }
             role={role}
         >
-            <Head title={__("Laboratories")}/>
-            <FileUploadModal modalHeaderText={__("Import Excel of data")}
-                             alertForWrongType={__("Please select a .xlsx or .csv file")}
-                             alertTextForMissingFile={__("Please choose a file before uploading")}
-                             submitButtonText={__("Submit")} itemNotSpecifiedText={__("Nothing chosen yet")}
-                             selectFileText={__("Chosen file")} isOpen={modalOpen} onClose={closeModal}
+            <Head title={StringHelper.__("Laboratories")}/>
+            <FileUploadModal modalHeaderText={StringHelper.__("Import Excel of data")}
+                             alertForWrongType={StringHelper.__("Please select a .xlsx or .csv file")}
+                             alertTextForMissingFile={StringHelper.__("Please choose a file before uploading")}
+                             submitButtonText={StringHelper.__("Submit")} itemNotSpecifiedText={StringHelper.__("Nothing chosen yet")}
+                             selectFileText={StringHelper.__("Chosen file")} isOpen={modalOpen} onClose={closeModal}
                              onFileSelect={handleFileSelect} onSubmit={handleSubmit2}/>
             <div className="py-12">
                 <div className="3xl:max-w-screen-3xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -119,18 +120,18 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                                             sort_field={queryParams.sort_field}
                                             sort_direction={queryParams.sort_direction}
                                             sortChanged={sortChanged}
-                                            children={__("Name")}
+                                            children={StringHelper.__("Name")}
                                         />
                                         <TableHeader
                                             name="updated_at"
                                             sort_field={queryParams.sort_field}
                                             sort_direction={queryParams.sort_direction}
                                             sortChanged={sortChanged}
-                                            children={__("Updated at")}
+                                            children={StringHelper.__("Updated at")}
                                         />
-                                        <th className="px-3 py-2">{__("Created by")}</th>
-                                        <th className="px-3 py-2">{__("Updated by")}</th>
-                                        <th className="px-3 py-2">{__("Actions")}</th>
+                                        <th className="px-3 py-2">{StringHelper.__("Created by")}</th>
+                                        <th className="px-3 py-2">{StringHelper.__("Updated by")}</th>
+                                        <th className="px-3 py-2">{StringHelper.__("Actions")}</th>
                                     </tr>
                                     </thead>
                                     <thead
@@ -140,14 +141,14 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                                             <TextInput
                                                 className="w-full 3xl:text-base text-sm"
                                                 defaultValue={queryParams.name}
-                                                placeholder={__("Name")}
+                                                placeholder={StringHelper.__("Name")}
                                                 onBlur={e => searchFieldChanged('name', e.target.value)}
                                                 onKeyPress={e => onKeyPress('name', e)}/>
                                         </th>
                                         <th className="px-3 py-2"></th>
                                         <th className="px-3 py-2"></th>
                                         <th className="px-3 py-2">
-                                            <TextInput className="w-full 3xl:text-base text-sm" placeholder={__("Updated by")}
+                                            <TextInput className="w-full 3xl:text-base text-sm" placeholder={StringHelper.__("Updated by")}
                                                        defaultValue={queryParams.updated_by}
                                                        onBlur={e => searchFieldChanged('updated_by', e.target.value)}
                                                        onKeyPress={e => onKeyPress('updated_by', e)}/>

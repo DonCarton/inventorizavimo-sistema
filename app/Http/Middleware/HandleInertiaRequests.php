@@ -45,6 +45,12 @@ class HandleInertiaRequests extends Middleware
                         'inventoryItem' => Auth::user()->can('create', InventoryItem::class),
                         'itemType' => Auth::user()->can('create', ItemType::class),
                         'laboratory' => Auth::user()->can('create', Laboratory::class),
+                    ],
+                    'view' => [
+                        'user' => Auth::user()->can('viewAny', User::class),
+                        'inventoryItem' => Auth::user()->can('viewAny', InventoryItem::class),
+                        'itemType' => Auth::user()->can('viewAny', ItemType::class),
+                        'laboratory' => Auth::user()->can('viewAny', Laboratory::class),
                     ]
                 ] : null
             ],

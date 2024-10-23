@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RoleEnum;
 use App\Exports\InventoryExports;
 use App\Http\Requests\ExportRequests\InventoryItemExportRequest;
 use App\Http\Requests\StoreRequests\AdjustInventoryAmountViaLog;
@@ -220,7 +221,8 @@ class InventoryItemController extends Controller
             'queryParams' => $queryParams,
             'referrer' => $request->query('referrer'),
             'can' => [
-                'alterType' => $request->user()->hasRole('admin'),
+                'alterType' => $request->user()->hasRole(RoleEnum::SUPER_ADMIN),
+                'alterLocation' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
                 'delete' => $request->user()->can('delete',$inventoryItem),
             ]
         ]);
