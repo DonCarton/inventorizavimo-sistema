@@ -7,7 +7,7 @@ export default function EditForm({children, onSubmit, cancelButtonRoute, primary
         <form onSubmit={onSubmit} className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
             {children}
             <div className="mt-4">
-                <Link href={route(cancelButtonRoute)}><SecondaryButton type="button">{cancelButtonText}</SecondaryButton></Link>
+                <Link href={route(cancelButtonRoute)}><SecondaryButton type="button" className="mr-2">{cancelButtonText}</SecondaryButton></Link>
                 <PrimaryButton>{primaryButtonText}</PrimaryButton>
             </div>
         </form>

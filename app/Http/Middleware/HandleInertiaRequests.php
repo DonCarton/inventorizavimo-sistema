@@ -38,7 +38,11 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? [
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                ] : null,
                 'can' => $request->user() ? [
                     'create' => [
                         'user' => Auth::user()->can('create', User::class),
@@ -61,7 +65,7 @@ class HandleInertiaRequests extends Middleware
                 $user = $request->user();
                 if ($user){
                     return $user->roleName();
-                }
+                } else {return null;}
             },
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),

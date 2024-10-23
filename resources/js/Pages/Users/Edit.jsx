@@ -34,6 +34,7 @@ export default function Edit({auth, user, role, userRole, roles, laboratories, f
     console.log(can);
     return (<AuthenticatedLayout
             user={auth.user}
+            can={auth.can}
             header={<h2
                 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Edit")} - {user.data.email}</h2>}
             role={role}
