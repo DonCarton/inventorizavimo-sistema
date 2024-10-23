@@ -1,22 +1,15 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, Link, router} from '@inertiajs/react';
+import {Head, Link} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
 import StringHelper from "@/Libs/StringHelper.jsx";
 import {TbEdit} from "react-icons/tb";
-import {RiDeleteBin6Line} from "react-icons/ri";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import React from "react";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import WarningMessage from "@/Components/WarningMessage.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 
-export default function InventoryTypes({auth, itemTypes, role, success, warning}) {
-    const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item")+'?';
-    const handleDestroy = (value) => {
-        if (window.confirm(handleConfirmMessage)) {
-            router.delete(route('itemTypes.destroy', value), {preserveScroll: true})
-        }
-    }
+export default function InventoryTypes({auth, itemTypes, success, warning}) {
     return (
         <AuthenticatedLayout user={auth.user}
                              can={auth.can}
@@ -38,7 +31,6 @@ export default function InventoryTypes({auth, itemTypes, role, success, warning}
                                          }
                                      </GroupButtonDropdown>
                                  </div>}
-                             role={role}
         >
             <Head title={StringHelper.__("Types")}/>
             <div className="py-12">
@@ -75,9 +67,6 @@ export default function InventoryTypes({auth, itemTypes, role, success, warning}
                                                     <TbEdit
                                                         className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
                                                 </Link>
-                                                <a type="button"
-                                                   onClick={() => handleDestroy(itemType.id)}><RiDeleteBin6Line
-                                                    className="w-8 h-8 text-red-500 hover:text-red-700 hover:animate-pulse hover:bg-gray-50"/></a>
                                             </td>
                                         </tr>
                                     ))}

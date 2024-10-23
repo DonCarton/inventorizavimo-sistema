@@ -12,7 +12,7 @@ import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 
-export default function Users({auth, users, role, queryParams = null, success, failure}) {
+export default function Users({auth, users, queryParams = null, success, failure}) {
     queryParams = queryParams || {};
     const handleDisableMessage = StringHelper.__("Are you sure you want to deactivate this user")+'?';
     const handleEnableMessage = StringHelper.__("Are you sure you want to activate this user")+'?';
@@ -78,7 +78,6 @@ export default function Users({auth, users, role, queryParams = null, success, f
                     </GroupButtonDropdown>
                 </div>
             }
-            role={role}
         >
             <Head title={StringHelper.__("Users")}/>
             <div className="py-12">

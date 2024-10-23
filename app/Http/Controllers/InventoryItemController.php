@@ -40,6 +40,7 @@ class InventoryItemController extends Controller
      */
     public function index(): Response
     {
+        Gate::authorize('viewAny', InventoryItem::class);
         $query = InventoryItem::query();
         $sortField = request("sort_field", 'updated_at');
         $sortDirection = request("sort_direction", 'desc');
@@ -181,6 +182,7 @@ class InventoryItemController extends Controller
      */
     public function create(Request $request): Response
     {
+        Gate::authorize('create', InventoryItem::class);
         $queryParams = $request->query();
         $laboratories = Laboratory::query()->get();
         $itemTypes = ItemType::query()->get();
@@ -197,6 +199,7 @@ class InventoryItemController extends Controller
      */
     public function store(StoreInventoryItemRequest $request): RedirectResponse
     {
+        Gate::authorize('create', InventoryItem::class);
         InventoryItem::create($request->all());
         return to_route('inventoryItems.index')->with('success', __('actions.inventoryItem.created', ['local_name' => $request['local_name']]));
     }
@@ -209,6 +212,7 @@ class InventoryItemController extends Controller
     public function editRaw(int|string $identifier, Request $request): Response
     {
         $inventoryItem = InventoryItem::where('id','=',$identifier)->orWhere('local_name', $identifier)->firstOrFail();
+        Gate::authorize('edit',$inventoryItem);
         $amountLogs = $inventoryItem->amountLogs;
         $laboratories = Laboratory::query()->get()->all();
         $itemTypes = ItemType::query()->get();

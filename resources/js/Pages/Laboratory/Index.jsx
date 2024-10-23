@@ -6,7 +6,6 @@ import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import {TbEdit} from "react-icons/tb";
-import {RiDeleteBin6Line} from "react-icons/ri";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import React, {useState} from "react";
 import WarningMessage from "@/Components/WarningMessage.jsx";
@@ -14,9 +13,8 @@ import FileUploadModal from "@/Components/FileUploadModal.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
 
-export default function Index({auth, laboratories, role, queryParams = null, success, warning, failure}) {
+export default function Index({auth, laboratories, queryParams = null, success, warning, failure}) {
     queryParams = queryParams || {};
-    const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item")+'?';
     const [modalOpen, setModalOpen] = useState(false);
     const {setData, post} = useForm({
         title: '',
@@ -46,11 +44,6 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
             queryParams.sort_direction = 'asc';
         }
         router.get(route('laboratories.index'), queryParams);
-    }
-    const handleDestory = (value) => {
-        if (window.confirm(handleConfirmMessage)) {
-            router.delete(route('laboratories.destroy', value), {preserveScroll: true})
-        }
     }
     const handleFileSelect = (file) => {
         setData('file', file);
@@ -93,7 +86,6 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                     </GroupButtonDropdown>
                 </div>
             }
-            role={role}
         >
             <Head title={StringHelper.__("Laboratories")}/>
             <FileUploadModal modalHeaderText={StringHelper.__("Import Excel of data")}
@@ -174,9 +166,6 @@ export default function Index({auth, laboratories, role, queryParams = null, suc
                                                     <TbEdit
                                                         className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
                                                 </Link>
-                                                <a type="button"
-                                                   onClick={() => handleDestory(laboratory.id)}><RiDeleteBin6Line
-                                                    className="w-8 h-8 text-red-500 hover:text-red-700 hover:animate-pulse hover:bg-gray-50"/></a>
                                             </td>
                                         </tr>
                                     ))}

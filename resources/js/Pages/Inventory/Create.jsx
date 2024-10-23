@@ -91,6 +91,8 @@ export default function Create({auth, itemTypes, queryParams}) {
     const handleInventoryTypeChange = (e) => {
         if (e !== null){
             if (itemTypes.data[e-1].assetRequired === false){ setAssetNumberShown(true); setData('asset_number_required', true) } else {setAssetNumberShown(false); setData('asset_number_required', false)}
+        } else {
+            setAssetNumberShown(false);
         }
         setData('inventory_type', e);
     }
@@ -187,8 +189,9 @@ export default function Create({auth, itemTypes, queryParams}) {
                                                 <InputError message={errors.inventory_type} className="mt-2"/>
                                             </div>
                                             <div className="mt-1 w-full">
-                                                <InputLabel
-                                                    htmlFor="inventoryItems_asset_number">{StringHelper.__("Asset number")}</InputLabel>
+                                                <InputLabel htmlFor="inventoryItems_asset_number">
+                                                    {StringHelper.__("Asset number")} {assetNumberShown && <span className="text-red-500">*</span>}
+                                                </InputLabel>
                                                 <TextInputExtra id="inventoryItems_asset_number" name="asset_number"
                                                                 className={assetNumberShown ? "w-full" : "w-full bg-gray-400 text-white"}
                                                                 type="text" disabled={!assetNumberShown} readOnly={!assetNumberShown}
@@ -206,6 +209,7 @@ export default function Create({auth, itemTypes, queryParams}) {
                                                 <InputError message={errors.name} className="mt-2"/>
                                             </div>
                                             <div>
+                                                {/*TODO MONITOR THIS PART AS APPARENTLY REACT COMPLAINS WHEN THE SCENE CHANGES*/}
                                                 <InputLabel htmlFor="inventoryItems_name_eng">
                                                     {StringHelper.__("Name ENG")} <span className="text-red-500">*</span>
                                                 </InputLabel>

@@ -166,6 +166,7 @@ export default function Authenticated({ user, header, children, can }) {
                         </div>
 
                         <div className="mt-3 space-y-1">
+                            {/*TODO FOR SOME REASON, THE TRANSLATIONS HERE ARE CAUSING ISSUES*/}
                             <ResponsiveNavLink className="text-white" href={route('profile.edit')}>{StringHelper.__("Profile")}</ResponsiveNavLink>
                             <ResponsiveNavLink className="text-white" method="post" href={route('logout')} as="button">
                                 {StringHelper.__("Log out")}

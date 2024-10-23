@@ -6,7 +6,7 @@ import StringHelper from "@/Libs/StringHelper.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 
-export default function Reader({auth, role, success, failure}) {
+export default function Reader({auth, success, failure}) {
     useEffect(() => {
         const startScanner = (cameraId) => {
             const scanner = new Html5Qrcode("reader");
@@ -38,9 +38,9 @@ export default function Reader({auth, role, success, failure}) {
     return (
         <AuthenticatedLayout
             user={auth.user}
+            can={auth.can}
             header={<h2
                 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Reader")}</h2>}
-            role={role}
         >
             <Head title={StringHelper.__("Scanner")}/>
             <div className="py-12">

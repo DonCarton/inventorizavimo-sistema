@@ -1,14 +1,16 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
-import {Head, Link, useForm} from "@inertiajs/react";
+import {Head, Link, router, useForm} from "@inertiajs/react";
 import StringHelper from "@/Libs/StringHelper.jsx";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
-import {useState} from "react";
+import React, {useState} from "react";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
+import {RiDeleteBin6Line} from "react-icons/ri";
 
 export default function Edit({ auth, itemType }) {
+    const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
     const [checked, setChecked] = useState(itemType.data.changeAccAmount);
     const {data, setData, put, errors, processing} = useForm({
         name: itemType.data.name || '',
@@ -22,6 +24,13 @@ export default function Edit({ auth, itemType }) {
         setData('change_acc_amount', e.target.checked);
         setChecked(e.target.checked);
     };
+    const handleDestroy = (value) => {
+        if (window.confirm(handleConfirmMessage)) {
+            router.delete(route('itemTypes.destroy', value), {
+                preserveScroll: true
+            })
+        }
+    }
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -54,9 +63,17 @@ export default function Edit({ auth, itemType }) {
                                     </label>
                                     <InputError message={errors.change_acc_amount} className="mt-2"/>
                                 </div>
-                                <div className="mt-4">
-                                    <Link href="/itemTypes"><SecondaryButton type="button">{StringHelper.__("Cancel")}</SecondaryButton></Link>
-                                    <PrimaryButton className="ml-2" disabled={processing}>{StringHelper.__("Save")}</PrimaryButton>
+                                <div className="flex justify-between mt-4">
+                                    <div>
+                                        <Link href="/itemTypes"><SecondaryButton
+                                            type="button">{StringHelper.__("Cancel")}</SecondaryButton></Link>
+                                        <PrimaryButton className="ml-2"
+                                                       disabled={processing}>{StringHelper.__("Save")}</PrimaryButton>
+                                    </div>
+                                    <button type="button" onClick={() => handleDestroy(itemType.data.id)}
+                                            className="inline-flex items-center px-4 py-2 bg-pink-500 dark:bg-pink-500 border border-pink-500 hover:border-pink-800 dark:border-pink-500 rounded-md font-semibold text-xs text-white dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-rose-800 dark:hover:bg-rose-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">{StringHelper.__("Delete")}<RiDeleteBin6Line
+                                        className="ml-1 w-5 h-5 text-white"/>
+                                    </button>
                                 </div>
                             </form>
                         </div>

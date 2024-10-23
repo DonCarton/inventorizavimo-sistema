@@ -24,6 +24,7 @@ class ItemTypeController extends Controller
      */
     public function index(): Response
     {
+        Gate::authorize('viewAny', ItemType::class);
         $query = ItemType::query();
         $itemTypes = $query->paginate(10)->onEachSide(1);
         return Inertia::render('ItemTypes/Index',[

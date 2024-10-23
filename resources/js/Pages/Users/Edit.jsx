@@ -10,7 +10,7 @@ import SteamDropdown from "@/Components/SteamDropdown";
 import FailureMessage from "@/Components/FailureMessage.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
-export default function Edit({auth, user, role, userRole, roles, laboratories, flash, can}) {
+export default function Edit({auth, user, userRole, roles, laboratories, flash, can}) {
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
     const {data, setData, put, errors, processing} = useForm({
         first_name: user.data.first_name || '',
@@ -31,13 +31,11 @@ export default function Edit({auth, user, role, userRole, roles, laboratories, f
             })
         }
     }
-    console.log(can);
     return (<AuthenticatedLayout
             user={auth.user}
             can={auth.can}
             header={<h2
                 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Edit")} - {user.data.email}</h2>}
-            role={role}
         >
             <Head title={StringHelper.__("Edit") + " - " + user.data.email}/>
 

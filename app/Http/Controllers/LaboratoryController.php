@@ -26,6 +26,7 @@ class LaboratoryController extends Controller
      */
     public function index(): Response
     {
+        Gate::authorize('viewAny', Laboratory::class);
         $query = Laboratory::query();
         $sortField = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", 'desc');

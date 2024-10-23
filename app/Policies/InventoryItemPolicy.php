@@ -11,9 +11,15 @@ class InventoryItemPolicy
 {
     public function viewAny(User $user): Response
     {
-        return $user->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]) ? Response::allow() : Response::deny(__('validation.unauthorized'));
+        return $user->hasAnyRole([RoleEnum::ADMIN,RoleEnum::USER,RoleEnum::SUPER_ADMIN]) ? Response::allow() : Response::deny(__('validation.unauthorized'));
     }
     public function create(User $user): Response
+    {
+        return $user->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]) ?
+            Response::allow() :
+            Response::deny(__('validation.unauthorized'));
+    }
+    public function edit(User $user, InventoryItem $inventoryItem): Response
     {
         return $user->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]) ?
             Response::allow() :
