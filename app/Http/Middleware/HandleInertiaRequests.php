@@ -2,7 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\InventoryItem;
+use App\Models\ItemType;
+use App\Models\Laboratory;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
@@ -33,7 +38,28 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? [
+                    'id' => $request->user()->id,
+                    'first_name' => $request->user()->first_name,
+                    'last_name' => $request->user()->last_name,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                    'locale' => $request->user()->locale,
+                ] : null,
+                'can' => $request->user() ? [
+                    'create' => [
+                        'user' => Auth::user()->can('create', User::class),
+                        'inventoryItem' => Auth::user()->can('create', InventoryItem::class),
+                        'itemType' => Auth::user()->can('create', ItemType::class),
+                        'laboratory' => Auth::user()->can('create', Laboratory::class),
+                    ],
+                    'view' => [
+                        'user' => Auth::user()->can('viewAny', User::class),
+                        'inventoryItem' => Auth::user()->can('viewAny', InventoryItem::class),
+                        'itemType' => Auth::user()->can('viewAny', ItemType::class),
+                        'laboratory' => Auth::user()->can('viewAny', Laboratory::class),
+                    ]
+                ] : null
             ],
             'previousUrl' => function () {
               return url()->previous();
@@ -42,7 +68,7 @@ class HandleInertiaRequests extends Middleware
                 $user = $request->user();
                 if ($user){
                     return $user->roleName();
-                }
+                } else {return null;}
             },
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),

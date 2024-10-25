@@ -8,6 +8,10 @@ use Illuminate\Auth\Access\Response;
 
 class UserPolicy
 {
+    public function viewAny(User $user): Response
+    {
+        return $user->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]) ? Response::allow() : Response::deny(__('validation.unauthorized'));
+    }
     public function create(User $user): Response
     {
         return $user->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]) ? Response::allow() : Response::deny(__('validation.unauthorized'));
@@ -40,6 +44,8 @@ class UserPolicy
             return Response::deny(__('validation.unauthorized_admin'));
         } else if (!$authUser->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN])) {
             return Response::deny(__('validation.unauthorized'));
+        } else if ($targetUser->id === $authUser->id) {
+            return Response::deny(__('actions.user.selfDelete'));
         }
         return Response::allow();
     }
@@ -58,6 +64,15 @@ class UserPolicy
             return Response::deny(__('validation.unauthorized_admin'));
         } else if (!$authUser->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN])) {
             return Response::deny(__('validation.unauthorized'));
+        }
+        return Response::allow();
+    }
+    public function changeRole(User $authUser, User $targetUser): Response
+    {
+        if ($targetUser->id === $authUser->id && $authUser->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN])) {
+            return Response::deny(__('validation.custom.selectedRole.unauthorized_role_change'));
+        } else if ($targetUser->hasRole(RoleEnum::SUPER_ADMIN) && !$authUser->hasRole(RoleEnum::SUPER_ADMIN)) {
+            return Response::deny(__('validation.unauthorized_admin'));
         }
         return Response::allow();
     }

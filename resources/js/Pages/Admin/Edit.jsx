@@ -3,12 +3,12 @@ import {Head} from '@inertiajs/react';
 import UpdateConfiguration from './Partials/UpdateConfiguration';
 import FailureMessage from '@/Components/FailureMessage';
 
-export default function Edit({ auth, role, systemConfiguration, flash }) {
+export default function Edit({ auth, systemConfiguration, flash }) {
     return (
         <AuthenticatedLayout
             user={auth.user}
+            can={auth.can}
             header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Profile</h2>}
-            role={role}
         >
             <Head title="Profile"/>
 

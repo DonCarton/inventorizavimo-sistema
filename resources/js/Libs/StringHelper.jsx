@@ -31,7 +31,7 @@ const StringHelper = {
     /**
      * Shortens the given string.
      * @param {string} str
-     * @param {string} length
+     * @param {int} length
      * @returns {string} str
      * @constructor
      */

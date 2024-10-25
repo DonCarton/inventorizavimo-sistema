@@ -4,7 +4,7 @@ import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
 import {useState} from "react";
-import {__} from "@/Libs/Lang.jsx";
+import { useTranslation } from "@/Libs/useTranslation.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
 import {measureOptions, labPrefixOptions} from "@/Configurations/SelectConfigurations.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
@@ -13,7 +13,8 @@ import FlexibleSelect from "@/Components/Forms/FlexibleSelect.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 import FlexibleAsyncSelect from "@/Components/Forms/FlexibleAsyncSelect.jsx";
 
-export default function Create({auth, role, itemTypes, queryParams}) {
+export default function Create({auth, itemTypes, queryParams, referrer}) {
+    const { translate } = useTranslation();
     const [postNumber, setPostNumber] = useState(null);
     const [activeTab, setActiveTab] = useState(1);
     const [selectedPrefix, setSelectedPrefix] = useState('BIN');
@@ -91,25 +92,27 @@ export default function Create({auth, role, itemTypes, queryParams}) {
     const handleInventoryTypeChange = (e) => {
         if (e !== null){
             if (itemTypes.data[e-1].assetRequired === false){ setAssetNumberShown(true); setData('asset_number_required', true) } else {setAssetNumberShown(false); setData('asset_number_required', false)}
+        } else {
+            setAssetNumberShown(false);
         }
         setData('inventory_type', e);
     }
     const onSubmit = (e) => {
         e.preventDefault();
 
-        post(route('inventoryItems.store'));
+        post(route('inventoryItems.store', {referrer: referrer, query: queryParams}));
     }
     return (
         <AuthenticatedLayout
             user={auth.user}
+            can={auth.can}
             header={
                 <div className="flex justify-between items-center">
-                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Create new inventory item")}</h2>
+                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{translate("Create new inventory item")}</h2>
                 </div>
             }
-            role={role}
         >
-            <Head title={__("Create new inventory item")}/>
+            <Head title={translate("Create new inventory item")}/>
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -117,14 +120,14 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                             <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <div>
                                     <InputLabel htmlFor="inventoryItems_unit">
-                                        {__("Choose where the item will be stored")}<span
+                                        {translate("Choose where the item will be stored")}<span
                                         className="text-red-500">*</span>
                                     </InputLabel>
                                     <select
                                         className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
                                         value={selectedPrefix}
                                         onChange={handlePrefixChange}>
-                                        <option value="">{__("Choose a value")}</option>
+                                        <option value="">{translate("Choose a value")}</option>
                                         {labPrefixOptions.map((prefixOption) => (
                                             <option key={prefixOption.value}
                                                     value={prefixOption.value}>{prefixOption.label}</option>
@@ -133,23 +136,23 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                 </div>
                                 <div>
                                     <InputLabel htmlFor="inventoryItems_unit">
-                                        {__("Storage measurement")}<span className="text-red-500">*</span>
+                                        {translate("Storage measurement")}<span className="text-red-500">*</span>
                                     </InputLabel>
                                     <select id="inventoryItems_unit" disabled={!postNumber}
                                             className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block disabled:bg-gray-400 disabled:text-white w-full"
                                             value={selectedMeasurement}
                                             onChange={handleMeasureChoice}>
-                                        <option id="0" value="">{__("Choose a value")}</option>
+                                        <option id="0" value="">{translate("Choose a value")}</option>
                                         {measureOptions.map(option => (
-                                            <option key={option.value} value={option.value}>{__(option.label)}</option>
+                                            <option key={option.value} value={option.value}>{translate(option.label)}</option>
                                         ))}
                                     </select>
                                 </div>
                                 <div>
-                                    <Link href={route('inventoryItems.index')}
+                                    <Link href={route(`inventoryItems.${referrer ? referrer : 'index'}`, queryParams)}
                                           className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                     >
-                                        {__("Cancel")}
+                                        {translate("Cancel")}
                                     </Link>
                                 </div>
                             </div>
@@ -159,11 +162,11 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                   className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                                 <div className="pb-6">
                                     <AccordionWithManualIndex expandedByDefault={true} indexOfAcc={1}
-                                                              headerName={__("Inventory information")}>
+                                                              headerName={translate("Inventory information")}>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_local_name">
-                                                    {__("Local name")}<span className="text-red-500">*</span>
+                                                    {translate("Local name")}<span className="text-red-500">*</span>
                                                 </InputLabel>
                                                 <TextInput id="inventoryItems_local_name" type="text"
                                                            name="local_name"
@@ -173,22 +176,23 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                             </div>
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_itemType" className="mb-1">
-                                                    {__("Type")} <span className="text-red-500">*</span>
+                                                    {translate("Type")} <span className="text-red-500">*</span>
                                                 </InputLabel>
                                                 <FlexibleSelect id="inventoryItems_itemType" name="itemType"
-                                                                customPlaceHolder={__("Choose an inventory type")}
+                                                                customPlaceHolder={translate("Choose an inventory type")}
                                                                 value={data.inventory_type}
                                                                 onChange={handleInventoryTypeChange}
                                                                 fetchUrlPath="/select/itemTypes"
-                                                                customNoOptionsMessage={__("No item types found")}
-                                                                customLoadingMessage={__("Fetching options") + "..."}
+                                                                customNoOptionsMessage={translate("No item types found")}
+                                                                customLoadingMessage={translate("Fetching options") + "..."}
                                                                 customIsMulti={false}
                                                 />
                                                 <InputError message={errors.inventory_type} className="mt-2"/>
                                             </div>
                                             <div className="mt-1 w-full">
-                                                <InputLabel
-                                                    htmlFor="inventoryItems_asset_number">{__("Asset number")}</InputLabel>
+                                                <InputLabel htmlFor="inventoryItems_asset_number">
+                                                    {translate("Asset number")} {assetNumberShown && <span className="text-red-500">*</span>}
+                                                </InputLabel>
                                                 <TextInputExtra id="inventoryItems_asset_number" name="asset_number"
                                                                 className={assetNumberShown ? "w-full" : "w-full bg-gray-400 text-white"}
                                                                 type="text" disabled={!assetNumberShown} readOnly={!assetNumberShown}
@@ -198,7 +202,7 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                             </div>
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_name">
-                                                    {__("Name")} <span className="text-red-500">*</span>
+                                                    {translate("Name")} <span className="text-red-500">*</span>
                                                 </InputLabel>
                                                 <TextInput id="inventoryItems_name" type="text" name="name"
                                                            value={data.name} className="mt-1 block w-full"
@@ -206,8 +210,9 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                                 <InputError message={errors.name} className="mt-2"/>
                                             </div>
                                             <div>
+                                                {/*TODO MONITOR THIS PART AS APPARENTLY REACT COMPLAINS WHEN THE SCENE CHANGES*/}
                                                 <InputLabel htmlFor="inventoryItems_name_eng">
-                                                    {__("Name ENG")} <span className="text-red-500">*</span>
+                                                    {translate("Name ENG")} <span className="text-red-500">*</span>
                                                 </InputLabel>
                                                 <TextInput id="inventoryItems_name_eng" type="text" name="name_eng"
                                                            value={data.name_eng} className="mt-1 block w-full"
@@ -216,7 +221,7 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                             </div>
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_formula">
-                                                    {__("Formula")}
+                                                    {translate("Formula")}
                                                 </InputLabel>
                                                 <TextInput id="inventoryItems_formula" type="text" name="name_eng"
                                                            value={data.formula} className="mt-1 block w-full"
@@ -224,7 +229,7 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                             </div>
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_cas_nr">
-                                                    {__("CAS NR")}
+                                                    {translate("CAS NR")}
                                                 </InputLabel>
                                                 <TextInput id="inventoryItems_cas_nr" type="text" name="name_eng"
                                                            value={data.cas_nr} className="mt-1 block w-full"
@@ -232,7 +237,7 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                             </div>
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_user_guide">
-                                                    {__("User guide")}
+                                                    {translate("User guide")}
                                                 </InputLabel>
                                                 <TextInput id="inventoryItems_user_guide" type="text"
                                                            name="user_guide"
@@ -242,11 +247,11 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                         </div>
                                     </AccordionWithManualIndex>
                                     <AccordionWithManualIndex expandedByDefault={true} indexOfAcc={2}
-                                                              headerName={__("Order information")}>
+                                                              headerName={translate("Order information")}>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_provider">
-                                                    {__("Provider")}
+                                                    {translate("Provider")}
                                                 </InputLabel>
                                                 <TextInput
                                                     id="inventoryItems_provider"
@@ -259,7 +264,7 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                             </div>
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_product_code">
-                                                    {__("Product code")}
+                                                    {translate("Product code")}
                                                 </InputLabel>
                                                 <TextInput
                                                     id="inventoryItems_product_code"
@@ -272,7 +277,7 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                             </div>
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_barcode">
-                                                    {__("Barcode")}
+                                                    {translate("Barcode")}
                                                 </InputLabel>
                                                 <TextInput
                                                     id="inventoryItems_barcode"
@@ -286,12 +291,12 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                             <div>
                                                 <InputLabel
                                                     htmlFor="inventoryItems_url_to_provider"
-                                                    value={__("Provider url")}
+                                                    value={translate("Provider url")}
                                                 />
                                                 <TextInput
                                                     id="inventoryItems_url_to_provider"
                                                     type="url"
-                                                    title={__("Must be a url")}
+                                                    title={translate("Must be a url")}
                                                     name="url_to_provider"
                                                     pattern="https?://.+"
                                                     value={data.url_to_provider}
@@ -301,12 +306,12 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                             </div>
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_alt_url_to_provider">
-                                                    {__("Alt url to provider")}
+                                                    {translate("Alt url to provider")}
                                                 </InputLabel>
                                                 <TextInput
                                                     id="inventoryItems_alt_url_to_provider"
                                                     type="url"
-                                                    title={__("Must be a url")}
+                                                    title={translate("Must be a url")}
                                                     name="alt_url_to_provider"
                                                     pattern="https?://.+"
                                                     value={data.alt_url_to_provider}
@@ -317,11 +322,11 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                         </div>
                                     </AccordionWithManualIndex>
                                     <AccordionWithManualIndex expandedByDefault={true} indexOfAcc={3}
-                                                              headerName={__("Amount")}>
+                                                              headerName={translate("Amount")}>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_total_amount">
-                                                    {__("Count")} <span className="text-red-500">*</span>
+                                                    {translate("Count")} <span className="text-red-500">*</span>
                                                 </InputLabel>
                                                 <TextInput
                                                     id="inventoryItems_total_amount"
@@ -335,7 +340,7 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                             </div>
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_critical_amount">
-                                                    {__("Critical amount")} <span className="text-red-500">*</span>
+                                                    {translate("Critical amount")} <span className="text-red-500">*</span>
                                                 </InputLabel>
                                                 <TextInput
                                                     id="inventoryItems_critical_amount"
@@ -349,7 +354,7 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                             </div>
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_multiple_locations">
-                                                    {__("Multiple locations")} <span
+                                                    {translate("Multiple locations")} <span
                                                     className="text-red-500">*</span>
                                                 </InputLabel>
                                                 <Checkbox id="inventoryItems_multiple_locations"
@@ -361,32 +366,32 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                         </div>
                                     </AccordionWithManualIndex>
                                     <AccordionWithManualIndex expandedByDefault={true} indexOfAcc={4}
-                                                              headerName={__("Location")}>
+                                                              headerName={translate("Location")}>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
                                                 <InputLabel
-                                                    htmlFor="inventoryItems_local_laboratory">{__("Location")}<span
+                                                    htmlFor="inventoryItems_local_laboratory">{translate("Location")}<span
                                                     className="text-red-500">*</span></InputLabel>
                                                 <FlexibleSelect id="inventoryItems_local_laboratory"
                                                                 name="local_laboratory"
-                                                                customPlaceHolder={__("Choose a laboratory")}
+                                                                customPlaceHolder={translate("Choose a laboratory")}
                                                                 value={data.laboratory}
                                                                 onChange={handleLaboratoryChoice}
                                                                 fetchUrlPath="/select/laboratories"
-                                                                customNoOptionsMessage={__("No laboratories found")}
-                                                                customLoadingMessage={__("Fetching options") + "..."}
+                                                                customNoOptionsMessage={translate("No laboratories found")}
+                                                                customLoadingMessage={translate("Fetching options") + "..."}
                                                                 customIsMulti={false}
                                                 />
                                                 <InputError message={errors.laboratory} className="mt-2"/>
                                             </div>
                                             <div>
                                                 <InputLabel
-                                                    htmlFor="inventoryItems_local_cupboard">{__("Cupboard")}<span
+                                                    htmlFor="inventoryItems_local_cupboard">{translate("Cupboard")}<span
                                                     className="text-red-500">*</span></InputLabel>
                                                 <FlexibleAsyncSelect id="inventoryItems_local_cupboard"
                                                                      name="local_cupboard"
                                                                      fetchUrlPath="/select/cupboards"
-                                                                     customIsMulti={false}  customLoadingMessage={__("Fetching options") + "..."} customPlaceHolder={__("Choose a cupboard")} customNoOptionsMessage={__("No inventory item found")}
+                                                                     customIsMulti={false}  customLoadingMessage={translate("Fetching options") + "..."} customPlaceHolder={translate("Choose a cupboard")} customNoOptionsMessage={translate("No inventory item found")}
                                                                      value={data.cupboard}
                                                                      onChange={handleCupboardChange}
                                                 />
@@ -394,12 +399,12 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                             </div>
                                             <div>
                                                 <InputLabel
-                                                    htmlFor="inventoryItems_local_shelf">{__("Shelf")}<span
+                                                    htmlFor="inventoryItems_local_shelf">{translate("Shelf")}<span
                                                     className="text-red-500">*</span></InputLabel>
                                                 <FlexibleAsyncSelect id="inventoryItems_local_shelf"
                                                                      name="local_shelf"
                                                                      fetchUrlPath="/select/shelves"
-                                                                     customIsMulti={false} customLoadingMessage={__("Fetching options") + "..."} customPlaceHolder={__("Choose a shelf")} customNoOptionsMessage={__("No inventory item found")}
+                                                                     customIsMulti={false} customLoadingMessage={translate("Fetching options") + "..."} customPlaceHolder={translate("Choose a shelf")} customNoOptionsMessage={translate("No inventory item found")}
                                                                      value={data.shelf}
                                                                      onChange={handleShelfChange}
                                                 />
@@ -408,11 +413,11 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                         </div>
                                     </AccordionWithManualIndex>
                                     <AccordionWithManualIndex expandedByDefault={true} indexOfAcc={5}
-                                                              headerName={__("Additional information")}>
+                                                              headerName={translate("Additional information")}>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
                                                 <InputLabel
-                                                    htmlFor="inventoryItems_storage_conditions">{__("Storage conditions")}</InputLabel>
+                                                    htmlFor="inventoryItems_storage_conditions">{translate("Storage conditions")}</InputLabel>
                                                 <TextInputExtra id="inventoryItems_storage_conditions"
                                                                 className="w-full"
                                                                 name="storage_conditions" type="textarea"
@@ -421,7 +426,7 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                             </div>
                                             <div>
                                                 <InputLabel
-                                                    htmlFor="inventoryItems_used_for">{__("Used for")}</InputLabel>
+                                                    htmlFor="inventoryItems_used_for">{translate("Used for")}</InputLabel>
                                                 <TextInputExtra id="inventoryItems_used_for" name="used_for"
                                                                 className="w-full"
                                                                 type="textarea"
@@ -430,7 +435,7 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                             </div>
                                             <div>
                                                 <InputLabel
-                                                    htmlFor="inventoryItems_comments">{__("Comments")}</InputLabel>
+                                                    htmlFor="inventoryItems_comments">{translate("Comments")}</InputLabel>
                                                 <TextInputExtra id="inventoryItems_comments" name="comments"
                                                                 className="w-full"
                                                                 type="textarea"
@@ -441,12 +446,12 @@ export default function Create({auth, role, itemTypes, queryParams}) {
                                     </AccordionWithManualIndex>
                                 </div>
                                 <div>
-                                    <Link href={route('inventoryItems.index')}
+                                    <Link href={route(`inventoryItems.${referrer ? referrer : 'index'}`, queryParams)}
                                           className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                     >
-                                        {__("Cancel")}
+                                        {translate("Cancel")}
                                     </Link>
-                                    <PrimaryButton className="ml-2" disabled={processing}>{__("Create")}</PrimaryButton>
+                                    <PrimaryButton className="ml-2" disabled={processing}>{translate("Create")}</PrimaryButton>
                                 </div>
                             </form>)}
                     </div>

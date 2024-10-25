@@ -20,23 +20,23 @@ const ThemeToggle = ({ showToggle = true }) => {
         document.documentElement.className = theme;
     }, [theme]);
     return (
-        <div className="flex items-center">
+        <div className="flex items-center mt-2">
             <Switch
                 checked={theme === 'dark'}
                 onChange={toggleTheme}
                 className={`${
-                    theme === 'dark' ? 'bg-gray-800' : 'bg-yellow-400'
-                } relative inline-flex items-center h-6 w-14 rounded-full transition-colors duration-200 focus:outline-none`}
+                    theme === 'dark' ? 'bg-gray-400 border-2 border-white' : 'bg-pink-800'
+                } relative inline-flex items-center h-7 w-12 rounded-full transition-colors duration-200 focus:outline-none`}
             >
                 <span
                     className={`${
-                        theme === 'dark' ? 'translate-x-6 bg-gray-400' : '-translate-x-1 bg-white'
-                    } pointer-events-none inline-block w-9 h-9 transform transition-transform duration-200 rounded-full`}
+                        theme === 'dark' ? 'translate-x-6 bg-gray-400 border-2 border-white' : '-translate-x-1 bg-white border-2 border-pink-800'
+                    } pointer-events-none inline-block w-7 h-7 transform transition-transform duration-200 rounded-full`}
                 >
           {theme === 'light' ? (
-              <WiDaySunny className="w-9 h-9 text-yellow-700"/>
+              <WiDaySunny className="w-6 h-6 text-pink-800"/>
           ) : (
-              <WiNightClear className="w-9 h-9 text-black"/>
+              <WiNightClear className="w-6 h-6 text-white"/>
           )}
             </span>
             </Switch>
