@@ -81,7 +81,7 @@ class LaboratoryController extends Controller
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
+     * @param UpdateLaboratoryRequest $request
      * @param Laboratory $laboratory
      * @return RedirectResponse
      */
@@ -89,7 +89,10 @@ class LaboratoryController extends Controller
     {
         $data = $request->validated();
         $laboratory->update($data);
-        return Redirect::route('laboratories.index')->with('success',(__('actions.laboratory.updated', ['name' => $request['name']])));
+        if ($laboratory->wasChanged()) {
+            return Redirect::route('laboratories.index')->with('success',(__('actions.laboratory.updated', ['name' => $request['name']])));
+        }
+        return Redirect::route('laboratories.index');
     }
 
     /**
@@ -99,7 +102,10 @@ class LaboratoryController extends Controller
     public function edit(Laboratory $laboratory): Response
     {
         return Inertia::render('Laboratory/Edit',[
-            'laboratory' => new LaboratoryResource($laboratory)
+            'laboratory' => new LaboratoryResource($laboratory),
+            'can' => [
+                'delete' => request()->user()->can('delete', $laboratory),
+            ]
         ]);
     }
 

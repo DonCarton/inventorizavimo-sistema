@@ -25,9 +25,9 @@ export default function InventoryTypes({auth, itemTypes, success, warning}) {
 
                                      <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={StringHelper.__("Actions")}>
                                          {auth.can.create.itemType && <>
-                                             <div id="create-new-entry" title="Create a new entry in the current page."
+                                             <button type="button" id="create-new-entry" title="Create a new entry in the current page."
                                                   className="px-2 py-1 bg-white border-2 rounded-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                                 <Link href={route("itemTypes.create")}>{StringHelper.__("Create")}</Link></div></>
+                                                 <Link href={route("itemTypes.create")}>{StringHelper.__("Create")}</Link></button></>
                                          }
                                      </GroupButtonDropdown>
                                  </div>}

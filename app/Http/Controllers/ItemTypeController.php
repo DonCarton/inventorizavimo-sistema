@@ -75,7 +75,10 @@ class ItemTypeController extends Controller
     public function edit(ItemType $itemType): Response
     {
         return Inertia::render('ItemTypes/Edit',[
-            'itemType' => new ItemTypeResource($itemType)
+            'itemType' => new ItemTypeResource($itemType),
+            'can' => [
+                'delete' => request()->user()->can('delete', $itemType),
+            ]
         ]);
     }
 

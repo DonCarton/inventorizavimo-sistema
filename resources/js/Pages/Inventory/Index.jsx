@@ -76,17 +76,20 @@ export default function Index({auth, inventoryItems, itemTypes, queryParams = nu
                     </div>
                     <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={StringHelper.__("Actions")}>
                         {auth.can.create.inventoryItem ? <>
-                                <div id="create-new-entry" title="Create a new entry in the current page."
-                                     className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                    <Link href={route("inventoryItems.create")}>
-                                        {StringHelper.__("Create")}
-                                    </Link></div>
-                                <div id="import-entries" title="Import an existing Excel sheet of data."
+                                <button type="button" id="create-new-entry" title="Create a new entry in the current page."
+                                         className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                        <Link href={route("inventoryItems.create", {query: queryParams})}>
+                                            {StringHelper.__("Create")}
+                                        </Link>
+                                </button>
+                                <button type="button" id="import-entries" title="Import an existing Excel sheet of data."
                                      className="px-2 py-1 bg-white border-2 border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                    <a onClick={() => setModalOpen(true)}>{StringHelper.__("Import")}</a></div>
-                                <div id="export-entries" title="Export all data from the database or export a specific set with the defined search parameters in the table."
+                                    <a onClick={() => setModalOpen(true)}>{StringHelper.__("Import")}</a>
+                                </button>
+                                <button type="button" id="export-entries" title="Export all data from the database or export a specific set with the defined search parameters in the table."
                                      className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                    <a href={route("exports.inventoryItems", queryParams)}>{StringHelper.__("Export")}</a></div></> :
+                                    <a href={route("exports.inventoryItems", queryParams)}>{StringHelper.__("Export")}</a>
+                                </button></> :
                             <DownloadButton linkToItem={route("exports.inventoryItems", queryParams)}>{StringHelper.__("Export")}</DownloadButton>
                         }
                     </GroupButtonDropdown>
@@ -220,11 +223,11 @@ export default function Index({auth, inventoryItems, itemTypes, queryParams = nu
                                             <td className="px-3 py-2">{inventoryItem.laboratory}</td>
                                             <td className="px-3 py-2">{inventoryItem.updatedBy}</td>
                                             <td className="flex justify-start mt-1 px-2 py-1">
-                                                <Link href={route("inventoryItems.editRaw", {inventoryItem: inventoryItem.id, query: queryParams})} title={StringHelper.__("Edit")+'.'}
+                                                {inventoryItem.can.edit && <Link href={route("inventoryItems.editRaw", {inventoryItem: inventoryItem.id, query: queryParams})} title={StringHelper.__("Edit")+'.'}
                                                       className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
                                                     <TbEdit
                                                         className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
-                                                </Link>
+                                                </Link>}
                                                 <Link href={route("inventoryItems.edit", {inventoryItem: inventoryItem.id, query: queryParams})} title={StringHelper.__("Edit amount")+'.'}
                                                       className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
                                                     <TbArrowsUpDown

@@ -1,18 +1,18 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
-import {Head, Link, router, useForm} from "@inertiajs/react";
+import {Head, Link, useForm} from "@inertiajs/react";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
-import {RiDeleteBin6Line} from "react-icons/ri";
 import InputError from "@/Components/InputError.jsx";
 import StringHelper from "@/Libs/StringHelper.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import SteamDropdown from "@/Components/SteamDropdown";
 import FailureMessage from "@/Components/FailureMessage.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
+import DeleteButton from "@/Components/Forms/DeleteButton.jsx";
 
 export default function Edit({auth, user, userRole, roles, laboratories, flash, can}) {
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
-    const {data, setData, put, errors, processing} = useForm({
+    const {data, setData, put, delete: destroy, errors, processing} = useForm({
         first_name: user.data.first_name || '',
         last_name: user.data.last_name || '',
         email: user.data.email || '',
@@ -26,9 +26,9 @@ export default function Edit({auth, user, userRole, roles, laboratories, flash, 
     }
     const handleDestroy = (value) => {
         if (window.confirm(handleConfirmMessage)) {
-            router.delete(route('users.destroy', value), {
+            destroy(route('users.destroy', value), {
                 preserveScroll: true
-            })
+            });
         }
     }
     return (<AuthenticatedLayout
@@ -85,13 +85,10 @@ export default function Edit({auth, user, userRole, roles, laboratories, flash, 
                             </div>
                             <div className="flex justify-between mt-4">
                             <div>
-                            <Link href="/users"><SecondaryButton type="button">{StringHelper.__("Cancel")}</SecondaryButton></Link>
+                            <Link href="/users"><SecondaryButton type="button" disabled={processing}>{StringHelper.__("Cancel")}</SecondaryButton></Link>
                             <PrimaryButton className="ml-2" disabled={processing}>{StringHelper.__("Save")}</PrimaryButton>
                             </div>
-                                {can.deleteUser && <a type="button" onClick={() => handleDestroy(user.data.id)}
-                                       className="inline-flex items-center px-4 py-2 hover:cursor-pointer bg-pink-500 dark:bg-pink-500 border border-pink-500 hover:border-pink-800 dark:border-pink-500 rounded-md font-semibold text-xs text-white dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-rose-800 dark:hover:bg-rose-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">{StringHelper.__("Delete")}
-                                        <RiDeleteBin6Line className="ml-1 w-5 h-5 text-white"/>
-                                    </a>}
+                                {can.deleteUser && <DeleteButton type="button" disabled={processing} onClick={() => handleDestroy(user.data.id)}>{StringHelper.__("Delete")}</DeleteButton>}
                             </div>
                         </form>
                     </div>

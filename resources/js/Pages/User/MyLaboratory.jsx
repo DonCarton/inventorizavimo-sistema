@@ -78,13 +78,13 @@ export default function MyLaboratory({auth, inventoryItems, itemTypes, queryPara
                     <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory"
                                          nameOfDropdownButton={StringHelper.__("Actions")}>
                         {auth.can.create.inventoryItem ? <>
-                                <div id="create-new-entry" title="Create a new entry in the current page."
+                                <button type="button" id="create-new-entry" title="Create a new entry in the current page."
                                      className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                    <a href={route("inventoryItems.create")}>{StringHelper.__("Create")}</a></div>
-                                <div id="import-entries" title="Import an existing Excel sheet of data."
+                                    <Link href={route("inventoryItems.create", {referrer: 'myLaboratory', query: queryParams})}>{StringHelper.__("Create")}</Link></button>
+                                <button type="button" id="import-entries" title="Import an existing Excel sheet of data."
                                      className="px-2 py-1 bg-white border-2 border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                    <a onClick={() => setModalOpen(true)}>{StringHelper.__("Import")}</a></div>
-                                <div id="export-entries"
+                                    <a onClick={() => setModalOpen(true)}>{StringHelper.__("Import")}</a></button>
+                                <button type="button" id="export-entries"
                                      title="Export all data from the database or export a specific set with the defined search paramters in the table."
                                      className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
                                     <a
@@ -92,7 +92,7 @@ export default function MyLaboratory({auth, inventoryItems, itemTypes, queryPara
                                     >
                                         {StringHelper.__("Export")}
                                     </a>
-                                </div>
+                                </button>
                             </> :
                             <DownloadButton linkToItem={route("exports.myLaboratoryInventoryItems", queryParams)}>{StringHelper.__("Export")}</DownloadButton>
                         }

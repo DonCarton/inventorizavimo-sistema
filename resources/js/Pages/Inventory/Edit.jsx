@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, Link, router, useForm} from "@inertiajs/react";
+import {Head, Link, useForm} from "@inertiajs/react";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
@@ -8,17 +8,17 @@ import StringHelper from "@/Libs/StringHelper.jsx";
 import SelectForSingleItem from "@/Components/Forms/SelectForSingleItem.jsx";
 import NumericInput from "@/Components/Forms/NumericInput.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
-import {RiDeleteBin6Line} from "react-icons/ri";
 import LogsTable from "@/Components/Forms/LogsTable.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
 import AsyncCustom from "@/Components/Forms/AsyncCustom.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
+import DeleteButton from "@/Components/Forms/DeleteButton.jsx";
 
 export default function Edit({auth, inventoryItem, logsForItem, laboratories, itemTypes, queryParams, referrer, can}) {
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
-    const {data, setData, put, errors, processing} = useForm({
+    const {data, setData, put, delete: destroy, errors, processing} = useForm({
         local_name: inventoryItem.data.localName || '',
         inventory_type: inventoryItem.data.inventoryType || '',
         name: inventoryItem.data.name || '',
@@ -46,9 +46,7 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
     })
     const handleDestroy = (value) => {
         if (window.confirm(handleConfirmMessage)) {
-            router.delete(route('inventoryItems.destroy', value), {
-                preserveScroll: true
-            })
+            destroy(route('inventoryItems.destroy', value));
         }
     }
     const onSubmit = (e) => {
@@ -232,7 +230,7 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
                                                         value={StringHelper.__("Alt url to provider")}/>
                                             <TextInput id="inventoryItems_alt_url_to_provider" type="text"
                                                        name="alt_url_to_provider"
-                                                       value={inventoryItem.data.altUrlToProviderSite}
+                                                       value={data.altUrlToProviderSite}
                                                        onChange={e => setData('alt_url_to_provider', e.target.value)}
                                                        className="mt-1 block w-full"/>
                                             <InputError message={errors.altUrlToProviderSite} className="mt-2"/>
@@ -301,14 +299,11 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
                                 </AccordionWithManualIndex>
                                 <div className="flex justify-between mt-4">
                                     <div>
-                                        <Link href={route(`inventoryItems.${referrer ? referrer : 'index'}`, queryParams)}><SecondaryButton type="button">{StringHelper.__("Cancel")}</SecondaryButton></Link>
+                                        <Link href={route(`inventoryItems.${referrer ? referrer : 'index'}`, queryParams)}><SecondaryButton type="button" disabled={processing}>{StringHelper.__("Cancel")}</SecondaryButton></Link>
                                         <PrimaryButton className="ml-2"
                                                        disabled={processing}>{StringHelper.__("Save")}</PrimaryButton>
                                     </div>
-                                    {can.delete && <a type="button" onClick={() => handleDestroy(inventoryItem.data.id)}
-                                       className="inline-flex items-center px-4 py-2 bg-pink-500 dark:bg-pink-500 border border-pink-500 hover:border-pink-800 dark:border-pink-500 rounded-md font-semibold text-xs text-white dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-rose-800 dark:hover:bg-rose-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">{StringHelper.__("Delete")}
-                                        <RiDeleteBin6Line className="ml-1 w-5 h-5 text-white"/>
-                                    </a>}
+                                    {can.delete && <DeleteButton type="button" disabled={processing} onClick={() => handleDestroy(inventoryItem.data.id)}>{StringHelper.__("Delete")}</DeleteButton>}
                                 </div>
                             </div>
                         </form>

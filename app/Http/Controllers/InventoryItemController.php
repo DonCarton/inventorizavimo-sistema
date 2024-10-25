@@ -157,24 +157,6 @@ class InventoryItemController extends Controller
 
         return response()->json(['post_number' => $newIdentifier]);
     }
-//    public function fetchPostNumber(Request $request): JsonResponse
-//    {
-//        $prefixOptionId = $request->input('prefix_option_id');
-//        $prefixOptionIdToFetch = $prefixOptionId . '%';
-//        $latestPost = InventoryItem::where('local_name', 'like', $prefixOptionIdToFetch)->latest('local_name')->first();
-//        if ($latestPost == null) {
-//            $newIdentifier = $prefixOptionId . '001';
-//            return response()->json(['post_number' => $newIdentifier]);
-//        }
-//        $numericPart = (int)preg_replace('/[^0-9]/', '', $latestPost->local_name);
-//        if ($numericPart < 999) {
-//            $numericPart++;
-//        } else {
-//            $numericPart = 1;
-//        }
-//        $newIdentifier = $prefixOptionId . str_pad($numericPart, 3, '0', STR_PAD_LEFT);
-//        return response()->json(['post_number' => $newIdentifier]);
-//    }
 
     /**
      * @param Request $request
@@ -189,7 +171,8 @@ class InventoryItemController extends Controller
         return Inertia::render('Inventory/Create', [
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
-            'queryParams' => $queryParams,
+            'referrer' => $request->query('referrer'),
+            'queryParams' => $request->query('query')
         ]);
     }
 
@@ -199,9 +182,11 @@ class InventoryItemController extends Controller
      */
     public function store(StoreInventoryItemRequest $request): RedirectResponse
     {
+        $queryParams = $request->query('query');
+        $redirectDestination = $request->query('referrer', 'index');
         Gate::authorize('create', InventoryItem::class);
         InventoryItem::create($request->all());
-        return to_route('inventoryItems.index')->with('success', __('actions.inventoryItem.created', ['local_name' => $request['local_name']]));
+        return to_route("inventoryItems.${redirectDestination}", $queryParams)->with('success', __('actions.inventoryItem.created', ['local_name' => $request['local_name']]));
     }
 
     /**
