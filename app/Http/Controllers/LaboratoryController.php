@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -25,6 +26,7 @@ class LaboratoryController extends Controller
      */
     public function index(): Response
     {
+        Gate::authorize('viewAny', Laboratory::class);
         $query = Laboratory::query();
         $sortField = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", 'desc');
@@ -41,7 +43,8 @@ class LaboratoryController extends Controller
             'laboratories' => LaboratoryResource::collection($laboratories),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
-            'warning' => session('warning')
+            'warning' => session('warning'),
+            'failure' => session('failure')
         ]);
     }
 
@@ -73,12 +76,12 @@ class LaboratoryController extends Controller
     {
         $data = $request->validated();
         Laboratory::create($data);
-        return redirect()->route('laboratories.index')->with('success', __('actions.laboratory.created', ['name' => $request['name']]) . '.');
+        return redirect()->route('laboratories.index')->with('success', __('actions.laboratory.created', ['name' => $request['name']]));
     }
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
+     * @param UpdateLaboratoryRequest $request
      * @param Laboratory $laboratory
      * @return RedirectResponse
      */
@@ -86,7 +89,10 @@ class LaboratoryController extends Controller
     {
         $data = $request->validated();
         $laboratory->update($data);
-        return Redirect::route('laboratories.index')->with('success',(__('actions.laboratory.updated', ['name' => $request['name']]).'.'));
+        if ($laboratory->wasChanged()) {
+            return Redirect::route('laboratories.index')->with('success',(__('actions.laboratory.updated', ['name' => $request['name']])));
+        }
+        return Redirect::route('laboratories.index');
     }
 
     /**
@@ -96,17 +102,28 @@ class LaboratoryController extends Controller
     public function edit(Laboratory $laboratory): Response
     {
         return Inertia::render('Laboratory/Edit',[
-            'laboratory' => new LaboratoryResource($laboratory)
+            'laboratory' => new LaboratoryResource($laboratory),
+            'can' => [
+                'delete' => request()->user()->can('delete', $laboratory),
+            ]
         ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(Laboratory $laboratory): RedirectResponse
     {
-        $laboratory = Laboratory::findOrFail($id);
-        return to_route('laboratories.index')->with('warning',(__('actions.laboratory.deleted', ['name' => $laboratory['name']]).'.'));
+        Gate::authorize('delete',$laboratory);
+        if ($laboratory->id == 1) { return to_route('laboratories.index')->with('failure', __('actions.invalidDelete')); }
+        if ($laboratory->inventoryItemsCount() >= 1 || $laboratory->userCount() >= 1) {
+            return to_route('laboratories.index')->with('failure', __('actions.invalidDelete')); }
+        $totalLaboratories = Laboratory::count();
+        if ($totalLaboratories <= 1) {
+            return to_route('laboratories.index')->with('failure', __('actions.invalidDelete'));
+        }
+        $laboratory->delete();
+        return to_route('laboratories.index')->with('success',(__('actions.laboratory.deleted', ['name' => $laboratory['name']])));
     }
 
     /**
@@ -129,6 +146,6 @@ class LaboratoryController extends Controller
         ]);
         $file = $request->file('file');
         Excel::import(new LaboratoryImport(), $file);
-        return to_route('laboratories.index')->with('success',__('actions.uploaded') . '!');
+        return to_route('laboratories.index')->with('success',__('actions.uploaded'));
     }
 }

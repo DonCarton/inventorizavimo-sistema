@@ -5,7 +5,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
-import { __ } from '@/Libs/Lang.jsx';
+import StringHelper from "@/Libs/StringHelper.jsx";
 
 export default function UpdatePasswordForm({ className = '' }) {
     const passwordInput = useRef();
@@ -40,16 +40,16 @@ export default function UpdatePasswordForm({ className = '' }) {
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">{__("Update password")}</h2>
+                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">{StringHelper.__("Update password")}</h2>
 
                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    {__("Ensure your account is using a long, random password to stay secure")}.
+                    {StringHelper.__("Ensure your account is using a long, random password to stay secure")}.
                 </p>
             </header>
 
             <form onSubmit={updatePassword} className="mt-6 space-y-6">
                 <div>
-                    <InputLabel htmlFor="current_password" value={__("Current password")} />
+                    <InputLabel htmlFor="current_password" value={StringHelper.__("Current password")} />
 
                     <TextInput
                         id="current_password"
@@ -65,7 +65,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password" value={__("New password")} />
+                    <InputLabel htmlFor="password" value={StringHelper.__("New password")} />
 
                     <TextInput
                         id="password"
@@ -81,7 +81,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password_confirmation" value={__("Confirm password")} />
+                    <InputLabel htmlFor="password_confirmation" value={StringHelper.__("Confirm password")} />
 
                     <TextInput
                         id="password_confirmation"
@@ -96,7 +96,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>{__("Save")}</PrimaryButton>
+                    <PrimaryButton disabled={processing}>{StringHelper.__("Save")}</PrimaryButton>
 
                     <Transition
                         show={recentlySuccessful}
@@ -105,7 +105,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                         leave="transition ease-in-out"
                         leaveTo="opacity-0"
                     >
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{__("Saved")}.</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{StringHelper.__("Saved")}.</p>
                     </Transition>
                 </div>
             </form>

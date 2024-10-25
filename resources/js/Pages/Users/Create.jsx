@@ -3,12 +3,11 @@ import {Head, Link, useForm} from "@inertiajs/react";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
-import {__} from "@/Libs/Lang.jsx";
 import SteamDropdown from "@/Components/SteamDropdown.jsx"
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import StringHelper from "@/Libs/StringHelper";
 
-export default function Create({auth, roles, role, laboratories}) {
+export default function Create({auth, roles, laboratories}) {
 
     const {data, setData, post, errors, processing} = useForm({
         first_name: '',
@@ -25,12 +24,12 @@ export default function Create({auth, roles, role, laboratories}) {
     return (
         <AuthenticatedLayout
             user={auth.user}
+            can={auth.can}
             header={
                 <div className="flex justify-between items-center">
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Create new user")}</h2>
                 </div>
             }
-            role={role}
         >
             <Head title={StringHelper.__("Create new user")}/>
             <div className="py-12">

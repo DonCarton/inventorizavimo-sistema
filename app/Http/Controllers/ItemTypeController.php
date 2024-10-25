@@ -9,6 +9,7 @@ use App\Models\ItemType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -23,6 +24,7 @@ class ItemTypeController extends Controller
      */
     public function index(): Response
     {
+        Gate::authorize('viewAny', ItemType::class);
         $query = ItemType::query();
         $itemTypes = $query->paginate(10)->onEachSide(1);
         return Inertia::render('ItemTypes/Index',[
@@ -73,7 +75,10 @@ class ItemTypeController extends Controller
     public function edit(ItemType $itemType): Response
     {
         return Inertia::render('ItemTypes/Edit',[
-            'itemType' => new ItemTypeResource($itemType)
+            'itemType' => new ItemTypeResource($itemType),
+            'can' => [
+                'delete' => request()->user()->can('delete', $itemType),
+            ]
         ]);
     }
 
@@ -92,9 +97,15 @@ class ItemTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(ItemType $itemType): RedirectResponse
     {
-        $itemType = ItemType::findOrFail($id);
-        return to_route('itemTypes.index')->with('warning',(__('actions.itemType.deleted', ['name' => $itemType['name']]).'.'));
+        Gate::authorize('delete',$itemType);
+        if ($itemType->inventoryItemCount() > 0) {
+            return to_route('itemTypes.index')->with('warning',__('actions.itemType.still_related', ['count' => $itemType->inventoryItemCount()]));
+        }
+        $itemTypes = ItemType::count();
+        if ($itemTypes <= 1) { return to_route('itemTypes.index')->with('failure',__('actions.invalidDelete')); }
+        $itemType->delete();
+        return to_route('itemTypes.index')->with('success',(__('actions.itemType.deleted', ['name' => $itemType['name']]).'.'));
     }
 }

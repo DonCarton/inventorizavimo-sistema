@@ -5,18 +5,19 @@ namespace App\Http\Controllers;
 use App\Events\UserCreated;
 use App\Exports\UserExports;
 use App\Http\Requests\ExportRequests\UserExportRequest;
+use App\Http\Requests\StoreRequests\StoreUserRequest;
+use App\Http\Requests\UpdateRequests\UpdateUserRequest;
 use App\Http\Resources\SelectObjectResources\LaboratoriesForSelect;
 use App\Http\Resources\SelectObjectResources\RolesForSelect;
 use App\Http\Resources\UserResource;
 use App\Models\Laboratory;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
@@ -26,19 +27,12 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class UserController extends Controller
 {
     /**
-     * @param Laboratory $laboratory
-     */
-    public function __construct(public Laboratory $laboratory)
-    {
-
-    }
-
-    /**
      * Display a listing of the resource.
      * @return Response
      */
     public function index(): Response
     {
+        Gate::authorize('viewAny', User::class);
         $query = User::query();
         $sortField = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", 'desc');
@@ -60,6 +54,7 @@ class UserController extends Controller
      */
     public function create(): Response
     {
+        Gate::authorize('create', User::class);
         $roles = Role::query()->get();
         $laboratories = Laboratory::query()->get();
         return Inertia::render('Users/Create', [
@@ -70,24 +65,20 @@ class UserController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     * @param StoreUserRequest $request
      * @return RedirectResponse
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreUserRequest $request): RedirectResponse
     {
-        $request->validate([
-            'first_name' => ['required','string','max:50'],
-            'last_name' => ['required','string','max:50'],
-            'email' => ['required','string','lowercase','email','max:60',Rule::unique('users')->whereNull('deleted_at')],
-            'laboratory' => 'required',
-            'selectedRole' => 'required|exists:roles,id',
-        ]);
+        Gate::authorize('store', User::class);
         $password = Str::random(10);
         $request['is_disabled'] = false;
         $request['locale'] = env('APP_LOCALE');
         $request['password'] = Hash::make($password);
         $request['name'] = $request['first_name'] . ' ' . $request['last_name'];
         $newUser = User::create($request->all())->assignRole(Role::findById($request['selectedRole'])->name);
+        $newUser->email_verified_at = now();
+        $newUser->save();
         event(new UserCreated($newUser, $password));
         return redirect()->route('users.index')->with('success', __('actions.user.created', ['email' => $newUser->email]));
     }
@@ -117,6 +108,7 @@ class UserController extends Controller
      */
     public function edit(User $user): Response
     {
+        Gate::authorize('edit',$user);
         $roles = Role::query()->get();
         $roleName = $user->roles()->select('id')->get()->toArray();
         $laboratories = Laboratory::all()->select('id', 'name')->toArray();
@@ -125,30 +117,34 @@ class UserController extends Controller
             'userRole' => $roleName ? $roleName[0]['id'] : '',
             'roles' => RolesForSelect::collection($roles),
             'laboratories' => $laboratories,
-            'failure' => session('failure')
+            'failure' => session('failure'),
+            'can' => [
+                'changeRole' => auth()->user()->can('changeRole', $user),
+                'deleteUser' => auth()->user()->can('delete', $user),
+            ]
         ]);
     }
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
+     * @param UpdateUserRequest $request
      * @param User $user
      * @return RedirectResponse
      */
-    public function update(Request $request, User $user): RedirectResponse
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $data = $request->validate([
-            'first_name' => ['required','string','max:50'],
-            'last_name' => ['required','string','max:50'],
-            'email' => ['required','string','lowercase','email','max:60',Rule::unique('users')->ignore($user->id)->whereNull('deleted_at')],
-            'laboratory' => ['required','integer','exists:laboratories,id'],
-            'role' => 'required|exists:roles,id',
-            'updated_by' => ['required']
-        ]);
-        $user->roles()->detach();
-        $user->assignRole(Role::findById($data['role'])->name);
-        $user->update($data);
-        return Redirect::route('users.index')->with('success', __('actions.user.updated', ['email' => $user->email]));
+        Gate::authorize('update', $user);
+        $currentUserRole = $user->currentlyAssignedRole();
+        if ($user->id != auth()->user()->id)
+        {
+            $user->syncRoles(Role::findById($request['role'])->name);
+        }
+        $roleChanged = $currentUserRole == $user->currentlyAssignedRole();
+        $user->update($request->validated());
+        if ($user->wasChanged() || !$roleChanged) {
+            return Redirect::route('users.index')->with('success', __('actions.user.updated', ['email' => $user->email]));
+        }
+        return Redirect::route('users.index');
     }
 
     /**
@@ -159,7 +155,11 @@ class UserController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         $user = User::findOrFail($id);
+        Gate::authorize('delete',$user);
         $userCount = User::query()->count();
+        if ($user->hasRole('super-admin')){
+            Gate::authorize('delete',$user);
+        }
         if ($userCount <= 1) {
             return to_route('users.edit',$user)->with('failure',__('actions.user.noUsersLeft'));
         }
@@ -173,6 +173,10 @@ class UserController extends Controller
 
     public function activate(User $user): RedirectResponse
     {
+        if ($user->id === auth()->user()->id) {
+            return to_route('users.index')->with('failure',__('actions.user.selfDeactivate'));
+        }
+        Gate::authorize('activate',$user);
         $user->update([
             'is_disabled' => false
         ]);
@@ -181,6 +185,10 @@ class UserController extends Controller
 
     public function deactivate(User $user): RedirectResponse
     {
+        if ($user->id === auth()->user()->id) {
+            return to_route('users.index')->with('failure',__('actions.user.selfDeactivate'));
+        }
+        Gate::authorize('deactivate',$user);
         $user->update([
             'is_disabled' => true
         ]);
@@ -188,6 +196,7 @@ class UserController extends Controller
     }
 
     /**
+     * @param UserExportRequest $userExportRequest
      * @return BinaryFileResponse
      */
     public function export(UserExportRequest $userExportRequest): BinaryFileResponse

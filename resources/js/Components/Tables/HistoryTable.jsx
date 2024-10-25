@@ -1,8 +1,9 @@
-import StringHelper from "@/Libs/StringHelper";
+import { useTranslation } from "@/Libs/useTranslation.jsx";
 import { useState } from "react";
 import { BiChevronDown } from "react-icons/bi";
 
 export default function HistoryTable({ data }) {
+    const { translate } = useTranslation();
     function TableRow({ object, index }) {
         let [isRowExpanded, setIsRowExpanded] = useState(false);
         return (
@@ -24,7 +25,7 @@ export default function HistoryTable({ data }) {
                     </td>
                     <td>{object.definitionOfChanges.created_at}</td>
                     <td><strong>[{object.definitionOfChanges.object}]</strong></td>
-                    <td>{StringHelper.__(object.definitionOfChanges.action)}</td>
+                    <td>{translate(object.definitionOfChanges.action)}</td>
                     <td>{object.definitionOfChanges.causeUser}</td>
                 </tr>
                 {isRowExpanded && (
@@ -46,13 +47,13 @@ export default function HistoryTable({ data }) {
                                         <thead>
                                             <tr className="bg-gray-50 uppercase">
                                                 <th className="w-64 text-left">
-                                                    {StringHelper.__("Field")}
+                                                    {translate("Field")}
                                                 </th>
                                                 <th className="w-64 text-left">
-                                                    {StringHelper.__("Changed from")}
+                                                    {translate("Changed from")}
                                                 </th>
                                                 <th className="w-64 text-left">
-                                                    {StringHelper.__("Changed to")}
+                                                    {translate("Changed to")}
                                                 </th>
                                             </tr>
                                         </thead>
@@ -91,10 +92,10 @@ export default function HistoryTable({ data }) {
                 <thead className="text-md text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                     <tr>
                         <th className="w-5"></th>
-                        <th className="w-64">{StringHelper.__("When")}</th>
-                        <th className="w-64">{StringHelper.__("Object")}</th>
-                        <th className="w-64">{StringHelper.__("Action")}</th>
-                        <th className="w-64">{StringHelper.__("Who")}</th>
+                        <th className="w-64">{translate("When")}</th>
+                        <th className="w-64">{translate("Object")}</th>
+                        <th className="w-64">{translate("Action")}</th>
+                        <th className="w-64">{translate("Who")}</th>
                     </tr>
                 </thead>
             </table>

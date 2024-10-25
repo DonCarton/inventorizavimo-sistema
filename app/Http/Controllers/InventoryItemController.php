@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RoleEnum;
 use App\Exports\InventoryExports;
 use App\Http\Requests\ExportRequests\InventoryItemExportRequest;
 use App\Http\Requests\StoreRequests\AdjustInventoryAmountViaLog;
@@ -25,6 +26,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -38,6 +40,7 @@ class InventoryItemController extends Controller
      */
     public function index(): Response
     {
+        Gate::authorize('viewAny', InventoryItem::class);
         $query = InventoryItem::query();
         $sortField = request("sort_field", 'updated_at');
         $sortDirection = request("sort_direction", 'desc');
@@ -154,24 +157,6 @@ class InventoryItemController extends Controller
 
         return response()->json(['post_number' => $newIdentifier]);
     }
-//    public function fetchPostNumber(Request $request): JsonResponse
-//    {
-//        $prefixOptionId = $request->input('prefix_option_id');
-//        $prefixOptionIdToFetch = $prefixOptionId . '%';
-//        $latestPost = InventoryItem::where('local_name', 'like', $prefixOptionIdToFetch)->latest('local_name')->first();
-//        if ($latestPost == null) {
-//            $newIdentifier = $prefixOptionId . '001';
-//            return response()->json(['post_number' => $newIdentifier]);
-//        }
-//        $numericPart = (int)preg_replace('/[^0-9]/', '', $latestPost->local_name);
-//        if ($numericPart < 999) {
-//            $numericPart++;
-//        } else {
-//            $numericPart = 1;
-//        }
-//        $newIdentifier = $prefixOptionId . str_pad($numericPart, 3, '0', STR_PAD_LEFT);
-//        return response()->json(['post_number' => $newIdentifier]);
-//    }
 
     /**
      * @param Request $request
@@ -179,13 +164,15 @@ class InventoryItemController extends Controller
      */
     public function create(Request $request): Response
     {
+        Gate::authorize('create', InventoryItem::class);
         $queryParams = $request->query();
         $laboratories = Laboratory::query()->get();
         $itemTypes = ItemType::query()->get();
         return Inertia::render('Inventory/Create', [
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
-            'queryParams' => $queryParams,
+            'referrer' => $request->query('referrer'),
+            'queryParams' => $request->query('query')
         ]);
     }
 
@@ -195,8 +182,11 @@ class InventoryItemController extends Controller
      */
     public function store(StoreInventoryItemRequest $request): RedirectResponse
     {
+        $queryParams = $request->query('query');
+        $redirectDestination = $request->query('referrer', 'index');
+        Gate::authorize('create', InventoryItem::class);
         InventoryItem::create($request->all());
-        return to_route('inventoryItems.index')->with('success', __('actions.inventoryItem.created', ['local_name' => $request['local_name']]) . '.');
+        return to_route("inventoryItems.${redirectDestination}", $queryParams)->with('success', __('actions.inventoryItem.created', ['local_name' => $request['local_name']]));
     }
 
     /**
@@ -207,6 +197,7 @@ class InventoryItemController extends Controller
     public function editRaw(int|string $identifier, Request $request): Response
     {
         $inventoryItem = InventoryItem::where('id','=',$identifier)->orWhere('local_name', $identifier)->firstOrFail();
+        Gate::authorize('edit',$inventoryItem);
         $amountLogs = $inventoryItem->amountLogs;
         $laboratories = Laboratory::query()->get()->all();
         $itemTypes = ItemType::query()->get();
@@ -218,6 +209,11 @@ class InventoryItemController extends Controller
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'queryParams' => $queryParams,
             'referrer' => $request->query('referrer'),
+            'can' => [
+                'alterType' => $request->user()->hasRole(RoleEnum::SUPER_ADMIN),
+                'alterLocation' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
+                'delete' => $request->user()->can('delete',$inventoryItem),
+            ]
         ]);
 
     }
@@ -241,7 +237,7 @@ class InventoryItemController extends Controller
         $redirectDestination = $request->query('referrer', 'index');
 
         if (!empty($changedData)){
-            return Redirect::route("inventoryItems.${redirectDestination}", $queryParams)->with('success', __('actions.inventoryItem.updated', ['local_name' => $data['local_name']]) . '.');
+            return Redirect::route("inventoryItems.${redirectDestination}", $queryParams)->with('success', __('actions.inventoryItem.updated', ['local_name' => $data['local_name']]));
         }
         return Redirect::route("inventoryItems.${redirectDestination}", $queryParams);
     }
@@ -274,13 +270,13 @@ class InventoryItemController extends Controller
             return to_route('reader')
                 ->with('success', __('actions.inventoryItem.updated', [
                             'local_name' => $inventoryItem->local_name]
-                    ) . '.');
+                    ));
         }
         else {
             return to_route("inventoryItems.${redirectDestination}", $queryParams)
                 ->with('success', __('actions.inventoryItem.updated', [
                             'local_name' => $inventoryItem->local_name]
-                    ) . '.');
+                    ));
         }
     }
 
@@ -377,11 +373,11 @@ class InventoryItemController extends Controller
         }
         if ($request->urlToRedirect) {
             return redirect()->route('reader')
-                ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
+                ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]));
         } else {
             $redirectTo = $request->query('referrer', 'index');
             return redirect()->route("inventoryItems.${redirectTo}",$queryParams)
-                ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]) . '.');
+                ->with('success', __('actions.inventoryItem.logged',['local_name' => $inventoryItem->local_name]));
         }
     }
 
@@ -418,7 +414,7 @@ class InventoryItemController extends Controller
         }
         $inventoryItem->delete();
         return redirect()->route('inventoryItems.index')
-            ->with('success', __('actions.inventoryItem.deleted', ['local_name' => $inventoryItem['local_name']]) . '.');
+            ->with('success', __('actions.inventoryItem.deleted', ['local_name' => $inventoryItem['local_name']]));
     }
 
     /**
@@ -445,6 +441,6 @@ class InventoryItemController extends Controller
         $file = $request->file('file');
         $fileName = $request->file('file')->getClientOriginalName();
         Excel::import(new InventoryImport(), $file);
-        return to_route("inventoryItems.${referrer}")->with('success', __('actions.uploaded', ['name' => $fileName]) . '.');
+        return to_route("inventoryItems.${referrer}")->with('success', __('actions.uploaded', ['name' => $fileName]));
     }
 }

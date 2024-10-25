@@ -1,15 +1,14 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
 import {Head, Link, useForm} from "@inertiajs/react";
-import {__} from '@/Libs/Lang.jsx';
+import StringHelper from "@/Libs/StringHelper.jsx";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
-import Checkbox from "@/Components/Checkbox.jsx";
 import {useState} from "react";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
+import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
-export default function Create({auth, previousUrl, role}) {
-    const [previousUrlPage] = useState(previousUrl);
+export default function Create({auth}) {
     const [checked, setChecked] = useState(false);
     const {data, setData, post, errors, processing} = useForm({
         name: '',
@@ -26,11 +25,11 @@ export default function Create({auth, previousUrl, role}) {
     return (
         <AuthenticatedLayout
             user={auth.user}
+            can={auth.can}
             header={<h2
-                className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Create")}</h2>}
-            role={role}
+                className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Create")}</h2>}
         >
-            <Head title={__("Create")}/>
+            <Head title={StringHelper.__("Create")}/>
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -38,7 +37,7 @@ export default function Create({auth, previousUrl, role}) {
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <form onSubmit={onSubmit}>
                                 <div className="mt-4">
-                                    <InputLabel htmlFor="itemType_name">{__("Name")}<span
+                                    <InputLabel htmlFor="itemType_name">{StringHelper.__("Name")}<span
                                         className="text-red-500">*</span></InputLabel>
                                     <TextInput id="itemType_name" type="text" name="name" value={data.name}
                                                className="mt-1 block w-full" isFocused={true}
@@ -53,16 +52,12 @@ export default function Create({auth, previousUrl, role}) {
                                             checked={checked}
                                             onChange={handleCheckbox}
                                         />
-                                        {__("Can change literal amount")}?<span className="text-red-500">*</span>
+                                        {StringHelper.__("Can change literal amount")}?<span className="text-red-500">*</span>
                                     </label>
                                 </div>
                                 <div className="mt-4">
-                                    <Link href={previousUrlPage}
-                                          className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
-                                    >
-                                        {__("Cancel")}
-                                    </Link>
-                                    <PrimaryButton className="ml-2" disabled={processing}>{__("Create")}</PrimaryButton>
+                                    <Link href="/itemTypes"><SecondaryButton>{StringHelper.__("Cancel")}</SecondaryButton></Link>
+                                    <PrimaryButton className="ml-2" disabled={processing}>{StringHelper.__("Create")}</PrimaryButton>
                                 </div>
                             </form>
                         </div>

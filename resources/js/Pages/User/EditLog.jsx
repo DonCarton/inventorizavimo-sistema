@@ -6,7 +6,7 @@ import Icon from "@/Components/Icon.jsx";
 import InputError from "@/Components/InputError.jsx";
 import {Accordion, AccordionBody, AccordionHeader} from "@material-tailwind/react";
 import React, {useState} from "react";
-import {__} from "@/Libs/Lang.jsx";
+import StringHelper from "@/Libs/StringHelper.jsx";
 import Modal from "@/Components/Modal.jsx";
 import { actionsOnInventory } from '@/Configurations/SelectConfigurations.jsx';
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
@@ -18,7 +18,7 @@ import {FaQrcode} from "react-icons/fa";
 import {MdClose} from "react-icons/md";
 import LogsTable from "@/Components/Forms/LogsTable.jsx";
 
-export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse, laboratories, redirectToReader, queryParams, referrer}) {
+export default function Edit({auth, inventoryItem, logsForItem, totalInUse, laboratories, redirectToReader, queryParams, referrer}) {
     const [actionFromUser, setActionFromUser] = useState('REMOVE');
     const {data, setData, patch, errors} = useForm({
         total_amount: inventoryItem.total_amount,
@@ -47,14 +47,14 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
     return (
         <AuthenticatedLayout
             user={auth.user}
+            can={auth.can}
             header={
                 <div className="flex justify-between items-center">
-                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{__("Change amount")} - {inventoryItem.local_name} - {inventoryItem.name}</h2>
+                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Change amount")} - {inventoryItem.local_name} - {inventoryItem.name}</h2>
                 </div>
             }
-            role={role}
         >
-            <Head title={__("Change amount") + ' - ' + inventoryItem.local_name}/>
+            <Head title={StringHelper.__("Change amount") + ' - ' + inventoryItem.local_name}/>
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg space-y-6">
@@ -62,7 +62,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                         <Modal closeable show={modalOpen} onClose={closeModal}>
                             <div className="flex justify-between items-center p-4 bg-gray-100 border-b dark:bg-gray-800 dark:border-gray-700">
                                 <h4 className="text-lg font-medium">
-                                    {inventoryItem.laboratory === null ? __("Base location undefined") : __("Base amount is located") + ' ' + inventoryItem.laboratory.name}
+                                    {inventoryItem.laboratory === null ? StringHelper.__("Base location undefined") : StringHelper.__("Base amount is located") + ' ' + inventoryItem.laboratory.name}
                                 </h4>
                                 <button onClick={closeModal}
                                         className="text-gray-600 hover:text-gray-800 dark:hover:text-white">
@@ -72,13 +72,13 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                             <form className="p-6" onSubmit={onSubmit2}>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6">
                                     <div className="mt-4">
-                                        <InputLabel htmlFor="inventoryItems_laboratory_id">{__("Laboratory")}<span
+                                        <InputLabel htmlFor="inventoryItems_laboratory_id">{StringHelper.__("Laboratory")}<span
                                             className="text-red-500">*</span></InputLabel>
                                         <select
                                             className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
                                             value={data.laboratory_id}
                                             onChange={e => setData('laboratory_id', e.target.value)}>
-                                            <option value="">{__("Choose a value")}</option>
+                                            <option value="">{StringHelper.__("Choose a value")}</option>
                                             {laboratories.data.map(laboratory => (
                                                 <option key={laboratory.id} value={laboratory.id}>{laboratory.name}</option>
                                             ))}
@@ -86,19 +86,19 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                         <InputError message={errors.laboratory_id} className="mt-2"/>
                                     </div>
                                     <div className="mt-4">
-                                        <InputLabel htmlFor="inventoryItems_action">{__("Action")}<span
+                                        <InputLabel htmlFor="inventoryItems_action">{StringHelper.__("Action")}<span
                                             className="text-red-500">*</span></InputLabel>
                                         <select
                                             className={data.action === 'REMOVE' ? "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full bg-red-300" : "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full bg-emerald-300 option:"}
                                             onChange={e => setData('action', e.target.value)} value={data.action}>
                                             {actionsOnInventory.map(action => (
                                                 <option key={action.value} value={action.value}
-                                                        className={action.className}>{__(action.label)}</option>
+                                                        className={action.className}>{StringHelper.__(action.label)}</option>
                                             ))}
                                         </select>
                                     </div>
                                     <div className="mt-4">
-                                        <InputLabel htmlFor="inventoryItems_amount">{__("Amount")}<span
+                                        <InputLabel htmlFor="inventoryItems_amount">{StringHelper.__("Amount")}<span
                                             className="text-red-500">*</span></InputLabel>
                                         <NumericInput type="text" className="mt-1 block w-full"
                                                       id="inventoryItems_amount" name="amount"
@@ -106,7 +106,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                         <InputError message={errors.amount} className="mt-2"/>
                                     </div>
                                     <div className="mt-4">
-                                        <InputLabel htmlFor="inventoryItems_comment">{__("Comment")}<span
+                                        <InputLabel htmlFor="inventoryItems_comment">{StringHelper.__("Comment")}<span
                                             className="text-red-500">*</span></InputLabel>
                                         <TextInputExtra type="textarea" className="mt-1 block w-full"
                                                         id="inventoryItems_comment" name="comment"
@@ -116,8 +116,8 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                 </div>
                                 <div className="mt-2">
                                     <SecondaryButton className="hover:bg-gray-100 mr-2"
-                                                     onClick={closeModal}>{__("Cancel")}</SecondaryButton>
-                                    <PrimaryButton className="bg-emerald-700">{__("Save")}</PrimaryButton>
+                                                     onClick={closeModal}>{StringHelper.__("Cancel")}</SecondaryButton>
+                                    <PrimaryButton className="bg-emerald-700">{StringHelper.__("Save")}</PrimaryButton>
                                 </div>
                             </form>
                         </Modal>
@@ -127,16 +127,16 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                     <div
                                         className="flex items-center w-40 space-x-2 bg-amber-300 rounded border shadow p-2 hover:bg-amber-400">
                                         <TbArrowsUpDown/>
-                                        <span className="text-gray-700">{__("Perform change")}</span>
+                                        <span className="text-gray-700">{StringHelper.__("Perform change")}</span>
                                     </div>
                                 </a>
                             </div>
                                 <Accordion open={open === 1} icon={<Icon id={1} open={open}/>}>
-                                    <AccordionHeader onClick={() => handleOpen(1)}>{__("Amount")}</AccordionHeader>
+                                    <AccordionHeader onClick={() => handleOpen(1)}>{StringHelper.__("Amount")}</AccordionHeader>
                                     <AccordionBody>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                             <div className="mt-4 w-full flex flex-col">
-                                                <InputLabel htmlFor="inventoryItems_total_amount" value={__("Count")}/>
+                                                <InputLabel htmlFor="inventoryItems_total_amount" value={StringHelper.__("Count")}/>
                                                 <TextInput id="inventoryItems_total_amount" type="text"
                                                            name="total_amount" value={data.total_amount}
                                                            className="mt-1 block w-full disabled:bg-gray-400 text-white"
@@ -144,7 +144,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                             </div>
                                             <div className="mt-4 w-full flex flex-col">
                                                 <InputLabel htmlFor="inventoryItems_total_available"
-                                                            value={__("Available amount")}/>
+                                                            value={StringHelper.__("Available amount")}/>
                                                 <TextInput id="inventoryItems_total_available" type="text"
                                                            name="total_available"
                                                            value={totalInUse}
@@ -156,12 +156,12 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                 </Accordion>
                                 <Accordion open={open2 === 2} icon={<Icon id={2} open={open2}/>}>
                                     <AccordionHeader
-                                        onClick={() => handleOpen2(2)}>{__("Inventory information")}</AccordionHeader>
+                                        onClick={() => handleOpen2(2)}>{StringHelper.__("Inventory information")}</AccordionHeader>
                                     <AccordionBody>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                             <div className="mt-4">
                                                 <InputLabel
-                                                    htmlFor="inventoryItems_local_name">{__("Barcode")}</InputLabel>
+                                                    htmlFor="inventoryItems_local_name">{StringHelper.__("Barcode")}</InputLabel>
                                                 <TextInput readOnly={true} disabled={true}
                                                            id="inventoryItems_local_name"
                                                            type="text" name="local_name"
@@ -170,7 +170,7 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                             </div>
                                             <div className="mt-4">
                                                 <InputLabel
-                                                    htmlFor="inventoryItems_type">{__("Type")}</InputLabel>
+                                                    htmlFor="inventoryItems_type">{StringHelper.__("Type")}</InputLabel>
                                                 <TextInput readOnly={true} disabled={true} id="inventoryItems_type"
                                                            type="text" name="type"
                                                            value={inventoryItem.inventory_type.label}
@@ -198,14 +198,14 @@ export default function Edit({auth, inventoryItem, role, logsForItem, totalInUse
                                         href={route(`inventoryItems.${referrer ? referrer : 'index'}`, queryParams)}
                                         className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150 mr-2"
                                     >
-                                        {__("Previous page")}
+                                        {StringHelper.__("Previous page")}
                                     </Link>
                                     <Link
                                         href={route('reader')}
                                         className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                     >
                                         <FaQrcode className="mr-2"/>
-                                        {__("Scanner")}
+                                        {StringHelper.__("Scanner")}
                                     </Link>
                                 </div>
                         </div>
