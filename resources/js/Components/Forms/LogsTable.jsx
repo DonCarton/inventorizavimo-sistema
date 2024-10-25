@@ -1,4 +1,4 @@
-import {__} from "@/Libs/Lang.jsx";
+import StringHelper from "@/Libs/StringHelper.jsx";
 import {Link} from "@inertiajs/react";
 
 export default function LogsTable({logsForItem}) {
@@ -10,12 +10,12 @@ export default function LogsTable({logsForItem}) {
                     <thead
                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                     <tr className="text-nowrap">
-                        <th className="px-3 py-2">{__("Laboratory")}</th>
-                        <th className="px-3 py-2">{__("Action")}</th>
-                        <th className="px-3 py-2">{__("Amount")}</th>
-                        <th className="px-3 py-2">{__("Comment")}</th>
-                        <th className="px-3 py-2">{__("Created by")}</th>
-                        <th className="px-3 py-2">{__("Created at")}</th>
+                        <th className="px-3 py-2">{StringHelper.__("Laboratory")}</th>
+                        <th className="px-3 py-2">{StringHelper.__("Action")}</th>
+                        <th className="px-3 py-2">{StringHelper.__("Amount")}</th>
+                        <th className="px-3 py-2">{StringHelper.__("Comment")}</th>
+                        <th className="px-3 py-2">{StringHelper.__("Created by")}</th>
+                        <th className="px-3 py-2">{StringHelper.__("Created at")}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -25,7 +25,7 @@ export default function LogsTable({logsForItem}) {
                                 <Link href={route("laboratories.show", logForItem.laboratory.id)}
                                       className="font-medium text-white hover:underline mx-1"> {logForItem.laboratory.name} </Link>
                             </td>
-                            <td className="px-3 py-2">{__(logForItem.action_taken)}</td>
+                            <td className="px-3 py-2">{StringHelper.__(logForItem.action_taken)}</td>
                             <td className="px-3 py-2">{logForItem.amount_handled}</td>
                             <td className="px-3 py-2">{logForItem.comment}</td>
                             <td className="px-3 py-2">

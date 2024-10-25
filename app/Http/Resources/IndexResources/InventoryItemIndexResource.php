@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\IndexResources;
 
+use App\Enums\RoleEnum;
 use App\Http\Resources\ItemTypeResource;
 use App\Http\Resources\LaboratoryResource;
 use App\Http\Resources\UserResource;
@@ -56,6 +57,9 @@ class InventoryItemIndexResource extends JsonResource
             'updated_at' => $this->updated_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
             'createdBy' => (new UserResource($this->createdBy))->email,
             'updatedBy' => (new UserResource($this->updatedBy))->email,
+            'can' => [
+                'edit' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
+            ]
         ];
     }
 }

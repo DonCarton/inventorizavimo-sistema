@@ -1,4 +1,3 @@
-import {__} from "@/Libs/Lang.jsx";
 import React from "react";
 
 const SelectForSingleItem = ({id, options, name, value, noValueText, onChange, disabled, className = ''}) => {

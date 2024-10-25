@@ -27,19 +27,12 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class UserController extends Controller
 {
     /**
-     * @param Laboratory $laboratory
-     */
-    public function __construct(public Laboratory $laboratory)
-    {
-
-    }
-
-    /**
      * Display a listing of the resource.
      * @return Response
      */
     public function index(): Response
     {
+        Gate::authorize('viewAny', User::class);
         $query = User::query();
         $sortField = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", 'desc');
@@ -124,7 +117,11 @@ class UserController extends Controller
             'userRole' => $roleName ? $roleName[0]['id'] : '',
             'roles' => RolesForSelect::collection($roles),
             'laboratories' => $laboratories,
-            'failure' => session('failure')
+            'failure' => session('failure'),
+            'can' => [
+                'changeRole' => auth()->user()->can('changeRole', $user),
+                'deleteUser' => auth()->user()->can('delete', $user),
+            ]
         ]);
     }
 

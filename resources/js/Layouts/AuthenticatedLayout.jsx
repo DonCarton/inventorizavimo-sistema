@@ -3,14 +3,15 @@ import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
-import { __ } from '@/Libs/Lang.jsx';
+import { useTranslation } from "@/Libs/useTranslation.jsx";
 import ApplicationLogoWhite from "@/Components/ApplicationLogoWhite.jsx";
 import MegaMenuNavLink from "@/Components/MegaMenuNavLink.jsx";
 import {ChevronDownIcon} from "@heroicons/react/24/solid/index.js";
 
-export default function Authenticated({ user, header, children, role }) {
+export default function Authenticated({ user, header, children, can }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
     const [showMegaMenuDropdown, setShowMegaMenuDropdown] = useState(false);
+    const { translate } = useTranslation();
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
             <nav className="bg-pink-800 border-b border-gray-100 dark:border-gray-700">
@@ -25,15 +26,15 @@ export default function Authenticated({ user, header, children, role }) {
 
                             <div className="hidden space-x-8 lg:-my-px lg:ms-10 lg:flex">
                                 <NavLink className="2xl:text-lg xl:text-base text-white" href={route('dashboard')} active={route().current('dashboard')}>
-                                    {__("Dashboard")}
+                                    {translate("Dashboard")}
                                 </NavLink>
-                                {role.includes('admin') &&
+                                {can.view.user &&
                                     <NavLink className="2xl:text-lg xl:text-base text-white" href={route('users.index')} active={route().current('users*')}>
-                                    {__("Users")}</NavLink>
+                                    {translate("Users")}</NavLink>
                                 }
                                 <button type="button" onClick={() => setShowMegaMenuDropdown(!showMegaMenuDropdown)} onMouseEnter={() => setShowMegaMenuDropdown(true)} onMouseLeave={() => setShowMegaMenuDropdown(false)}
                                         className={`inline-flex items-center 2xl:text-lg xl:text-base text-white px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none hover:border-b-2 hover:border-b-indigo-400 border-transparent dark:text-gray-400 hover:text-teal-100 dark:hover:text-gray-300 hover:border-indigo-500 dark:hover:border-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700 ${route().current('inventoryItems*') ? 'border-b-indigo-400 bg-pink-700' : ''}`}>
-                                    {__("Inventory")}
+                                    {translate("Inventory")}
                                     <ChevronDownIcon className="ml-1 w-5 h-5"/>
                                     {showMegaMenuDropdown &&
                                         <div className="absolute z-10 grid w-auto mt-40 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 dark:bg-gray-700">
@@ -41,32 +42,32 @@ export default function Authenticated({ user, header, children, role }) {
                                                 <ul className="space-y-4" aria-labelledby="mega-menu-dropdown-button">
                                                     <li>
                                                         <MegaMenuNavLink className="2xl:text-lg xl:text-base" href={route('inventoryItems.index')} active={route().current('inventoryItems.index') && !route().current('inventoryItems.myLaboratory')}>
-                                                            {__("Inventory")}
+                                                            {translate("Inventory")}
                                                         </MegaMenuNavLink>
                                                     </li>
                                                     <li>
                                                         <MegaMenuNavLink className="2xl:text-lg xl:text-base" href={route('inventoryItems.myLaboratory')} active={route().current('inventoryItems.myLaboratory')}>
-                                                            {__("My inventory")}
+                                                            {translate("My inventory")}
                                                         </MegaMenuNavLink>
                                                     </li>
                                                 </ul>
                                             </div>
                                         </div>}
                                 </button>
-                                {role.includes('admin') &&
+                                {can.view.itemType &&
                                     <NavLink className="2xl:text-lg xl:text-base text-white"
                                              href={route('itemTypes.index')} active={route().current('itemTypes*')}>
-                                        {__("Types")}
+                                        {translate("Types")}
                                     </NavLink>}
-                                {role.includes('admin') &&
+                                {can.view.laboratory &&
                                     <NavLink className="2xl:text-lg xl:text-base text-white"
                                              href={route('laboratories.index')}
                                              active={route().current('laboratories*')}>
-                                        {__("Laboratories")}
+                                        {translate("Laboratories")}
                                     </NavLink>}
                                 <NavLink className="2xl:text-lg xl:text-base text-white"
                                          href={route('reader')} active={route().current('reader')}>
-                                    {__("Reader")}
+                                    {translate("Reader")}
                                 </NavLink>
                             </div>
                         </div>
@@ -99,9 +100,9 @@ export default function Authenticated({ user, header, children, role }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
-                                        <Dropdown.Link href={route('profile.edit')}>{__("Profile")}</Dropdown.Link>
+                                        <Dropdown.Link href={route('profile.edit')}>{translate("Profile")}</Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
-                                            {__("Log out")}
+                                            {translate("Log out")}
                                         </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
@@ -137,25 +138,25 @@ export default function Authenticated({ user, header, children, role }) {
                 <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' lg:hidden'}>
                     <div className="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink className="text-white" href={route('dashboard')} active={route().current('dashboard')}>
-                            {__("Dashboard")}
+                            {translate("Dashboard")}
                         </ResponsiveNavLink>
-                        {role ==="admin" && <ResponsiveNavLink className="text-white" href={route('users.index')} active={route().current('users.index')}>
-                            {__("Users")}
+                        {can.view.user && <ResponsiveNavLink className="text-white" href={route('users.index')} active={route().current('users.index')}>
+                            {translate("Users")}
                         </ResponsiveNavLink>}
                         <ResponsiveNavLink className="text-white" href={route('inventoryItems.index')} active={route().current('inventoryItems.index')}>
-                            {__("Inventory")}
+                            {translate("Inventory")}
                         </ResponsiveNavLink>
                         <ResponsiveNavLink className="text-white" href={route('inventoryItems.myLaboratory')} active={route().current('inventoryItems.myLaboratory')}>
-                            {__("My inventory")}
+                            {translate("My inventory")}
                         </ResponsiveNavLink>
-                        {role ==="admin" && <ResponsiveNavLink className="text-white" href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
-                            {__("Types")}
+                        {can.view.itemType && <ResponsiveNavLink className="text-white" href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
+                            {translate("Types")}
                         </ResponsiveNavLink>}
-                        {role ==="admin" && <ResponsiveNavLink className="text-white" href={route('laboratories.index')} active={route().current('laboratories.index')}>
-                            {__("Laboratories")}
+                        {can.view.laboratory && <ResponsiveNavLink className="text-white" href={route('laboratories.index')} active={route().current('laboratories.index')}>
+                            {translate("Laboratories")}
                         </ResponsiveNavLink>}
                         <ResponsiveNavLink className="text-white" href={route('reader')} active={route().current('reader')}>
-                            {__("Reader")}
+                            {translate("Reader")}
                         </ResponsiveNavLink>
                     </div>
 
@@ -166,9 +167,10 @@ export default function Authenticated({ user, header, children, role }) {
                         </div>
 
                         <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink className="text-white" href={route('profile.edit')}>{__("Profile")}</ResponsiveNavLink>
+                            {/*TODO FOR SOME REASON, THE TRANSLATIONS HERE ARE CAUSING ISSUES*/}
+                            <ResponsiveNavLink className="text-white" href={route('profile.edit')}>{translate("Profile")}</ResponsiveNavLink>
                             <ResponsiveNavLink className="text-white" method="post" href={route('logout')} as="button">
-                                {__("Log out")}
+                                {translate("Log out")}
                             </ResponsiveNavLink>
                         </div>
                     </div>

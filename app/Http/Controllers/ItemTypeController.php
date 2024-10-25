@@ -24,6 +24,7 @@ class ItemTypeController extends Controller
      */
     public function index(): Response
     {
+        Gate::authorize('viewAny', ItemType::class);
         $query = ItemType::query();
         $itemTypes = $query->paginate(10)->onEachSide(1);
         return Inertia::render('ItemTypes/Index',[
@@ -74,7 +75,10 @@ class ItemTypeController extends Controller
     public function edit(ItemType $itemType): Response
     {
         return Inertia::render('ItemTypes/Edit',[
-            'itemType' => new ItemTypeResource($itemType)
+            'itemType' => new ItemTypeResource($itemType),
+            'can' => [
+                'delete' => request()->user()->can('delete', $itemType),
+            ]
         ]);
     }
 
