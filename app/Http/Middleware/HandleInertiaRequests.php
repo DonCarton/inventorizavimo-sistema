@@ -62,26 +62,28 @@ class HandleInertiaRequests extends Middleware
                 ] : null
             ],
             'previousUrl' => function () {
-              return url()->previous();
+                return url()->previous();
             },
             'role' => function () use ($request) {
                 $user = $request->user();
-                if ($user){
+                if ($user) {
                     return $user->roleName();
-                } else {return null;}
+                } else {
+                    return null;
+                }
             },
             'flash' => [
-                'success' => fn () => $request->session()->get('success'),
-                'failure' => fn () => $request->session()->get('failure'),
-                'warning' => fn () => $request->session()->get('warning')
+                'id' => uniqid(),
+                'success' => fn() => $request->session()->get('success'),
+                'failure' => fn() => $request->session()->get('failure'),
+                'warning' => fn() => $request->session()->get('warning')
             ],
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),
                 ]);
             },
-            'language' => fn () =>
-            translations(base_path('lang/' . app()->getLocale() . '.json'))
+            'language' => fn() => translations(base_path('lang/' . app()->getLocale() . '.json'))
             ,
         ];
     }
