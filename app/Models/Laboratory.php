@@ -21,6 +21,7 @@ class Laboratory extends Model
     use HasFactory, LogsActivity;
     protected $fillable = [
         'name',
+        'ident_code',
         'created_by',
         'updated_by'
     ];

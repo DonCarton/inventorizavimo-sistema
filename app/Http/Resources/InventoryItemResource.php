@@ -69,7 +69,7 @@ class InventoryItemResource extends JsonResource
             'averageConsumption' => $this->average_consumption,
             'multipleLocations' => $this->multiple_locations,
             'laboratory' => $this->laboratory,
-            'cupboard' => (int)$this->cupboard,
+            'cupboard' => $this->cupboard,
             'shelf' => (int)$this->shelf,
             'storageConditions' => $this->storage_conditions,
             'assetNumber' => $this->asset_number,

@@ -14,7 +14,7 @@ import ActionButton from '@/Components/Forms/ActionButton';
 import AsyncCustom from "@/Components/Forms/AsyncCustom.jsx";
 
 
-export default function Show({auth, inventoryItem, laboratories, itemTypes, queryParams, referrer}) {
+export default function Show({auth, inventoryItem, laboratories, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions}) {
     const [openAll, setOpenAll] = useState(true);
     const toggleAllAccordions = () => {
         setOpenAll(!openAll);
@@ -208,11 +208,29 @@ export default function Show({auth, inventoryItem, laboratories, itemTypes, quer
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_cupboard" value={StringHelper.__("Cupboard")} className="mb-1"/>
-                                            <AsyncCustom itemId={inventoryItem.data.cupboard} customIsDisabled={true} fetchUrlPath="/select/cupboards" customPlaceHolder={StringHelper.__("Choose a cupboard")}/>
+                                            <select
+                                                    id="inventoryItems_cupboard"
+                                                    name="local_cupboard"
+                                                    disabled={true}
+                                                    className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
+                                                    value={inventoryItem.data.cupboard}>
+                                                    {cupboardOptions.map((cupboardOption) => (
+                                                        <option key={cupboardOption.id} value={cupboardOption.id}>{cupboardOption.label}</option>
+                                                    ))}
+                                            </select>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_shelf" value={StringHelper.__("Shelf")} className="mb-1"/>
-                                            <AsyncCustom itemId={inventoryItem.data.shelf} customIsDisabled={true} fetchUrlPath="/select/shelves" customPlaceHolder={StringHelper.__("Choose a shelf")}/>
+                                            <select
+                                                    id="inventoryItems_shelf"
+                                                    name="local_shelf"
+                                                    disabled={true}
+                                                    className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
+                                                    value={inventoryItem.data.shelf}>
+                                                    {shelfOptions.map((shelfOption) => (
+                                                        <option key={shelfOption.id} value={shelfOption.id}>{shelfOption.label}</option>
+                                                    ))}
+                                            </select>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_multiple_locations"
