@@ -10,6 +10,7 @@ export default function Edit({auth, laboratory, can}) {
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
     const {data, setData, patch, delete: destroy, errors, processing} = useForm({
         name: laboratory.name,
+        ident_code: laboratory.ident_code,
     })
     const onSubmit = (e) => {
         e.preventDefault();
@@ -42,6 +43,14 @@ export default function Edit({auth, laboratory, can}) {
                                        onChange={e => setData('name', e.target.value)}
                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                             <InputError message={errors.name} className="mt-2"/>
+                        </div>
+                        <div className="mt-4">
+                            <InputLabel htmlFor="laboratory_ident_code">{StringHelper.__("Identification code")}<span
+                                className="text-red-500">*</span></InputLabel>
+                            <TextInput id="laboratory_ident_code" type="text" name="laboratory_ident_code" value={data.ident_code}
+                                       onChange={e => setData('ident_code', e.target.value)}
+                                       className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                            <InputError message={errors.ident_code} className="mt-2"/>
                         </div>
                     </EditForm>
                 </div>

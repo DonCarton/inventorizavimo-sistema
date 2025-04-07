@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\ItemType;
 use App\Models\Laboratory;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 /**
@@ -58,5 +57,16 @@ class FetchDataToSelect extends Controller
             'name' => $shelf->name . ' [' . $shelf->local_name . ']'
         ];
         return response()->json($data);
+    }
+    public function listIdentCode(): ResourceCollection
+    {
+        $identCodes = Laboratory::where('name', 'like', '%' . request('search') . '%')
+            ->where(function ($query){
+                $query->whereRaw('LENGTH(ident_code) > 0')
+                ->orWhereNotNull('ident_code');
+            })
+            ->select('id','ident_code','name')
+            ->paginate(10);
+        return \App\Http\Resources\SelectObjectResources\IdentCodeForSelect::collection($identCodes);
     }
 }

@@ -29,6 +29,7 @@ class LaboratoryResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'ident_code' => $this->ident_code,
             'created_at' => $this->created_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
             'created_by' => new UserResource($this->createdBy),

@@ -6,14 +6,14 @@ import InputError from "@/Components/InputError.jsx";
 import {useState} from "react";
 import { useTranslation } from "@/Libs/useTranslation.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
-import {measureOptions, labPrefixOptions} from "@/Configurations/SelectConfigurations.jsx";
+import {measureOptions} from "@/Configurations/SelectConfigurations.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import FlexibleSelect from "@/Components/Forms/FlexibleSelect.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 import FlexibleAsyncSelect from "@/Components/Forms/FlexibleAsyncSelect.jsx";
 
-export default function Create({auth, itemTypes, queryParams, referrer}) {
+export default function Create({auth, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions}) {
     const { translate } = useTranslation();
     const [postNumber, setPostNumber] = useState(null);
     const [activeTab, setActiveTab] = useState(1);
@@ -21,6 +21,7 @@ export default function Create({auth, itemTypes, queryParams, referrer}) {
     const [selectedMeasurement, setSelectedMeasurement] = useState('');
     const {data, setData, post, processing, errors} = useForm({
         local_name: postNumber || '',
+        ident_code: '',
         inventory_type: '',
         name: '',
         name_eng: '',
@@ -45,9 +46,13 @@ export default function Create({auth, itemTypes, queryParams, referrer}) {
         comments: ''
     });
     const handlePrefixChange = async (e) => {
-        const prefixId = e.target.value;
+        if (e === null){
+           setPostNumber(null);
+           return;
+        }
+        const prefixId = e;
         setSelectedPrefix(prefixId);
-        if (e.target.value !== '') {
+        if (e !== '') {
             try {
                 const response = await axios.post('/inventoryItems/fetch-post-number', {prefix_option_id: prefixId});
                 const {post_number} = response.data;
@@ -84,10 +89,10 @@ export default function Create({auth, itemTypes, queryParams, referrer}) {
         setData('laboratory', e);
     }
     const handleCupboardChange = (e) => {
-        setData('cupboard', e);
+        setData('cupboard', e.target.value);
     }
     const handleShelfChange = (e) => {
-        setData('shelf', e);
+        setData('shelf', e.target.value);
     }
     const handleInventoryTypeChange = (e) => {
         if (e !== null){
@@ -123,16 +128,17 @@ export default function Create({auth, itemTypes, queryParams, referrer}) {
                                         {translate("Choose where the item will be stored")}<span
                                         className="text-red-500">*</span>
                                     </InputLabel>
-                                    <select
-                                        className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
-                                        value={selectedPrefix}
-                                        onChange={handlePrefixChange}>
-                                        <option value="">{translate("Choose a value")}</option>
-                                        {labPrefixOptions.map((prefixOption) => (
-                                            <option key={prefixOption.value}
-                                                    value={prefixOption.value}>{prefixOption.label}</option>
-                                        ))}
-                                    </select>
+                                    <div className="mt-1">
+                                        <FlexibleAsyncSelect id="inventoryItems_ident_code"
+                                                name="ident_code"
+                                                fetchUrlPath="/select/ident-code"
+                                                customIsMulti={false} customLoadingMessage={translate("Fetching options") + "..."}
+                                                customPlaceHolder={translate("Choose a value")}
+                                                customNoOptionsMessage={translate("No item found")}
+                                                value={selectedPrefix}
+                                                onChange={handlePrefixChange}
+                                        />
+                                    </div>
                                 </div>
                                 <div>
                                     <InputLabel htmlFor="inventoryItems_unit">
@@ -372,42 +378,50 @@ export default function Create({auth, itemTypes, queryParams, referrer}) {
                                                 <InputLabel
                                                     htmlFor="inventoryItems_local_laboratory">{translate("Location")}<span
                                                     className="text-red-500">*</span></InputLabel>
-                                                <FlexibleSelect id="inventoryItems_local_laboratory"
-                                                                name="local_laboratory"
-                                                                customPlaceHolder={translate("Choose a laboratory")}
-                                                                value={data.laboratory}
-                                                                onChange={handleLaboratoryChoice}
-                                                                fetchUrlPath="/select/laboratories"
-                                                                customNoOptionsMessage={translate("No laboratories found")}
-                                                                customLoadingMessage={translate("Fetching options") + "..."}
-                                                                customIsMulti={false}
-                                                />
+                                                <div className="mt-1">
+                                                    <FlexibleSelect id="inventoryItems_local_laboratory"
+                                                                    name="local_laboratory"
+                                                                    customPlaceHolder={translate("Choose a laboratory")}
+                                                                    value={data.laboratory}
+                                                                    onChange={handleLaboratoryChoice}
+                                                                    fetchUrlPath="/select/laboratories"
+                                                                    customNoOptionsMessage={translate("No laboratories found")}
+                                                                    customLoadingMessage={translate("Fetching options") + "..."}
+                                                                    customIsMulti={false}
+                                                    />
+                                                </div>
                                                 <InputError message={errors.laboratory} className="mt-2"/>
                                             </div>
                                             <div>
                                                 <InputLabel
                                                     htmlFor="inventoryItems_local_cupboard">{translate("Cupboard")}<span
                                                     className="text-red-500">*</span></InputLabel>
-                                                <FlexibleAsyncSelect id="inventoryItems_local_cupboard"
-                                                                     name="local_cupboard"
-                                                                     fetchUrlPath="/select/cupboards"
-                                                                     customIsMulti={false}  customLoadingMessage={translate("Fetching options") + "..."} customPlaceHolder={translate("Choose a cupboard")} customNoOptionsMessage={translate("No inventory item found")}
-                                                                     value={data.cupboard}
-                                                                     onChange={handleCupboardChange}
-                                                />
+                                                <select
+                                                    id="inventoryItems_local_cupboard"
+                                                    name="local_cupboard"
+                                                    className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
+                                                    value={data.cupboard}
+                                                    onChange={handleCupboardChange}>
+                                                    {cupboardOptions.map((cupboardOption) => (
+                                                        <option key={cupboardOption.id} value={cupboardOption.id}>{cupboardOption.label}</option>
+                                                    ))}
+                                                </select>
                                                 <InputError message={errors.cupboard} className="mt-2"/>
                                             </div>
                                             <div>
                                                 <InputLabel
                                                     htmlFor="inventoryItems_local_shelf">{translate("Shelf")}<span
                                                     className="text-red-500">*</span></InputLabel>
-                                                <FlexibleAsyncSelect id="inventoryItems_local_shelf"
-                                                                     name="local_shelf"
-                                                                     fetchUrlPath="/select/shelves"
-                                                                     customIsMulti={false} customLoadingMessage={translate("Fetching options") + "..."} customPlaceHolder={translate("Choose a shelf")} customNoOptionsMessage={translate("No inventory item found")}
-                                                                     value={data.shelf}
-                                                                     onChange={handleShelfChange}
-                                                />
+                                                <select
+                                                    id="inventoryItems_local_shelf"
+                                                    className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
+                                                    value={data.shelf}
+                                                    onChange={handleShelfChange}>
+                                                    {shelfOptions.map((shelfOption) => (
+                                                        <option key={shelfOption.id} value={shelfOption.id}>{shelfOption.label}</option>
+                                                    ))}
+                                                </select>
+
                                                 <InputError message={errors.shelf} className="mt-2"/>
                                             </div>
                                         </div>

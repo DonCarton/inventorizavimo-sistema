@@ -10,7 +10,6 @@ use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\SystemConfigurationController;
 use App\Models\InventoryItem;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -97,6 +96,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/select/cupboards/{id}', [FetchDataToSelect::class, 'getCupboard'])->name('select.cupboards.specific');
     Route::get('/select/shelves', [FetchDataToSelect::class, 'listShelves'])->name('select.shelves');
     Route::get('/select/shelves/{id}', [FetchDataToSelect::class, 'getShelf'])->name('select.shelves.specific');
+    Route::get('/select/ident-code',[FetchDataToSelect::class,'listIdentCode'])->name('select.identCode');
 });
 
 require __DIR__.'/auth.php';
