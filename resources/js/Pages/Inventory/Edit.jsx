@@ -12,11 +12,10 @@ import LogsTable from "@/Components/Forms/LogsTable.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
-import AsyncCustom from "@/Components/Forms/AsyncCustom.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import DeleteButton from "@/Components/Forms/DeleteButton.jsx";
 
-export default function Edit({auth, inventoryItem, logsForItem, laboratories, itemTypes, queryParams, referrer, can}) {
+export default function Edit({auth, inventoryItem, logsForItem, laboratories, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, can}) {
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
     const {data, setData, put, delete: destroy, errors, processing} = useForm({
         local_name: inventoryItem.data.localName || '',
@@ -37,8 +36,8 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
         average_consumption: inventoryItem.data.averageConsumption || '',
         multiple_locations: inventoryItem.data.multipleLocations || 0,
         laboratory: inventoryItem.data.laboratory || '',
-        cupboard: inventoryItem.data.cupboard || '',
-        shelf: inventoryItem.data.shelf || '',
+        cupboard: inventoryItem.data.cupboard || null,
+        shelf: inventoryItem.data.shelf || null,
         storage_conditions: inventoryItem.data.storageConditions || '',
         asset_number: inventoryItem.data.assetNumber || '',
         used_for: inventoryItem.data.usedFor || '',
@@ -58,10 +57,14 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
         setData('inventory_type',e.target.value);
     }
     const handleCupboardChange = (e) => {
-        setData('cupboard',e.value);
+        setData('cupboard',e.target.value);
     }
     const handleShelfChange = (e) => {
-        setData('shelf',e.value);
+        if (e.target.value === undefined){
+            return;
+        }
+        const cleanInt = parseInt(e.target.value);
+        setData('shelf',cleanInt);
     }
     return (
         <AuthenticatedLayout
@@ -252,15 +255,30 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_cupboard" value={StringHelper.__("Cupboard")} className="mb-1"/>
-                                            <AsyncCustom itemId={data.cupboard} fetchUrlPath="/select/cupboards" onChange={handleCupboardChange} customIsDisabled={!can.alterLocation}
-                                                         customNoOptionsMessage={StringHelper.__("No inventory item found")} customLoadingMessage={StringHelper.__("Fetching options") + "..."} customPlaceHolder={StringHelper.__("Choose a cupboard")}
-                                            />
+                                            <select
+                                                    id="inventoryItems_cupboard"
+                                                    name="local_cupboard"
+                                                    className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
+                                                    value={data.cupboard}
+                                                    onChange={handleCupboardChange}>
+                                                    {cupboardOptions.map((cupboardOption) => (
+                                                        <option key={cupboardOption.id} value={cupboardOption.id}>{cupboardOption.label}</option>
+                                                    ))}
+                                            </select>
                                             <InputError message={errors.cupboard} className="mt-2"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_shelf" value={StringHelper.__("Shelf")} className="mb-1"/>
-                                            <AsyncCustom itemId={data.shelf} fetchUrlPath="/select/shelves" onChange={handleShelfChange} customIsDisabled={!can.alterLocation}
-                                                         customNoOptionsMessage={StringHelper.__("No inventory item found")} customLoadingMessage={StringHelper.__("Fetching options") + "..."} customPlaceHolder={StringHelper.__("Choose a shelf")}/>
+                                            <select
+                                                    id="inventoryItems_shelf"
+                                                    name="local_shelf"
+                                                    className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
+                                                    value={data.shelf}
+                                                    onChange={handleShelfChange}>
+                                                    {shelfOptions.map((shelfOption) => (
+                                                        <option key={shelfOption.id} value={shelfOption.id}>{shelfOption.label}</option>
+                                                    ))}
+                                            </select>
                                             <InputError message={errors.shelf} className="mt-2"/>
                                         </div>
                                         <div className="mt-4">

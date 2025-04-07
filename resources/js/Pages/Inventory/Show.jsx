@@ -212,11 +212,9 @@ export default function Show({auth, inventoryItem, laboratories, itemTypes, quer
                                                     id="inventoryItems_cupboard"
                                                     name="local_cupboard"
                                                     disabled={true}
-                                                    className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
+                                                    className="disabled:text-white disabled:bg-gray-500 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
                                                     value={inventoryItem.data.cupboard}>
-                                                    {cupboardOptions.map((cupboardOption) => (
-                                                        <option key={cupboardOption.id} value={cupboardOption.id}>{cupboardOption.label}</option>
-                                                    ))}
+                                                    <option value={inventoryItem.data.cupboard}>{inventoryItem.data.cupboard}</option>
                                             </select>
                                         </div>
                                         <div className="mt-4">
@@ -225,11 +223,9 @@ export default function Show({auth, inventoryItem, laboratories, itemTypes, quer
                                                     id="inventoryItems_shelf"
                                                     name="local_shelf"
                                                     disabled={true}
-                                                    className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
+                                                    className="disabled:text-white disabled:bg-gray-500 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full"
                                                     value={inventoryItem.data.shelf}>
-                                                    {shelfOptions.map((shelfOption) => (
-                                                        <option key={shelfOption.id} value={shelfOption.id}>{shelfOption.label}</option>
-                                                    ))}
+                                                    <option value={inventoryItem.data.shelf}>{inventoryItem.data.shelf}</option>
                                             </select>
                                         </div>
                                         <div className="mt-4">

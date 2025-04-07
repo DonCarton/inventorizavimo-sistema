@@ -217,6 +217,18 @@ class InventoryItemController extends Controller
         $laboratories = Laboratory::query()->get()->all();
         $itemTypes = ItemType::query()->get();
         $queryParams = $request->query('query');
+
+        $letterRange = config('letters.range');
+        $letters = $this->getItemsInRange($letterRange[0],$letterRange[1]);
+        $cupboardOptions = array_map(function ($letter) {
+            return ['id' => $letter, 'label' => $letter];
+        }, $letters);
+
+        $numberRange = config('letters.shelves');
+        $shelfRanges = $this->getItemsInRange($numberRange[0],$numberRange[1]);
+        $shelfOptions = array_map(function ($shelfRange): array {
+            return ['id' => $shelfRange, 'label' => $shelfRange];
+        }, $shelfRanges);
         return Inertia::render('Inventory/Edit', [
             'inventoryItem' => new InventoryItemResource($inventoryItem),
             'logsForItem' => AmountLogResource::collection($amountLogs),
@@ -224,6 +236,8 @@ class InventoryItemController extends Controller
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'queryParams' => $queryParams,
             'referrer' => $request->query('referrer'),
+            'cupboardOptions' => $cupboardOptions,
+            'shelfOptions' => $shelfOptions,
             'can' => [
                 'alterType' => $request->user()->hasRole(RoleEnum::SUPER_ADMIN),
                 'alterLocation' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
@@ -407,7 +421,6 @@ class InventoryItemController extends Controller
         $laboratories = Laboratory::query()->get()->all();
         $itemTypes = ItemType::query()->get();
         $queryParams = $request->query('query');
-        
 
         $letterRange = config('letters.range');
         $letters = $this->getItemsInRange($letterRange[0],$letterRange[1]);
@@ -475,7 +488,7 @@ class InventoryItemController extends Controller
     }
 
     /**
-     * Get letters within the specified range.
+     * Get value within the specified range.
      *
      * @param string $start
      * @param string $end
@@ -483,10 +496,10 @@ class InventoryItemController extends Controller
      */
     private function getItemsInRange($start, $end)
     {
-        $letters = [];
-        for ($letter = $start; $letter <= $end; $letter++) {
-            $letters[] = $letter;
+        $rangeOfValues = [];
+        for ($entry = $start; $entry <= $end; $entry++) {
+            $rangeOfValues[] = $entry;
         }
-        return $letters;
+        return $rangeOfValues;
     }
 }

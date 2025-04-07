@@ -4,5 +4,5 @@
 
 return [
     'range' => ['A', 'G'],
-    'shelves' => [1, 100]
+    'shelves' => [1, 25]
 ];
