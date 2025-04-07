@@ -20,8 +20,10 @@ class SystemConfigurationController extends Controller
         }
 
         $systemConfiguration = SystemConfiguration::all()->groupBy('category');
+        $myConfigurations = SystemConfiguration::with('value')->get()->groupBy('category');
         return Inertia::render('Admin/Edit', [
             'systemConfiguration' => $systemConfiguration,
+            'myConfigurations' => $myConfigurations,
             'success' => session('success'),
             'failure' => session('failure')
         ]);

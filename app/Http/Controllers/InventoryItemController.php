@@ -21,6 +21,7 @@ use App\Models\AmountLog;
 use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
+use App\Models\SystemConfiguration;
 use App\Rules\NonNegativeAmount;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -168,26 +169,16 @@ class InventoryItemController extends Controller
         $queryParams = $request->query();
         $laboratories = Laboratory::query()->get();
         $itemTypes = ItemType::query()->get();
-
-        $letterRange = config('letters.range');
-        $letters = $this->getItemsInRange($letterRange[0],$letterRange[1]);
-        $cupboardOptions = array_map(function ($letter) {
-            return ['id' => $letter, 'label' => $letter];
-        }, $letters);
-
-        $numberRange = config('letters.shelves');
-        $shelfRanges = $this->getItemsInRange($numberRange[0],$numberRange[1]);
-        $shelfOptions = array_map(function ($shelfRange): array {
-            return ['id' => $shelfRange, 'label' => $shelfRange];
-        }, $shelfRanges);
+        
+        $configurations = $this->getDropdownConfigurations();
 
         return Inertia::render('Inventory/Create', [
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'referrer' => $request->query('referrer'),
             'queryParams' => $request->query('query'),
-            'cupboardOptions' => $cupboardOptions,
-            'shelfOptions' => $shelfOptions
+            'cupboardOptions' => $configurations['cupboardOptions'],
+            'shelfOptions' => $configurations['shelfOptions']
         ]);
     }
 
@@ -217,18 +208,9 @@ class InventoryItemController extends Controller
         $laboratories = Laboratory::query()->get()->all();
         $itemTypes = ItemType::query()->get();
         $queryParams = $request->query('query');
+        
+        $configurations = $this->getDropdownConfigurations();
 
-        $letterRange = config('letters.range');
-        $letters = $this->getItemsInRange($letterRange[0],$letterRange[1]);
-        $cupboardOptions = array_map(function ($letter) {
-            return ['id' => $letter, 'label' => $letter];
-        }, $letters);
-
-        $numberRange = config('letters.shelves');
-        $shelfRanges = $this->getItemsInRange($numberRange[0],$numberRange[1]);
-        $shelfOptions = array_map(function ($shelfRange): array {
-            return ['id' => $shelfRange, 'label' => $shelfRange];
-        }, $shelfRanges);
         return Inertia::render('Inventory/Edit', [
             'inventoryItem' => new InventoryItemResource($inventoryItem),
             'logsForItem' => AmountLogResource::collection($amountLogs),
@@ -236,8 +218,8 @@ class InventoryItemController extends Controller
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'queryParams' => $queryParams,
             'referrer' => $request->query('referrer'),
-            'cupboardOptions' => $cupboardOptions,
-            'shelfOptions' => $shelfOptions,
+            'cupboardOptions' => $configurations['cupboardOptions'],
+            'shelfOptions' => $configurations['shelfOptions'],
             'can' => [
                 'alterType' => $request->user()->hasRole(RoleEnum::SUPER_ADMIN),
                 'alterLocation' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
@@ -422,25 +404,16 @@ class InventoryItemController extends Controller
         $itemTypes = ItemType::query()->get();
         $queryParams = $request->query('query');
 
-        $letterRange = config('letters.range');
-        $letters = $this->getItemsInRange($letterRange[0],$letterRange[1]);
-        $cupboardOptions = array_map(function ($letter) {
-            return ['id' => $letter, 'label' => $letter];
-        }, $letters);
+        $configurations = $this->getDropdownConfigurations();
 
-        $numberRange = config('letters.shelves');
-        $shelfRanges = $this->getItemsInRange($numberRange[0],$numberRange[1]);
-        $shelfOptions = array_map(function ($shelfRange): array {
-            return ['id' => $shelfRange, 'label' => $shelfRange];
-        }, $shelfRanges);
         return Inertia::render('Inventory/Show', [
             'inventoryItem' => new InventoryItemResource($inventoryItem),
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'queryParams' => $queryParams,
             'referrer' => $request->query('referrer'),
-            'cupboardOptions' => $cupboardOptions,
-            'shelfOptions' => $shelfOptions,
+            'cupboardOptions' => $configurations['cupboardOptions'],
+            'shelfOptions' => $configurations['shelfOptions'],
         ]);
     }
 
@@ -501,5 +474,51 @@ class InventoryItemController extends Controller
             $rangeOfValues[] = $entry;
         }
         return $rangeOfValues;
+    }
+    
+    private function getDropdownConfigurations()
+    {
+        $cupboardConfig = SystemConfiguration::with('value')->where('key','cupboard_range')->first();
+        $shelfConfig = SystemConfiguration::with('value')->where('key','shelf_range')->first();
+
+        if ($cupboardConfig && $shelfConfig) {
+            $letterRange = $this->parseRangeDefinition($cupboardConfig->value->value);
+            $numberRange = $this->parseRangeDefinition($shelfConfig->value->value);
+        
+            $letters = $this->getItemsInRange($letterRange['start'], $letterRange['end']);
+            $cupboardOptions = array_map(function ($letter) {
+                return ['id' => $letter, 'label' => $letter];
+            }, $letters);
+            
+            $shelfRanges = $this->getItemsInRange($numberRange['start'], $numberRange['end']);
+            $shelfOptions = array_map(function ($shelfRange) {
+                return ['id' => $shelfRange, 'label' => $shelfRange];
+            }, $shelfRanges);
+        } else {
+            
+            $cupboardOptions = [];
+            $shelfOptions = [];
+        }
+
+        return [
+            'cupboardOptions' => $cupboardOptions,
+            'shelfOptions' => $shelfOptions,
+        ];
+    }
+
+    private function parseRangeDefinition($rangeDefinition) {
+        if (strpos($rangeDefinition, '-') !== false) {
+            $rangeParts = explode('-', $rangeDefinition);
+            if (count($rangeParts) === 2) {
+                return [
+                    'start' => $rangeParts[0],
+                    'end' => $rangeParts[1],
+                ];
+            }
+        }
+        return [
+            'start' => $rangeDefinition,
+            'end' => $rangeDefinition,
+        ];
     }
 }
