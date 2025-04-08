@@ -9,6 +9,8 @@ class SystemConfiguration extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = ['key', 'name', 'value_type', 'category'];
     public function value()
     {

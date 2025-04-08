@@ -9,6 +9,8 @@ class ConfigurationValue extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = ['configuration_id', 'value'];
 
     public function configuration()
