@@ -28,6 +28,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -456,7 +457,7 @@ class InventoryItemController extends Controller
         $referrer = $request['referrer'] ?? 'index';
         $file = $request->file('file');
         $fileName = $request->file('file')->getClientOriginalName();
-        Excel::import(new InventoryImport(), $file);
+        $importStatus = Excel::import(new InventoryImport(), $file);
         return to_route("inventoryItems.${referrer}")->with('success', __('actions.uploaded', ['name' => $fileName]));
     }
 
