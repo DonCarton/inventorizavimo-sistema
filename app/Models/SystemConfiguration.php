@@ -9,13 +9,11 @@ class SystemConfiguration extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'key',
-        'name',
-        'boolean_value'
-    ];
+    public $timestamps = false;
 
-    protected $casts = [
-        'boolean_value' => 'boolean',
-    ];
+    protected $fillable = ['key', 'name', 'value_type', 'category'];
+    public function value()
+    {
+        return $this->hasOne(ConfigurationValue::class, 'configuration_id');
+    }
 }

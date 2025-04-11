@@ -21,6 +21,7 @@ use App\Models\AmountLog;
 use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
+use App\Models\SystemConfiguration;
 use App\Rules\NonNegativeAmount;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -169,25 +170,15 @@ class InventoryItemController extends Controller
         $laboratories = Laboratory::query()->get();
         $itemTypes = ItemType::query()->get();
 
-        $letterRange = config('letters.range');
-        $letters = $this->getItemsInRange($letterRange[0],$letterRange[1]);
-        $cupboardOptions = array_map(function ($letter) {
-            return ['id' => $letter, 'label' => $letter];
-        }, $letters);
-
-        $numberRange = config('letters.shelves');
-        $shelfRanges = $this->getItemsInRange($numberRange[0],$numberRange[1]);
-        $shelfOptions = array_map(function ($shelfRange): array {
-            return ['id' => $shelfRange, 'label' => $shelfRange];
-        }, $shelfRanges);
+        $configurations = $this->getDropdownConfigurations();
 
         return Inertia::render('Inventory/Create', [
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'referrer' => $request->query('referrer'),
             'queryParams' => $request->query('query'),
-            'cupboardOptions' => $cupboardOptions,
-            'shelfOptions' => $shelfOptions
+            'cupboardOptions' => $configurations['cupboardOptions'],
+            'shelfOptions' => $configurations['shelfOptions']
         ]);
     }
 
@@ -218,17 +209,8 @@ class InventoryItemController extends Controller
         $itemTypes = ItemType::query()->get();
         $queryParams = $request->query('query');
 
-        $letterRange = config('letters.range');
-        $letters = $this->getItemsInRange($letterRange[0],$letterRange[1]);
-        $cupboardOptions = array_map(function ($letter) {
-            return ['id' => $letter, 'label' => $letter];
-        }, $letters);
+        $configurations = $this->getDropdownConfigurations();
 
-        $numberRange = config('letters.shelves');
-        $shelfRanges = $this->getItemsInRange($numberRange[0],$numberRange[1]);
-        $shelfOptions = array_map(function ($shelfRange): array {
-            return ['id' => $shelfRange, 'label' => $shelfRange];
-        }, $shelfRanges);
         return Inertia::render('Inventory/Edit', [
             'inventoryItem' => new InventoryItemResource($inventoryItem),
             'logsForItem' => AmountLogResource::collection($amountLogs),
@@ -236,8 +218,8 @@ class InventoryItemController extends Controller
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'queryParams' => $queryParams,
             'referrer' => $request->query('referrer'),
-            'cupboardOptions' => $cupboardOptions,
-            'shelfOptions' => $shelfOptions,
+            'cupboardOptions' => $configurations['cupboardOptions'],
+            'shelfOptions' => $configurations['shelfOptions'],
             'can' => [
                 'alterType' => $request->user()->hasRole(RoleEnum::SUPER_ADMIN),
                 'alterLocation' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
@@ -422,25 +404,16 @@ class InventoryItemController extends Controller
         $itemTypes = ItemType::query()->get();
         $queryParams = $request->query('query');
 
-        $letterRange = config('letters.range');
-        $letters = $this->getItemsInRange($letterRange[0],$letterRange[1]);
-        $cupboardOptions = array_map(function ($letter) {
-            return ['id' => $letter, 'label' => $letter];
-        }, $letters);
+        $configurations = $this->getDropdownConfigurations();
 
-        $numberRange = config('letters.shelves');
-        $shelfRanges = $this->getItemsInRange($numberRange[0],$numberRange[1]);
-        $shelfOptions = array_map(function ($shelfRange): array {
-            return ['id' => $shelfRange, 'label' => $shelfRange];
-        }, $shelfRanges);
         return Inertia::render('Inventory/Show', [
             'inventoryItem' => new InventoryItemResource($inventoryItem),
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'queryParams' => $queryParams,
             'referrer' => $request->query('referrer'),
-            'cupboardOptions' => $cupboardOptions,
-            'shelfOptions' => $shelfOptions,
+            'cupboardOptions' => $configurations['cupboardOptions'],
+            'shelfOptions' => $configurations['shelfOptions'],
         ]);
     }
 
@@ -494,12 +467,104 @@ class InventoryItemController extends Controller
      * @param string $end
      * @return array
      */
-    private function getItemsInRange($start, $end)
+    private function getItemsInRange($start, $end): array
     {
         $rangeOfValues = [];
-        for ($entry = $start; $entry <= $end; $entry++) {
-            $rangeOfValues[] = $entry;
+
+        // Check if the range is alphabetic
+        if (ctype_alpha($start) && ctype_alpha($end)) {
+            // Convert start and end to their ASCII values
+            $startAscii = ord($start);
+            $endAscii = ord($end);
+
+            // Generate the range of alphabetic values
+            for ($entry = $startAscii; $entry <= $endAscii; $entry++) {
+                $rangeOfValues[] = chr($entry);
+            }
+        } else {
+            // Handle numeric ranges
+            for ($entry = $start; $entry <= $end; $entry++) {
+                $rangeOfValues[] = $entry;
+            }
         }
+
         return $rangeOfValues;
+    }
+
+    private function getDropdownConfigurations(): array
+    {
+        // Fetch the configurations from the database
+        $cupboardConfig = SystemConfiguration::with('value')->where('key', 'cupboard_range')->first();
+        $shelfConfig = SystemConfiguration::with('value')->where('key', 'shelf_range')->first();
+
+        // Define default values
+        $defaults = [
+            'cupboard_range' => 'A-F',
+            'shelf_range' => '1-20',
+        ];
+
+        // Parse and validate the cupboard range
+        if ($cupboardConfig) {
+            $letterRange = $this->parseRangeDefinition($cupboardConfig->value->value);
+            if (!$this->isValidRange($letterRange, 'alpha')) {
+                $letterRange = $this->parseRangeDefinition($defaults['cupboard_range']);
+            }
+        } else {
+            $letterRange = $this->parseRangeDefinition($defaults['cupboard_range']);
+        }
+
+        // Parse and validate the shelf range
+        if ($shelfConfig) {
+            $numberRange = $this->parseRangeDefinition($shelfConfig->value->value);
+            if (!$this->isValidRange($numberRange, 'numeric')) {
+                $numberRange = $this->parseRangeDefinition($defaults['shelf_range']);
+            }
+        } else {
+            $numberRange = $this->parseRangeDefinition($defaults['shelf_range']);
+        }
+
+        // Generate the range of values
+        $letters = $this->getItemsInRange($letterRange['start'], $letterRange['end']);
+        $cupboardOptions = array_map(function ($letter) {
+            return ['id' => $letter, 'label' => $letter];
+        }, $letters);
+
+        $shelfRanges = $this->getItemsInRange($numberRange['start'], $numberRange['end']);
+        $shelfOptions = array_map(function ($shelfRange) {
+            return ['id' => $shelfRange, 'label' => $shelfRange];
+        }, $shelfRanges);
+
+        return [
+            'cupboardOptions' => $cupboardOptions,
+            'shelfOptions' => $shelfOptions,
+        ];
+    }
+
+    private function parseRangeDefinition($rangeDefinition): array
+    {
+        if (strpos($rangeDefinition, '-') !== false) {
+            $rangeParts = explode('-', $rangeDefinition);
+            if (count($rangeParts) === 2) {
+                return [
+                    'start' => $rangeParts[0],
+                    'end' => $rangeParts[1],
+                ];
+            }
+        }
+        return [
+            'start' => $rangeDefinition,
+            'end' => $rangeDefinition,
+        ];
+    }
+
+    private function isValidRange($range, $type): bool
+    {
+        // Check if the range is valid based on the type
+        if ($type === 'alpha') {
+            return ctype_alpha($range['start']) && ctype_alpha($range['end']) && $range['start'] <= $range['end'];
+        } elseif ($type === 'numeric') {
+            return ctype_digit($range['start']) && ctype_digit($range['end']) && $range['start'] <= $range['end'];
+        }
+        return false;
     }
 }
