@@ -5,6 +5,7 @@
     "Dashboard": "Skydelis",
     "Users": "Naudotojai",
     "Inventory": "Inventorius",
+    "Identification code": "Atpažinimo kodas",
     "My inventory": "Mano inventorius",
     "Types": "Tipai",
     "Type": "Tipas",
@@ -106,6 +107,7 @@
     "Kilograms": "Kilogramai",
     "Packs": "Pakuotės",
     "Fetching options": "Pasirinkimai kraunami",
+    "No item found": "Pasirinkimų nerasta",
     "No item types found": "Tipai pagal pateiktą paiešką nerasti",
     "No laboratories found": "Laboratorijos pagal paiešką nerastos",
     "No inventory item found": "Inventoriaus įrašai pagal paiešką nerasti",
@@ -160,6 +162,7 @@
     "Choose a shelf": "Pasirinkti lentyną",
     "Current object history" : "Pasirinkto įrašo :value istorinei pakeitimai",
     "History description": "Šiame lange pateikiama išklotinė įrašo, su visais registruotais pakeitimais, visi pakeitimų įrašai saugomi iki 12 mėnesių",
+    "Edit configuration": "Redaguoti nustatymą",
     "User configurations": "Naudotojų nustatymai",
     "Email configurations": "Pašto nustatymai",
     "General configurations": "Bendri nustatymai"

@@ -26,8 +26,12 @@ export default function Show({auth, laboratory}) {
                 <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <ShowForm cancelButtonRoute="laboratories.index" cancelButtonText={StringHelper.__("Cancel")}>
                         <div className="mt-4">
-                            <InputLabel htmlFor="user_first_name" value={StringHelper.__("Name")}/>
-                            <TextInput id="user_first_name" type="text" name="first_name" value={laboratory.name} className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white" readOnly={true} disabled={true}/>
+                            <InputLabel htmlFor="laboratory_name" value={StringHelper.__("Name")}/>
+                            <TextInput id="laboratory_name" type="text" name="laboratory_name" value={laboratory.name} className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white" readOnly={true} disabled={true}/>
+                        </div>
+                        <div className="mt-4">
+                            <InputLabel htmlFor="laboratory_ident_code" value={StringHelper.__("Identification code")}/>
+                            <TextInput id="laboratory_ident_code" type="text" name="laboratory_ident_code" value={laboratory.ident_code} className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white" readOnly={true} disabled={true}/>
                         </div>
                     </ShowForm>
                 </div>

@@ -110,7 +110,5 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $regularUser->save(['laboratory' => 1]);
-
-//        InventoryItem::factory()->count(8991)->create();
     }
 }

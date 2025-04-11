@@ -10,12 +10,17 @@ use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\SystemConfigurationController;
 use App\Models\InventoryItem;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::middleware(['auth', 'verified'])->group(function (){
     Route::get('/', function (){return Inertia::render('Dashboard');})->name('dashboard');
+
+    Route::group(['middleware' => ['role:super-admin']], function (){
+        Route::get('/systemConfigurations', [SystemConfigurationController::class, 'index'])->middleware('includeUserId')->name('systemConfigurations.index');
+        Route::patch('/systemConfigurations/{systemConfiguration}', [SystemConfigurationController::class, 'update'])->middleware('includeUserId')->name('systemConfigurations.update');
+    });
+
     Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
         Route::resource('inventoryItems', InventoryItemController::class)->middleware('includeUserId');
@@ -54,9 +59,6 @@ Route::middleware(['auth', 'verified'])->group(function (){
                 ]);
             })->name('firstPlayground');
         });
-
-        Route::get('/systemConfigurations', [SystemConfigurationController::class, 'edit'])->middleware('includeUserId')->name('systemConfigurations.edit');
-        Route::patch('/systemConfigurations', [SystemConfigurationController::class, 'update'])->middleware('includeUserId')->name('systemConfigurations.update');
     });
 
     Route::group(['middleware' => ['role:super-admin|admin|user']], function (){
@@ -97,6 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/select/cupboards/{id}', [FetchDataToSelect::class, 'getCupboard'])->name('select.cupboards.specific');
     Route::get('/select/shelves', [FetchDataToSelect::class, 'listShelves'])->name('select.shelves');
     Route::get('/select/shelves/{id}', [FetchDataToSelect::class, 'getShelf'])->name('select.shelves.specific');
+    Route::get('/select/ident-code',[FetchDataToSelect::class,'listIdentCode'])->name('select.identCode');
 });
 
 require __DIR__.'/auth.php';

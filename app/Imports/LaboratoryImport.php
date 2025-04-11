@@ -19,6 +19,7 @@ class LaboratoryImport implements ToModel, WithUpserts, WithHeadingRow
     {
         return new Laboratory([
             'name' => $row['name'],
+            'ident_code' => $row['ident_code'],
             'created_by' => auth()->user()->id,
             'updated_by' => auth()->user()->id,
         ]);
