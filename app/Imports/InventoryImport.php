@@ -6,11 +6,17 @@ use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
+use Maatwebsite\Excel\Concerns\SkipsErrors;
+use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Throwable;
 
-class InventoryImport implements ToModel, WithHeadingRow
+class InventoryImport implements ToModel, WithHeadingRow, SkipsEmptyRows, SkipsOnError
 {
+    use SkipsErrors;
     private array $arrayOfAttributes = [];
 
     /**
@@ -52,5 +58,13 @@ class InventoryImport implements ToModel, WithHeadingRow
                 'updated_by'       => auth()->user()->id,
             ]
         );
+    }
+    public function onError(Throwable $e): void
+    {
+        Log::error('Import error: ' . $e->getMessage(), [
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString(),
+        ]);
     }
 }
