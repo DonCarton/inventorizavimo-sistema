@@ -4,12 +4,18 @@ namespace App\Imports;
 
 use App\Models\Laboratory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
+use Maatwebsite\Excel\Concerns\SkipsErrors;
+use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithUpserts;
+use Throwable;
 
-class LaboratoryImport implements ToModel, WithUpserts, WithHeadingRow
+class LaboratoryImport implements ToModel, WithUpserts, WithHeadingRow, SkipsEmptyRows, SkipsOnError
 {
+    use SkipsErrors;
     /**
     * @param array $row
     *
@@ -30,5 +36,13 @@ class LaboratoryImport implements ToModel, WithUpserts, WithHeadingRow
     public function uniqueBy(): string
     {
         return 'name';
+    }
+    public function onError(Throwable $e): void
+    {
+        Log::error('Import error: ' . $e->getMessage(), [
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString(),
+        ]);
     }
 }
