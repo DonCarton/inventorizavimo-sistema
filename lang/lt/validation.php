@@ -213,6 +213,11 @@ return [
         'selectedRole' => [
             'can' => 'Tik super administratoriai gali suteikti šią rolę.',
             'unauthorized_role_change' => 'Rolės pakeisti negalite.',
+        ],
+        'value' => [
+            'range_alphabetical' => 'Pateikta reikšmė yra netinkama. Naudokite A-F arba A-J.',
+            'range_numeric' => 'Pateikta reikšmė yra netinkama. Naudokite 1-10 arba 1-20.',
+            'range_generic' => 'Pateikta reikšmė yra netinkama.',
         ]
     ],
 
@@ -262,7 +267,8 @@ return [
         'shelf' => 'lentyna',
         'per_page' => 'įrašų kiekis per puslapį',
         'object_type' => 'objekto tipas',
-        'critical_amount_notified_at' => 'pranešimas apie stygių išsiųstas laiku'
+        'critical_amount_notified_at' => 'pranešimas apie stygių išsiųstas laiku',
+        'value' => 'reikšmė'
     ],
 
 ];

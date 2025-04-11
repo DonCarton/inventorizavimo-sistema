@@ -13,7 +13,7 @@ class ConfigurationValue extends Model
 
     protected $fillable = ['configuration_id', 'value'];
 
-    public function configuration()
+    public function configuration(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(SystemConfiguration::class, 'configuration_id');
     }

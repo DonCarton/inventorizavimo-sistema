@@ -36,6 +36,9 @@ return [
         'deleted' => 'Tipas :name sėkmingai ištrintas.',
         'still_related' => 'Tipas yra priskirtas inventoriaus įrašams (:count). Ištrinti negalima.'
     ],
+    'systemConfiguration' => [
+        'updated' => 'Nustatymas pakeistas sėkmingai.'
+    ],
     'noItemFound' => 'Kodas atpažintas (:name), bet įrašas nerastas.',
     'true' => 'Taip',
     'false' => 'Ne',
