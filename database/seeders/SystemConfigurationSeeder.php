@@ -11,7 +11,7 @@ class SystemConfigurationSeeder extends Seeder
     public function run(): void
     {
         $defaultConfigurations = [
-            ['key' => 'cupboard_range', 'name' => 'Spintų numeracija', 'value_type' => 'string', 'category' => 'general', 'default_value' => 'A-H'],
+            ['key' => 'cupboard_range', 'name' => 'Spintų numeracija', 'value_type' => 'string', 'category' => 'general', 'default_value' => 'A-Z'],
             ['key' => 'shelf_range', 'name' => 'Lentynų numeracija', 'value_type' => 'string', 'category' => 'general', 'default_value' => '1-20'],
         ];
 
