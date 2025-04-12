@@ -115,6 +115,13 @@ export default function Index({auth, laboratories, queryParams = null, success, 
                                             children={StringHelper.__("Name")}
                                         />
                                         <TableHeader
+                                            name="ident_code"
+                                            sort_field={queryParams.sort_field}
+                                            sort_direction={queryParams.sort_direction}
+                                            sortChanged={sortChanged}
+                                            children={StringHelper.__("Identification code")}
+                                        />
+                                        <TableHeader
                                             name="updated_at"
                                             sort_field={queryParams.sort_field}
                                             sort_direction={queryParams.sort_direction}
@@ -137,6 +144,14 @@ export default function Index({auth, laboratories, queryParams = null, success, 
                                                 onBlur={e => searchFieldChanged('name', e.target.value)}
                                                 onKeyPress={e => onKeyPress('name', e)}/>
                                         </th>
+                                        <th className="px-3 py-2">
+                                            <TextInput
+                                                className="w-full 3xl:text-base text-sm"
+                                                defaultValue={queryParams.ident_code}
+                                                placeholder={StringHelper.__("Identification code")}
+                                                onBlur={e => searchFieldChanged('ident_code', e.target.value)}
+                                                onKeyPress={e => onKeyPress('ident_code', e)}/>
+                                        </th>
                                         <th className="px-3 py-2"></th>
                                         <th className="px-3 py-2"></th>
                                         <th className="px-3 py-2">
@@ -157,6 +172,7 @@ export default function Index({auth, laboratories, queryParams = null, success, 
                                             >{laboratory.name}
                                             </Link>
                                             </td>
+                                            <td className="px-3 py-2">{laboratory.ident_code}</td>
                                             <td className="px-3 py-2">{laboratory.updated_at}</td>
                                             <td className="px-3 py-2">{laboratory.created_by.email}</td>
                                             <td className="px-3 py-2">{laboratory.updated_by.email}</td>

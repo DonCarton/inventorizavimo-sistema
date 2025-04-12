@@ -23,7 +23,7 @@ class UpdateLaboratoryRequest extends FormRequest
     {
         return [
             'name' => 'required|string|min:3|max:255',
-            'ident_code' => 'string|max:10',
+            'ident_code' => 'string|max:4',
             'updated_by' => 'required|exists:users,id'
         ];
     }

@@ -152,7 +152,7 @@ return [
         'string' => 'The :attribute field must be :size characters.',
     ],
     'starts_with' => 'The :attribute field must start with one of the following: :values.',
-    'string' => 'The :attribute field must be a string.',
+    'string' => ':Attribute turi būti tekstinės vertės.',
     'timezone' => 'The :attribute field must be a valid timezone.',
     'unique' => 'Šis :attribute jau užimtas.',
     'uploaded' => 'The :attribute failed to upload.',
@@ -268,7 +268,8 @@ return [
         'per_page' => 'įrašų kiekis per puslapį',
         'object_type' => 'objekto tipas',
         'critical_amount_notified_at' => 'pranešimas apie stygių išsiųstas laiku',
-        'value' => 'reikšmė'
+        'value' => 'reikšmė',
+        'ident_code' => 'atpažinimo kodas',
     ],
 
 ];

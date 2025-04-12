@@ -33,6 +33,9 @@ class LaboratoryController extends Controller
         if (request('name')){
             $query->where('name','like','%'.request('name').'%');
         }
+        if (request('ident_code')){
+            $query->where('ident_code','like','%'.request('ident_code').'%');
+        }
         if (request('updated_by')){
             $query->whereHas('updatedBy', function ($query) {
                 $query->where('email', 'like', '%'.request('updated_by').'%');

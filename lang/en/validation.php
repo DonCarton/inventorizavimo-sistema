@@ -228,6 +228,8 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'ident_code' => 'identification code',
+    ],
 
 ];

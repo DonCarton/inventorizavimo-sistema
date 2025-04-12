@@ -23,6 +23,7 @@ class StoreLaboratoryRequest extends FormRequest
     {
         return [
             'name' => 'required|string|min:3|max:255',
+            'ident_code' => 'string|min:1|max:4',
             'created_by' => 'required|exists:users,id',
             'updated_by' => 'required|exists:users,id'
         ];
