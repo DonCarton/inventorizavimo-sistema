@@ -191,6 +191,7 @@ return [
         ],
         'inventory_type' => [
             'required' => 'Pasirinkti inventoriaus tipą yra privaloma.',
+            'no_valid_record' => ':Attribute su pateikta verte nerastas.',
         ],
         'per_page' => [
             'min' => 'Norimas gauti kiekis įrašų turi būti lygus arba didesnis nei :min.',
@@ -218,7 +219,10 @@ return [
             'range_alphabetical' => 'Pateikta reikšmė yra netinkama. Naudokite A-F arba A-J.',
             'range_numeric' => 'Pateikta reikšmė yra netinkama. Naudokite 1-10 arba 1-20.',
             'range_generic' => 'Pateikta reikšmė yra netinkama.',
-        ]
+        ],
+        'laboratory' => [
+            'no_valid_record' => ':Attribute su pateikta verte nerasta.',
+        ],
     ],
 
     /*
@@ -270,6 +274,8 @@ return [
         'critical_amount_notified_at' => 'pranešimas apie stygių išsiųstas laiku',
         'value' => 'reikšmė',
         'ident_code' => 'atpažinimo kodas',
+        '*.inventory_type' => 'tipas',
+        '*.laboratory' => 'laboratorija',
     ],
 
 ];

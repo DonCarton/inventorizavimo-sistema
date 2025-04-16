@@ -40,6 +40,17 @@ return [
     'true' => 'True',
     'false' => 'False',
     'denied' => 'Action is denied.',
-    'invalidDelete' => 'You cannot delete this item.'
+    'invalidDelete' => 'You cannot delete this item.',
+    'imports' => [
+        'row' => 'eilutė faile',
+        'value' => 'reikšmė',
+        'field' => 'laukas',
+        'error_type' => 'klaidos tipas',
+        'error_message' => 'klaidos žinutė',
+        'issue_types' => [
+            'validation' => 'duomenų tiklsumas',
+            'exception' => 'išimtis',
+        ],
+    ],
 
 ];

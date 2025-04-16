@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
+use App\Rules\ExistsByNumericOrString;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
@@ -14,6 +15,7 @@ use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Validators\Failure;
 use Throwable;
 
 class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyRows, SkipsOnError, SkipsOnFailure
@@ -27,6 +29,14 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
     {
         return [
             '*.local_name' => ['required','regex:/^[A-Z]{3,4}\d{3}-[A-Z]$/'],
+            '*.inventory_type' => [
+                'nullable',
+                new ExistsByNumericOrString('item_types','inventory_type')
+            ],
+            '*.laboratory' => [
+                'nullable',
+                new ExistsByNumericOrString('laboratories','laboratory')
+            ],
             '*.cupboard' => ['nullable','string','regex:/[A-Z]/'],
             '*.shelf' => ['nullable','numeric','gte:0','lte:40'],
         ];
@@ -39,12 +49,12 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
      */
     public function model(array $row): Model|InventoryItem|null
     {
-        $inventoryType = ItemType::where('name', $row['inventory_type'])->first();
-        $laboratory = Laboratory::where('name', $row['laboratory'])->first();
+        $inventoryType = (is_numeric($row['inventory_type'])) ? ItemType::find($row['inventory_type']) : ItemType::where('name', $row['inventory_type'])->first();
+        $laboratory = (is_numeric($row['laboratory'])) ? Laboratory::find($row['laboratory']) : Laboratory::where('name', $row['laboratory'])->first();
         return InventoryItem::updateOrCreate(
             ['local_name' => $row['local_name']],
             [
-                'inventory_type'   => $inventoryType ? $inventoryType->id : null,
+                'inventory_type'   => $inventoryType?->id,
                 'name'             => $row['name'],
                 'name_eng'         => $row['name_eng'],
                 'formula'          => $row['formula'],
@@ -60,7 +70,7 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
                 'to_order_amount'  => $row['to_order'],
                 'average_consumption' => $row['average_consumption'],
                 'multiple_locations' => $row['multiple_locations'],
-                'laboratory'       => $laboratory ? $laboratory->id : null,
+                'laboratory'       => $laboratory?->id,
                 'cupboard'         => $row['cupboard'],
                 'shelf'            => $row['shelf'],
                 'storage_conditions' => $row['storage_conditions'],
@@ -82,17 +92,15 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
         ]);
     }
 
-    public function onFailure(\Maatwebsite\Excel\Validators\Failure ...$failures)
+    public function onFailure(Failure ...$failures): void
     {
-        foreach($failures as $failure)
-        {
+        foreach ($failures as $failure) {
             $this->caughtFailures[] = [
-                'row' => $failure->row(),
-                'local_name' => $failure->values()['local_name'] ?? null,
-                'cupboard' => $failure->values()['cupboard'] ?? null,
-                'shelf' => $failure->values()['shelf'] ?? null,
-                'error_type'   => 'Validation',
-                'error_message'=> implode(' ', $failure->errors()),
+                ucfirst(__('actions.imports.row')) => $failure->row(),
+                ucfirst(__('actions.imports.value'))=> $failure->values()[$failure->attribute()],
+                ucfirst(__('actions.imports.field')) => $failure->attribute(),
+                ucfirst(__('actions.imports.error_type')) => ucfirst(__('actions.imports.issue_types.validation')),
+                ucfirst(__('actions.imports.error_message')) => implode(' ', $failure->errors()),
             ];
         }
     }

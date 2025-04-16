@@ -165,5 +165,6 @@
     "Edit configuration": "Redaguoti nustatymą",
     "User configurations": "Naudotojų nustatymai",
     "Email configurations": "Pašto nustatymai",
-    "General configurations": "Bendri nustatymai"
+    "General configurations": "Bendri nustatymai",
+    "Receive results via mail": "Ar norite gauti nepavykusius importavimo rezultatus el. paštu?"
 }

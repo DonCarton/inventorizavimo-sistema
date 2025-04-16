@@ -20,6 +20,7 @@ export default function Index({auth, inventoryItems, itemTypes, queryParams = nu
     const {setData, post} = useForm({
         title: '',
         file: null,
+        failsViaMail: false,
     });
     const searchFieldChanged = (name, value) => {
         if (value) {
@@ -49,6 +50,9 @@ export default function Index({auth, inventoryItems, itemTypes, queryParams = nu
         }
         router.get(route('inventoryItems.index'), queryParams);
     };
+    const handleCheckbox = (e) => {
+        setData('failsViaMail', e.target.checked);
+    };
     const handleFileSelect = (file) => {
         setData('file', file);
     };
@@ -57,6 +61,7 @@ export default function Index({auth, inventoryItems, itemTypes, queryParams = nu
         setModalOpen(false);
         setData("title", "");
         setData("file", null);
+        setData("failsViaMail", false);
     }
     function closeModal() {
         setModalOpen(false);
@@ -101,8 +106,8 @@ export default function Index({auth, inventoryItems, itemTypes, queryParams = nu
                              alertForWrongType={StringHelper.__("Please select a .xlsx or .csv file")}
                              alertTextForMissingFile={StringHelper.__("Please choose a file before uploading")}
                              submitButtonText={StringHelper.__("Submit")} itemNotSpecifiedText={StringHelper.__("Nothing chosen yet")}
-                             selectFileText={StringHelper.__("Chosen file")} isOpen={modalOpen} onClose={closeModal}
-                             onFileSelect={handleFileSelect} onSubmit={handleSubmit}/>
+                             selectFileText={StringHelper.__("Chosen file")} checkboxText={StringHelper.__("Receive results via mail")} isOpen={modalOpen} onClose={closeModal}
+                             onFileSelect={handleFileSelect} onFailsViaMailCheck={handleCheckbox} onSubmit={handleSubmit}/>
             <div className="py-12">
                 <div className="3xl:max-w-screen-4xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {success && <SuccessMessage message={success}/>}

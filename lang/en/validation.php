@@ -191,6 +191,7 @@ return [
         ],
         'inventory_type' => [
             'required' => 'An inventory type must be selected.',
+            'no_valid_record' => ':Attribute with the provided value could not be found.',
         ],
         'per_page' => [
             'min' => 'The requested amount per page has to be equal or more than :min.',
@@ -213,7 +214,15 @@ return [
         'selectedRole' => [
             'can' => 'Only super admins are permitted to grant this role.',
             'unauthorized_role_change' => 'You cannot change the role.',
-        ]
+        ],
+        'value' => [
+            'range_alphabetical' => 'The provided value is not correct. Please use A-F or A-J.',
+            'range_numeric' => 'The provided value is not correct. Please use 1-10 or 1-20.',
+            'range_generic' => 'The provided value is not correct.',
+        ],
+        'laboratory' => [
+            'no_valid_record' => ':Attribute with the provided value could not be found.',
+        ],
 
     ],
 

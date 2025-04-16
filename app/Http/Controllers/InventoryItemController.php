@@ -457,11 +457,9 @@ class InventoryItemController extends Controller
         $referrer = $request['referrer'] ?? 'index';
         $file = $request->file('file');
         $fileName = $request->file('file')->getClientOriginalName();
+
         $import = new InventoryImport();
         Excel::import($import, $file);
-        if($import->caughtFailures){
-            dd($import->caughtFailures);
-        }
 
         return to_route("inventoryItems.${referrer}")->with('success', __('actions.uploaded', ['name' => $fileName]));
     }

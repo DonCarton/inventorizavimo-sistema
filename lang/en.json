@@ -164,5 +164,6 @@
     "Edit configuration": "Edit configuration",
     "User configurations": "User configurations",
     "Email configurations": "Email configurations",
-    "General configurations": "General configurations"
+    "General configurations": "General configurations",
+    "Receive results via mail": "Do you want to receive the failed import results via email?"
 }

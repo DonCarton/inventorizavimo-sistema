@@ -43,6 +43,17 @@ return [
     'true' => 'Taip',
     'false' => 'Ne',
     'denied' => 'Veiksmas neleistinas.',
-    'invalidDelete' => 'Ištrinti šio įrašo negalima.'
+    'invalidDelete' => 'Ištrinti šio įrašo negalima.',
+    'imports' => [
+        'row' => 'eilutė faile',
+        'value' => 'reikšmė',
+        'field' => 'laukas',
+        'error_type' => 'klaidos tipas',
+        'error_message' => 'klaidos žinutė',
+        'issue_types' => [
+            'validation' => 'duomenų tiklsumas',
+            'exception' => 'išimtis',
+        ],
+    ],
 
 ];
