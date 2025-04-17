@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\RoleEnum;
+use App\Exports\FailedExports;
 use App\Exports\InventoryExports;
 use App\Http\Requests\ExportRequests\InventoryItemExportRequest;
 use App\Http\Requests\StoreRequests\AdjustInventoryAmountViaLog;
@@ -17,6 +18,7 @@ use App\Http\Resources\LaboratoryResource;
 use App\Http\Resources\SelectObjectResources\ItemTypeForSelect;
 use App\Http\Resources\SelectObjectResources\LaboratoryResourceForMulti;
 use App\Imports\InventoryImport;
+use App\Jobs\NotifyFailedImports;
 use App\Models\AmountLog;
 use App\Models\InventoryItem;
 use App\Models\ItemType;
@@ -452,7 +454,7 @@ class InventoryItemController extends Controller
      * @param Request $request
      * @return RedirectResponse
      */
-    public function import(Request $request): RedirectResponse
+    public function import(Request $request): RedirectResponse|BinaryFileResponse
     {
         $referrer = $request['referrer'] ?? 'index';
         $file = $request->file('file');
@@ -460,8 +462,12 @@ class InventoryItemController extends Controller
 
         $import = new InventoryImport();
         Excel::import($import, $file);
+        if (!empty($import->caughtFailures)){
+            NotifyFailedImports::dispatch($import->caughtFailures, auth()->user());
+            return to_route("inventoryItems.${referrer}")->with('failure', __('actions.uploaded.not_fully', ['name' => $fileName]));
+        }
 
-        return to_route("inventoryItems.${referrer}")->with('success', __('actions.uploaded', ['name' => $fileName]));
+        return to_route("inventoryItems.${referrer}")->with('success', __('actions.uploaded.success', ['name' => $fileName]));
     }
 
     /**

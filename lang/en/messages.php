@@ -14,4 +14,7 @@ return [
     'Inventory' => [
         'Inventory item is too low or changed' => 'Inventory item <strong>:localName</strong> has reached the critical amount, please order more or check the current amount.',
     ],
+    'Import' => [
+        'Failed imports' => 'Your recent import has been processeced, however some items have failed to import. Please find the attached report to amend the failed items.'
+    ],
 ];

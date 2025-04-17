@@ -37,8 +37,8 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
                 'nullable',
                 new ExistsByNumericOrString('laboratories','laboratory')
             ],
-            '*.cupboard' => ['nullable','string','regex:/[A-Z]/'],
-            '*.shelf' => ['nullable','numeric','gte:0','lte:40'],
+            '*.cupboard' => ['nullable','numeric','gte:0','lte:40'],
+            '*.shelf' => ['nullable','string','regex:/[A-Z]/'],
         ];
     }
 

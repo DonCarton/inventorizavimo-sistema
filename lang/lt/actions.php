@@ -6,7 +6,10 @@ return [
     'updated' => 'Atnaujintas',
     'deleted' => 'Ištrintas',
     'saved' => 'Išsaugotas',
-    'uploaded' => 'Failas :name buvo sėkmingai importuotas!',
+    'uploaded' => [
+        'success' => 'Failas :name buvo sėkmingai importuotas!',
+        'not_fully' => 'Failas pilnai neįsikėlė, paštu gausite klaidų raportą.'
+    ],
     'user' => [
         'created' => 'Naujas naudotojas :email sukurtas.',
         'updated' => 'Naudotojas :email atnaujintas.',
