@@ -18,7 +18,7 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
 use Throwable;
 
-class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyRows, SkipsOnError, SkipsOnFailure
+class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnError, SkipsOnFailure
 {
     use SkipsErrors;
     private array $arrayOfAttributes = [];
@@ -95,12 +95,14 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
     public function onFailure(Failure ...$failures): void
     {
         foreach ($failures as $failure) {
+            $row = $failure->values();
+            $isEmpty = collect($row)->every(fn ($value) => is_null($value) || trim($value) === '');
             $this->caughtFailures[] = [
                 ucfirst(__('actions.imports.row')) => $failure->row(),
+                ucfirst(__('actions.imports.field')) => $isEmpty ? '' : $failure->attribute(),
                 ucfirst(__('actions.imports.value'))=> $failure->values()[$failure->attribute()],
-                ucfirst(__('actions.imports.field')) => $failure->attribute(),
-                ucfirst(__('actions.imports.error_type')) => ucfirst(__('actions.imports.issue_types.validation')),
-                ucfirst(__('actions.imports.error_message')) => implode(' ', $failure->errors()),
+                ucfirst(__('actions.imports.error_type')) => $isEmpty ? ucfirst(__('actions.imports.issue_types.empty')) : ucfirst(__('actions.imports.issue_types.validation')),
+                ucfirst(__('actions.imports.error_message')) => $isEmpty ? '' : implode(' ', $failure->errors()),
             ];
         }
     }

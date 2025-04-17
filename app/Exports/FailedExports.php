@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use Illuminate\Support\Facades\App;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -13,10 +14,12 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class FailedExports implements FromCollection, WithHeadings, ShouldAutoSize, WithStyles
 {
     protected Collection $rows;
+    protected string $localeForHeaders;
 
-    public function __construct(array $rows)
+    public function __construct(array $rows, string $localeForHeaders = 'lt')
     {
         $this->rows = collect($rows);
+        $this->localeForHeaders = $localeForHeaders;
     }
 
     public function collection(): Collection
@@ -26,10 +29,11 @@ class FailedExports implements FromCollection, WithHeadings, ShouldAutoSize, Wit
 
     public function headings(): array
     {
+        App::setLocale($this->localeForHeaders);
         return [
             ucfirst(__('actions.imports.row')),
-            ucfirst(__('actions.imports.value')),
             ucfirst(__('actions.imports.field')),
+            ucfirst(__('actions.imports.value')),
             ucfirst(__('actions.imports.error_type')),
             ucfirst(__('actions.imports.error_message'))
         ];

@@ -54,6 +54,7 @@ return [
         'error_type' => 'klaidos tipas',
         'error_message' => 'klaidos žinutė',
         'issue_types' => [
+            'empty' => 'tuščia eilutė',
             'validation' => 'duomenų tiklsumas',
             'exception' => 'išimtis',
         ],

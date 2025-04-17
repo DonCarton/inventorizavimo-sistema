@@ -5,14 +5,13 @@ namespace App\Jobs;
 use App\Exports\FailedExports;
 use App\Mail\ImportReportMail;
 use App\Models\User;
-use App\Notifications\ImportFailedNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Maatwebsite\Excel\Facades\Excel;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 
 class NotifyFailedImports implements ShouldQueue
 {
@@ -30,7 +29,7 @@ class NotifyFailedImports implements ShouldQueue
     public function handle(): void
     {
         $failFileName = 'failed-imports-' . now()->timestamp . '.xlsx';
-        Excel::store(new FailedExports($this->failures), "temp/{$failFileName}");
+        Excel::store(new FailedExports($this->failures, $this->user->locale), "temp/{$failFileName}");
         $path = storage_path("app/temp/{$failFileName}");
         Mail::to($this->user)->send(new ImportReportMail(__('mail.generic_import'), $path, $this->user));
     }

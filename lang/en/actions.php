@@ -42,14 +42,15 @@ return [
     'denied' => 'Action is denied.',
     'invalidDelete' => 'You cannot delete this item.',
     'imports' => [
-        'row' => 'eilutė faile',
-        'value' => 'reikšmė',
-        'field' => 'laukas',
-        'error_type' => 'klaidos tipas',
-        'error_message' => 'klaidos žinutė',
+        'row' => 'row in file',
+        'value' => 'value',
+        'field' => 'field',
+        'error_type' => 'error type',
+        'error_message' => 'error message',
         'issue_types' => [
-            'validation' => 'duomenų tiklsumas',
-            'exception' => 'išimtis',
+            'empty' => 'empty row',
+            'validation' => 'data clarity',
+            'exception' => 'exception',
         ],
     ],
 
