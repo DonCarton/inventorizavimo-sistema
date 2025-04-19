@@ -462,6 +462,7 @@ class InventoryItemController extends Controller
 
         $import = new InventoryImport();
         Excel::import($import, $file);
+        
         if (!empty($import->caughtFailures)){
             NotifyFailedImports::dispatch($import->caughtFailures, auth()->user());
             return to_route("inventoryItems.${referrer}")->with('failure', __('actions.uploaded.not_fully', ['name' => $fileName]));
