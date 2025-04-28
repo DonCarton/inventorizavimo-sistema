@@ -88,7 +88,9 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
                                             <InputLabel
                                                 htmlFor="inventoryItems_local_name">{StringHelper.__("Local name")}</InputLabel>
                                             <TextInput id="inventoryItems_local_name" type="text" name="local_name"
-                                                       value={data.local_name} disabled={true} readOnly={true}
+                                                       value={data.local_name}
+                                                       disabled={!can.alterLocalName}
+                                                       readOnly={!can.alterLocalName}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                             <InputError message={errors.local_name} className="mt-2"/>
                                         </div>

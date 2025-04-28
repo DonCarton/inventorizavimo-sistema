@@ -224,6 +224,7 @@ class InventoryItemController extends Controller
             'cupboardOptions' => $configurations['cupboardOptions'],
             'shelfOptions' => $configurations['shelfOptions'],
             'can' => [
+                'alterLocalName' => $request->user()->hasRole(RoleEnum::SUPER_ADMIN),
                 'alterType' => $request->user()->hasRole(RoleEnum::SUPER_ADMIN),
                 'alterLocation' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
                 'delete' => $request->user()->can('delete',$inventoryItem),
@@ -510,14 +511,14 @@ class InventoryItemController extends Controller
 
         // Define default values
         $defaults = [
-            'cupboard_range' => 'A-F',
-            'shelf_range' => '1-20',
+            'cupboard_range' => '1-20',
+            'shelf_range' => 'A-F',
         ];
 
         // Parse and validate the cupboard range
         if ($cupboardConfig) {
             $letterRange = $this->parseRangeDefinition($cupboardConfig->value->value);
-            if (!$this->isValidRange($letterRange, 'alpha')) {
+            if (!$this->isValidRange($letterRange, 'numeric')) {
                 $letterRange = $this->parseRangeDefinition($defaults['cupboard_range']);
             }
         } else {
@@ -527,7 +528,7 @@ class InventoryItemController extends Controller
         // Parse and validate the shelf range
         if ($shelfConfig) {
             $numberRange = $this->parseRangeDefinition($shelfConfig->value->value);
-            if (!$this->isValidRange($numberRange, 'numeric')) {
+            if (!$this->isValidRange($numberRange, 'alpha')) {
                 $numberRange = $this->parseRangeDefinition($defaults['shelf_range']);
             }
         } else {
