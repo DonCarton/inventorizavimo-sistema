@@ -7,8 +7,6 @@ use App\Models\ItemType;
 use App\Models\Laboratory;
 use App\Rules\ExistsByNumericOrString;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
@@ -16,7 +14,6 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
-use Throwable;
 
 class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnError, SkipsOnFailure
 {
@@ -24,6 +21,7 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsO
     private array $arrayOfAttributes = [];
 
     public array $caughtFailures = [];
+    public array $caughtErrors = [];
 
     public function rules(): array
     {
@@ -39,6 +37,10 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsO
             ],
             '*.cupboard' => ['nullable','numeric','gte:0','lte:40'],
             '*.shelf' => ['nullable','string','regex:/[A-Z]/'],
+            '*.total_amount' => ['nullable','numeric'],
+            '*.critical_amount' => ['nullable','numeric'],
+            '*.to_order' => ['nullable','numeric'],
+            '*.average_consumption' => ['nullable','numeric'],
         ];
     }
 
@@ -81,15 +83,6 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsO
                 'updated_by'       => auth()->user()->id,
             ]
         );
-    }
-
-    public function onError(Throwable $e): void
-    {
-        Log::error('Import error: ' . $e->getMessage(), [
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'trace' => $e->getTraceAsString(),
-        ]);
     }
 
     public function onFailure(Failure ...$failures): void

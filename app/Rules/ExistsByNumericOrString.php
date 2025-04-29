@@ -29,9 +29,9 @@ class ExistsByNumericOrString implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (is_numeric($value)){
-            DB::table($this->table)->where($this->idColumn, $value)->exists() ?: $fail(__($this->translationKey));
+            DB::table($this->table)->where($this->idColumn, $value)->exists() ?: $fail(__($this->translationKey, ['value' => $value]));
         } elseif(is_string($value)){
-            DB::table($this->table)->where($this->nameColumn, $value)->exists() ?: $fail(__($this->translationKey));
+            DB::table($this->table)->where($this->nameColumn, $value)->exists() ?: $fail(__($this->translationKey, ['value' => $value]));
         }
     }
 }

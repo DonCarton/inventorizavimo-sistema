@@ -4,7 +4,6 @@ namespace App\Imports;
 
 use App\Models\Laboratory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
@@ -14,7 +13,6 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithUpserts;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
-use Throwable;
 
 class LaboratoryImport implements ToModel, WithUpserts, WithHeadingRow, WithValidation, SkipsOnFailure, SkipsEmptyRows, SkipsOnError
 {
@@ -50,14 +48,6 @@ class LaboratoryImport implements ToModel, WithUpserts, WithHeadingRow, WithVali
     public function uniqueBy(): string
     {
         return 'name';
-    }
-    public function onError(Throwable $e): void
-    {
-        Log::error('Import error: ' . $e->getMessage(), [
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'trace' => $e->getTraceAsString(),
-        ]);
     }
 
     public function onFailure(Failure ...$failures): void

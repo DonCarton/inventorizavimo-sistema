@@ -36,8 +36,8 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
         average_consumption: inventoryItem.data.averageConsumption || '',
         multiple_locations: inventoryItem.data.multipleLocations || 0,
         laboratory: inventoryItem.data.laboratory || '',
-        cupboard: inventoryItem.data.cupboard || null,
-        shelf: inventoryItem.data.shelf || null,
+        cupboard: inventoryItem.data.cupboard || 1,
+        shelf: inventoryItem.data.shelf || 'A',
         storage_conditions: inventoryItem.data.storageConditions || '',
         asset_number: inventoryItem.data.assetNumber || '',
         used_for: inventoryItem.data.usedFor || '',
@@ -57,14 +57,14 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
         setData('inventory_type',e.target.value);
     }
     const handleCupboardChange = (e) => {
-        setData('cupboard',e.target.value);
-    }
-    const handleShelfChange = (e) => {
         if (e.target.value === undefined){
             return;
         }
         const cleanInt = parseInt(e.target.value);
-        setData('shelf',cleanInt);
+        setData('cupboard',cleanInt);
+    }
+    const handleShelfChange = (e) => {
+        setData('shelf',e.target.value);
     }
     return (
         <AuthenticatedLayout

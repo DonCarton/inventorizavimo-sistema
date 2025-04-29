@@ -191,7 +191,7 @@ return [
         ],
         'inventory_type' => [
             'required' => 'An inventory type must be selected.',
-            'no_valid_record' => ':Attribute with the provided value could not be found.',
+            'no_valid_record' => ':Attribute with the provided value of [:value] could not be found.',
         ],
         'per_page' => [
             'min' => 'The requested amount per page has to be equal or more than :min.',
@@ -221,7 +221,7 @@ return [
             'range_generic' => 'The provided value is not correct.',
         ],
         'laboratory' => [
-            'no_valid_record' => ':Attribute with the provided value could not be found.',
+            'no_valid_record' => ':Attribute with the provided value of [:value] could not be found.',
         ],
 
     ],
@@ -239,6 +239,13 @@ return [
 
     'attributes' => [
         'ident_code' => 'identification code',
+        '*.inventory_type' => 'type',
+        '*.laboratory' => 'laboratory',
+        '*.cupboard' => 'cupboard',
+        '*.shelf' => 'shelf',
+        '*.critical_amount' => 'critical amount',
+        '*.to_order' => 'to order',
+        '*.average_consumption' => 'average consumption',
     ],
 
 ];
