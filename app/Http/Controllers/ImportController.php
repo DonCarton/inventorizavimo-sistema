@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\ValidAttributes;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -10,6 +12,7 @@ use Illuminate\Support\Str;
 
 class ImportController extends Controller
 {
+    use ValidAttributes;
     protected UploadedFile $uploadedFile;
     protected bool $previewImport;
     protected string $modelType;
@@ -41,9 +44,9 @@ class ImportController extends Controller
 
     //TODO: use this function to retrieve the mappings for the import
     //so that the end-user themselves can choose what to import
-    public function showMappings(Request $request)
+    public function showMappings($model)
     {
-        //
+        
     }
 
     //TODO: this should not do the full handling but only the provided
@@ -62,10 +65,12 @@ class ImportController extends Controller
 
         $this->className = '\\App\\Imports\\' . Str::studly(Str::singular($this->modelType)) . 'Import';
 
-        if (!class_exists($this->className)) {
+        if (!class_exists(class: $this->className)) {
             // return redirect()->back()->with('failure', "Import class [$this->className] not found.");
             return ['failure' => "Import class [$this->className] not found."];
         }
+
+        $this->showMappings(request());
 
         return $this->import();
     }

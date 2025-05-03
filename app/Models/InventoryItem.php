@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\InventoryStatusEnum;
 use App\Observers\InventoryItemObserver;
+use App\ValidAttributes;
 use DateTime;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,7 +34,7 @@ use Spatie\Activitylog\LogOptions;
 #[ObservedBy(InventoryItemObserver::class)]
 class InventoryItem extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, ValidAttributes;
     protected $fillable = [
         'local_name',
         'inventory_type',
