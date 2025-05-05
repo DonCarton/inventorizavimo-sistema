@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\ValidAttributes;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Maatwebsite\Excel\Facades\Excel;
@@ -18,17 +16,18 @@ class ImportController extends Controller
     protected string $modelType;
     protected string $className;
 
-    public function __construct(UploadedFile $uploadedFile, bool $previewImport = $false, string $modelType, string $className)
+    //TODO: FOR NOW, OBSOLETE
+    /*public function __construct(UploadedFile $uploadedFile, bool $previewImport = $false, string $modelType, string $className)
     {
         $this->uploadedFile = $uploadedFile;
         $this->previewImport = $previewImport;
         $this->modelType = $modelType;
         $this->className = $className;
-    }
+    }*/
 
     //TODO: use this function to maybe hanlde an import
     //and the parseInput() to just parse the data.
-    public function import(): array
+    public function processImport(): array
     {
         $importInstance = new $this->className();
 
@@ -47,6 +46,47 @@ class ImportController extends Controller
     public function showMappings($model)
     {
         
+    }
+    public function getImportableFields(Request $request)
+    {
+        $validated = $request->validate([
+            'model' => ['required', 'string'],
+        ]);
+
+        if (!class_exists($validated['model'])){
+            return response()->json(['error' => 'Selected object does not support imports'], 422);
+        }
+        
+        $modelClass = $validated["model"];
+
+        $model = new $modelClass;
+        
+        if (!in_array(\App\Interfaces\ImportableModel::class, class_implements($model))) {
+            return response()->json(['error' => 'Selected object does not support imports'], 400);
+        }
+
+        return response()->json([
+            'fields' => $model->fetchValidFields(),
+        ]);
+    }
+    public function extractHeaders(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:xlsx,csv,txt'],
+        ]);
+
+        $file = $request->file('file');
+
+        // Load only the first row for headers
+        $headings = Excel::toArray(null, $file)[0][0] ?? [];
+
+        if (!is_array($headings)) {
+            return response()->json(['error' => 'Unable to extract headers.'], 422);
+        }
+
+        return response()->json([
+            'headers' => array_filter(array_map('trim', $headings)),
+        ]);
     }
 
     //TODO: this should not do the full handling but only the provided
@@ -72,7 +112,7 @@ class ImportController extends Controller
 
         $this->showMappings(request());
 
-        return $this->import();
+        return $this->processImport();
     }
 
     //TODO: use this function to maybe hanlde an export

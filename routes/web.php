@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\DataFileImportController;
 use App\Http\Controllers\FetchDataToSelect;
 use App\Http\Controllers\HistoryQueryController;
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BarcodesController;
@@ -23,11 +25,18 @@ Route::middleware(['auth', 'verified'])->group(function (){
 
     Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
+        Route::prefix('imports')->name('imports.')->group(function() {
+            Route::post('importable-fields', [ImportController::class, 'getImportableFields'])->name('importableFields');
+            Route::post('preview-headers', [ImportController::class, 'extractHeaders'])->name('previewHeaders');
+
+        });
+
         Route::resource('inventoryItems', InventoryItemController::class)->middleware('includeUserId');
         Route::get('/inventoryItems/{inventoryItem}/editRaw', [InventoryItemController::class, 'editRaw'])->name('inventoryItems.editRaw')->middleware('includeUserId');
         Route::resource('itemTypes', ItemTypeController::class)->middleware('includeUserId');
 
         Route::resource('users', UserController::class)->middleware('includeUserId');
+        Route::resource('import-definitions',DataFileImportController::class)->middleware('includeUserId');
         Route::patch('/users/{user}/activate', [UserController::class, 'activate'])->name('users.activate')->middleware('includeUserId');
         Route::patch('/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate')->middleware('includeUserId');
         Route::post('/inventoryItems/fetch-post-number', [InventoryItemController::class, 'fetchPostNumber']);
@@ -100,6 +109,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/select/shelves', [FetchDataToSelect::class, 'listShelves'])->name('select.shelves');
     Route::get('/select/shelves/{id}', [FetchDataToSelect::class, 'getShelf'])->name('select.shelves.specific');
     Route::get('/select/ident-code',[FetchDataToSelect::class,'listIdentCode'])->name('select.identCode');
+    Route::get('/select/importable-fields',[FetchDataToSelect::class,'listImportableFields'])->name('select.importableFields');
 });
 
 require __DIR__.'/auth.php';

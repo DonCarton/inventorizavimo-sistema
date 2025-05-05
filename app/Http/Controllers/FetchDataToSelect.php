@@ -6,6 +6,7 @@ use App\Models\ItemType;
 use App\Models\Laboratory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Request;
 
 /**
  * Pirminis valdiklio panaudojimas, ištraukti informaciją iš
@@ -68,5 +69,25 @@ class FetchDataToSelect extends Controller
             ->select('id','ident_code','name')
             ->paginate(10);
         return \App\Http\Resources\SelectObjectResources\IdentCodeForSelect::collection($identCodes);
+    }
+
+    public function listImportableFields(Request $request)
+    {
+        $modelClass = $request->input("model");
+
+        if (!class_exists($request->input("model"))){
+            return response()->json(['error' => 'Select object does not support imports'], 400);
+        }
+        
+        $modelClass = $request->input("model");
+
+        $model = new $modelClass;
+        
+        if (!in_array(\App\Interfaces\ImportableModel::class, class_implements($model))) {
+            return response()->json(['error' => 'Select object does not support imports'], 400);
+        }
+        return response()->json([
+            'fields' => $model->fetchValidFields(),
+        ]);
     }
 }
