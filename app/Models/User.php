@@ -3,7 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Interfaces\ImportableModel;
 use App\Observers\UserObserver;
+use App\ValidAttributes;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,9 +29,9 @@ use Spatie\Permission\Traits\HasRoles;
  * @property false|mixed $is_disable
  */
 #[ObservedBy(UserObserver::class)]
-class User extends Authenticatable
+class User extends Authenticatable implements ImportableModel
 {
-    use HasFactory, Notifiable, HasRoles, LogsActivity, SoftDeletes;
+    use HasFactory, Notifiable, HasRoles, LogsActivity, SoftDeletes, ValidAttributes;
 
     /**
      * The attributes that are mass assignable.

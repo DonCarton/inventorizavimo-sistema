@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\InventoryStatusEnum;
+use App\Enums\AttributeMerge;
+use App\Interfaces\ImportableModel;
 use App\Observers\InventoryItemObserver;
 use App\ValidAttributes;
 use DateTime;
@@ -11,8 +13,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\LogOptions;
@@ -32,7 +32,7 @@ use Spatie\Activitylog\LogOptions;
  * @method static where(string $string, string $operator, mixed $value)
  */
 #[ObservedBy(InventoryItemObserver::class)]
-class InventoryItem extends Model
+class InventoryItem extends Model implements ImportableModel
 {
     use HasFactory, LogsActivity, ValidAttributes;
     protected $fillable = [
@@ -64,6 +64,8 @@ class InventoryItem extends Model
         'created_by',
         'updated_by',
     ];
+
+    public const DISCLUDE_MODE = AttributeMerge::TRAITONLY;
 
     /*
      * @param InventoryItem
