@@ -89,6 +89,11 @@ class DataFileImportController extends Controller
             'field_mappings' => 'required|array',
         ]);
 
+        $validated['field_mappings'] = array_filter(
+            $validated['field_mappings'],
+            fn($v) => !is_null($v) && $v !== ''
+        );
+
         ImportDefinition::create($validated);
 
         return redirect()->route('import-definitions.index')->with('success', 'Import definition saved successfully!');

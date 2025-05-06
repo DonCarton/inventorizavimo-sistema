@@ -1,6 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
+import {FiUpload} from 'react-icons/fi';
 import { Head, Link, useForm } from "@inertiajs/react";
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
@@ -11,25 +12,39 @@ import FieldMappingForm from "@/Components/Forms/FieldMappingForm";
 
 export default function Create({ auth, importableObjects }) {
     const [fileHeaders, setFileHeaders] = useState([]);
-
+    const [selectedFileName, setSelectedFileName] = useState(null);
+    const fileInputRef = useRef(null);
     const { data, setData, post, errors, processing } = useForm({
         name: '',
         model_class: '',
         file: null,
         field_mappings: {},
-    });
+    });    
+    const handleButtonClick = (e) => {
+        e.preventDefault();
+        fileInputRef.current.click();
+    };
     const handleModelChange = (e) => {
         const model = e.target.value
         setData('model_class', model)
     };
-    const handleFileChange = async e => {
-        const file = e.target.files[0]
-        setData('file', file)
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        setData('file', file);
 
-        const formData = new FormData()
-        formData.append('file', file)
+        const formData = new FormData();
+        formData.append('file', file);
+        if (file) {
+            setSelectedFileName(file.name);
+        }
         const response = await axios.post(route('imports.previewHeaders'), formData);
-        setFileHeaders(response.data.headers)
+        setFileHeaders(response.data.headers);
+
+        /*const fileType = file.name.split('.').pop().toLowerCase();
+        if (fileType !== 'xlsx' && fileType !== 'csv') {
+            alert(alertForWrongType + '.');
+            return;
+        }*/
     };
     const onSubmit = (e) => {
         e.preventDefault();
@@ -70,7 +85,22 @@ export default function Create({ auth, importableObjects }) {
                         </div>
                         <div className="mt-4">
                             <label>File</label>
-                            <input type="file" accept=".csv,.xlsx,.xls" onChange={handleFileChange} className="w-full" />
+                            <button className="flex items-center justify-center border border-gray-300 rounded-md p-2 hover:bg-gray-100" onClick={handleButtonClick}>
+                                <FiUpload className="mr-2"/>
+                            </button>
+                            <input type="file" accept=".csv,.xlsx,.xls" ref={fileInputRef} style={{display: 'none'}} onChange={handleFileChange} className="w-full" />
+                                    
+                            {selectedFileName ?
+                                <div className="col-span-2 text-center">
+                                    <p className="font-semibold">{StringHelper.__("Chosen file")}</p>
+                                    <p>{selectedFileName}</p>
+                                </div>
+                                :
+                                <div className="col-span-2 text-center">
+                                    <p className="font-semibold">{StringHelper.__("Chosen file")}</p>
+                                    <p>{StringHelper.__("Nothing chosen yet")}</p>
+                                </div>
+                            }
                         </div>
                         {fileHeaders.length > 0 && data.model_class.length > 0 && (
                             <div className="mt-4">

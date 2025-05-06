@@ -19,13 +19,6 @@ export default function FieldMappingForm({
             setImportableFields(response.data.humanReadable);
         }
         fetchMappingFields();
-        /*axios
-      .post(`/imports/importable-fields`, { params: { model: selectedModel } })
-      .then(res => setImportableFields(res.data.fields))
-      .catch(err => {
-        console.error("Failed to fetch importable fields:", err);
-        setImportableFields([]);
-      });*/
     }, [model]);
 
     const handleMappingChange = (header, mappedField) => {
@@ -35,30 +28,52 @@ export default function FieldMappingForm({
         };
         onChange?.(updated);
     };
+    const selectedFields = Object.values(value).filter(Boolean);
     return (
         <div id={id} className="mt-1 space-y-4">
-            {fileHeaders.map((header) => (
-                <div key={header} className="flex items-center gap-4">
-                    <span className="font-medium w-1/3">{header}</span>
-                    <select
-                        className="border rounded px-2 py-1 w-2/3"
-                        value={value[header] || ""}
-                        onChange={(e) =>
-                            handleMappingChange(header, e.target.value)
-                        }
-                    >
-                        <option value="">-- Do not map --</option>
-                        {Object.entries(importableFields).map(
-                            ([key, value]) => (
-                                <option key={key} value={key}>
-                                    {value}
-                                </option>
-                            )
-                        )}
-                    </select>
-                </div>
-            ))}
-
+            {fileHeaders.map((header) => 
+            {
+              const selectedValue = value[header] || '';
+    
+              // Compute selected fields *excluding* the one for this header
+              const selectedElsewhere = Object.entries(value)
+                  .filter(([key, val]) => key !== header && val)
+                  .map(([_, val]) => val);
+          
+              // Filter available options for this header
+              const availableOptions = Object.entries(importableFields)
+                .filter(([fieldKey]) =>
+                  !selectedElsewhere.includes(fieldKey) || fieldKey === selectedValue
+              );
+              return (
+              <div key={header} className="flex items-center gap-4">
+                  <span className="font-medium w-1/3">{header}</span>
+                  <select
+                      className="border rounded px-2 py-1 w-2/3"
+                      value={value[header] || ""}
+                      onChange={(e) =>
+                          handleMappingChange(header, e.target.value)
+                      }
+                  >
+                      <option value="">-- Do not map --</option>
+                      {/*{Object.entries(importableFields || {}).map(
+                          ([key, value]) => (
+                              <option key={key} value={key} disabled={selectedFields.includes(key) && key !== selectedValue}>
+                                  {value}
+                              </option>
+                          )
+                      )}*/}
+                      {availableOptions.map(([fieldKey, fieldLabel]) => (
+                        <option key={fieldKey} value={fieldKey}>
+                          {fieldLabel}
+                        </option>
+                      ))}
+                  </select>
+              </div>
+              )
+            }
+          )
+        }
             <pre className="mt-4 text-xs text-gray-500">
                 Mapping: {JSON.stringify(value, null, 2)}
             </pre>
