@@ -10,6 +10,7 @@ class ImportDefinition extends Model
         'name',
         'model_class',
         'field_mappings',
+        'file_path',
         'user_id',
     ];
 

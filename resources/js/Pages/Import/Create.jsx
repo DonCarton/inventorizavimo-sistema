@@ -19,7 +19,7 @@ export default function Create({ auth, importableObjects }) {
         model_class: '',
         file: null,
         field_mappings: {},
-    });    
+    });
     const handleButtonClick = (e) => {
         e.preventDefault();
         fileInputRef.current.click();
@@ -89,7 +89,7 @@ export default function Create({ auth, importableObjects }) {
                                 <FiUpload className="mr-2"/>
                             </button>
                             <input type="file" accept=".csv,.xlsx,.xls" ref={fileInputRef} style={{display: 'none'}} onChange={handleFileChange} className="w-full" />
-                                    
+
                             {selectedFileName ?
                                 <div className="col-span-2 text-center">
                                     <p className="font-semibold">{StringHelper.__("Chosen file")}</p>

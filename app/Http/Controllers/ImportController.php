@@ -81,7 +81,7 @@ class ImportController extends Controller
         $file = $request->file('file');
 
         // Load only the first row for headers
-        $headings = Excel::toArray(null, $file)[0][0] ?? [];
+        $headings = $this->fetchHeaders($file);
 
         if (!is_array($headings)) {
             return response()->json(['error' => 'Unable to extract headers.'], 422);
@@ -109,13 +109,17 @@ class ImportController extends Controller
         $this->className = '\\App\\Imports\\' . Str::studly(Str::singular($this->modelType)) . 'Import';
 
         if (!class_exists(class: $this->className)) {
-            // return redirect()->back()->with('failure', "Import class [$this->className] not found.");
             return ['failure' => "Import class [$this->className] not found."];
         }
 
         $this->showMappings(request());
 
         return $this->processImport();
+    }
+
+    public static function fetchHeaders(UploadedFile $file)
+    {
+        return Excel::toArray(null, $file)[0][0] ?? [];
     }
 
     //TODO: use this function to maybe hanlde an export

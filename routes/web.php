@@ -11,8 +11,10 @@ use App\Http\Controllers\ItemTypeController;
 use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\SystemConfigurationController;
+use App\Models\ImportDefinition;
 use App\Models\InventoryItem;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 Route::middleware(['auth', 'verified'])->group(function (){
@@ -28,7 +30,9 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::prefix('imports')->name('imports.')->group(function() {
             Route::post('importable-fields', [ImportController::class, 'getImportableFields'])->name('importableFields');
             Route::post('preview-headers', [ImportController::class, 'extractHeaders'])->name('previewHeaders');
-
+            Route::get('{definition}/download', function (ImportDefinition $definition) {
+                return Storage::download($definition->file_path);
+            })->name('download');
         });
 
         Route::resource('inventoryItems', InventoryItemController::class)->middleware('includeUserId');

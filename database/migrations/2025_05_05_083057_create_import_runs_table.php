@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('import_runs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('import_definition_id')->constrained();
-            $table->foreignId('user_id')->constrained();
             $table->string('file_path'); // e.g. 'imports/user_42/2025_05_04_Products.xlsx'
             $table->enum('status', ['pending', 'processing', 'completed', 'failed']);
             $table->integer('rows_total')->nullable();
             $table->integer('rows_failed')->nullable();
+            $table->foreignId('created_by')->nullable()->constrained('users');
+            $table->foreignId('updated_by')->nullable()->constrained('users');
             $table->timestamps();
         });
     }

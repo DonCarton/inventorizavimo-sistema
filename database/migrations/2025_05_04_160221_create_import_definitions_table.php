@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('model_class'); // e.g., App\Models\InventoryItem
             $table->string('file_path')->nullable(); //Path to file which is linked to import definition
             $table->json('field_mappings'); // {"Product Name": "name", "Code": "sku"}
-            $table->foreignId('user_id')->nullable(); // if user-specific
+            $table->foreignId('created_by')->nullable()->constrained('users');
+            $table->foreignId('updated_by')->nullable()->constrained('users');
             $table->timestamps();
         });
     }
