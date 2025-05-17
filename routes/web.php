@@ -4,6 +4,7 @@ use App\Http\Controllers\DataFileImportController;
 use App\Http\Controllers\FetchDataToSelect;
 use App\Http\Controllers\HistoryQueryController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\ImportRunController;
 use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BarcodesController;
@@ -33,6 +34,15 @@ Route::middleware(['auth', 'verified'])->group(function (){
             Route::get('{definition}/download', function (ImportDefinition $definition) {
                 return Storage::download($definition->file_path);
             })->name('download');
+        });
+        
+        Route::prefix('import-runs')->name('import-runs.')->group(function() {
+                Route::get('/', [ImportRunController::class,'index'])->name('index');
+                Route::get('/create', [ImportRunController::class,'edit'])->name('create');
+                Route::get('/{importRun}/edit', [ImportRunController::class,'edit'])->name('edit');
+                Route::post('/{importRun}', [ImportRunController::class,'store'])->name('store');
+                Route::patch('/{importRun}', [ImportRunController::class,'update'])->name('update');
+                Route::delete('/{importRun}', [ImportRunController::class,'destroy'])->name('destroy');
         });
 
         Route::resource('inventoryItems', InventoryItemController::class)->middleware('includeUserId');

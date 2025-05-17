@@ -11,7 +11,8 @@ class ImportDefinition extends Model
         'model_class',
         'field_mappings',
         'file_path',
-        'user_id',
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [
@@ -34,5 +35,10 @@ class ImportDefinition extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function runs()
+    {
+        return $this->hasMany(ImportRun::class)
     }
 }
