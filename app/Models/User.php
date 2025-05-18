@@ -63,6 +63,11 @@ class User extends Authenticatable implements ImportableModel
         'remember_token',
     ];
 
+    public static function getImportUniqueBy(): array
+    {
+        return ['email'];
+    }
+
     /**
      * Get the attributes that should be cast.
      *

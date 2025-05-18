@@ -238,6 +238,7 @@ return [
 
     'attributes' => [
         'local_name' => 'vietinis pavadinimas',
+        'model_class' => 'įrašo tipas',
         'inventory_type' => 'tipas',
         'name' => 'pavadinimas',
         'name_eng' => 'pavadinimas ENG',

@@ -239,6 +239,7 @@ return [
 
     'attributes' => [
         'ident_code' => 'identification code',
+        'model_class' => 'object type',
         '*.inventory_type' => 'type',
         '*.laboratory' => 'laboratory',
         '*.cupboard' => 'cupboard',

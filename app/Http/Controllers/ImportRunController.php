@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ImportRunResource;
 use App\Models\ImportDefinition;
 use App\Models\ImportRun;
 use Illuminate\Http\RedirectResponse;
@@ -11,20 +12,20 @@ use Inertia\Response;
 
 class ImportRunController extends Controller
 {
-    protected string $nameOfDefinition;
-    protected string $typeOfImport;
-    protected string $successMessage;
-    public function __construct(string $name, string $type)
+    public function index(Request $request): Response
     {
-        $this->nameOfDefinition = $name;
-        $this->typeOfImport = $type;
-    }
-
-    public function index(): Response
-    {
-        $importRuns = ImportRun::paginate(10);
+        $query = ImportRun::query();
+        $sortField = $request->input("sort_field", "updated_at");
+        $sortDirection = $request->input("sort_direction", "desc");
+        if ($request["definition_name"]) {
+            $query->whereHas('definition', function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request["definition_name"] . '%');
+            });
+        }
+        $importRuns = $query->orderBy($sortField, $sortDirection)->paginate(10)->withQueryString()->onEachSide(1);
         return Inertia::render('ImportRun/Index',[
-            'importRuns' => $importRuns
+            'importRuns' => ImportRunResource::collection($importRuns),
+            'queryParams' => $request->query() ?: null,
         ]);
     }
     public function create(): Response
@@ -36,8 +37,23 @@ class ImportRunController extends Controller
     }
 
     public function store(Request $request)
-    {        
-        return redirect()->route('import-runs.index')->with('success','Created');
+    {
+        $validated = $request->validate([
+            'import_definition_id' => 'required|exists:import_definitions,id',
+        ]);
+
+        $importDefinition = ImportDefinition::findOrFail($validated['import_definition_id']);
+
+        if ($request->boolean('run_after_save')) {
+            $run = ImportRun::create([
+                'import_definition_id' => $importDefinition->id,
+                'file_path' => $importDefinition->file_path,
+                'status' => 'pending',
+            ]);
+            dispatch(new \App\Jobs\RunImportJob($run));
+        }
+
+        return redirect()->route('import-definitions.index')->with('success', 'Import run saved successfully!');
     }
 
     public function edit(ImportRun $importRun): Response

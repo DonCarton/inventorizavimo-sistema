@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ImportDefinitionResource;
 use App\Models\ImportDefinition;
 use App\Interfaces\ImportableModel;
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
 use Inertia\Response;
 use ReflectionClass;
+use Storage;
 
 class DataFileImportController extends Controller
 {
@@ -22,8 +25,10 @@ class DataFileImportController extends Controller
 
         foreach (File::allFiles($modelsPath) as $file) {
             $relativePath = $file->getRelativePathname();
+            
             $className = str_replace(['/', '.php'], ['\\', ''], $relativePath);
             $class = $modelsNamespace . $className;
+            $userFriendlyName = __('objects.'.$class);
 
             if (!class_exists($class)) {
                 continue;
@@ -35,7 +40,7 @@ class DataFileImportController extends Controller
             {
                 $importableModels[] = [
                     'value' => $class,
-                    'label' => $className,
+                    'label' => $userFriendlyName,
                 ];
             }
         }
@@ -64,7 +69,7 @@ class DataFileImportController extends Controller
             ->withQueryString()->onEachSide(1);
 
         return Inertia::render('Import/Index', [
-            'importDefinitions' => $importDefinitions,
+            'importDefinitions' => ImportDefinitionResource::collection($importDefinitions),
             'queryParams' => $request->query() ?: null,
         ]);
     }
@@ -91,19 +96,41 @@ class DataFileImportController extends Controller
             'model_class' => 'required|string',
             'file' => 'required|file|mimes:xlsx,xls,csv',
             'field_mappings' => 'required|array',
+            'created_by' => 'required|exists:users,id',
+            'updated_by' => 'required|exists:users,id',
         ]);
 
-        $path = $request->file("file")->store("imports");
+        $originalName = $request->file('file')->getClientOriginalName();
+        $cleanedName = str_replace(' ', '_', $originalName);
+
+        // $path = $request->file("file")->store("imports", 'local');
+        $path = $request->file('file')->storeAs('imports', $cleanedName);
 
         $validated['field_mappings'] = array_filter(
             $validated['field_mappings'],
             fn($v) => !is_null($v) && $v !== ''
         );
+
         $validated['file_path'] = $path;
 
-        ImportDefinition::create($validated);
+        $importDefinition = ImportDefinition::create($validated);
 
-        return redirect()->route('import-definitions.index')->with('success', 'Import definition saved successfully!');
+        $importRun = \App\Models\ImportRun::create([
+            'import_definition_id' => $importDefinition->id,
+            'file_path' => $importDefinition->file_path,
+            'status' => 'pending',
+            'created_by' => auth()->id(),
+            'updated_by' => auth()->id(),
+        ]);
+
+        if ($request->input('import')){
+
+            dispatch(new \App\Jobs\RunImportJob($importRun, auth()->user()));
+            return redirect()->route('import-definitions.index')->with('success', __('actions.importDefinition.created_and_import',['name'=>$importDefinition->name]));
+
+        }
+
+        return redirect()->route('import-definitions.index')->with('success', __('actions.importDefinition.created', ['name' => $importDefinition->name]));
     }
 
     /**
@@ -112,7 +139,8 @@ class DataFileImportController extends Controller
      */
     public function edit(ImportDefinition $importDefinition): Response
     {
-        $existingfile = new UploadedFile($importDefinition->file_path, basename($importDefinition->file_path));
+        $tempPath = Storage::path($importDefinition->file_path);
+        $existingfile = new UploadedFile($tempPath, originalName: basename($tempPath));
         $headers = ImportController::fetchHeaders($existingfile);
 
         return Inertia::render('Import/Edit',[
@@ -142,7 +170,7 @@ class DataFileImportController extends Controller
 
         $importDefinition->update($validated);
 
-        return redirect()->route('import-definitions.index')->with('success', 'Import definition updated successfully!');
+        return redirect()->route('import-definitions.index')->with('success', __('actions.importDefinition.updated', ['name' => $validated['name']]));
     }
 
     /**
@@ -151,8 +179,9 @@ class DataFileImportController extends Controller
      */
     public function destroy(ImportDefinition $importDefinition)
     {
+        $nameOfDefinition = $importDefinition->name;
         $importDefinition->delete();
 
-        return redirect()->route('import-definitions.index')->with('success', 'Import definition deleted successfully!');
+        return redirect()->route('import-definitions.index')->with('success', __('actions.importDefinition.deleted', ['name' => $nameOfDefinition]));
     }
 }

@@ -3,16 +3,14 @@ import { Head, Link, router } from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
 import StringHelper from "@/Libs/StringHelper.jsx";
 import { TbEdit } from "react-icons/tb";
-import { RiLockUnlockLine, RiLockLine } from "react-icons/ri";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import React from "react";
 import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
-import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 
-export default function Users({ auth, importDefinitions, queryParams = null, flash }) {
+export default function Index({ auth, importDefinitions, queryParams = null, flash }) {
     queryParams = queryParams || {};
     const searchFieldChanged = (name, value) => {
         if (value) {
@@ -121,7 +119,7 @@ export default function Users({ auth, importDefinitions, queryParams = null, fla
                                                     </Link>
                                                 </td>
                                                 <td className="px-3 py-2">{importDefinition.model_class}</td>
-                                                <td className="px-3 py-2">{importDefinition.update_at}</td>
+                                                <td className="px-3 py-2">{importDefinition.updated_at}</td>
                                                 <td className="px-3 py-2">{importDefinition.created_by}</td>
                                                 <td className="flex justify-start mt-1 px-2 py-1">
                                                     <Link href={route("import-definitions.edit", importDefinition.id)}
@@ -135,7 +133,7 @@ export default function Users({ auth, importDefinitions, queryParams = null, fla
                                     </tbody>
                                 </table>
                             </div>
-                            <Pagination links={importDefinitions.links}></Pagination>
+                            <Pagination links={importDefinitions.meta.links}></Pagination>
                         </div>
                     </div>
                 </div>

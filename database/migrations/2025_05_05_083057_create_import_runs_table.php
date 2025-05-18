@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamp('finished_at')->nullable();
             $table->unsignedInteger('row_count')->nullable();
             $table->unsignedInteger('error_count')->nullable();
-            $table->string('error_file_path')->nullable();
+            $table->string('output_file_path')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users');
             $table->foreignId('updated_by')->nullable()->constrained('users');
             $table->timestamps();

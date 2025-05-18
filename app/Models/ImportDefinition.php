@@ -29,16 +29,26 @@ class ImportDefinition extends Model
         return new $this->model_class;
     }
 
-    /**
-     * Get the user that owns the import definition (optional).
+    /*
+     * @param InventoryItem
+     * @return BelongsTo
      */
-    public function user()
+    public  function createdBy()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_by')->withTrashed();
+    }
+
+    /*
+     * @param InventoryItem
+     * @return BelongsTo
+     */
+    public  function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by')->withTrashed();
     }
 
     public function runs()
     {
-        return $this->hasMany(ImportRun::class)
+        return $this->hasMany(ImportRun::class);
     }
 }

@@ -59,5 +59,11 @@ return [
             'exception' => 'išimtis',
         ],
     ],
+    'importDefinition' => [
+        'created' => 'Naujas importavimo šablonas [:name] sukurtas.',
+        'created_and_import' => 'Naujas importavimo šablonas [:name] sukurtas ir importas pradėtas.',
+        'updated' => 'Importavimo šablonas [:name] atnaujintas.',
+        'deleted' => 'Importavimo šablonas [:name] sėkmingai ištrintas.',
+    ],
 
 ];

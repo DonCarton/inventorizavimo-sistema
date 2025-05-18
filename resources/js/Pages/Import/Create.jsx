@@ -9,6 +9,7 @@ import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import StringHelper from "@/Libs/StringHelper";
 import SteamDropdown from "@/Components/SteamDropdown";
 import FieldMappingForm from "@/Components/Forms/FieldMappingForm";
+import Checkbox2 from "@/Components/Checkbox2";
 
 export default function Create({ auth, importableObjects }) {
     const [fileHeaders, setFileHeaders] = useState([]);
@@ -19,6 +20,7 @@ export default function Create({ auth, importableObjects }) {
         model_class: '',
         file: null,
         field_mappings: {},
+        import: true
     });
     const handleButtonClick = (e) => {
         e.preventDefault();
@@ -46,10 +48,16 @@ export default function Create({ auth, importableObjects }) {
             return;
         }*/
     };
+
+    const handleCheckbox = (e) => {
+        setData('import', e.target.checked);
+    }
+
     const onSubmit = (e) => {
         e.preventDefault();
         post(route('import-definitions.store'));
     };
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -84,8 +92,8 @@ export default function Create({ auth, importableObjects }) {
                             <InputError message={errors.model_class} className="mt-2" />
                         </div>
                         <div className="mt-4">
-                            <label>File</label>
-                            <button className="flex items-center justify-center border border-gray-300 rounded-md p-2 hover:bg-gray-100" onClick={handleButtonClick}>
+                            <InputLabel htmlFor="file_upload">{StringHelper.__("File for import definition")}</InputLabel>
+                            <button id="file_upload" className="flex items-center justify-center border border-gray-300 rounded-md p-2 hover:bg-gray-100" onClick={handleButtonClick}>
                                 <FiUpload className="mr-2"/>
                             </button>
                             <input type="file" accept=".csv,.xlsx,.xls" ref={fileInputRef} style={{display: 'none'}} onChange={handleFileChange} className="w-full" />
@@ -114,6 +122,10 @@ export default function Create({ auth, importableObjects }) {
                                 <InputError message={errors.field_mappings} className="mt-2" />
                             </div>
                         )}
+                        <div className="mt-4">
+                            <InputLabel htmlFor="run_import">{StringHelper.__('Run import after creation')}?</InputLabel>
+                            <Checkbox2 id="run_import" checked={data.import} onChange={handleCheckbox}/>
+                        </div>
                         <div className="mt-2">
                             <Link href={route("import-definitions.index")}
                                 className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"

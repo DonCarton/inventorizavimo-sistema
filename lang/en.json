@@ -153,6 +153,10 @@
     "Are you sure you want to activate this user": "Are you sure you want to activate this user",
     "Admin": "Admin",
     "User": "User",
+    "Download current file": "Download current file",
+    "Mappings": "Mappings",
+    "Field in file": "Field in file",
+    "Field in system": "Field in system",
     "Super-admin": "Super admin",
     "History": "History",
     "Choose a laboratory": "Choose a laboratory",
@@ -165,5 +169,10 @@
     "User configurations": "User configurations",
     "Email configurations": "Email configurations",
     "General configurations": "General configurations",
-    "Receive results via mail": "Do you want to receive the failed import results via email?"
+    "Receive results via mail": "Do you want to receive the failed import results via email?",
+    "File for import definition": "File for import definition",
+    "Record type": "Record type",
+    "Run import after creation": "Run import after creation",
+    "Status": "Status",
+    "Changing the object type reset the mappings, do you wish to proceed?": "Changing the object type reset the mappings, do you wish to proceed?"
 }

@@ -69,10 +69,8 @@ return [
     |
     */
 
-    //TODO: DEFINE A CLEAR PATH FOR USER UPLOADS
     'links' => [
-        public_path('storage') => storage_path('app/public'),
-        public_path('imports') => storage_path('app/imports')
+        public_path('storage') => storage_path('app/public')
     ],
 
 ];

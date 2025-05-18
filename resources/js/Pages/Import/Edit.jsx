@@ -1,7 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
-import {FiUpload} from 'react-icons/fi';
 import { Head, Link, useForm } from "@inertiajs/react";
-import { useState, useRef } from 'react';
+import { useState} from 'react';
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
@@ -11,42 +10,31 @@ import SteamDropdown from "@/Components/SteamDropdown";
 import FieldMappingForm from "@/Components/Forms/FieldMappingForm";
 
 export default function Create({ auth, importableObjects, fileDownloadUrl, headers, importDefinition, originalFilename }) {
+    const confirmMessage = StringHelper.__("Changing the object type reset the mappings, do you wish to proceed?");
     const [fileHeaders, setFileHeaders] = useState(headers || []);
-    const [selectedFileName, setSelectedFileName] = useState(null);
-    const fileInputRef = useRef(null);
-    const { data, setData, put, errors, processing } = useForm({
+    const { data, setData, patch, errors, processing } = useForm({
         name: importDefinition.name || '',
         model_class: importDefinition.model_class || '',
         file: importDefinition.file || null,
         field_mappings: importDefinition.field_mappings || {},
     });
-    const handleButtonClick = (e) => {
-        if (confirm('Changing the file will reset the mappings, do you wish to proceed?')){
-            fileInputRef.current.click();
+    const handleModelChange = (e) => {
+        if (confirm(confirmMessage)){
+            const model = e.target.value
+            setData('model_class', model)
         } else {
             return;
         }
     };
-    const handleModelChange = (e) => {
-        const model = e.target.value
-        setData('model_class', model)
-    };
-    const handleFileChange = async (e) => {
-        const file = e.target.files[0];
-        setData('file', file);
-
-        const formData = new FormData();
-        formData.append('file', file);
-        if (file) {
-            setSelectedFileName(file.name);
-        }
-        const response = await axios.post(route('imports.previewHeaders'), formData);
-        setFileHeaders(response.data.headers);
-    };
     const onSubmit = (e) => {
         e.preventDefault();
-        put(route('import-definitions.update', {import_definition: importDefinition.id}));
+        patch(
+            route('import-definitions.update', {
+                import_definition: importDefinition.id
+            })
+        );
     };
+    console.log(data);
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -84,39 +72,17 @@ export default function Create({ auth, importableObjects, fileDownloadUrl, heade
                             {fileDownloadUrl && (
                                 <div className="mb-2">
                                     <a href={fileDownloadUrl} className="text-blue-600 underline" download>
-                                        Download current file ({originalFilename})
+                                        {StringHelper.__("Download current file")} ({originalFilename})
                                     </a>
                                 </div>
                             )}
-                            <div>
-                                <input type="file" accept=".csv,.xlsx,.xls" ref={fileInputRef} style={{display: 'none'}} onChange={handleFileChange} className="w-full" />
-                                <div className="flex gap-2">
-                                    {selectedFileName ?
-                                        <div className="w-full text-center">
-                                            <p className="font-semibold">{StringHelper.__("Chosen file")}</p>
-                                            <TextInput className="w-full" readOnly={true} disabled={true} value={selectedFileName}/>
-                                        </div>
-                                        :
-                                        <div className="w-full text-center">
-                                            <p className="font-semibold">{StringHelper.__("Chosen file")}</p>
-                                            <TextInput className="w-full" readOnly={true} disabled={true} value={originalFilename}/>
-                                        </div>
-                                    }
-                                        <div className="flex flex-none justify-center">
-                                            <button type="button" className="flex w-16 items-center justify-center border border-gray-300 rounded-md p-2 hover:bg-gray-100" onClick={handleButtonClick}>
-                                                <FiUpload className="mr-2"/>
-                                            </button>
-                                        </div>
-                                </div>
-
-                            </div>
                         </div>
                         {data.model_class.length > 0 && (
                             <div className="mt-4">
-                                <InputLabel htmlFor="import_definition_field_mappings">{StringHelper.__("Mappings")}<span className="text-red-500">*</span></InputLabel>                                
+                                <InputLabel htmlFor="import_definition_field_mappings" className="mb-2">{StringHelper.__("Mappings")}<span className="text-red-500">*</span></InputLabel>                                
                                 <div className="grid grid-cols-2">
-                                    <div>Field in file</div>
-                                    <div>Field in system</div>
+                                    <div>{StringHelper.__("Field in file")}</div>
+                                    <div>{StringHelper.__("Field in system")}</div>
                                 </div>
                                 <FieldMappingForm id="import_definition_field_mappings"
                                                   model={data.model_class}
@@ -133,7 +99,7 @@ export default function Create({ auth, importableObjects, fileDownloadUrl, heade
                             >
                                 {StringHelper.__("Cancel")}
                             </Link>
-                            <PrimaryButton className="ml-2" disabled={processing}>{StringHelper.__("Create")}</PrimaryButton>
+                            <PrimaryButton className="ml-2" disabled={processing}>{StringHelper.__("Save")}</PrimaryButton>
                         </div>
                     </form>
                 </div>

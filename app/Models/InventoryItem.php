@@ -67,6 +67,11 @@ class InventoryItem extends Model implements ImportableModel
 
     public const DISCLUDE_MODE = AttributeMerge::TRAITONLY;
 
+    public static function getImportUniqueBy(): array
+    {
+        return ['local_name'];
+    }
+
     /*
      * @param InventoryItem
      * @return BelongsTo
@@ -155,4 +160,32 @@ class InventoryItem extends Model implements ImportableModel
     {
         return $this->hasMany(AmountLog::class, 'inventory_item_id');
     }
+
+    public static function getImportForeignKeyLookups(): array
+    {
+        return [
+            'laboratory' => [
+                'table' => 'laboratories',
+                'match_on' => 'name',
+            ],
+            'inventory_type' => [
+                'table' => 'item_types',
+                'match_on' => 'name',
+            ],
+        ];
+    }
+
+    public static function resolveForeignKey(string $attribute, string $value): ?int
+    {
+        $lookup = static::getImportForeignKeyLookups()[$attribute] ?? null;
+
+        if (!$lookup) {
+            return null;
+        }
+
+        return \DB::table($lookup['table'])
+            ->where($lookup['match_on'], $value)
+            ->value('id');
+    }
+
 }
