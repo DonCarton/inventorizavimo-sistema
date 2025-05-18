@@ -1,5 +1,9 @@
 {
     "Welcome": "Sveiki",
+    "Edit entry": "Redaguoti :name",
+    "Upload": "Įkelti",
+    "Download": "Atsisiųsti",
+    "Rerun last import": "Išnaujo paleisti importą",
     "Profile": "Profilis",
     "Log out": "Atsijungti",
     "Dashboard": "Skydelis",
@@ -100,6 +104,7 @@
     "Create new inventory item": "Sukurti naują inventoriaus įrašą",
     "Create new type": "Sukurti naują tipą",
     "Create new laboratory": "Sukurti naują laboratorijos įrašą",
+    "Create new import definition": "Sukurti naują importo šabloną",
     "Choose a value": "Pasirinkti",
     "Choose where the item will be stored": "Pasirinkite kur bus laikomas daiktas",
     "Storage measurement": "Matavimo vienetas",
@@ -138,6 +143,9 @@
     "Here you can view all the available inventory items" : "Čia galima matyti visus inventoriuje esančius įrašus",
     "Here you can view all the available users" : "Čia galima matyti visus sistemos naudotojus",
     "Here you can view all the inventory types" : "Čia galima matyti visus inventoriui priskiriamus tipus",
+    "Here you can view all of the defined import definitions": "Čia galima matyti visus importo šablonus",
+    "Here you can view all of the defined import runs": "Čia galima matyti visus importo veiksmus",
+    "Create a new entry in the current page": "Sukurti naują įrašą šiame puslapyje",
     "In this field, the amount which will be added is specified": "Šiame laukelyje yra nurodomas pridedamas kiekis",
     "In this field, the amount which will be removed is specified": "Šiame laukelyje yra nurodomas išimamas kiekis",
     "User does not have the right roles.": "Veiksmas prisijungusiam naudotojui nėra leistinas.",
@@ -175,5 +183,8 @@
     "Record type": "Įrašo tipas",
     "Run import after creation": "Importuoti sukūrus šabloną",
     "Status": "Statusas",
+    "Import definitions": "Importo šablonai",
+    "Import runs": "Importo veiksmai",
+    "Parsing file": "Įkeliamas failas",
     "Changing the object type reset the mappings, do you wish to proceed?": "Keičiant įrašo tipą, importavimo laukų reikšmės bus anuliuotos, ar tikrai norite pakeisti įrašo tipą?"
 }

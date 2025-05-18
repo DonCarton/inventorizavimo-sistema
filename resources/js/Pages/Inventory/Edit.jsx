@@ -235,7 +235,7 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
                                                         value={StringHelper.__("Alt url to provider")}/>
                                             <TextInput id="inventoryItems_alt_url_to_provider" type="text"
                                                        name="alt_url_to_provider"
-                                                       value={data.altUrlToProviderSite}
+                                                       value={data.alt_url_to_provider}
                                                        onChange={e => setData('alt_url_to_provider', e.target.value)}
                                                        className="mt-1 block w-full"/>
                                             <InputError message={errors.altUrlToProviderSite} className="mt-2"/>

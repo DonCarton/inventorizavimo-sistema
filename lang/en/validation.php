@@ -173,6 +173,12 @@ return [
     */
 
     'custom' => [
+        'file' => [
+            'required' => 'The importo file is required.' 
+        ],
+        'field_mappings' => [
+            'required' => 'At least one mapping must be specified.',
+        ],
         'asset_number' => [
             'custom_asset_validation' => ':Attribute can\'t be empty, because the chosen type is \':Name.\'',
             'custom_asset_still_exists' => ':Attribute must be empty, because the chosen type is \':Name.\'',
@@ -238,6 +244,8 @@ return [
     */
 
     'attributes' => [
+        'file' => 'file',
+        'field_mappings' => 'import mappings',
         'ident_code' => 'identification code',
         'model_class' => 'object type',
         '*.inventory_type' => 'type',

@@ -178,17 +178,18 @@ export default function Show({auth, inventoryItem, laboratories, itemTypes, quer
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_provider_url"
                                                         value={StringHelper.__("Provider url")}/>
-                                            <ClickableUrlInput id="inventoryItems_provider_url" name="provider_url"
-                                                               url={inventoryItem.data.urlToProviderSite || ''}
-                                                               className="mt-1 block w-full"/>
+                                            <TextInput id="inventoryItems_provider" type="text" disabled={true}
+                                                       readOnly={true} name="provider"
+                                                       value={inventoryItem.data.urlToProviderSite || ''}
+                                                       className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-2">
                                             <InputLabel htmlFor="inventoryItems_alt_url_to_provider"
                                                         value={StringHelper.__("Alt url to provider")}/>
-                                            <ClickableUrlInput id="inventoryItems_alt_url_to_provider"
-                                                               name="alt_url_to_provider"
-                                                               url={inventoryItem.data.altUrlToProviderSite || ''}
-                                                               className="mt-1 block w-full"/>
+                                            <TextInput id="inventoryItems_provider" type="text" disabled={true}
+                                                       readOnly={true} name="provider"
+                                                       value={inventoryItem.data.altUrlToProviderSite || ''}
+                                                       className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                     </div>
                                 </AccordionWithManualIndex>

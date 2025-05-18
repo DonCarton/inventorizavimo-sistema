@@ -41,7 +41,7 @@ class RunImportJob implements ShouldQueue
                 throw new \Exception("Import file not found at {$path}");
             }
 
-            $importer = new GenericImport($this->importRun, $this->user->locale);
+            $importer = new GenericImport($this->importRun, $this->user->locale, $this->user);
             Excel::import($importer, $path);
             
         } catch (\Throwable $e) {

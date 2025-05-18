@@ -15,6 +15,7 @@ return [
         'Inventory item is too low or changed' => 'Inventoriaus įrašas <strong>:localName</strong> pasiekė kritinį kiekį, prašome užsakyti jo daugiau arba peržvelgti turimą kiekį.',
     ],
     'Import' => [
-        'Failed imports' => 'Jūsų neseniai įkeltas importas baigtas, tačiau tam tikri įrašai sėkmingai neįsikėlė. Prašome peržvelkti prisegtuką ir patikrinti duomenų klaidas.'
+        'Failed imports' => 'Jūsų neseniai įkeltas importas baigtas, tačiau tam tikri įrašai sėkmingai neįsikėlė. Prašome peržvelkti prisegtuką ir patikrinti duomenų klaidas.',
+        'Success' => 'Jūsų neseniai įkeltas importas baigtas, įrašai sėkmingai įkelti. Prašome peržvelgti įrašus sistemoje.',
     ],
 ];

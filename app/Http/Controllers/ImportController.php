@@ -16,37 +16,6 @@ class ImportController extends Controller
     protected string $modelType;
     protected string $className;
 
-    //TODO: FOR NOW, OBSOLETE
-    /*public function __construct(UploadedFile $uploadedFile, bool $previewImport = $false, string $modelType, string $className)
-    {
-        $this->uploadedFile = $uploadedFile;
-        $this->previewImport = $previewImport;
-        $this->modelType = $modelType;
-        $this->className = $className;
-    }*/
-
-    //TODO: use this function to maybe hanlde an import
-    //and the parseInput() to just parse the data.
-    public function processImport(): array
-    {
-        $importInstance = new $this->className();
-
-        Excel::import($importInstance, $this->uploadedFile);
-
-        if ($this->previewImport && method_exists($importInstance, 'getPreviewResult')) {
-            // return redirect()->back()->with('success',$importInstance->getPreviewResult());
-            return ['success',$importInstance->getPreviewResult()];
-        }
-        // return redirect()->back()->with('success', 'Import completed.');
-        return ['success' => 'Import completed.'];
-    }
-
-    //TODO: use this function to retrieve the mappings for the import
-    //so that the end-user themselves can choose what to import
-    public function showMappings($model)
-    {
-        
-    }
     public function getImportableFields(Request $request)
     {
         $validated = $request->validate([
@@ -80,52 +49,42 @@ class ImportController extends Controller
 
         $file = $request->file('file');
 
-        // Load only the first row for headers
         $headings = $this->fetchHeaders($file);
 
         if (!is_array($headings)) {
             return response()->json(['error' => 'Unable to extract headers.'], 422);
         }
 
+        $normalizedHeaders = collect($headings)->map(function ($header) {
+            return $header ? Str::slug($header, '_') : null;
+        })->all();
+
         return response()->json([
-            'headers' => array_filter(array_map('trim', $headings)),
+            'rawHeaders' => $headings,
+            'normalizedHeaders' => $normalizedHeaders,
         ]);
-    }
-
-    //TODO: this should not do the full handling but only the provided
-    //data
-    /**
-     * Checks if the model, file and class are existent for handling an import.
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    // public function parseInput(Request $request): RedirectResponse
-    public function parseInput(): array
-    {
-        if (!$this->modelType || !$this->uploadedFile) {
-            return ['failure' => 'Type and file are required.'];
-        }
-
-        $this->className = '\\App\\Imports\\' . Str::studly(Str::singular($this->modelType)) . 'Import';
-
-        if (!class_exists(class: $this->className)) {
-            return ['failure' => "Import class [$this->className] not found."];
-        }
-
-        $this->showMappings(request());
-
-        return $this->processImport();
     }
 
     public static function fetchHeaders(UploadedFile $file)
     {
-        return Excel::toArray(null, $file)[0][0] ?? [];
-    }
+        $rows = Excel::toArray(null, $file);
 
-    //TODO: use this function to maybe hanlde an export
-    //and the parseInput() to just parse the data.
-    public function export(Request $request)
-    {
-        //
+        if (empty($rows) || empty($rows[0])) {
+            return [];
+        }
+
+        $firstRow = $rows[0][0] ?? [];
+
+        $headers = [];
+
+        foreach ($firstRow as $header) {
+            if (is_null($header) || trim($header) === '') {
+                break;
+            }
+
+            $headers[] = trim((string)$header);
+        }
+
+        return $headers;
     }
 }

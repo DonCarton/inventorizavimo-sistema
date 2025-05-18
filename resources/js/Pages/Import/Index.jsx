@@ -9,6 +9,7 @@ import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
+import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 
 export default function Index({ auth, importDefinitions, queryParams = null, flash }) {
     queryParams = queryParams || {};
@@ -46,15 +47,29 @@ export default function Index({ auth, importDefinitions, queryParams = null, fla
                     <div className="flex justify-between">
                         <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Import definitions")}</h2>
                         <InformationIconToolTip
-                            content={StringHelper.__("Here you can view all the available users") + '.'}
+                            content={StringHelper.__("Here you can view all of the defined import definitions") + '.'}
                             placement="right-end" classname="bg-black" color="black"
                             classnameForIcon="w-5 h-5 ml-1 mt-1" />
                     </div>
                     <div>
-                        <Link href={route("import-definitions.create")} id="create-new-entry" title="Create a new entry in the current page."
-                            className="px-3 py-2 bg-white border-2 rounded-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                {StringHelper.__("Create")}
-                        </Link>
+                        <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={StringHelper.__("Actions")}>
+                            {auth.can.create.importDefinition && <>
+                                <Link href={route("import-definitions.create")}>
+                                    <button type="button" id="create-new-entry" title={StringHelper.__("Create a new entry in the current page")}
+                                        className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+
+                                        {StringHelper.__("Create")}
+                                    </button>
+                                </Link>
+                                <Link href={route("import-runs.index")}>
+                                    <button type="button" id="import-entries" title={StringHelper.__("Import runs")}
+                                        className="px-2 py-1 bg-white border-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                        {StringHelper.__("Import runs")}
+                                    </button>
+                                </Link>
+                            </>
+                            }
+                        </GroupButtonDropdown>
                     </div>
                 </div>
             }
@@ -62,8 +77,8 @@ export default function Index({ auth, importDefinitions, queryParams = null, fla
             <Head title={StringHelper.__("Import definitions")} />
             <div className="py-12">
                 <div className="3xl:max-w-screen-3xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    {flash.success && <SuccessMessage message={flash.success}/>}
-                    {flash.failure && <FailureMessage message={flash.failure}/>}
+                    {flash.success && <SuccessMessage message={flash.success} />}
+                    {flash.failure && <FailureMessage message={flash.failure} />}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <div className="overflow-auto">

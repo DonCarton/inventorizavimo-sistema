@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
-import {FiUpload} from 'react-icons/fi';
+import { FiUpload } from 'react-icons/fi';
 import { Head, Link, useForm } from "@inertiajs/react";
 import { useState, useRef } from 'react';
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
@@ -12,7 +12,9 @@ import FieldMappingForm from "@/Components/Forms/FieldMappingForm";
 import Checkbox2 from "@/Components/Checkbox2";
 
 export default function Create({ auth, importableObjects }) {
-    const [fileHeaders, setFileHeaders] = useState([]);
+    const [rawHeaders, setRawHeaders] = useState([]);
+    const [normalizedHeaders, setNormalizedHeaders] = useState([]);
+    const [loadingHeaders, setLoadingHeaders] = useState(false);
     const [selectedFileName, setSelectedFileName] = useState(null);
     const fileInputRef = useRef(null);
     const { data, setData, post, errors, processing } = useForm({
@@ -33,20 +35,24 @@ export default function Create({ auth, importableObjects }) {
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
         setData('file', file);
-
-        const formData = new FormData();
-        formData.append('file', file);
         if (file) {
             setSelectedFileName(file.name);
         }
-        const response = await axios.post(route('imports.previewHeaders'), formData);
-        setFileHeaders(response.data.headers);
 
-        /*const fileType = file.name.split('.').pop().toLowerCase();
-        if (fileType !== 'xlsx' && fileType !== 'csv') {
-            alert(alertForWrongType + '.');
-            return;
-        }*/
+        setLoadingHeaders(true);
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await axios.post(route('imports.previewHeaders'), formData);
+            setRawHeaders(response.data.rawHeaders);
+            setNormalizedHeaders(response.data.normalizedHeaders);
+        } catch (error) {
+            console.error("Failed to preview headers:", error);
+        } finally {
+            setLoadingHeaders(false);
+        }
     };
 
     const handleCheckbox = (e) => {
@@ -64,11 +70,11 @@ export default function Create({ auth, importableObjects }) {
             can={auth.can}
             header={
                 <div className="flex justify-between items-center">
-                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Create new import")}</h2>
+                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Create new import definition")}</h2>
                 </div>
             }
         >
-            <Head title={StringHelper.__("Create new import")} />
+            <Head title={StringHelper.__("Create new import definition")} />
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <form onSubmit={onSubmit} className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
@@ -82,49 +88,62 @@ export default function Create({ auth, importableObjects }) {
                         <div className="mt-4">
                             <InputLabel htmlFor="import_definition_model_class">{StringHelper.__("Record type")}<span className="text-red-500">*</span></InputLabel>
                             <SteamDropdown
-                                    id="import_definition_model_class"
-                                    name="import_definition_model_class"
-                                    value={data.model}
-                                    onChange={handleModelChange}
-                                    options={importableObjects}
-                                    className="mt-1 block w-full"
-                                />
+                                id="import_definition_model_class"
+                                name="import_definition_model_class"
+                                value={data.model}
+                                disabled={loadingHeaders}
+                                onChange={handleModelChange}
+                                options={importableObjects}
+                                className="mt-1 block w-full disabled:bg-gray-300"
+                            />
                             <InputError message={errors.model_class} className="mt-2" />
                         </div>
                         <div className="mt-4">
-                            <InputLabel htmlFor="file_upload">{StringHelper.__("File for import definition")}</InputLabel>
-                            <button id="file_upload" className="flex items-center justify-center border border-gray-300 rounded-md p-2 hover:bg-gray-100" onClick={handleButtonClick}>
-                                <FiUpload className="mr-2"/>
-                            </button>
-                            <input type="file" accept=".csv,.xlsx,.xls" ref={fileInputRef} style={{display: 'none'}} onChange={handleFileChange} className="w-full" />
+                            <InputLabel htmlFor="file_upload">{StringHelper.__("File for import definition")}<span className="text-red-500">*</span></InputLabel>
+                            <div className="mt-1 flex items-center space-x-2">
+                                <button id="file_upload" className="flex items-center justify-center p-2 border border-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700" onClick={handleButtonClick}>
+                                    <FiUpload className="mr-2" />
+                                    <span>{StringHelper.__("Upload")}</span>
+                                </button>
+                                <TextInput className="w-full disabled:bg-gray-300" onClick={handleButtonClick} disabled readOnly value={selectedFileName || ""} />
 
-                            {selectedFileName ?
-                                <div className="col-span-2 text-center">
-                                    <p className="font-semibold">{StringHelper.__("Chosen file")}</p>
-                                    <p>{selectedFileName}</p>
-                                </div>
-                                :
-                                <div className="col-span-2 text-center">
-                                    <p className="font-semibold">{StringHelper.__("Chosen file")}</p>
-                                    <p>{StringHelper.__("Nothing chosen yet")}</p>
-                                </div>
-                            }
+                                <input type="file" accept=".csv,.xlsx,.xls" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} className="w-full" />
+                            </div>
+                            <InputError className="mt-2" message={errors.file}/>
                         </div>
-                        {fileHeaders.length > 0 && data.model_class.length > 0 && (
-                            <div className="mt-4">
-                                <InputLabel htmlFor="import_definition_field_mappings">{StringHelper.__("Mappings")}<span className="text-red-500">*</span></InputLabel>
+
+                        {loadingHeaders && (
+                            <div className="mt-4 text-sm text-gray-500 dark:text-gray-300 flex items-center gap-2">
+                                <svg className="animate-spin h-5 w-5 text-gray-500" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                                </svg>
+                                {StringHelper.__("Parsing file")}...
+                            </div>
+                        )}
+
+                        <div className="mt-4">
+                            <InputLabel className="mb-2" htmlFor="import_definition_field_mappings">{StringHelper.__("Mappings")}<span className="text-red-500">*</span></InputLabel>
+                            <InputError message={errors.field_mappings} className="mb-2" />
+                            {normalizedHeaders.length > 0 && data.model_class.length > 0 && (<>
+                                <div className="grid grid-cols-2">
+                                    <div className="text-xl font-bold">{StringHelper.__("Field in file")}</div>
+                                    <div className="text-xl font-bold">{StringHelper.__("Field in system")}</div>
+                                </div>
                                 <FieldMappingForm id="import_definition_field_mappings"
                                     model={data.model_class}
-                                    fileHeaders={fileHeaders}
+                                    fileHeaders={normalizedHeaders}
+                                    rawHeaders={rawHeaders}
                                     value={data.field_mappings}
                                     onChange={mapping => setData('field_mappings', mapping)}
                                 />
-                                <InputError message={errors.field_mappings} className="mt-2" />
-                            </div>
-                        )}
+                            </>
+                            )}
+                        </div>
+
                         <div className="mt-4">
                             <InputLabel htmlFor="run_import">{StringHelper.__('Run import after creation')}?</InputLabel>
-                            <Checkbox2 id="run_import" checked={data.import} onChange={handleCheckbox}/>
+                            <Checkbox2 id="run_import" checked={data.import} onChange={handleCheckbox} />
                         </div>
                         <div className="mt-2">
                             <Link href={route("import-definitions.index")}

@@ -5,5 +5,9 @@ return [
     'welcome_message' => 'Sveiki, :name, jūsų prisijungimai prie sistemos yra žemiau',
     'go_to_dashboard' => 'Eiti į skydelį.',
     'thank_you' => 'Dėkojame',
-    'generic_import' => 'Importavimo rezultatai',
+    'imports' => [
+        'generic' => 'Importavimo rezultatai - SteamLT',
+        'success' => 'Importas sėkmingai įvykdytas - SteamLT',
+        'failure' => 'Importas nepavyko - SteamLT',
+    ],
 ];
