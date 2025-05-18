@@ -47,5 +47,19 @@ return [
     'item_type' => [
         'name' => 'Name',
         'change_acc_amount' => 'Can change literal amount?'
-    ]
+    ],
+    'import_definition' => [
+        'name' => 'Name',
+        'model_class' => 'Object type',
+        'file_path' => 'File',
+    ],
+    'import_run' => [
+        'status' => [
+            'pending' => 'Pending',
+            'running' => 'Running',
+            'completed' => 'Completed',
+            'completed_with_errors' => 'Completed with errors',
+            'failed' => 'Failed',
+        ],
+    ],
 ];

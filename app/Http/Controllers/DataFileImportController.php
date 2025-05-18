@@ -92,7 +92,7 @@ class DataFileImportController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|unique:import_definitions,name|string|max:255',
             'model_class' => 'required|string',
             'file' => 'required|file|mimes:xlsx,xls,csv',
             'field_mappings' => 'required|array',

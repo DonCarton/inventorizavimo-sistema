@@ -3,11 +3,9 @@
 namespace App\Imports;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Facades\Validator;
-use App\Models\User;
 use App\Models\ImportRun;
 
 class GenericImport implements ToCollection, WithHeadingRow
@@ -30,6 +28,7 @@ class GenericImport implements ToCollection, WithHeadingRow
 
     public function collection(Collection $rows)
     {
+        $totalRowCount = $rows->count();
         $definition = $this->importRun->definition;
 
         $mapping = $definition->field_mappings;
@@ -62,7 +61,6 @@ class GenericImport implements ToCollection, WithHeadingRow
                             'row' => $rowNumber,
                             'errors' => [__($translationKey,['attribute' => __("validation.attributes.$fkAttr"), 'value' => $input[$fkAttr]])]
                         ];
-                        //continue 2;
                     }
                 }
             }
@@ -74,11 +72,11 @@ class GenericImport implements ToCollection, WithHeadingRow
                 foreach ($validator->errors()->getMessages() as $field => $messages) {
                     foreach ($messages as $message) {
                         $this->caughtErrors[] = [
-                            ucfirst(__('actions.imports.row'))         => $rowNumber,
-                            ucfirst(__('actions.imports.field'))       => $field,
-                            ucfirst(__('actions.imports.value'))       => $input[$field] ?? null,
-                            ucfirst(__('actions.imports.error_type'))  => ucfirst(__('actions.imports.issue_types.validation')),
-                            ucfirst(__('actions.imports.error_message')) => $message,
+                            ucfirst(__('actions.imports.row',[],$this->userLocale))         => $rowNumber,
+                            ucfirst(__('actions.imports.field',[],$this->userLocale))       => $field,
+                            ucfirst(__('actions.imports.value',[],$this->userLocale))       => $input[$field] ?? null,
+                            ucfirst(__('actions.imports.error_type',[],$this->userLocale))  => ucfirst(__('actions.imports.issue_types.validation')),
+                            ucfirst(__('actions.imports.error_message',[],$this->userLocale)) => $message,
                         ];
                     }
                 }
@@ -100,24 +98,25 @@ class GenericImport implements ToCollection, WithHeadingRow
             $input['created_by'] = $this->createdBy->id;
             $input['updated_by'] = $this->updatedBy->id;
 
-            $modelClass::updateOrCreate(
-                $uniqueValues,
-                $input
-            );
+            $modelClass::updateOrCreate($uniqueValues,$input);
         }
 
         if (!empty($this->errors)) {
+            $failFileName = 'failed-imports-' . now()->timestamp . '.xlsx';
+            $tempFailFilePath = "imports/failed/{$failFileName}";
+            \Maatwebsite\Excel\Facades\Excel::store(new \App\Exports\FailedExports($this->caughtErrors, $this->userLocale), $tempFailFilePath);
             $this->importRun->update([
+                'row_count' => $totalRowCount,
                 'error_count' => count($this->errors),
                 'status' => 'completed_with_errors',
+                'output_file_path' => $tempFailFilePath,
             ]);
-            if ($this->caughtErrors) {
-                $failFileName = 'failed-imports-' . now()->timestamp . '.xlsx';
-                \Maatwebsite\Excel\Facades\Excel::store(new \App\Exports\FailedExports($this->caughtErrors, $this->userLocale), "temp/{$failFileName}");
-            }
-            foreach ($this->errors as $field) {
-                Log::error('Validation errors', $field);
-            }
+        } else {
+            $this->importRun->update([
+                'row_count' => $totalRowCount,
+                'error_count' => 0,
+                'status' => 'completed',
+            ]);
         }
     }
 }

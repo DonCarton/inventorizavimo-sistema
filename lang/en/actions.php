@@ -55,7 +55,7 @@ return [
             'validation' => 'data clarity',
             'exception' => 'exception',
         ],
-    ],,
+    ],
     'importDefinition' => [
         'created' => 'New import definition [:name] has been created.',
         'created_and_import' => 'New import definition [:name] has been created and import started.',

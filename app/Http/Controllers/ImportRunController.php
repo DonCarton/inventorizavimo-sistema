@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ImportRunResource;
+use App\Http\Resources\SelectObjectResources\ImportRunStatusForSelect;
 use App\Models\ImportDefinition;
 use App\Models\ImportRun;
 use Illuminate\Http\RedirectResponse;
@@ -22,9 +23,16 @@ class ImportRunController extends Controller
                 $query->where('name', 'like', '%' . $request["definition_name"] . '%');
             });
         }
+        if ($request["status"]) {
+            $query->where('status', '=', $request["status"]);
+        }
         $importRuns = $query->orderBy($sortField, $sortDirection)->paginate(10)->withQueryString()->onEachSide(1);
         return Inertia::render('ImportRun/Index',[
             'importRuns' => ImportRunResource::collection($importRuns),
+            'importStatuses' => collect(__('model_attributes.import_run.status'))->map(fn($label, $key) => [
+                    'value' => $key,
+                    'label' => $label,
+                ])->values(),
             'queryParams' => $request->query() ?: null,
         ]);
     }
@@ -50,7 +58,7 @@ class ImportRunController extends Controller
                 'file_path' => $importDefinition->file_path,
                 'status' => 'pending',
             ]);
-            dispatch(new \App\Jobs\RunImportJob($run));
+            dispatch(new \App\Jobs\RunImportJob($run, auth()->user()));
         }
 
         return redirect()->route('import-definitions.index')->with('success', 'Import run saved successfully!');
@@ -66,6 +74,15 @@ class ImportRunController extends Controller
     public function update(Request $request, ImportRun $importRun)
     {
         return redirect()->route('import-runs.index')->with('success','Updated');
+    }
+
+    public function requeue(ImportRun $importRun)
+    {
+        if ($importRun->status == 'running'){
+            return redirect()->route('import-runs.index')->with('failure','An import is already.');
+        }
+        dispatch(new \App\Jobs\RunImportJob($importRun, auth()->user()));
+        return redirect()->route('import-runs.index')->with('success','An import has been started.');
     }
 
     public function destroy(ImportRun $importRun)

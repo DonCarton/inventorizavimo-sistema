@@ -44,13 +44,8 @@ class RunImportJob implements ShouldQueue
             $importer = new GenericImport($this->importRun, $this->user->locale);
             Excel::import($importer, $path);
             
-            if ($this->importRun->fresh()->status === 'running') {
-            $this->importRun->update([
-                'status' => 'completed',
-            ]);
-        }
-            
         } catch (\Throwable $e) {
+
             Log::error('Import failed', [
                 'import_run_id' => $this->importRun->id,
                 'error' => $e->getMessage(),
@@ -61,10 +56,12 @@ class RunImportJob implements ShouldQueue
                 'status' => 'failed',
                 'finished_at' => now(),
             ]);
-        } finally {
-            $this->importRun->update([
-                'finished_at' => now(),
-            ]);
+            return;
+            
         }
+        
+        $this->importRun->update([
+            'finished_at' => now(),
+        ]);
     }
 }

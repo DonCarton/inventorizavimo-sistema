@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('import_definitions', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('model_class'); // e.g., App\Models\InventoryItem
             $table->string('file_path')->nullable(); //Path to file which is linked to import definition
             $table->json('field_mappings'); // {"Product Name": "name", "Code": "sku"}

@@ -9,9 +9,14 @@ import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
+import { VscDesktopDownload, VscDebugRerun } from "react-icons/vsc";
+import SteamDropdown from '@/Components/SteamDropdown';
 
-export default function Index({ auth, importRuns, queryParams = null, flash }) {
+export default function Index({ auth, importRuns, importStatuses, queryParams = null, flash }) {
     queryParams = queryParams || {};
+    const onSelectChange = (name, e) => {
+        searchFieldChanged(name, e.target.value);
+    }
     const searchFieldChanged = (name, value) => {
         if (value) {
             queryParams[name] = value;
@@ -37,6 +42,9 @@ export default function Index({ auth, importRuns, queryParams = null, flash }) {
         }
         router.get(route('import-runs.index'), queryParams);
     }
+    const handleRequeue = (value) => {
+        router.patch(route('import-runs.requeue', value), {preserveScroll: true});
+    };
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -97,7 +105,9 @@ export default function Index({ auth, importRuns, queryParams = null, flash }) {
                                                     onKeyPress={e => onKeyPress('definition_name', e)} />
                                             </th>
                                             <th className="px-3 py-2"></th>
-                                            <th className="px-3 py-2"></th>
+                                            <th className="px-3 py-2">
+                                                <SteamDropdown name="import_run_query_select" className="w-full 3xl:text-base text-sm text-gray-500" value={queryParams.status} options={importStatuses} onChange={e => onSelectChange('status', e)} />
+                                            </th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>
                                         </tr>
@@ -108,7 +118,7 @@ export default function Index({ auth, importRuns, queryParams = null, flash }) {
                                                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 sm:text-base">
                                                 <td className="px-3 py-2">{importRun.definition_name}</td>
                                                 <td className="px-3 py-2">{importRun.model_class}</td>
-                                                <td className="px-3 py-2"></td>
+                                                <td className="px-3 py-2">{importRun.status}</td>
                                                 <td className="px-3 py-2">{importRun.created_by}</td>
                                                 <td className="flex justify-start mt-1 px-2 py-1">
                                                     <Link href={route("import-runs.edit", importRun.id)}
@@ -116,6 +126,11 @@ export default function Index({ auth, importRuns, queryParams = null, flash }) {
                                                         <TbEdit
                                                             className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50" />
                                                     </Link>
+                                                    <a title={StringHelper.__("Rerun last import")} type="button" onClick={() => handleRequeue(importRun.id)}
+                                                        className="font-medium text-yellow-500 dark:text-yellow-400 hover:under mx-1"
+                                                        >
+                                                        <VscDebugRerun className="w-8 h-8 text-amber-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
+                                                    </a>
                                                 </td>
                                             </tr>
                                         ))}

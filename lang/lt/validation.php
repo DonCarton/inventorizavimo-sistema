@@ -154,7 +154,7 @@ return [
     'starts_with' => 'The :attribute field must start with one of the following: :values.',
     'string' => ':Attribute turi būti tekstinės vertės.',
     'timezone' => 'The :attribute field must be a valid timezone.',
-    'unique' => 'Ši [:value] reikšmė jau užimta.',
+    'unique' => 'Ši reikšmė jau užimta.',
     'uploaded' => 'The :attribute failed to upload.',
     'uppercase' => ':Attribute turi būti didžiosimis raidėmis.',
     'url' => 'The :attribute field must be a valid URL.',

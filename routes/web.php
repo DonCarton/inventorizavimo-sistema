@@ -42,6 +42,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
                 Route::get('/{importRun}/edit', [ImportRunController::class,'edit'])->name('edit');
                 Route::post('/{importRun}', [ImportRunController::class,'store'])->name('store');
                 Route::patch('/{importRun}', [ImportRunController::class,'update'])->name('update');
+                Route::patch('/requeue/{importRun}',[ImportRunController::class,'requeue'])->name('requeue');
                 Route::delete('/{importRun}', [ImportRunController::class,'destroy'])->name('destroy');
         });
 
