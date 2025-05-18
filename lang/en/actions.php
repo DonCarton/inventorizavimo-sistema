@@ -62,5 +62,5 @@ return [
         'updated' => 'Import definition [:name] has been updated.',
         'deleted' => 'Import definition [:name] has been deleted successfully.',
     ],
-
+    'unavailable' => 'Unavailable.',
 ];

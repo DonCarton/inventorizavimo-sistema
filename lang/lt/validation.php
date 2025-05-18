@@ -52,7 +52,7 @@ return [
     'email' => 'The :attribute field must be a valid email address.',
     'ends_with' => 'The :attribute field must end with one of the following: :values.',
     'enum' => 'The selected :attribute is invalid.',
-    'exists' => 'Pasirinkta :attribute nėra tinkama.',
+    'exists' => 'Pateikta reikšmė nėra tinkama.',
     'extensions' => 'The :attribute field must have one of the following extensions: :values.',
     'file' => 'The :attribute field must be a file.',
     'filled' => 'The :attribute field must have a value.',
@@ -173,6 +173,12 @@ return [
     */
 
     'custom' => [
+        'file' => [
+            'required' => 'Importo failas yra privalomas.' 
+        ],
+        'field_mappings' => [
+            'required' => 'Bent vienas importavimo laukas turi būti nurodytas.',
+        ],
         'asset_number' => [
             'custom_asset_validation' => ':Attribute negali būti tuščias, jeigu pasirinktas tipas yra \':Name.\'',
             'custom_asset_still_exists' => ':Attribute turi būti tuščias, jeigu pasirinktas tipas yra \':Name.\'',
@@ -237,6 +243,8 @@ return [
     */
 
     'attributes' => [
+        'file' => 'failas',
+        'field_mappings' => 'importavimo laukai',
         'local_name' => 'vietinis pavadinimas',
         'model_class' => 'įrašo tipas',
         'inventory_type' => 'tipas',

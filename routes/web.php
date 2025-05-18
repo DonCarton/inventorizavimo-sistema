@@ -14,6 +14,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\SystemConfigurationController;
 use App\Models\ImportDefinition;
 use App\Models\InventoryItem;
+use App\Models\ImportRun;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -38,8 +39,11 @@ Route::middleware(['auth', 'verified'])->group(function (){
         
         Route::prefix('import-runs')->name('import-runs.')->group(function() {
                 Route::get('/', [ImportRunController::class,'index'])->name('index');
-                Route::get('/create', [ImportRunController::class,'edit'])->name('create');
+                Route::get('/create', [ImportRunController::class,'create'])->name('create');
                 Route::get('/{importRun}/edit', [ImportRunController::class,'edit'])->name('edit');
+                Route::get('{importRun}/download', function (ImportRun $importRun) {
+                    return Storage::download($importRun->file_path);
+                })->name('download');
                 Route::post('/{importRun}', [ImportRunController::class,'store'])->name('store');
                 Route::patch('/{importRun}', [ImportRunController::class,'update'])->name('update');
                 Route::patch('/requeue/{importRun}',[ImportRunController::class,'requeue'])->name('requeue');

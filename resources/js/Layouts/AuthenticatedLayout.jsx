@@ -100,6 +100,8 @@ export default function Authenticated({ user, header, children, can }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
+                                        <Dropdown.Link href={route("import-definitions.index")}>{translate("Import definitions")}</Dropdown.Link>
+                                        <Dropdown.Link href={route("import-runs.index")}>{translate("Import runs")}</Dropdown.Link>
                                         <Dropdown.Link href={route('profile.edit')}>{translate("Profile")}</Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
                                             {translate("Log out")}
@@ -168,6 +170,8 @@ export default function Authenticated({ user, header, children, can }) {
 
                         <div className="mt-3 space-y-1">
                             {/*TODO FOR SOME REASON, THE TRANSLATIONS HERE ARE CAUSING ISSUES*/}
+                            <ResponsiveNavLink className="text-white" href={route("import-definitions.index")}>{translate("Import definitions")}</ResponsiveNavLink>
+                            <ResponsiveNavLink className="text-white" href={route("import-runs.index")}>{translate("Import runs")}</ResponsiveNavLink>
                             <ResponsiveNavLink className="text-white" href={route('profile.edit')}>{translate("Profile")}</ResponsiveNavLink>
                             <ResponsiveNavLink className="text-white" method="post" href={route('logout')} as="button">
                                 {translate("Log out")}

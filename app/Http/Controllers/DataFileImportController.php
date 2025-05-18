@@ -9,6 +9,7 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use ReflectionClass;
@@ -141,14 +142,15 @@ class DataFileImportController extends Controller
     {
         $tempPath = Storage::path($importDefinition->file_path);
         $existingfile = new UploadedFile($tempPath, originalName: basename($tempPath));
-        $headers = ImportController::fetchHeaders($existingfile);
+        $headings = ImportController::fetchHeaders($existingfile);
+        $normalizedHeaders = collect($headings)->map(function ($header) {
+            return $header ? Str::slug($header, '_') : null;
+        })->all();
 
         return Inertia::render('Import/Edit',[
             'importableObjects' => DataFileImportController::getImportableModels(),
-            'fileDownloadUrl' => $importDefinition->file_path
-                ? route('imports.download', $importDefinition->id)
-                : null,
-            'headers' => $headers,
+            'rawHeaders' => $headings,
+            'normalizedHeaders' => $normalizedHeaders,
             'originalFilename' => basename($importDefinition->file_path),
             'importDefinition' => $importDefinition,
         ]);
@@ -161,6 +163,15 @@ class DataFileImportController extends Controller
      */
     public function update(Request $request, ImportDefinition $importDefinition)
     {
+        $fieldMappings = $request->input('field_mappings', []);
+
+        $filteredMappings = array_filter($fieldMappings, function ($value) {
+            return !is_null($value) && strtolower(trim($value)) !== 'null' && trim($value) !== '';
+        });
+        
+        $request->merge([
+            'field_mappings' => $filteredMappings,
+        ]);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'model_class' => 'required|string',

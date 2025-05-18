@@ -65,5 +65,15 @@ return [
         'updated' => 'Importavimo šablonas [:name] atnaujintas.',
         'deleted' => 'Importavimo šablonas [:name] sėkmingai ištrintas.',
     ],
+    'importRun' => [
+        'created' => 'Naujas importavimo veiksmas [:name] sukurtas.',
+        'updated' => 'Importavimo veiksmas [:name] atnaujintas.',
+        'deleted' => 'Importavimo veiksmas [:name] sėkmingai ištrintas.',
+        'requeue' => [
+            'running' => 'Importavimo veiksmas [:name] jau vykdomas!',
+            'success' => 'Importavimo veiksmas [:name] paleistas!',
+        ],
+    ],
+    'unavailable' => 'Nepasiekiamas veiksmas.',
 
 ];

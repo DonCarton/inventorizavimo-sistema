@@ -17,14 +17,16 @@ class ImportReportMail extends Mailable
 
     public string $emailTitle;
     public string $filePath;
+    public bool $importFailed;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(string $emailTitle = 'Imports have failed', string $filePath, public User $user)
+    public function __construct(string $emailTitle = 'Imports have failed', string $filePath, public User $user, bool $importFailed = false)
     {
         $this->emailTitle = $emailTitle;
         $this->filePath = $filePath;
+        $this->importFailed = $importFailed;
     }
 
     /**
@@ -54,9 +56,12 @@ class ImportReportMail extends Mailable
      */
     public function attachments(): array
     {
+        if (!$this->importFailed || empty($this->filePath) || !file_exists($this->filePath)){
+            return [];
+        }
         return [
             Attachment::fromPath($this->filePath)
-                ->as('failed_exports_of_our_time')
+                ->as('failed-import-'.now())
         ];
     }
 }

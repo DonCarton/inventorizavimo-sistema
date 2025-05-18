@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('import_runs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('import_definition_id')->constrained();
+            $table->foreignId('import_definition_id')->constrained()->onDelete('cascade');
             $table->string('file_path');
             $table->enum('status', ['pending', 'running', 'completed', 'completed_with_errors', 'failed'])->default('pending');
             $table->timestamp('started_at')->nullable();

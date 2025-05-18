@@ -29,7 +29,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property false|mixed $is_disable
  */
 #[ObservedBy(UserObserver::class)]
-class User extends Authenticatable implements ImportableModel
+class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles, LogsActivity, SoftDeletes, ValidAttributes;
 
