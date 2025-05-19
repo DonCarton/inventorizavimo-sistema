@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\DataFileImportController;
 use App\Http\Controllers\FetchDataToSelect;
 use App\Http\Controllers\HistoryQueryController;
+use App\Http\Controllers\ImportController;
+use App\Http\Controllers\ImportRunController;
 use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BarcodesController;
@@ -9,8 +12,11 @@ use App\Http\Controllers\ItemTypeController;
 use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\SystemConfigurationController;
+use App\Models\ImportDefinition;
 use App\Models\InventoryItem;
+use App\Models\ImportRun;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 Route::middleware(['auth', 'verified'])->group(function (){
@@ -23,11 +29,33 @@ Route::middleware(['auth', 'verified'])->group(function (){
 
     Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
+        Route::prefix('imports')->name('imports.')->group(function() {
+            Route::post('importable-fields', [ImportController::class, 'getImportableFields'])->name('importableFields');
+            Route::post('preview-headers', [ImportController::class, 'extractHeaders'])->name('previewHeaders');
+            Route::get('{definition}/download', function (ImportDefinition $definition) {
+                return Storage::download($definition->file_path);
+            })->name('download');
+        });
+        
+        Route::prefix('import-runs')->name('import-runs.')->group(function() {
+                Route::get('/', [ImportRunController::class,'index'])->name('index');
+                Route::get('/create', [ImportRunController::class,'create'])->name('create');
+                Route::get('/{importRun}/edit', [ImportRunController::class,'edit'])->name('edit');
+                Route::get('{importRun}/download', function (ImportRun $importRun) {
+                    return Storage::download($importRun->file_path);
+                })->name('download');
+                Route::post('/{importRun}', [ImportRunController::class,'store'])->name('store');
+                Route::patch('/{importRun}', [ImportRunController::class,'update'])->name('update');
+                Route::patch('/requeue/{importRun}',[ImportRunController::class,'requeue'])->name('requeue');
+                Route::delete('/{importRun}', [ImportRunController::class,'destroy'])->name('destroy');
+        });
+
         Route::resource('inventoryItems', InventoryItemController::class)->middleware('includeUserId');
         Route::get('/inventoryItems/{inventoryItem}/editRaw', [InventoryItemController::class, 'editRaw'])->name('inventoryItems.editRaw')->middleware('includeUserId');
         Route::resource('itemTypes', ItemTypeController::class)->middleware('includeUserId');
 
         Route::resource('users', UserController::class)->middleware('includeUserId');
+        Route::resource('import-definitions',DataFileImportController::class)->middleware('includeUserId');
         Route::patch('/users/{user}/activate', [UserController::class, 'activate'])->name('users.activate')->middleware('includeUserId');
         Route::patch('/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate')->middleware('includeUserId');
         Route::post('/inventoryItems/fetch-post-number', [InventoryItemController::class, 'fetchPostNumber']);
@@ -100,6 +128,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/select/shelves', [FetchDataToSelect::class, 'listShelves'])->name('select.shelves');
     Route::get('/select/shelves/{id}', [FetchDataToSelect::class, 'getShelf'])->name('select.shelves.specific');
     Route::get('/select/ident-code',[FetchDataToSelect::class,'listIdentCode'])->name('select.identCode');
+    Route::get('/select/importable-fields',[FetchDataToSelect::class,'listImportableFields'])->name('select.importableFields');
 });
 
 require __DIR__.'/auth.php';

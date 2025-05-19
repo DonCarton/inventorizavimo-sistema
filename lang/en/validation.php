@@ -173,6 +173,12 @@ return [
     */
 
     'custom' => [
+        'file' => [
+            'required' => 'The importo file is required.' 
+        ],
+        'field_mappings' => [
+            'required' => 'At least one mapping must be specified.',
+        ],
         'asset_number' => [
             'custom_asset_validation' => ':Attribute can\'t be empty, because the chosen type is \':Name.\'',
             'custom_asset_still_exists' => ':Attribute must be empty, because the chosen type is \':Name.\'',
@@ -191,6 +197,7 @@ return [
         ],
         'inventory_type' => [
             'required' => 'An inventory type must be selected.',
+            'no_valid_record' => ':Attribute with the provided value of [:value] could not be found.',
         ],
         'per_page' => [
             'min' => 'The requested amount per page has to be equal or more than :min.',
@@ -213,7 +220,15 @@ return [
         'selectedRole' => [
             'can' => 'Only super admins are permitted to grant this role.',
             'unauthorized_role_change' => 'You cannot change the role.',
-        ]
+        ],
+        'value' => [
+            'range_alphabetical' => 'The provided value is not correct. Please use A-F or A-J.',
+            'range_numeric' => 'The provided value is not correct. Please use 1-10 or 1-20.',
+            'range_generic' => 'The provided value is not correct.',
+        ],
+        'laboratory' => [
+            'no_valid_record' => ':Attribute with the provided value of [:value] could not be found.',
+        ],
 
     ],
 
@@ -229,7 +244,17 @@ return [
     */
 
     'attributes' => [
+        'file' => 'file',
+        'field_mappings' => 'import mappings',
         'ident_code' => 'identification code',
+        'model_class' => 'object type',
+        '*.inventory_type' => 'type',
+        '*.laboratory' => 'laboratory',
+        '*.cupboard' => 'cupboard',
+        '*.shelf' => 'shelf',
+        '*.critical_amount' => 'critical amount',
+        '*.to_order' => 'to order',
+        '*.average_consumption' => 'average consumption',
     ],
 
 ];

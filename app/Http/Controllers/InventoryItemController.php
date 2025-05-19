@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\RoleEnum;
+use App\Exports\FailedExports;
 use App\Exports\InventoryExports;
 use App\Http\Requests\ExportRequests\InventoryItemExportRequest;
 use App\Http\Requests\StoreRequests\AdjustInventoryAmountViaLog;
@@ -17,6 +18,7 @@ use App\Http\Resources\LaboratoryResource;
 use App\Http\Resources\SelectObjectResources\ItemTypeForSelect;
 use App\Http\Resources\SelectObjectResources\LaboratoryResourceForMulti;
 use App\Imports\InventoryImport;
+use App\Jobs\NotifyFailedImports;
 use App\Models\AmountLog;
 use App\Models\InventoryItem;
 use App\Models\ItemType;
@@ -222,6 +224,7 @@ class InventoryItemController extends Controller
             'cupboardOptions' => $configurations['cupboardOptions'],
             'shelfOptions' => $configurations['shelfOptions'],
             'can' => [
+                'alterLocalName' => $request->user()->hasRole(RoleEnum::SUPER_ADMIN),
                 'alterType' => $request->user()->hasRole(RoleEnum::SUPER_ADMIN),
                 'alterLocation' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
                 'delete' => $request->user()->can('delete',$inventoryItem),
@@ -452,13 +455,21 @@ class InventoryItemController extends Controller
      * @param Request $request
      * @return RedirectResponse
      */
-    public function import(Request $request): RedirectResponse
+    public function import(Request $request): RedirectResponse|BinaryFileResponse
     {
         $referrer = $request['referrer'] ?? 'index';
         $file = $request->file('file');
         $fileName = $request->file('file')->getClientOriginalName();
-        $importStatus = Excel::import(new InventoryImport(), $file);
-        return to_route("inventoryItems.${referrer}")->with('success', __('actions.uploaded', ['name' => $fileName]));
+
+        $import = new InventoryImport();
+        Excel::import($import, $file);
+        
+        if (!empty($import->caughtFailures)){
+            NotifyFailedImports::dispatch($import->caughtFailures, auth()->user());
+            return to_route("inventoryItems.${referrer}")->with('failure', __('actions.uploaded.not_fully', ['name' => $fileName]));
+        }
+
+        return to_route("inventoryItems.${referrer}")->with('success', __('actions.uploaded.success', ['name' => $fileName]));
     }
 
     /**
@@ -500,14 +511,14 @@ class InventoryItemController extends Controller
 
         // Define default values
         $defaults = [
-            'cupboard_range' => 'A-F',
-            'shelf_range' => '1-20',
+            'cupboard_range' => '1-20',
+            'shelf_range' => 'A-F',
         ];
 
         // Parse and validate the cupboard range
         if ($cupboardConfig) {
             $letterRange = $this->parseRangeDefinition($cupboardConfig->value->value);
-            if (!$this->isValidRange($letterRange, 'alpha')) {
+            if (!$this->isValidRange($letterRange, 'numeric')) {
                 $letterRange = $this->parseRangeDefinition($defaults['cupboard_range']);
             }
         } else {
@@ -517,7 +528,7 @@ class InventoryItemController extends Controller
         // Parse and validate the shelf range
         if ($shelfConfig) {
             $numberRange = $this->parseRangeDefinition($shelfConfig->value->value);
-            if (!$this->isValidRange($numberRange, 'numeric')) {
+            if (!$this->isValidRange($numberRange, 'alpha')) {
                 $numberRange = $this->parseRangeDefinition($defaults['shelf_range']);
             }
         } else {

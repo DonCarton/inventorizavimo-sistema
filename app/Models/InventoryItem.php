@@ -3,15 +3,16 @@
 namespace App\Models;
 
 use App\Enums\InventoryStatusEnum;
+use App\Enums\AttributeMerge;
+use App\Interfaces\ImportableModel;
 use App\Observers\InventoryItemObserver;
+use App\ValidAttributes;
 use DateTime;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\LogOptions;
@@ -31,9 +32,9 @@ use Spatie\Activitylog\LogOptions;
  * @method static where(string $string, string $operator, mixed $value)
  */
 #[ObservedBy(InventoryItemObserver::class)]
-class InventoryItem extends Model
+class InventoryItem extends Model implements ImportableModel
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, ValidAttributes;
     protected $fillable = [
         'local_name',
         'inventory_type',
@@ -63,6 +64,13 @@ class InventoryItem extends Model
         'created_by',
         'updated_by',
     ];
+
+    public const DISCLUDE_MODE = AttributeMerge::TRAITONLY;
+
+    public static function getImportUniqueBy(): array
+    {
+        return ['local_name'];
+    }
 
     /*
      * @param InventoryItem
@@ -152,4 +160,32 @@ class InventoryItem extends Model
     {
         return $this->hasMany(AmountLog::class, 'inventory_item_id');
     }
+
+    public static function getImportForeignKeyLookups(): array
+    {
+        return [
+            'laboratory' => [
+                'table' => 'laboratories',
+                'match_on' => 'name',
+            ],
+            'inventory_type' => [
+                'table' => 'item_types',
+                'match_on' => 'name',
+            ],
+        ];
+    }
+
+    public static function resolveForeignKey(string $attribute, string $value): ?int
+    {
+        $lookup = static::getImportForeignKeyLookups()[$attribute] ?? null;
+
+        if (!$lookup) {
+            return null;
+        }
+
+        return \DB::table($lookup['table'])
+            ->where($lookup['match_on'], $value)
+            ->value('id');
+    }
+
 }

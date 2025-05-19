@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\ImportDefinition;
+use App\Models\ImportRun;
 use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
@@ -52,12 +54,16 @@ class HandleInertiaRequests extends Middleware
                         'inventoryItem' => Auth::user()->can('create', InventoryItem::class),
                         'itemType' => Auth::user()->can('create', ItemType::class),
                         'laboratory' => Auth::user()->can('create', Laboratory::class),
+                        'importDefinition' => Auth::user()->can('create', ImportDefinition::class),
+                        'importRun' => Auth::user()->can('create', ImportRun::class),
                     ],
                     'view' => [
                         'user' => Auth::user()->can('viewAny', User::class),
                         'inventoryItem' => Auth::user()->can('viewAny', InventoryItem::class),
                         'itemType' => Auth::user()->can('viewAny', ItemType::class),
                         'laboratory' => Auth::user()->can('viewAny', Laboratory::class),
+                        'importDefinition' => Auth::user()->can('viewAny', ImportDefinition::class),
+                        'importRun' => Auth::user()->can('viewAny', ImportRun::class),
                     ]
                 ] : null
             ],

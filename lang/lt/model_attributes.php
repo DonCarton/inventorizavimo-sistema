@@ -47,5 +47,19 @@ return [
     'item_type' => [
         'name' => 'Pavadinimas',
         'change_acc_amount' => 'Kiekis gali kisti?'
-    ]
+    ],
+    'import_definition' => [
+        'name' => 'Pavadinimas',
+        'model_class' => 'Įrašo tipas',
+        'file_path' => 'Failas',
+    ],
+    'import_run' => [
+        'status' => [
+            'pending' => 'Laukiama',
+            'running' => 'Vykdoma',
+            'completed' => 'Baigta',
+            'completed_with_errors' => 'Baigta su klaidomis',
+            'failed' => 'Nepavyko',
+        ],
+    ],
 ];

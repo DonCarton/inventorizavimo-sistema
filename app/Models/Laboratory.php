@@ -38,6 +38,11 @@ class Laboratory extends Model
             ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
     }
 
+    public static function getImportUniqueBy(): array
+    {
+        return ['name'];
+    }
+
     public function inventoryItems(): HasMany
     {
         return $this->hasMany(InventoryItem::class,'laboratory');

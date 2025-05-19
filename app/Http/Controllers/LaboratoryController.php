@@ -7,6 +7,7 @@ use App\Http\Requests\StoreRequests\StoreLaboratoryRequest;
 use App\Http\Requests\UpdateRequests\UpdateLaboratoryRequest;
 use App\Http\Resources\LaboratoryResource;
 use App\Imports\LaboratoryImport;
+use App\Jobs\NotifyFailedImports;
 use App\Models\Laboratory;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -148,7 +149,17 @@ class LaboratoryController extends Controller
            'file' => 'file|mimetypes:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/excel'
         ]);
         $file = $request->file('file');
-        Excel::import(new LaboratoryImport(), $file);
-        return to_route('laboratories.index')->with('success',__('actions.uploaded'));
+        $fileName = $request->file('file')->getClientOriginalName();
+
+        $import = new LaboratoryImport();
+        Excel::import($import, $file);
+        
+        if (!empty($import->caughtFailures))
+        {
+            NotifyFailedImports::dispatch($import->caughtFailures, auth()->user());
+            return to_route('laboratories.index')->with('failure', __('actions.uploaded.not_fully', ['name' => $fileName]));
+        }
+
+        return to_route('laboratories.index')->with('success',__('actions.uploaded.success', ['name' => $fileName]));
     }
 }

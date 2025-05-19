@@ -52,7 +52,7 @@ class SystemConfigurationController extends Controller
 
         $validated = $request->validate([
             'value' => ['required', 'string', function ($attribute, $value, $fail) use ($configurationValue) {
-                if (str_contains("_range", $configurationValue->configuration->key)){
+                if (str_contains($configurationValue->configuration->key, "_range")){
                     if (!$this->isValidRange($value, $configurationValue->configuration->key)) {
                         if ($configurationValue->configuration->key === 'cupboard_range') {
                             $fail(__('validation.custom.value.range_alphabetical'));

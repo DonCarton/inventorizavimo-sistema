@@ -3,7 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Interfaces\ImportableModel;
 use App\Observers\UserObserver;
+use App\ValidAttributes;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,7 +31,7 @@ use Spatie\Permission\Traits\HasRoles;
 #[ObservedBy(UserObserver::class)]
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles, LogsActivity, SoftDeletes;
+    use HasFactory, Notifiable, HasRoles, LogsActivity, SoftDeletes, ValidAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -60,6 +62,11 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public static function getImportUniqueBy(): array
+    {
+        return ['email'];
+    }
 
     /**
      * Get the attributes that should be cast.

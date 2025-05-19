@@ -36,8 +36,8 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
         average_consumption: inventoryItem.data.averageConsumption || '',
         multiple_locations: inventoryItem.data.multipleLocations || 0,
         laboratory: inventoryItem.data.laboratory || '',
-        cupboard: inventoryItem.data.cupboard || null,
-        shelf: inventoryItem.data.shelf || null,
+        cupboard: inventoryItem.data.cupboard || 1,
+        shelf: inventoryItem.data.shelf || 'A',
         storage_conditions: inventoryItem.data.storageConditions || '',
         asset_number: inventoryItem.data.assetNumber || '',
         used_for: inventoryItem.data.usedFor || '',
@@ -57,14 +57,14 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
         setData('inventory_type',e.target.value);
     }
     const handleCupboardChange = (e) => {
-        setData('cupboard',e.target.value);
-    }
-    const handleShelfChange = (e) => {
         if (e.target.value === undefined){
             return;
         }
         const cleanInt = parseInt(e.target.value);
-        setData('shelf',cleanInt);
+        setData('cupboard',cleanInt);
+    }
+    const handleShelfChange = (e) => {
+        setData('shelf',e.target.value);
     }
     return (
         <AuthenticatedLayout
@@ -88,7 +88,9 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
                                             <InputLabel
                                                 htmlFor="inventoryItems_local_name">{StringHelper.__("Local name")}</InputLabel>
                                             <TextInput id="inventoryItems_local_name" type="text" name="local_name"
-                                                       value={data.local_name} disabled={true} readOnly={true}
+                                                       value={data.local_name}
+                                                       disabled={!can.alterLocalName}
+                                                       readOnly={!can.alterLocalName}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                             <InputError message={errors.local_name} className="mt-2"/>
                                         </div>
@@ -233,7 +235,7 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
                                                         value={StringHelper.__("Alt url to provider")}/>
                                             <TextInput id="inventoryItems_alt_url_to_provider" type="text"
                                                        name="alt_url_to_provider"
-                                                       value={data.altUrlToProviderSite}
+                                                       value={data.alt_url_to_provider}
                                                        onChange={e => setData('alt_url_to_provider', e.target.value)}
                                                        className="mt-1 block w-full"/>
                                             <InputError message={errors.altUrlToProviderSite} className="mt-2"/>

@@ -1,13 +1,16 @@
 import React, {useEffect, useRef, useState} from 'react';
 import Modal from '@/Components/Modal';
 import {FiUpload, FiX} from 'react-icons/fi';
+import Checkbox2 from "@/Components/Checkbox2.jsx";
 
 const FileUploadModal = ({
                              isOpen,
                              onClose,
                              onFileSelect,
+                             onFailsViaMailCheck,
                              onSubmit,
                              selectFileText,
+                             checkboxText = 'Do you wish to receive the failed import via email?',
                              itemNotSpecifiedText,
                              submitButtonText,
                              alertTextForMissingFile,
@@ -16,6 +19,7 @@ const FileUploadModal = ({
                          }) => {
     const fileInputRef = useRef(null);
     const [selectedFileName, setSelectedFileName] = useState(null);
+    const [sendFailsViaMail, setSendFailsViaMail] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -39,6 +43,11 @@ const FileUploadModal = ({
             onFileSelect(file);
         }
     };
+
+    const handleFeedback = (e) => {
+        setSendFailsViaMail(e.target.checked);
+        onFailsViaMailCheck(e);
+    }
 
     const handleSubmit = (e) => {
         if (!selectedFileName) {
@@ -82,6 +91,16 @@ const FileUploadModal = ({
                             <p className="font-semibold">{selectFileText}</p>
                             <p>{itemNotSpecifiedText}</p>
                         </div>}
+                    <div className="col-span-3 flex items-center">
+                        <Checkbox2
+                            id="file-upload-checkbox"
+                            checked={sendFailsViaMail}
+                            onChange={handleFeedback}
+                        />
+                        <label htmlFor="file-upload-checkbox" className="text-sm">
+                            {checkboxText}
+                        </label>
+                    </div>
                     <button
                         className="col-span-3 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
                         onClick={handleSubmit}

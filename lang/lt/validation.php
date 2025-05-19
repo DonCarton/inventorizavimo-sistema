@@ -52,7 +52,7 @@ return [
     'email' => 'The :attribute field must be a valid email address.',
     'ends_with' => 'The :attribute field must end with one of the following: :values.',
     'enum' => 'The selected :attribute is invalid.',
-    'exists' => 'Pasirinkta :attribute nėra tinkama.',
+    'exists' => 'Pateikta reikšmė nėra tinkama.',
     'extensions' => 'The :attribute field must have one of the following extensions: :values.',
     'file' => 'The :attribute field must be a file.',
     'filled' => 'The :attribute field must have a value.',
@@ -65,7 +65,7 @@ return [
     'gte' => [
         'array' => 'The :attribute field must have :value items or more.',
         'file' => 'The :attribute field must be greater than or equal to :value kilobytes.',
-        'numeric' => 'The :attribute field must be greater than or equal to :value.',
+        'numeric' => 'Reikšmė turi būti didesnė arba lygi :value.',
         'string' => 'The :attribute field must be greater than or equal to :value characters.',
     ],
     'hex_color' => 'The :attribute field must be a valid hexadecimal color.',
@@ -88,7 +88,7 @@ return [
     'lte' => [
         'array' => 'The :attribute field must not have more than :value items.',
         'file' => 'The :attribute field must be less than or equal to :value kilobytes.',
-        'numeric' => ':attribute turi būti mažesnis arba lygus :value.',
+        'numeric' => 'Reikšmė turi būti mažesnė arba lygi :value.',
         'string' => 'The :attribute field must be less than or equal to :value characters.',
     ],
     'mac_address' => 'The :attribute field must be a valid MAC address.',
@@ -115,8 +115,8 @@ return [
     'missing_with_all' => 'The :attribute field must be missing when :values are present.',
     'multiple_of' => 'The :attribute field must be a multiple of :value.',
     'not_in' => 'The selected :attribute is invalid.',
-    'not_regex' => 'The :attribute field format is invalid.',
-    'numeric' => 'The :attribute field must be a number.',
+    'not_regex' => 'Reikšmė nėra tinkama.',
+    'numeric' => 'Reikšmė turi būti skaitinė (0-9).',
     'password' => [
         'letters' => 'The :attribute field must contain at least one letter.',
         'mixed' => 'The :attribute field must contain at least one uppercase and one lowercase letter.',
@@ -133,7 +133,7 @@ return [
     'prohibited_if' => 'The :attribute field is prohibited when :other is :value.',
     'prohibited_unless' => 'The :attribute field is prohibited unless :other is in :values.',
     'prohibits' => 'The :attribute field prohibits :other from being present.',
-    'regex' => 'The :attribute field format is invalid.',
+    'regex' => 'Reikšmė nėra tinkama.',
     'required' => ':Attribute yra privalomas laukas.',
     'required_array_keys' => 'The :attribute field must contain entries for: :values.',
     'required_if' => ':attribute yra privalomas jeigu :other yra :value.',
@@ -154,7 +154,7 @@ return [
     'starts_with' => 'The :attribute field must start with one of the following: :values.',
     'string' => ':Attribute turi būti tekstinės vertės.',
     'timezone' => 'The :attribute field must be a valid timezone.',
-    'unique' => 'Šis :attribute jau užimtas.',
+    'unique' => 'Ši reikšmė jau užimta.',
     'uploaded' => 'The :attribute failed to upload.',
     'uppercase' => ':Attribute turi būti didžiosimis raidėmis.',
     'url' => 'The :attribute field must be a valid URL.',
@@ -173,6 +173,12 @@ return [
     */
 
     'custom' => [
+        'file' => [
+            'required' => 'Importo failas yra privalomas.' 
+        ],
+        'field_mappings' => [
+            'required' => 'Bent vienas importavimo laukas turi būti nurodytas.',
+        ],
         'asset_number' => [
             'custom_asset_validation' => ':Attribute negali būti tuščias, jeigu pasirinktas tipas yra \':Name.\'',
             'custom_asset_still_exists' => ':Attribute turi būti tuščias, jeigu pasirinktas tipas yra \':Name.\'',
@@ -191,6 +197,7 @@ return [
         ],
         'inventory_type' => [
             'required' => 'Pasirinkti inventoriaus tipą yra privaloma.',
+            'no_valid_record' => ':Attribute su pateikta reikšme [:value] nerastas.',
         ],
         'per_page' => [
             'min' => 'Norimas gauti kiekis įrašų turi būti lygus arba didesnis nei :min.',
@@ -218,7 +225,10 @@ return [
             'range_alphabetical' => 'Pateikta reikšmė yra netinkama. Naudokite A-F arba A-J.',
             'range_numeric' => 'Pateikta reikšmė yra netinkama. Naudokite 1-10 arba 1-20.',
             'range_generic' => 'Pateikta reikšmė yra netinkama.',
-        ]
+        ],
+        'laboratory' => [
+            'no_valid_record' => ':Attribute su pateikta reikšme [:value] nerasta.',
+        ],
     ],
 
     /*
@@ -233,7 +243,10 @@ return [
     */
 
     'attributes' => [
+        'file' => 'failas',
+        'field_mappings' => 'importavimo laukai',
         'local_name' => 'vietinis pavadinimas',
+        'model_class' => 'įrašo tipas',
         'inventory_type' => 'tipas',
         'name' => 'pavadinimas',
         'name_eng' => 'pavadinimas ENG',
@@ -270,6 +283,13 @@ return [
         'critical_amount_notified_at' => 'pranešimas apie stygių išsiųstas laiku',
         'value' => 'reikšmė',
         'ident_code' => 'atpažinimo kodas',
+        '*.inventory_type' => 'tipas',
+        '*.laboratory' => 'laboratorija',
+        '*.cupboard' => 'spinta',
+        '*.shelf' => 'lentyna',
+        '*.critical_amount' => 'kritinis kiekis',
+        '*.to_order' => 'užsakyti',
+        '*.average_consumption' => 'vidutiniškai sunaudojama',
     ],
 
 ];

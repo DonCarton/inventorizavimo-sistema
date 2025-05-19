@@ -301,10 +301,9 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
                                                 />
                                                 <TextInput
                                                     id="inventoryItems_url_to_provider"
-                                                    type="url"
+                                                    type="text"
                                                     title={translate("Must be a url")}
                                                     name="url_to_provider"
-                                                    pattern="https?://.+"
                                                     value={data.url_to_provider}
                                                     className="mt-1 block w-full"
                                                     onChange={e => setData('url_to_provider', e.target.value)}
@@ -316,10 +315,9 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
                                                 </InputLabel>
                                                 <TextInput
                                                     id="inventoryItems_alt_url_to_provider"
-                                                    type="url"
+                                                    type="text"
                                                     title={translate("Must be a url")}
                                                     name="alt_url_to_provider"
-                                                    pattern="https?://.+"
                                                     value={data.alt_url_to_provider}
                                                     className="mt-1 block w-full"
                                                     onChange={e => setData('alt_url_to_provider', e.target.value)}
