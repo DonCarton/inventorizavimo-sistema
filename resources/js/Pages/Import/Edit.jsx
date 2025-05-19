@@ -9,7 +9,10 @@ import StringHelper from "@/Libs/StringHelper";
 import SteamDropdown from "@/Components/SteamDropdown";
 import FieldMappingForm from "@/Components/Forms/FieldMappingForm";
 import { FiDownload } from "react-icons/fi";
+<<<<<<< HEAD
 import DeleteButton from "@/Components/Forms/DeleteButton.jsx";
+=======
+>>>>>>> 3db282538c1577d93d7261e4bb59d5e0669fc215
 
 export default function Create({ auth, importableObjects, rawHeaders, normalizedHeaders, importDefinition, originalFilename }) {
     const confirmMessage = StringHelper.__("Changing the object type reset the mappings, do you wish to proceed?");
@@ -118,15 +121,14 @@ export default function Create({ auth, importableObjects, rawHeaders, normalized
                                 />
                             </>)}
                         </div>
-                        <div className="flex justify-between mt-4">
-                            <div>
-                                <Link href={route("import-definitions.index")}
-                                    className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
-                                >
-                                    {StringHelper.__("Cancel")}
-                                </Link>
-                                <PrimaryButton className="ml-2" disabled={processing}>{StringHelper.__("Save")}</PrimaryButton>
-                            </div>
+
+                        <div className="mt-2">
+                            <Link href={route("import-definitions.index")}
+                                className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
+                            >
+                                {StringHelper.__("Cancel")}
+                            </Link>
+                            <PrimaryButton className="ml-2" disabled={processing}>{StringHelper.__("Save")}</PrimaryButton>
                         </div>
                     </form>
                 </div>

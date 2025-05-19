@@ -90,7 +90,7 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams = n
                             <Link href={route("import-definitions.index")}>
                                 <button type="button" id="import-entries" title="Import an existing Excel sheet of data."
                                     className="px-2 py-1 bg-white border-2 border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                    {StringHelper.__("Import")}
+                                        <Link href={route("import-definitions.index")}>{StringHelper.__("Import")}</Link>
                                 </button>
                             </Link>
                             <a href={route("exports.inventoryItems", queryParams)}>

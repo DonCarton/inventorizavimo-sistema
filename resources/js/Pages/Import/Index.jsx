@@ -54,20 +54,16 @@ export default function Index({ auth, importDefinitions, queryParams = null, fla
                     <div>
                         <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={StringHelper.__("Actions")}>
                             {auth.can.create.importDefinition && <>
-                                <Link href={route("import-definitions.create")}>
-                                    <button type="button" id="create-new-entry" title={StringHelper.__("Create a new entry in the current page")}
-                                        className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-
+                                <button type="button" id="create-new-entry" title={StringHelper.__("Create a new entry in the current page")}
+                                    className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                    <Link href={route("import-definitions.create")}>
                                         {StringHelper.__("Create")}
-                                    </button>
-                                </Link>
-                                <Link href={route("import-runs.index")}>
-                                    <button type="button" id="import-entries" title={StringHelper.__("Import runs")}
-                                        className="px-2 py-1 bg-white border-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                        {StringHelper.__("Import runs")}
-                                    </button>
-                                </Link>
-                            </>
+                                    </Link>
+                                </button>
+                                <button type="button" id="import-entries" title={StringHelper.__("Import runs")}
+                                    className="px-2 py-1 bg-white border-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                    <Link href={route("import-runs.index")}>{StringHelper.__("Import runs")}</Link>
+                                </button></>
                             }
                         </GroupButtonDropdown>
                     </div>
