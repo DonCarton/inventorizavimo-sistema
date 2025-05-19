@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('inventory_items', function (Blueprint $table) {
-            $table->integer('cupboard')->nullable()->change();
+            $table->string('cupboard')->nullable()->change();
             $table->string('shelf', 1)->nullable()->change();
         });
     }
