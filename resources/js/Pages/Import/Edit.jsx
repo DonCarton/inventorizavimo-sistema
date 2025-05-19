@@ -9,10 +9,6 @@ import StringHelper from "@/Libs/StringHelper";
 import SteamDropdown from "@/Components/SteamDropdown";
 import FieldMappingForm from "@/Components/Forms/FieldMappingForm";
 import { FiDownload } from "react-icons/fi";
-<<<<<<< HEAD
-import DeleteButton from "@/Components/Forms/DeleteButton.jsx";
-=======
->>>>>>> 3db282538c1577d93d7261e4bb59d5e0669fc215
 
 export default function Create({ auth, importableObjects, rawHeaders, normalizedHeaders, importDefinition, originalFilename }) {
     const confirmMessage = StringHelper.__("Changing the object type reset the mappings, do you wish to proceed?");
