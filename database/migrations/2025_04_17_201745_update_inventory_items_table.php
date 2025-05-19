@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('inventory_items', function (Blueprint $table) {
             $table->string('cupboard')->nullable()->change();
-            $table->string('shelf', 1)->nullable()->change();
+            $table->string('shelf')->nullable()->change();
         });
     }
 
