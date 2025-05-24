@@ -7,7 +7,6 @@ use App\Models\ImportRun;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -63,5 +62,10 @@ class RunImportJob implements ShouldQueue
         $this->importRun->update([
             'finished_at' => now(),
         ]);
+    }
+
+    public function displayName()
+    {
+        return "Import job (Definition ID: [{$this->importRun->definition->name}], Run By: User [{$this->user->email}])";
     }
 }

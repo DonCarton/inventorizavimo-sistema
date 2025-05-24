@@ -9,13 +9,17 @@ import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
-import { VscDesktopDownload, VscDebugRerun } from "react-icons/vsc";
+import { VscDebugRerun } from "react-icons/vsc";
 import SteamDropdown from '@/Components/SteamDropdown';
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import WarningMessage from '@/Components/WarningMessage';
+import { IoMdRefresh } from "react-icons/io";
 
 export default function Index({ auth, importRuns, importStatuses, queryParams = null, flash }) {
     queryParams = queryParams || {};
+    const refreshPage = (e) => {
+        router.get(route('import-runs.index'), queryParams);
+    }
     const onSelectChange = (name, e) => {
         searchFieldChanged(name, e.target.value);
     }
@@ -60,7 +64,12 @@ export default function Index({ auth, importRuns, importStatuses, queryParams = 
                             placement="right-end" classname="bg-black" color="black"
                             classnameForIcon="w-5 h-5 ml-1 mt-1" />
                     </div>
-                    <div>
+                    <div className="flex justify-between">
+                        <div className="pt-1 mr-2">
+                            <button title="Perkrauti puslapį" onClick={refreshPage} className="w-10 h-10 flex items-center justify-center rounded-lg hover:animate-pulse hover:bg-gray-300">
+                                <IoMdRefresh className="w-8 h-8"/>
+                            </button>
+                        </div>
                         <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={StringHelper.__("Actions")}>
                             {auth.can.create.importRun && <>
                                 <Link href={route("import-runs.create")}>

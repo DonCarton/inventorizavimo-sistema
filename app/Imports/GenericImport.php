@@ -2,8 +2,11 @@
 
 namespace App\Imports;
 
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Facades\Validator;
@@ -16,7 +19,9 @@ class GenericImport implements ToCollection, WithHeadingRow
     protected User $user;
     protected int $createdBy;
     protected int $updatedBy;
+    protected int $totalRowCount;
     protected string $userLocale;
+    protected string $validationFileName = "steam_validations";
     protected array $errors = [];
 
     public array $caughtErrors = [];
@@ -32,7 +37,7 @@ class GenericImport implements ToCollection, WithHeadingRow
 
     public function collection(Collection $rows)
     {
-        $totalRowCount = $rows->count();
+        $this->totalRowCount = $rows->count();
         $definition = $this->importRun->definition;
 
         $mapping = $definition->field_mappings;
@@ -45,11 +50,15 @@ class GenericImport implements ToCollection, WithHeadingRow
         $rules = $definition->validation_rules ?? [];
 
         $modelClass = $definition->model_class;
+
+        $fullValidationPath = "{$this->validationFileName}.{$modelClass}";
         
-        $rules = \Config::get("steam_validations.$modelClass", []);
+        $rules = Config::get($fullValidationPath, []);
+        
         $foreignKeyLookups = $definition->foreign_key_lookups ?? $modelClass::getImportForeignKeyLookups();
 
         foreach ($rows as $index => $row) {
+            
             $rowNumber = $index + 2;
             
             $input = [];
@@ -58,10 +67,16 @@ class GenericImport implements ToCollection, WithHeadingRow
             }
 
             foreach ($foreignKeyLookups as $fkAttr => $lookupConfig) {
+                \Log::debug($fkAttr);
                 if (!empty($input[$fkAttr])) {
                     $resolvedId = \DB::table($lookupConfig['table'])
                         ->where($lookupConfig['match_on'], $input[$fkAttr])
                         ->value('id');
+                    
+                    \Log::debug("Looked up [{$lookupConfig['match_on']}] with value [{$input[$fkAttr]}]", [
+                        "Found object?" => $resolvedId ? "Yes" : "No",
+                        "Object id" => $resolvedId ? $resolvedId : null,
+                    ]);
 
                     if ($resolvedId) {
                         $input[$fkAttr] = $resolvedId;
@@ -77,61 +92,79 @@ class GenericImport implements ToCollection, WithHeadingRow
 
 
             $validator = Validator::make($input, $rules);
-
+            
             if ($validator->fails()) {
-                foreach ($validator->errors()->getMessages() as $field => $messages) {
-                    foreach ($messages as $message) {
-                        $this->caughtErrors[] = [
-                            ucfirst(__('actions.imports.row',[],$this->userLocale))         => $rowNumber,
-                            ucfirst(__('actions.imports.field',[],$this->userLocale))       => ucfirst(__('validation.attributes.' . $field)),
-                            ucfirst(__('actions.imports.value',[],$this->userLocale))       => $input[$field] ?? null,
-                            ucfirst(__('actions.imports.error_type',[],$this->userLocale))  => ucfirst(__('actions.imports.issue_types.validation',[],$this->userLocale)),
-                            ucfirst(__('actions.imports.error_message',[],$this->userLocale)) => $message,
-                        ];
-                    }
-                }
-
-                
-                $this->errors[] = [
-                    'row' => $rowNumber,
-                    'errors' => $validator->errors()->all()
-                ];
+                $this->buildValidationOutput($validator->errors()->getMessages(), $rowNumber);
                 continue;
-                
             }
 
             $uniqueBy = $modelClass::getImportUniqueBy();
 
-            $uniqueValues = collect($uniqueBy)
-                            ->mapWithKeys(fn($key) => [$key => $input[$key] ?? null])
-                            ->toArray();
+            $uniqueValues = collect($uniqueBy)->mapWithKeys(fn($key) => [$key => $input[$key] ?? null])->toArray();
 
-            $input['created_by'] = $this->createdBy;
+            /*$input['created_by'] = $this->createdBy;
             $input['updated_by'] = $this->updatedBy;
 
-            $modelClass::updateOrCreate($uniqueValues,$input);
+            $modelClass::updateOrCreate($uniqueValues,$input);*/
+
+            $existing = $modelClass::where($uniqueValues)->exists();
+
+            $modelClass::updateOrCreate($uniqueValues,array_merge(
+                $input, [
+                    'updated_by' => $this->createdBy,
+                    ...($existing ? ['created_by' => $this->updatedBy] : [])
+                ]
+            ));
         }
 
         if (!empty($this->errors)) {
-            $failFileName = 'failed-imports-' . now()->timestamp . '.xlsx';
-            $failedImportPath = "imports/failed/{$failFileName}";
-            \Maatwebsite\Excel\Facades\Excel::store(new \App\Exports\FailedExports($this->caughtErrors, $this->userLocale), $failedImportPath);
-            $this->importRun->update([
-                'row_count' => $totalRowCount,
-                'error_count' => count($this->errors),
-                'status' => 'completed_with_errors',
-                'output_file_path' => $failedImportPath,
-            ]);
-            $mailFilePath = storage_path('app/' . $failedImportPath);
-            \Mail::to($this->user)->send(new ImportReportMail(__('mail.imports.failure'), $mailFilePath, $this->user, true));
+            $this->sendFailureEmail();
         } else {
-            $this->importRun->update([
-                'row_count' => $totalRowCount,
-                'error_count' => 0,
-                'status' => 'completed',
-                'output_file_path' => null,
-            ]);
-            \Mail::to($this->user)->send(new ImportReportMail(__('mail.imports.success'), "", $this->user));
+            $this->sendSuccessEmail();
+        }
+    }
+
+    private function sendFailureEmail()
+    {
+        $failFileName = 'failed-imports-' . now()->timestamp . '.xlsx';
+        $failedImportPath = "imports/failed/{$failFileName}";
+        
+        Excel::store(new \App\Exports\FailedExports($this->caughtErrors, $this->userLocale), $failedImportPath);
+        
+        $this->importRun->update([
+            'row_count' => $this->totalRowCount,
+            'error_count' => count($this->errors),
+            'status' => 'completed_with_errors',
+            'output_file_path' => $failedImportPath,
+        ]);
+
+        $mailFilePath = storage_path('app/' . $failedImportPath);
+        Mail::to($this->user)->send(new ImportReportMail(__('mail.imports.failure'), $mailFilePath, $this->user, true));
+    }
+
+    private function sendSuccessEmail()
+    {
+        $this->importRun->update([
+            'row_count' => $this->totalRowCount,
+            'error_count' => 0,
+            'status' => 'completed',
+            'output_file_path' => null,
+        ]);
+        Mail::to($this->user)->send(new ImportReportMail(__('mail.imports.success'), "", $this->user));
+    }
+
+    private function buildValidationOutput(array $errorMessages, int $rowWhereFailed): void
+    {
+        foreach ($errorMessages as $field => $messages) {
+            foreach ($messages as $message) {
+                $this->caughtErrors[] = [
+                    ucfirst(__('actions.imports.row',[],$this->userLocale))         => $rowWhereFailed,
+                    ucfirst(__('actions.imports.field',[],$this->userLocale))       => ucfirst(__('validation.attributes.' . $field)),
+                    ucfirst(__('actions.imports.value',[],$this->userLocale))       => $input[$field] ?? null,
+                    ucfirst(__('actions.imports.error_type',[],$this->userLocale))  => ucfirst(__('actions.imports.issue_types.validation',[],$this->userLocale)),
+                    ucfirst(__('actions.imports.error_message',[],$this->userLocale)) => $message,
+                ];
+            }
         }
     }
 }
