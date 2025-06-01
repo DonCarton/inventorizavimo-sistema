@@ -99,6 +99,8 @@ export default function Create({ auth, importableObjects, rawHeaders, normalized
                             </div>
                         </div>
 
+                        {data.model_class.length > 0 && <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"/>}
+
                         <div className="mt-4">
                             <InputLabel className="mb-2" htmlFor="import_definition_field_mappings">{StringHelper.__("Mappings")}<span className="text-red-500">*</span></InputLabel>
                             <InputError message={errors.field_mappings} className="mb-2" />

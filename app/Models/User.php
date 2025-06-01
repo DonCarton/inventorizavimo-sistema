@@ -3,7 +3,6 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Interfaces\ImportableModel;
 use App\Observers\UserObserver;
 use App\ValidAttributes;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -13,11 +12,9 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use PhpParser\Node\Expr\AssignOp\Mod;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
-use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -121,5 +118,14 @@ class User extends Authenticatable
         return $this->belongsTo(User::class, 'updated_by')->withTrashed();
     }
 
+    public static function getImportForeignKeyLookups(): array
+    {
+        return [
+            'laboratory' => [
+                'table' => 'laboratories',
+                'match_on' => 'name',
+            ],
+        ];
+    }
 
 }

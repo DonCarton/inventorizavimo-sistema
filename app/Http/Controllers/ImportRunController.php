@@ -9,7 +9,6 @@ use App\Models\ImportRun;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -94,6 +93,14 @@ class ImportRunController extends Controller
         return redirect()->route('import-runs.index')->with('success',__('actions.importRun.updated', [
             'name' => $importRun->definition->name,
         ]));
+    }
+
+    public function destroy(ImportRun $importRun)
+    {
+        $nameOfDefinition = $importRun->definition->name;
+        $importRun->delete();
+
+        return redirect()->route('import-runs.index')->with('success', __('actions.importRun.deleted', ['name' => $nameOfDefinition]));
     }
 
     public function requeue(ImportRun $importRun)

@@ -1,8 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
 import StringHelper from "@/Libs/StringHelper.jsx";
-import { TbEdit } from "react-icons/tb";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import React from "react";
 import TextInput from "@/Components/TextInput.jsx";
@@ -14,9 +13,19 @@ import SteamDropdown from '@/Components/SteamDropdown';
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import WarningMessage from '@/Components/WarningMessage';
 import { IoMdRefresh } from "react-icons/io";
+import DeleteButton from '@/Components/Forms/DeleteButton';
+import EditButton from '@/Components/Forms/EditButton';
+import MiscButton from '@/Components/Forms/MiscButton';
 
 export default function Index({ auth, importRuns, importStatuses, queryParams = null, flash }) {
+    const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
     queryParams = queryParams || {};
+    const {delete: destroy, processing} = useForm();
+    const handleDestroy = (value) => {
+        if (window.confirm(handleConfirmMessage)) {
+            destroy(route('import-runs.destroy', value));
+        }
+    }
     const refreshPage = (e) => {
         router.get(route('import-runs.index'), queryParams);
     }
@@ -144,17 +153,10 @@ export default function Index({ auth, importRuns, importStatuses, queryParams = 
                                                 <td className="px-3 py-2">{importRun.model_class}</td>
                                                 <td className="px-3 py-2">{importRun.status}</td>
                                                 <td className="px-3 py-2">{importRun.created_by}</td>
-                                                <td className="flex justify-start mt-1 px-2 py-1">
-                                                    <Link title={StringHelper.__("Edit entry", { name: importRun.definition_name })} href={route("import-runs.edit", importRun.id)}
-                                                        className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
-                                                        <TbEdit
-                                                            className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50" />
-                                                    </Link>
-                                                    <a title={StringHelper.__("Rerun last import")} type="button" onClick={() => handleRequeue(importRun.id)}
-                                                        className="font-medium text-yellow-500 dark:text-yellow-400 hover:underline hover:cursor-pointer mx-1"
-                                                    >
-                                                        <VscDebugRerun className="w-8 h-8 text-amber-500 hover:text-amber-700 hover:animate-pulse hover:bg-gray-50" />
-                                                    </a>
+                                                <td className="flex justify-start mt-1 px-2 py-1 space-x-2">
+                                                    <EditButton title={StringHelper.__("Edit")} href={route("import-runs.edit", importRun.id)} disabled={processing}>{StringHelper.__("Edit")}</EditButton>
+                                                    <MiscButton title={StringHelper.__("Rerun last import")} as="button" onClick={() => handleRequeue(importRun.id)} disabled={processing} icon={VscDebugRerun} children={StringHelper.__("Rerun last import")}/>
+                                                    <DeleteButton title={StringHelper.__("Delete")} type="button" disabled={processing} onClick={() => handleDestroy(importRun.id)} children={StringHelper.__("Delete")}/>
                                                 </td>
                                             </tr>
                                         ))}

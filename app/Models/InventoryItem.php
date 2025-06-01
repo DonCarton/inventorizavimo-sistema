@@ -161,12 +161,20 @@ class InventoryItem extends Model implements ImportableModel
         return $this->hasMany(AmountLog::class, 'inventory_item_id');
     }
 
+    /**
+     * Summary of getImportForeignKeyLookups
+     * Method is used to retrieve how the model's references can be mapped.
+     * @return array
+     */
     public static function getImportForeignKeyLookups(): array
     {
         return [
             'laboratory' => [
                 'table' => 'laboratories',
-                'match_on' => 'name',
+                'match_on' => [
+                    'name',
+                    'ident_code',
+                ],
             ],
             'inventory_type' => [
                 'table' => 'item_types',

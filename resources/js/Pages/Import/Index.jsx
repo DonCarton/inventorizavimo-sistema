@@ -1,8 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
 import StringHelper from "@/Libs/StringHelper.jsx";
-import { TbEdit } from "react-icons/tb";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import React from "react";
 import TextInput from "@/Components/TextInput.jsx";
@@ -10,9 +9,18 @@ import TableHeader from "@/Components/TableHeader.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
+import DeleteButton from '@/Components/Forms/DeleteButton';
+import EditButton from '@/Components/Forms/EditButton';
 
 export default function Index({ auth, importDefinitions, queryParams = null, flash }) {
+    const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
     queryParams = queryParams || {};
+    const {delete: destroy, processing} = useForm();
+    const handleDestroy = (value) => {
+        if (window.confirm(handleConfirmMessage)) {
+            destroy(route('import-definitions.destroy', value));
+        }
+    }
     const searchFieldChanged = (name, value) => {
         if (value) {
             queryParams[name] = value;
@@ -54,16 +62,18 @@ export default function Index({ auth, importDefinitions, queryParams = null, fla
                     <div>
                         <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={StringHelper.__("Actions")}>
                             {auth.can.create.importDefinition && <>
-                                <button type="button" id="create-new-entry" title={StringHelper.__("Create a new entry in the current page")}
-                                    className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                    <Link href={route("import-definitions.create")}>
+                                <Link href={route("import-definitions.create")}>
+                                    <button type="button" id="create-new-entry" title={StringHelper.__("Create a new entry in the current page")}
+                                        className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
                                         {StringHelper.__("Create")}
-                                    </Link>
-                                </button>
-                                <button type="button" id="import-entries" title={StringHelper.__("Import runs")}
-                                    className="px-2 py-1 bg-white border-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                    <Link href={route("import-runs.index")}>{StringHelper.__("Import runs")}</Link>
-                                </button></>
+                                    </button>
+                                </Link>
+                                <Link href={route("import-runs.index")}>
+                                    <button type="button" id="import-entries" title={StringHelper.__("Import runs")}
+                                        className="px-2 py-1 bg-white border-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                        {StringHelper.__("Import runs")}
+                                    </button>
+                                </Link></>
                             }
                         </GroupButtonDropdown>
                     </div>
@@ -132,12 +142,9 @@ export default function Index({ auth, importDefinitions, queryParams = null, fla
                                                 <td className="px-3 py-2">{importDefinition.model_class}</td>
                                                 <td className="px-3 py-2">{importDefinition.updated_at}</td>
                                                 <td className="px-3 py-2">{importDefinition.created_by}</td>
-                                                <td className="flex justify-start mt-1 px-2 py-1">
-                                                    <Link href={route("import-definitions.edit", importDefinition.id)}
-                                                        className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
-                                                        <TbEdit
-                                                            className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50" />
-                                                    </Link>
+                                                <td className="flex justify-start mt-1 px-2 py-1 space-x-2">
+                                                    <EditButton title={StringHelper.__("Edit")} disabled={processing} href={route("import-definitions.edit", importDefinition.id)}>{StringHelper.__("Edit")}</EditButton>
+                                                    <DeleteButton title={StringHelper.__("Delete")} type="button" disabled={processing} onClick={() => handleDestroy(importDefinition.id)}>{StringHelper.__("Delete")}</DeleteButton>
                                                 </td>
                                             </tr>
                                         ))}
