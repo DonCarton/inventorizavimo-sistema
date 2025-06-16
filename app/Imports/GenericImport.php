@@ -114,14 +114,16 @@ class GenericImport implements ToCollection, WithHeadingRow
             $uniqueValues = collect($uniqueBy)->mapWithKeys(fn($key) => [$key => $input[$key] ?? null])->toArray();
 
             $existing = $modelClass::where($uniqueValues)->exists();
-
-            $modelClass::updateOrCreate($uniqueValues, array_merge(
-                $input,
-                [
+            
+            $mergedArray = array_merge($input, [
                     'updated_by' => $this->updatedBy,
                     ...(!$existing ? ['created_by' => $this->createdBy] : [])
-                ]
-            ));
+            ]);
+
+            $modelClass::updateOrCreate(
+                $uniqueValues,
+                $mergedArray
+            );
         }
 
         if (!empty($this->errors)) {
