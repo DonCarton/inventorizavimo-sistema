@@ -11,6 +11,8 @@ import TableHeader from "@/Components/TableHeader.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
+import MiscButton from '@/Components/Forms/MiscButton';
+import EditButton from '@/Components/Forms/EditButton';
 
 export default function Users({auth, users, queryParams = null, success, failure}) {
     queryParams = queryParams || {};
@@ -135,22 +137,14 @@ export default function Users({auth, users, queryParams = null, success, failure
                                                 </Link>
                                             </td>
                                             <th className="px-3 py-2">{user.created_by}</th>
-                                            <td className="flex justify-start mt-1 px-2 py-1">
-                                                <Link href={route("users.edit", user.id)}
-                                                      className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
-                                                    <TbEdit
-                                                        className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
-                                                </Link>
+                                            <td className="flex justify-start mt-1 px-2 py-1 space-x-2">
+                                                <EditButton title={StringHelper.__("Edit")} href={route("users.edit", user.id)}>{StringHelper.__("Edit")}</EditButton>
                                                 {
-                                                    user.is_disabled ?
-                                                        <a type="button" onClick={() => handleEnable(user.id)}>
-                                                            <RiLockLine
-                                                                className="w-8 h-8 text-red-500 hover:text-red-500 hover:animate-pulse hover:bg-gray-50"/>
-                                                        </a> :
-                                                        <a type="button" onClick={() => handleDisable(user.id)}>
-                                                            <RiLockUnlockLine
-                                                                className="w-8 h-8 text-blue-500 hover:text-blue-500 hover:animate-pulse hover:bg-gray-50"/>
-                                                        </a>
+                                                    user.is_disabled
+                                                    ?
+                                                    <MiscButton classVariant="blue" title={StringHelper.__("Unblock user")} as="button" onClick={() => handleEnable(user.id)} icon={RiLockUnlockLine} children={StringHelper.__("Unblock user")}/>
+                                                    :
+                                                    <MiscButton classVariant="red" title={StringHelper.__("Block user")} as="button" onClick={() => handleDisable(user.id)} icon={RiLockLine} children={StringHelper.__("Block user")}/>
                                                 }
                                             </td>
                                         </tr>

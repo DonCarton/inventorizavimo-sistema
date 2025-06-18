@@ -13,9 +13,14 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
+//use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use Maatwebsite\Excel\Events\AfterSheet;
+
+/**
+ * TODO: IMPROVE IT SO THAT IT ALSO STAMPS THE LOGO IN THE UPPER LEFT CORNER OF THE DOCUMENT.
+ */
 
 class InventoryExports implements FromCollection, WithMapping, WithHeadings, WithStyles, WithEvents, ShouldAutoSize
 {
@@ -63,6 +68,11 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
         return $query->get();
     }
 
+    /*public function startCell(): string
+    {
+        return 'C1';
+    }*/
+
     /**
      * @param $row
      * @return array
@@ -71,6 +81,7 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
     {
         return [
             $row->local_name,
+            '',
             $row->name,
             $row->name_eng,
             $row->inventory_type ? ItemType::where('id', $row->inventory_type)->first()->name : '-',
@@ -99,7 +110,9 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
     public function headings(): array
     {
         return [
-            'Kodas',
+            // 'Kodas',
+            'MERGE_1',
+            'MERGE_2',
             'Pavadinimas',
             'Pavadinimas ENG',
             'Tipas',
@@ -124,6 +137,8 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
 
     public function styles(Worksheet $sheet)
     {
+        $sheet->getRowDimension(1)->setRowHeight(110);
+        $sheet->mergeCells("A1:B1");
         return [
             1 => [
                 'font' => ['bold' => true],
@@ -147,15 +162,34 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
                 $highestRow = $sheet->getHighestRow();
                 $highestColumn = $sheet->getHighestColumn();
 
-                $sheet->getStyle("A1:{$highestColumn}{$highestRow}")
+                /*$drawing = new Drawing();
+                $drawing->setName('SteamLT_LOGO');
+                $drawing->setDescription('SteamLT logotipas');
+                $drawing->setPath(public_path('/img/path_to_image.jpg'));
+                $drawing->setHeight(110);
+                $drawing->setCoordinates('A1');
+                $drawing->setWorksheet($sheet);*/
+
+                $sheet->getStyle("A2:{$highestColumn}{$highestRow}")
                     ->getBorders()
                     ->getAllBorders()
                     ->setBorderStyle(Border::BORDER_THIN);
 
-                $sheet->getStyle("A1:{$highestColumn}1")
+                $sheet->getStyle("C1:{$highestColumn}1")
                     ->getBorders()
                     ->getAllBorders()
                     ->setBorderStyle(Border::BORDER_MEDIUM);
+
+                $sheet->getStyle("C1:{$highestColumn}1")
+                    ->getAlignment()
+                    ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                    ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+                    
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    $sheet->mergeCells("A{$row}:B{$row}");
+                }
+                
+                $sheet->setCellValue("A1","");
             },
         ];
     }
