@@ -71,6 +71,36 @@ class FetchDataToSelect extends Controller
         return \App\Http\Resources\SelectObjectResources\IdentCodeForSelect::collection($identCodes);
     }
 
+    public function facilitiesByIdentCode(string $identCode): JsonResponse
+    {
+        $laboratory = Laboratory::where('ident_code', $identCode)
+            ->with('facilities:id,name')
+            ->firstOrFail();
+
+        return response()->json([
+            'laboratory_id' => $laboratory->id,
+            'facilities' => \App\Http\Resources\SelectObjectResources\FacilityForSelect::collection($laboratory->facilities),
+        ]);
+    }
+
+    public function facilitiesByLaboratory(int $laboratoryId): JsonResponse
+    {
+        
+        if (!$laboratoryId) {
+            return response()->json(['facilities' => []]);
+        }
+
+        $laboratory = Laboratory::with('facilities:id,name')->find($laboratoryId);
+
+        if (!$laboratory) {
+            return response()->json(['facilities' => []]);
+        }
+
+        return response()->json([
+            'facilities' => \App\Http\Resources\SelectObjectResources\FacilityForSelect::collection($laboratory->facilities),
+        ]);
+    }
+
     public function listImportableFields(Request $request)
     {
         $modelClass = $request->input("model");

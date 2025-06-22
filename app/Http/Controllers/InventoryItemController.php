@@ -15,6 +15,7 @@ use App\Http\Resources\CRUDInventoryItemResource;
 use App\Http\Resources\IndexResources\InventoryItemIndexResource;
 use App\Http\Resources\InventoryItemResource;
 use App\Http\Resources\LaboratoryResource;
+use App\Http\Resources\SelectObjectResources\FacilityForSelect;
 use App\Http\Resources\SelectObjectResources\ItemTypeForSelect;
 use App\Http\Resources\SelectObjectResources\LaboratoryResourceForMulti;
 use App\Imports\InventoryImport;
@@ -169,7 +170,7 @@ class InventoryItemController extends Controller
     public function create(Request $request): Response
     {
         Gate::authorize('create', InventoryItem::class);
-        $queryParams = $request->query();
+        
         $laboratories = Laboratory::query()->get();
         $itemTypes = ItemType::query()->get();
 
@@ -194,7 +195,10 @@ class InventoryItemController extends Controller
         $queryParams = $request->query('query');
         $redirectDestination = $request->query('referrer', 'index');
         Gate::authorize('create', InventoryItem::class);
-        InventoryItem::create($request->all());
+        $createdInvItem = InventoryItem::create($request->all());
+
+        $createdInvItem->facilities()->sync($request['facility']);
+
         return to_route("inventoryItems.${redirectDestination}", $queryParams)->with('success', __('actions.inventoryItem.created', ['local_name' => $request['local_name']]));
     }
 
@@ -205,10 +209,11 @@ class InventoryItemController extends Controller
      */
     public function editRaw(int|string $identifier, Request $request): Response
     {
-        $inventoryItem = InventoryItem::where('id','=',$identifier)->orWhere('local_name', $identifier)->firstOrFail();
+        $inventoryItem = InventoryItem::where('id','=',$identifier)->orWhere('local_name', $identifier)->with(['facilities:id,name'])->firstOrFail();
         Gate::authorize('edit',$inventoryItem);
         $amountLogs = $inventoryItem->amountLogs;
         $laboratories = Laboratory::query()->get()->all();
+        $facilities = $inventoryItem->facilities;
         $itemTypes = ItemType::query()->get();
         $queryParams = $request->query('query');
 
@@ -218,6 +223,7 @@ class InventoryItemController extends Controller
             'inventoryItem' => new InventoryItemResource($inventoryItem),
             'logsForItem' => AmountLogResource::collection($amountLogs),
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
+            'facilities' => FacilityForSelect::collection($facilities),
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'queryParams' => $queryParams,
             'referrer' => $request->query('referrer'),
@@ -246,6 +252,7 @@ class InventoryItemController extends Controller
         $extraData = $request->except(array_keys($validatedData));
         $data = array_merge($validatedData, $extraData);
         $inventoryItem->update($data);
+        $inventoryItem->facilities()->sync($data['facility']);
         unset($data['query'],$data['referrer']);
         $changedData = array_diff_assoc($data, $originalData);
 
@@ -406,6 +413,7 @@ class InventoryItemController extends Controller
         $inventoryItem = InventoryItem::where('id','=',$identifier)->orWhere('local_name', $identifier)->firstOrFail();
         $laboratories = Laboratory::query()->get()->all();
         $itemTypes = ItemType::query()->get();
+        $facilities = $inventoryItem->facilities;
         $queryParams = $request->query('query');
 
         $configurations = $this->getDropdownConfigurations();
@@ -413,6 +421,7 @@ class InventoryItemController extends Controller
         return Inertia::render('Inventory/Show', [
             'inventoryItem' => new InventoryItemResource($inventoryItem),
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
+            'facilities' => FacilityForSelect::collection($facilities),
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),
             'queryParams' => $queryParams,
             'referrer' => $request->query('referrer'),

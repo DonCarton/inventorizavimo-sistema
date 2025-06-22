@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('inventory_stocks', function (Blueprint $table) {
+        /*Schema::create('inventory_stocks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('inventory_item_id')->constrained()->onDelete('cascade');
             $table->foreignId('facility_id')->constrained()->onDelete('cascade');
@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamps();
             $table->foreignId('created_by')->nullable()->constrained('users');
             $table->foreignId('updated_by')->nullable()->constrained('users');
-        });
+        });*/
     }
 
     /**
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('inventory_stocks');
+        //Schema::dropIfExists('inventory_stocks');
     }
 };

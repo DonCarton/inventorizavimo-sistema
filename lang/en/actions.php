@@ -22,9 +22,14 @@ return [
         'deletedUser' => 'Deleted user.'
     ],
     'laboratory' => [
-        'created' => 'New location [:name] has been created.',
-        'updated' => 'Location [:name] has been updated.',
-        'deleted' => 'Location [:name] has been deleted successfully.',
+        'created' => 'New laboratory [:name] has been created.',
+        'updated' => 'Laboratory [:name] has been updated.',
+        'deleted' => 'Laboratory [:name] has been deleted successfully.',
+    ],
+    'facility' => [
+        'created' => 'New facility [:name] has been created.',
+        'updated' => 'Facility [:name] has been updated.',
+        'deleted' => 'Facility [:name] has been deleted successfully.',
     ],
     'inventoryItem' => [
         'created' => 'New entry [:local_name] has been created.',

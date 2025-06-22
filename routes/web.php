@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DataFileImportController;
+use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\FetchDataToSelect;
 use App\Http\Controllers\HistoryQueryController;
 use App\Http\Controllers\ImportController;
@@ -51,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
         });
 
         Route::resource('inventoryItems', InventoryItemController::class)->middleware('includeUserId');
+        Route::resource('facilities',FacilityController::class);//->middleware('includeUserId');
         Route::get('/inventoryItems/{inventoryItem}/editRaw', [InventoryItemController::class, 'editRaw'])->name('inventoryItems.editRaw')->middleware('includeUserId');
         Route::resource('itemTypes', ItemTypeController::class)->middleware('includeUserId');
 
@@ -129,6 +131,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/select/shelves/{id}', [FetchDataToSelect::class, 'getShelf'])->name('select.shelves.specific');
     Route::get('/select/ident-code',[FetchDataToSelect::class,'listIdentCode'])->name('select.identCode');
     Route::get('/select/importable-fields',[FetchDataToSelect::class,'listImportableFields'])->name('select.importableFields');
+    Route::get('/select/{identCode}/facilities',[FetchDataToSelect::class,'facilitiesByIdentCode'])->name('select.facilitiesByIdentCode');
+    Route::get('/select/laboratory/{laboratoryId}/facilities',[FetchDataToSelect::class,'facilitiesByLaboratory'])->name('select.facilitiesByLaboratory');
 });
 
 require __DIR__.'/auth.php';

@@ -12,6 +12,7 @@ import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import FlexibleSelect from "@/Components/Forms/FlexibleSelect.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 import FlexibleAsyncSelect from "@/Components/Forms/FlexibleAsyncSelect.jsx";
+import FlexibleStaticSelect from "@/Components/Forms/FlexibleStaticSelect";
 
 export default function Create({auth, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions}) {
     const { translate } = useTranslation();
@@ -19,6 +20,7 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
     const [activeTab, setActiveTab] = useState(1);
     const [selectedPrefix, setSelectedPrefix] = useState('BIN');
     const [selectedMeasurement, setSelectedMeasurement] = useState('');
+    const [facilities, setFacilities] = useState([]);
     const {data, setData, post, processing, errors} = useForm({
         local_name: postNumber || '',
         ident_code: '',
@@ -38,6 +40,7 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
         to_order_amount: '',
         multiple_locations: false,
         laboratory: '',
+        facility: [],
         cupboard: '',
         shelf: '',
         storage_conditions: '',
@@ -58,6 +61,15 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
                 const {post_number} = response.data;
                 setPostNumber(post_number);
                 setData('local_name', post_number);
+                try {
+                    const miscResponse = await axios.get(`/select/${prefixId}/facilities`);
+                    const laboratoryId = miscResponse.data.laboratory_id;
+                    const returnedFacilities = miscResponse.data.facilities;
+                    setData('laboratory',laboratoryId);
+                    setFacilities(returnedFacilities);
+                } catch (error) {
+                    console.error('Error fetching the facilities and laboratory:', error.message);
+                }
             } catch (error) {
                 console.error('Error fetching post number:', error.message);
             }
@@ -87,6 +99,9 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
     }
     const handleLaboratoryChoice = (e) => {
         setData('laboratory', e);
+    }
+    const handleFacilityChange = (e) => {
+        setData('facility', e);
     }
     const handleCupboardChange = (e) => {
         setData('cupboard', e.target.value);
@@ -374,11 +389,12 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
                                                 <InputLabel
-                                                    htmlFor="inventoryItems_local_laboratory">{translate("Location")}<span
+                                                    htmlFor="inventoryItems_local_laboratory">{translate("Laboratory")}<span
                                                     className="text-red-500">*</span></InputLabel>
                                                 <div className="mt-1">
                                                     <FlexibleSelect id="inventoryItems_local_laboratory"
                                                                     name="local_laboratory"
+                                                                    customIsDisabled={true}
                                                                     customPlaceHolder={translate("Choose a laboratory")}
                                                                     value={data.laboratory}
                                                                     onChange={handleLaboratoryChoice}
@@ -389,6 +405,17 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
                                                     />
                                                 </div>
                                                 <InputError message={errors.laboratory} className="mt-2"/>
+                                            </div>
+                                            <div>
+                                                <InputLabel htmlFor="inventoryItems_facility">
+                                                    {translate("Facility")}
+                                                    <span className="text-red-500">*</span>
+                                                </InputLabel>
+                                                <div className="mt-1">
+                                                    <FlexibleStaticSelect id="inventoryItems_facility" name="facility" options={facilities} customPlaceHolder={translate("Choose a facility")}
+                                                        value={data.facility} onChange={handleFacilityChange} customNoOptionsMessage={translate("No facilities found")} customIsMulti={true}/>
+                                                </div>
+                                                <InputError message={errors.facility} className="mt-2"/>
                                             </div>
                                             <div>
                                                 <InputLabel

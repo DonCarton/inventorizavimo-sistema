@@ -43,6 +43,7 @@ class StoreInventoryItemRequest extends FormRequest
                 'to_order_amount' => ['nullable', 'numeric'],
                 'multiple_locations' => ['boolean'],
                 'laboratory' => 'required:exists:laboratories,id',
+                'facility' => 'required:exists:facilities,id',
                 'cupboard' => 'nullable|numeric',
                 'shelf' => 'nullable|string',
                 'storage_conditions' => ['nullable', 'string'],

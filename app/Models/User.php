@@ -8,6 +8,7 @@ use App\ValidAttributes;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -101,21 +102,30 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Laboratory::class, 'laboratory');
     }
+    
     public function rolesForDisplay(): HasManyThrough
     {
         return $this->hasManyThrough(Role::class, ModelHasRole::class, 'model_id', 'id', 'id', 'role_id');
     }
+    
     public function roleName()
     {
         return $this->rolesForDisplay->pluck('name')->implode(', ');
     }
+    
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by')->withTrashed();
     }
+    
     public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by')->withTrashed();
+    }
+
+    public function facilities(): BelongsToMany
+    {
+        return $this->belongsToMany(Facility::class);
     }
 
     public static function getImportForeignKeyLookups(): array

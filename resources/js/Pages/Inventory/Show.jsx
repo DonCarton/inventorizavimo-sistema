@@ -8,13 +8,12 @@ import Checkbox from "@/Components/Checkbox.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 import React, {useState} from "react";
-import ClickableUrlInput from "@/Components/Forms/ClickableUrlInput.jsx";
 import HistoryLog from "@/Components/Forms/HistoryLog.jsx";
 import ActionButton from '@/Components/Forms/ActionButton';
-import AsyncCustom from "@/Components/Forms/AsyncCustom.jsx";
+import FlexibleStaticSelect from '@/Components/Forms/FlexibleStaticSelect';
 
 
-export default function Show({auth, inventoryItem, laboratories, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions}) {
+export default function Show({auth, inventoryItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions}) {
     const [openAll, setOpenAll] = useState(true);
     const toggleAllAccordions = () => {
         setOpenAll(!openAll);
@@ -206,6 +205,14 @@ export default function Show({auth, inventoryItem, laboratories, itemTypes, quer
                                                                  name="inventory_type"
                                                                  id="inventoryItems_inventory_type"
                                                                  noValueText={StringHelper.__("Choose a value")}/>
+                                        </div>
+                                        <div className="mt-4">
+                                            <InputLabel htmlFor="inventoryItems_local_facility"
+                                                        value={StringHelper.__("Facility")}/>
+                                            <div className="mt-1">
+                                                <FlexibleStaticSelect id="inventoryItems_local_facility" name="facility"  options={facilities.data} customPlaceHolder={StringHelper.__("Choose a facility")}
+                                                    value={inventoryItem.data.facility} customIsDisabled={true} customNoOptionsMessage={StringHelper.__("No facilities found")} customIsMulti={true}/>
+                                            </div>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_cupboard" value={StringHelper.__("Cupboard")} className="mb-1"/>

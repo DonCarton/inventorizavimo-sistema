@@ -7,9 +7,25 @@ use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
 class UserObserver implements ShouldHandleEventsAfterCommit
 {
+
+    public function updated(User $user)
+    {
+        if ($user->isDirty('laboratory') && $user->laboratory !== null) {
+            
+            $laboratory = $user->laboratory()->with('faculties')->first();
+
+            if ($laboratory) {
+
+                $facilityIds = $laboratory->facilities->pluck('id')->toArray();
+                $user->facilities()->sync($facilityIds);
+            
+            }
+        }
+    }
+
     public function deleting(User $user)
     {
-        if ($user->isForceDeleting()){
+        if ($user->isForceDeleting()) {
             return;
         }
 
