@@ -116,18 +116,41 @@ class LaboratoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    //TODO: MAKE SURE THAT THE LAB DELETES PROPERLY IF THERE ARE ITEMS LINKED TO IT DIRECTLY ON THEIR TABLES,
+    //LIKE USERS, INVENTORY ITEMS
     public function destroy(Laboratory $laboratory): RedirectResponse
     {
         Gate::authorize('delete',$laboratory);
+        
         if ($laboratory->id == 1) { return to_route('laboratories.index')->with('failure', __('actions.invalidDelete')); }
+        
         if ($laboratory->inventoryItemsCount() >= 1 || $laboratory->userCount() >= 1) {
-            return to_route('laboratories.index')->with('failure', __('actions.invalidDelete')); }
+            return to_route('laboratories.index')->with('failure', __('actions.invalidDelete'));
+        }
+
         $totalLaboratories = Laboratory::count();
         if ($totalLaboratories <= 1) {
             return to_route('laboratories.index')->with('failure', __('actions.invalidDelete'));
         }
+        
         $laboratory->delete();
         return to_route('laboratories.index')->with('success',(__('actions.laboratory.deleted', ['name' => $laboratory['name']])));
+    }
+
+    public function deleteImpact(Laboratory $laboratory)
+    {
+        return response()->json([
+            'impactCounts' => [
+                'inventoryItems' => $laboratory->inventoryItemsCount(),
+                'facilities' => $laboratory->facilitiesCount(),
+                'users' => $laboratory->userCount(),
+            ],
+            'labels' => [
+                'inventoryItems' => $laboratory->inventoryItemsCount() > 1 ? __('objects.labels.plural.inventoryItem') : __('objects.labels.singular.inventoryItem'),
+                'facilities' => $laboratory->facilitiesCount() > 1 ? __('objects.labels.plural.facility') : __('objects.labels.singular.facility'),
+                'users' => $laboratory->userCount() > 1 ? __('objects.labels.plural.user') : __('objects.labels.singular.user'),
+            ]
+        ]);
     }
 
     /**

@@ -40,7 +40,17 @@ const StringHelper = {
             return str.slice(0, length);
         }
         return str;
-    }
+    },
+
+    HumanizeImpactList(data, labels = {}) {
+        return Object.entries(data)
+            .filter(([_, count]) => count > 0)
+            .map(([key, count]) => {
+                const label = labels[key] || key;
+                return ` - ${count} ${label}\n`;
+            })
+            .join('');
+    },
 };
 
 export default StringHelper;

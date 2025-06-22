@@ -80,20 +80,32 @@ class FacilityController extends Controller
         }
         return to_route('facilities.index');
     }
-
+    
     public function destroy(Facility $facility)
     {
         Gate::authorize('delete',$facility);
 
-        if ($facility->inventoryItemsCount() >= 1 || $facility->usersCount() >= 1) {
-            return to_route('facilities.index')->with('failure', __('actions.invalidDelete')); }
-
         $totalFacilities = Facility::count();
+
         if ($totalFacilities <= 1) {
             return to_route('facilities.index')->with('failure', __('actions.invalidDelete'));
         }
 
         $facility->delete();
         return to_route('facilities.index')->with('success',(__('actions.facility.deleted', ['name' => $facility['name']])));
+    }
+
+    public function deleteImpact(Facility $facility)
+    {
+        return response()->json([
+            'impactCounts' => [
+                'inventoryItems' => $facility->inventoryItemsCount(),
+                'users' => $facility->usersCount(),
+            ],
+            'labels' => [
+                'inventoryItems' => $facility->inventoryItemsCount() > 1 ? __('objects.labels.plural.inventoryItem') : __('objects.labels.singular.inventoryItem'),
+                'users' => $facility->usersCount() > 1 ? __('objects.labels.plural.user') : __('objects.labels.singular.user'),
+            ]
+        ]);
     }
 }

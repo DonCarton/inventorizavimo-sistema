@@ -78,4 +78,9 @@ class Laboratory extends Model
     {
         return $this->belongsToMany(Facility::class);
     }
+
+    public function facilitiesCount(): int
+    {
+        return $this->facilities()->count();
+    }
 }

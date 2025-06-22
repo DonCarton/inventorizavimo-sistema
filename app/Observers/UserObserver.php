@@ -12,7 +12,7 @@ class UserObserver implements ShouldHandleEventsAfterCommit
     {
         if ($user->isDirty('laboratory') && $user->laboratory !== null) {
             
-            $laboratory = $user->laboratory()->with('faculties')->first();
+            $laboratory = $user->belongsToLaboratory()->with('faculties')->first();
 
             if ($laboratory) {
 
