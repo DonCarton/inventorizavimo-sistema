@@ -5,12 +5,19 @@ import TextInput from "@/Components/TextInput.jsx";
 import StringHelper from "@/Libs/StringHelper.jsx";
 import InputError from "@/Components/InputError.jsx";
 import CreateForm from "@/Components/Forms/CreateForm.jsx";
+import FlexibleStaticSelect from "@/Components/Forms/FlexibleStaticSelect";
 
-export default function Create({auth}) {
+export default function Create({auth,facilities}) {
     const {data, setData, post, errors} = useForm({
         name: '',
         ident_code: '',
+        facility: [],
     })
+
+    const handleFacilityChange = (e) => {
+        setData('facility', e);
+    };
+    
     const onSubmit = (e) => {
         e.preventDefault();
 
@@ -45,6 +52,12 @@ export default function Create({auth}) {
                                            onChange={e => setData('ident_code', e.target.value)}
                                            className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                 <InputError message={errors.ident_code} className="mt-2"/>
+                            </div>
+                            <div className="mt-4">
+                                <InputLabel htmlFor="laboratory_facility">{StringHelper.__("Facility")}</InputLabel>
+                                <FlexibleStaticSelect id="laboratory_facility" value={data.facility} onChange={handleFacilityChange} options={facilities}
+                                    customIsMulti={true} customPlaceHolder={StringHelper.__("Choose a facility")} customNoOptionsMessage={StringHelper.__("No options")}/>
+                                <InputError message={errors.facility} className="mt-2"/>
                             </div>
                         </CreateForm>
                     </div>

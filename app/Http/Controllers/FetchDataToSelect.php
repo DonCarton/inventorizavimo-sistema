@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Facility;
 use App\Models\ItemType;
 use App\Models\Laboratory;
 use Illuminate\Http\JsonResponse;
@@ -24,6 +25,21 @@ class FetchDataToSelect extends Controller
     {
         $laboratories = Laboratory::select('id', 'name')->get();
         return response()->json($laboratories);
+    }
+
+    public function listFacilities(): JsonResponse
+    {
+        $facilities = Facility::where('name','like','%' . request('search') . '%')
+            ->select('id', 'name')
+            ->get()
+            ->map(function($facility){
+                return [
+                    'value' => $facility->id,
+                    'label' => $facility->name,
+                ];
+            })
+            ->toArray();
+        return response()->json(['data' => $facilities]);
     }
 
     public function listCupboards(): ResourceCollection

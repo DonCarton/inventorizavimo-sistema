@@ -5,14 +5,21 @@ import TextInput from "@/Components/TextInput.jsx";
 import StringHelper from "@/Libs/StringHelper.jsx";
 import InputError from "@/Components/InputError.jsx";
 import EditForm from "@/Components/Forms/EditForm.jsx";
+import FlexibleStaticSelect from "@/Components/Forms/FlexibleStaticSelect";
 
-export default function Edit({ auth, laboratory, can }) {
+export default function Edit({ auth, laboratory, facilities, can }) {
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
     const handleSecondConfirm = StringHelper.__("Secondary confirm");
     const { data, setData, patch, delete: destroy, errors, processing } = useForm({
         name: laboratory.name,
         ident_code: laboratory.ident_code,
+        facility: laboratory.facility || [],
     })
+
+    const handleFacilityChange = (e) => {
+        setData('facility', e);
+    };
+
     const onSubmit = (e) => {
         e.preventDefault();
 
@@ -72,6 +79,12 @@ export default function Edit({ auth, laboratory, can }) {
                                 onChange={e => setData('ident_code', e.target.value)}
                                 className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white" />
                             <InputError message={errors.ident_code} className="mt-2" />
+                        </div>
+                        <div className="mt-4">
+                            <InputLabel htmlFor="laboratory_facility">{StringHelper.__("Facility")}</InputLabel>
+                            <FlexibleStaticSelect id="laboratory_facility" value={data.facility} onChange={handleFacilityChange} options={facilities}
+                                customIsMulti={true} customPlaceHolder={StringHelper.__("Choose a facility")} customNoOptionsMessage={StringHelper.__("No options")}/>
+                            <InputError message={errors.facility} className="mt-2"/>
                         </div>
                     </EditForm>
                 </div>

@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateRequests\UpdateLaboratoryRequest;
 use App\Http\Resources\LaboratoryResource;
 use App\Imports\LaboratoryImport;
 use App\Jobs\NotifyFailedImports;
+use App\Models\Facility;
 use App\Models\Laboratory;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -68,7 +69,20 @@ class LaboratoryController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Laboratory/Create');
+        $facilities = Facility::select('id', 'name')
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(function($facility){
+                return [
+                    'value' => $facility->id,
+                    'label' => $facility->name,
+                ];
+            })
+            ->toArray();
+
+        return Inertia::render('Laboratory/Create',[
+            'facilities' => $facilities,
+        ]);
     }
 
     /**
@@ -79,7 +93,9 @@ class LaboratoryController extends Controller
     public function store(StoreLaboratoryRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        Laboratory::create($data);
+        $newLab = Laboratory::create($data);
+        $newLab->facilities()->sync($data['facility']);
+        
         return redirect()->route('laboratories.index')->with('success', __('actions.laboratory.created', ['name' => $request['name']]));
     }
 
@@ -92,8 +108,14 @@ class LaboratoryController extends Controller
     public function update(UpdateLaboratoryRequest $request, Laboratory $laboratory): RedirectResponse
     {
         $data = $request->validated();
+        $oldFacilities = $laboratory->facilities->pluck('id')->toArray();
+
         $laboratory->update($data);
-        if ($laboratory->wasChanged()) {
+        $laboratory->facilities()->sync($data['facility']);
+
+        $facilitiesChanged = $oldFacilities != $data['facility'];
+
+        if ($laboratory->wasChanged() || $facilitiesChanged) {
             return Redirect::route('laboratories.index')->with('success',(__('actions.laboratory.updated', ['name' => $request['name']])));
         }
         return Redirect::route('laboratories.index');
@@ -105,8 +127,19 @@ class LaboratoryController extends Controller
      */
     public function edit(Laboratory $laboratory): Response
     {
+        $facilities = Facility::select('id', 'name')
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(function($facility){
+                return [
+                    'value' => $facility->id,
+                    'label' => $facility->name,
+                ];
+            })
+            ->toArray();
         return Inertia::render('Laboratory/Edit',[
             'laboratory' => new LaboratoryResource($laboratory),
+            'facilities' => $facilities,
             'can' => [
                 'delete' => request()->user()->can('delete', $laboratory),
             ]

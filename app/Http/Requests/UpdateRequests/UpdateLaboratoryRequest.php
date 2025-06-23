@@ -24,6 +24,7 @@ class UpdateLaboratoryRequest extends FormRequest
         return [
             'name' => 'required|string|min:3|max:255',
             'ident_code' => 'string|max:4',
+            'facility' => 'nullable|exists:facilities,id',
             'updated_by' => 'required|exists:users,id'
         ];
     }

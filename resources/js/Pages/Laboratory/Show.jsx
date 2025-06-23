@@ -6,6 +6,8 @@ import StringHelper from "@/Libs/StringHelper.jsx";
 import ShowForm from "@/Components/Forms/ShowForm.jsx";
 import HistoryLog from "@/Components/Forms/HistoryLog.jsx";
 
+//TODO: Field to showcase facilities linked to a laboratory.
+
 export default function Show({auth, laboratory}) {
     return (<AuthenticatedLayout
         user={auth.user}
