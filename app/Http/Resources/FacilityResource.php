@@ -11,6 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @property int $id
  * @property string $name
+ * @property \Illuminate\Database\Eloquent\Relations\HasMany $laboratories
  * @property DateTime $created_at
  * @property DateTime $updated_at
  * @property BelongsTo $createdBy
@@ -29,6 +30,7 @@ class FacilityResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'laboratory' => $this->laboratories->pluck('id')->all(),
             'created_at' => $this->created_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
             'created_by' => new UserResource($this->createdBy),

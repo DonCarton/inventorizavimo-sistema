@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\FacilityResource;
 use App\Models\Facility;
+use App\Models\Laboratory;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Gate;
@@ -54,12 +55,44 @@ class FacilityController extends Controller
         return to_route('facilities.index')->with('success',(__('actions.facility.created', ['name' => $facility->name])));
     }
 
+    public function show(Facility $facility)
+    {
+        $laboratories = Laboratory::select('id', 'name')
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(function($laboratory){
+                return [
+                    'value' => $laboratory->id,
+                    'label' => $laboratory->name,
+                ];
+            })
+            ->toArray();
+        return Inertia::render(
+            'Facility/Show', [
+                'facility' => new FacilityResource($facility),
+                'laboratories' => $laboratories,
+            ]
+        );
+    }
+
     public function edit(Facility $facility)
     {
+        $laboratories = Laboratory::select('id', 'name')
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(function($laboratory){
+                return [
+                    'value' => $laboratory->id,
+                    'label' => $laboratory->name,
+                ];
+            })
+            ->toArray();
         return Inertia::render(
             'Facility/Edit', [
                 'facility' => new FacilityResource($facility),
+                'laboratories' => $laboratories,
                 'can' => [
+                    'setLaboratory' => request()->user()->can('setLaboratory', $facility),
                     'delete' => request()->user()->can('delete', $facility),
                 ] 
             ]
@@ -68,14 +101,27 @@ class FacilityController extends Controller
 
     public function update(Request $request, Facility $facility)
     {
+        Gate::authorize('update',$facility);
+
         $request['updated_by'] = auth()->user()->id;
         $data = $request->validate([
             'name' => ['required', 'min:2', 'max:255'],
+            'laboratory' => ['required', 'exists:laboratories,id'],
             'updated_by' => ['required', 'exists:users,id'],
         ]);
-
         $facility->update($data);
-        if ($facility->wasChanged()) {
+
+        $laboratoriesChanged = false;
+
+        if(request()->user()->can('setLaboratory', $facility)){
+            
+            $oldFacilities = $facility->laboratories->pluck('id')->toArray();
+            $facility->laboratories()->sync($data['laboratory']);
+            $laboratoriesChanged = $oldFacilities != $data['laboratory'];
+
+        }
+        
+        if ($facility->wasChanged() || $laboratoriesChanged) {
             return to_route('facilities.index')->with('success',(__('actions.facility.updated', ['name' => $request['name']])));
         }
         return to_route('facilities.index');

@@ -59,8 +59,19 @@ class LaboratoryController extends Controller
      */
     public function show(Laboratory $laboratory): Response
     {
+        $facilities = Facility::select('id', 'name')
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(function($facility){
+                return [
+                    'value' => $facility->id,
+                    'label' => $facility->name,
+                ];
+            })
+            ->toArray();
         return Inertia::render('Laboratory/Show',[
-            'laboratory' => new LaboratoryResource($laboratory)
+            'laboratory' => new LaboratoryResource($laboratory),
+            'facilities' => $facilities,
         ]);
     }
 
@@ -107,18 +118,26 @@ class LaboratoryController extends Controller
      */
     public function update(UpdateLaboratoryRequest $request, Laboratory $laboratory): RedirectResponse
     {
+        Gate::authorize('update',$laboratory);
         $data = $request->validated();
-        $oldFacilities = $laboratory->facilities->pluck('id')->toArray();
 
         $laboratory->update($data);
-        $laboratory->facilities()->sync($data['facility']);
 
-        $facilitiesChanged = $oldFacilities != $data['facility'];
+        $facilitiesChanged = false;
+
+        if(request()->user()->can('setFacility', $laboratory)){
+            
+            $oldFacilities = $laboratory->facilities->pluck('id')->toArray();
+            $laboratory->facilities()->sync($data['facility']);
+            $facilitiesChanged = $oldFacilities != $data['facility'];
+
+        }
 
         if ($laboratory->wasChanged() || $facilitiesChanged) {
             return Redirect::route('laboratories.index')->with('success',(__('actions.laboratory.updated', ['name' => $request['name']])));
         }
-        return Redirect::route('laboratories.index');
+        
+        return Redirect::route(route: 'laboratories.index');
     }
 
     /**
@@ -141,6 +160,7 @@ class LaboratoryController extends Controller
             'laboratory' => new LaboratoryResource($laboratory),
             'facilities' => $facilities,
             'can' => [
+                'setFacility' => request()->user()->can('setFacility', $laboratory),
                 'delete' => request()->user()->can('delete', $laboratory),
             ]
         ]);

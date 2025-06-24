@@ -11,6 +11,7 @@ import {ChevronDownIcon} from "@heroicons/react/24/solid/index.js";
 export default function Authenticated({ user, header, children, can }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
     const [showMegaMenuDropdown, setShowMegaMenuDropdown] = useState(false);
+    const [showLabMegaMenuDropdown, setShowLabMegaMenuDropdown] = useState(false);
     const { translate } = useTranslation();
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -60,11 +61,28 @@ export default function Authenticated({ user, header, children, can }) {
                                         {translate("Types")}
                                     </NavLink>}
                                 {can.view.laboratory &&
-                                    <NavLink className="2xl:text-lg xl:text-base text-white"
-                                             href={route('laboratories.index')}
-                                             active={route().current('laboratories*')}>
-                                        {translate("Laboratories")}
-                                    </NavLink>}
+                                <button type="button" onClick={() => setShowMegaMenuDropdown(!showLabMegaMenuDropdown)} onMouseEnter={() => setShowLabMegaMenuDropdown(true)} onMouseLeave={() => setShowLabMegaMenuDropdown(false)}
+                                        className={`inline-flex items-center 2xl:text-lg xl:text-base text-white px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none hover:border-b-2 hover:border-b-indigo-400 border-transparent dark:text-gray-400 hover:text-teal-100 dark:hover:text-gray-300 hover:border-indigo-500 dark:hover:border-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700 ${route().current('laboratories*') ? 'border-b-indigo-400 bg-pink-700' : ''}`}>
+                                    {translate("Laboratory")}
+                                    <ChevronDownIcon className="ml-1 w-5 h-5"/>
+                                    {showLabMegaMenuDropdown &&
+                                        <div className="absolute z-10 grid w-auto mt-40 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 dark:bg-gray-700">
+                                            <div className="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
+                                                <ul className="space-y-4" aria-labelledby="mega-menu-dropdown-button">
+                                                    <li>
+                                                        <MegaMenuNavLink className="2xl:text-lg xl:text-base" href={route('laboratories.index')} active={route().current('laboratories.index') && !route().current('facilities.index')}>
+                                                            {translate("Laboratory")}
+                                                        </MegaMenuNavLink>
+                                                    </li>
+                                                    <li>
+                                                        <MegaMenuNavLink className="2xl:text-lg xl:text-base" href={route('facilities.index')} active={route().current('facilities.index')}>
+                                                            {translate("Facility")}
+                                                        </MegaMenuNavLink>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>}
+                                </button>}
                                 <NavLink className="2xl:text-lg xl:text-base text-white"
                                          href={route('reader')} active={route().current('reader')}>
                                     {translate("Reader")}

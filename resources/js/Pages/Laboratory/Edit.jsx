@@ -83,7 +83,7 @@ export default function Edit({ auth, laboratory, facilities, can }) {
                         <div className="mt-4">
                             <InputLabel htmlFor="laboratory_facility">{StringHelper.__("Facility")}</InputLabel>
                             <FlexibleStaticSelect id="laboratory_facility" value={data.facility} onChange={handleFacilityChange} options={facilities}
-                                customIsMulti={true} customPlaceHolder={StringHelper.__("Choose a facility")} customNoOptionsMessage={StringHelper.__("No options")}/>
+                                customIsMulti={true} customIsDisabled={!can.setFacility} customPlaceHolder={StringHelper.__("Choose a facility")} customNoOptionsMessage={StringHelper.__("No options")}/>
                             <InputError message={errors.facility} className="mt-2"/>
                         </div>
                     </EditForm>

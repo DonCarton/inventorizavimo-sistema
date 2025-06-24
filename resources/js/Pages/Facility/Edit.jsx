@@ -6,12 +6,14 @@ import StringHelper from "@/Libs/StringHelper.jsx";
 import InputError from "@/Components/InputError.jsx";
 import EditForm from "@/Components/Forms/EditForm.jsx";
 import axios from "axios";
+import FlexibleStaticSelect from "@/Components/Forms/FlexibleStaticSelect";
 
-export default function Edit({ auth, facility, can }) {
+export default function Edit({ auth, facility, laboratories, can }) {
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
     const handleSecondConfirm = StringHelper.__("Secondary confirm");
     const { data, setData, patch, delete: destroy, errors, processing } = useForm({
         name: facility.name,
+        laboratory: facility.laboratory,
     })
     const onSubmit = (e) => {
         e.preventDefault();
@@ -44,6 +46,9 @@ export default function Edit({ auth, facility, can }) {
                 }
             });
     };
+    const handleLaboratoryChange = (e) => {
+        setData('laboratory',e);
+    };
     return (<AuthenticatedLayout
         user={auth.user}
         can={auth.can}
@@ -65,6 +70,13 @@ export default function Edit({ auth, facility, can }) {
                                 onChange={e => setData('name', e.target.value)}
                                 className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white" />
                             <InputError message={errors.name} className="mt-2" />
+                        </div>
+                        <div className="mt-4">
+                            <InputLabel htmlFor="facility_laboratory">{StringHelper.__("Laboratory")}<span
+                                className="text-red-500">*</span></InputLabel>
+                            <FlexibleStaticSelect id="facility_laboratory" options={laboratories} value={data.laboratory} onChange={handleLaboratoryChange} customIsMulti={true}
+                                customIsDisabled={!can.setLaboratory} customNoOptionsMessage={StringHelper.__("No laboratories found")} customPlaceHolder={StringHelper.__("Choose a laboratory")}/>
+                            <InputError message={errors.laboratory} className="mt-2" />
                         </div>
                     </EditForm>
                 </div>
