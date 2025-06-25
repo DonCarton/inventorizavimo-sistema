@@ -3,7 +3,8 @@
     "Edit entry": "Redaguoti :name",
     "Upload": "Įkelti",
     "Download": "Atsisiųsti",
-    "Rerun last import": "Išnaujo paleisti importą",
+    "Rerun last import": "Paleisti naują importą",
+    "Rerun": "Pakartoti",
     "Profile": "Profilis",
     "Log out": "Atsijungti",
     "Dashboard": "Skydelis",
@@ -193,5 +194,7 @@
     "Import definitions": "Importo šablonai",
     "Import runs": "Importo veiksmai",
     "Parsing file": "Įkeliamas failas",
+    "Block": "Užblokuoti",
+    "Unblock": "Atblokuoti",
     "Changing the object type reset the mappings, do you wish to proceed?": "Keičiant įrašo tipą, importavimo laukų reikšmės bus anuliuotos, ar tikrai norite pakeisti įrašo tipą?"
 }

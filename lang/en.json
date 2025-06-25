@@ -1,7 +1,8 @@
 {
     "Welcome": "Welcome",
     "Edit entry": "Edit entry :name",
-    "Rerun last import": "Rerun last import",
+    "Rerun last import": "Retry the import again",
+    "Rerun": "Rerun",
     "Profile": "Profile",
     "Log out": "Log out",
     "Dashboard": "Dashboard",

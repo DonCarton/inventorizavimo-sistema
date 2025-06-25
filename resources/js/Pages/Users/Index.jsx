@@ -12,7 +12,7 @@ import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import MiscButton from '@/Components/Forms/MiscButton';
-import EditButton from '@/Components/Forms/EditButton';
+import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
 
 export default function Users({auth, users, queryParams = null, success, failure}) {
     queryParams = queryParams || {};
@@ -137,15 +137,19 @@ export default function Users({auth, users, queryParams = null, success, failure
                                                 </Link>
                                             </td>
                                             <th className="px-3 py-2">{user.created_by}</th>
-                                            <td className="flex justify-start mt-1 px-2 py-1 space-x-2">
-                                                <EditButton title={StringHelper.__("Edit")} href={route("users.edit", user.id)}>{StringHelper.__("Edit")}</EditButton>
-                                                {
-                                                    user.is_disabled
-                                                    ?
-                                                    <MiscButton classVariant="blue" title={StringHelper.__("Unblock user")} as="button" onClick={() => handleEnable(user.id)} icon={RiLockUnlockLine} children={StringHelper.__("Unblock user")}/>
-                                                    :
-                                                    <MiscButton classVariant="red" title={StringHelper.__("Block user")} as="button" onClick={() => handleDisable(user.id)} icon={RiLockLine} children={StringHelper.__("Block user")}/>
-                                                }
+                                            <td className="flex justify-start mt-1 mb-1 px-2 py-1 space-x-2">
+                                                <div>
+                                                    <BulkActionsButton>
+                                                        <MiscButton classVariant="green" title={StringHelper.__("Edit")} as="link" to={route("users.edit", user.id)} icon={TbEdit} children={StringHelper.__("Edit")}/>
+                                                        {
+                                                            user.is_disabled
+                                                            ?
+                                                            <MiscButton classVariant="blue" title={StringHelper.__("Unblock")} as="button" onClick={() => handleEnable(user.id)} icon={RiLockUnlockLine} children={StringHelper.__("Unblock")}/>
+                                                            :
+                                                            <MiscButton classVariant="red" title={StringHelper.__("Block")} as="button" onClick={() => handleDisable(user.id)} icon={RiLockLine} children={StringHelper.__("Block")}/>
+                                                        }
+                                                    </BulkActionsButton>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}

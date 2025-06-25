@@ -17,6 +17,9 @@ import DeleteButton from '@/Components/Forms/DeleteButton';
 import EditButton from '@/Components/Forms/EditButton';
 import MiscButton from '@/Components/Forms/MiscButton';
 import { useState, useRef, useEffect } from 'react';
+import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
+import { TbEdit } from 'react-icons/tb';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 
 /*TODO:
 Wrap the action button into a component that can be re-used through multiple views.
@@ -25,16 +28,16 @@ Making a button gives a bit more clarity for the action.
 */
 
 export default function Index({ auth, importRuns, importStatuses, queryParams = null, flash }) {
-    const [showObjectActionItems, setShowObjectActionItems] = useState(false);
-    const dropdownRef2 = useRef(null);
-    function exposeDropdown2(){
-        setShowObjectActionItems(!showObjectActionItems);
-    }
-    const handleClickOutside2 = (event) => {
-        if (dropdownRef2.current && !dropdownRef2.current.contains(event.target)) {
-            setShowObjectActionItems(false);
-        }
-    };
+    // const [showObjectActionItems, setShowObjectActionItems] = useState(false);
+    // const dropdownRef2 = useRef(null);
+    // function exposeDropdown2(){
+    //     setShowObjectActionItems(!showObjectActionItems);
+    // }
+    // const handleClickOutside2 = (event) => {
+    //     if (dropdownRef2.current && !dropdownRef2.current.contains(event.target)) {
+    //         setShowObjectActionItems(false);
+    //     }
+    // };
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
     queryParams = queryParams || {};
     const {delete: destroy, processing} = useForm();
@@ -77,12 +80,12 @@ export default function Index({ auth, importRuns, importStatuses, queryParams = 
     const handleRequeue = (value) => {
         router.patch(route('import-runs.requeue', value), { preserveScroll: true });
     };
-    useEffect(() => {
-        document.addEventListener('click', handleClickOutside2);
-        return () => {
-            document.removeEventListener('click', handleClickOutside2);
-        };
-    }, []);
+    // useEffect(() => {
+    //     document.addEventListener('click', handleClickOutside2);
+    //     return () => {
+    //         document.removeEventListener('click', handleClickOutside2);
+    //     };
+    // }, []);
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -176,27 +179,12 @@ export default function Index({ auth, importRuns, importStatuses, queryParams = 
                                                 <td className="px-3 py-2">{importRun.model_class}</td>
                                                 <td className="px-3 py-2">{importRun.status}</td>
                                                 <td className="px-3 py-2">{importRun.created_by}</td>
-                                                <td className="flex justify-start mt-1 px-2 py-1 space-x-2">
-                                                    <div id="dropdown-interactions-import-runs" name="interactions-import-runs" ref={dropdownRef2}>
-                                                        <button type="button" className="flex items-center px-4 bg-white font-semibold uppercase text-gray-700 dark:text-gray-300 border-2 border-gray-300 rounded-lg focus:outline-none hover:bg-gray-50 dark:hover:bg-gray-700" onClick={exposeDropdown2}>
-                                                            {StringHelper.__("Action")}
-                                                            <span className="mx-2 h-4 border-l border-gray-700"></span>
-                                                            <svg
-                                                                className={`w-4 h-4 transition-transform transform ${showObjectActionItems ? 'rotate-180' : 'rotate-0'}`}
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                fill="none"
-                                                                viewBox="0 0 24 24"
-                                                                stroke="currentColor"
-                                                            >
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M19 9l-7 7-7-7"/>
-                                                            </svg>
-                                                        </button>
-                                                        <div className={`absolute mt-2 w-44 space-y-1 transition-all duration-300 ease-out transform ${showObjectActionItems ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'}`}>
-                                                            <EditButton title={StringHelper.__("Edit")} href={route("import-runs.edit", importRun.id)} disabled={processing}>{StringHelper.__("Edit")}</EditButton>
-                                                            <MiscButton title={StringHelper.__("Rerun last import")} as="button" onClick={() => handleRequeue(importRun.id)} disabled={processing} icon={VscDebugRerun} children={StringHelper.__("Rerun last import")}/>
-                                                            <DeleteButton title={StringHelper.__("Delete")} type="button" disabled={processing} onClick={() => handleDestroy(importRun.id)} children={StringHelper.__("Delete")}/>
-                                                        </div>
-                                                    </div>
+                                                <td className="flex justify-start mt-1 mb-1 px-2 py-1 space-x-2">
+                                                    <BulkActionsButton>
+                                                            <MiscButton classVariant="green" title={StringHelper.__("Edit")} as="link" to={route("import-runs.edit", importRun.id)} disabled={processing} icon={TbEdit} children={StringHelper.__("Edit")}/>
+                                                            <MiscButton title={StringHelper.__("Rerun last import")} as="button" onClick={() => handleRequeue(importRun.id)} disabled={processing} icon={VscDebugRerun} children={StringHelper.__("Rerun")}/>
+                                                            <MiscButton classVariant="red" title={StringHelper.__("Delete")} as="button" disabled={processing} onClick={() => handleDestroy(importRun.id)} icon={RiDeleteBin6Line} children={StringHelper.__("Delete")}/>
+                                                    </BulkActionsButton>
                                                 </td>
                                             </tr>
                                         ))}

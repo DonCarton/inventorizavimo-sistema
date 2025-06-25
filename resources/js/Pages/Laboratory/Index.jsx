@@ -5,13 +5,15 @@ import StringHelper from "@/Libs/StringHelper.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
-import { TbEdit } from "react-icons/tb";
+// import { TbEdit } from "react-icons/tb";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import React, { useState } from "react";
 import WarningMessage from "@/Components/WarningMessage.jsx";
 import FileUploadModal from "@/Components/FileUploadModal.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
+import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
+import EditButton from '@/Components/Forms/EditButton';
 
 export default function Index({ auth, laboratories, queryParams = null, success, warning, failure }) {
     queryParams = queryParams || {};
@@ -179,12 +181,10 @@ export default function Index({ auth, laboratories, queryParams = null, success,
                                                 <td className="px-3 py-2">{laboratory.updated_at}</td>
                                                 <td className="px-3 py-2">{laboratory.created_by.email}</td>
                                                 <td className="px-3 py-2">{laboratory.updated_by.email}</td>
-                                                <td className="flex justify-start mt-1 px-2 py-1">
-                                                    <Link href={route("laboratories.edit", laboratory.id)}
-                                                        className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
-                                                        <TbEdit
-                                                            className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50" />
-                                                    </Link>
+                                                <td className="flex justify-start mt-1 mb-1 px-2 py-1">
+                                                    <BulkActionsButton>
+                                                        <EditButton title={StringHelper.__("Edit")} href={route("laboratories.edit", laboratory.id)}>{StringHelper.__("Edit")}</EditButton>
+                                                    </BulkActionsButton>
                                                 </td>
                                             </tr>
                                         ))}

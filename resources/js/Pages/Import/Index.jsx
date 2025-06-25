@@ -11,6 +11,10 @@ import FailureMessage from "@/Components/FailureMessage.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import DeleteButton from '@/Components/Forms/DeleteButton';
 import EditButton from '@/Components/Forms/EditButton';
+import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
+import MiscButton from '@/Components/Forms/MiscButton';
+import { TbEdit } from 'react-icons/tb';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 
 export default function Index({ auth, importDefinitions, queryParams = null, flash }) {
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
@@ -142,9 +146,11 @@ export default function Index({ auth, importDefinitions, queryParams = null, fla
                                                 <td className="px-3 py-2">{importDefinition.model_class}</td>
                                                 <td className="px-3 py-2">{importDefinition.updated_at}</td>
                                                 <td className="px-3 py-2">{importDefinition.created_by}</td>
-                                                <td className="flex justify-start mt-1 px-2 py-1 space-x-2">
-                                                    <EditButton title={StringHelper.__("Edit")} disabled={processing} href={route("import-definitions.edit", importDefinition.id)}>{StringHelper.__("Edit")}</EditButton>
-                                                    <DeleteButton title={StringHelper.__("Delete")} type="button" disabled={processing} onClick={() => handleDestroy(importDefinition.id)}>{StringHelper.__("Delete")}</DeleteButton>
+                                                <td className="flex justify-start mt-1 mb-1 px-2 py-1 space-x-2">
+                                                    <BulkActionsButton>
+                                                        <MiscButton classVariant="green" title={StringHelper.__("Edit")} disabled={processing} as="link" to={route("import-definitions.edit", importDefinition.id)} icon={TbEdit} children={StringHelper.__("Edit")} />
+                                                        <MiscButton classVariant="red" title={StringHelper.__("Delete")} disabled={processing} as="button" onClick={() => handleDestroy(importDefinition.id)} icon={RiDeleteBin6Line} children={StringHelper.__("Delete")}/>
+                                                    </BulkActionsButton>
                                                 </td>
                                             </tr>
                                         ))}
