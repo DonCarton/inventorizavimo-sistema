@@ -19,8 +19,6 @@ const BulkActionsButton = ({ children }) => {
         };
     }, []);
 
-    // useClickAway(dropdownRef, () => setShowItems(false));
-
     if (items.length === 0) return null;
 
     if (items.length === 1) {
@@ -61,7 +59,7 @@ const BulkActionsButton = ({ children }) => {
                 }`}
             >
                 {items.map((item, index) => (
-                    <div key={index}>{item}</div>
+                    <div key={index} className="w-full">{item}</div>
                 ))}
             </div>
         </div>

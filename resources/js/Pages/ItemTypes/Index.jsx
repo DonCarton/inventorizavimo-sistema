@@ -65,7 +65,7 @@ export default function InventoryTypes({auth, itemTypes, success, warning}) {
                                             <td className="px-3 py-2">{itemType.updatedBy.email}</td>
                                             <td className="flex justify-start mt-1 px-2 py-1">
                                                 <BulkActionsButton>
-                                                    <MiscButton className="w-36" classVariant="green" title={StringHelper.__("Edit")} as="link" to={route("itemTypes.edit", itemType.id)} icon={TbEdit} children={StringHelper.__("Edit")}/>
+                                                    <MiscButton classVariant="green" title={StringHelper.__("Edit")} as="link" to={route("itemTypes.edit", itemType.id)} icon={TbEdit} children={StringHelper.__("Edit")}/>
                                                 </BulkActionsButton>
                                             </td>
                                         </tr>
