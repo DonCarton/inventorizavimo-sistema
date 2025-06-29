@@ -177,6 +177,7 @@ class InventoryItem extends Model implements ImportableModel
         return [
             'laboratory' => [
                 'table' => 'laboratories',
+                'many_to_many' => false,
                 'match_on' => [
                     'name',
                     'ident_code',
@@ -184,6 +185,12 @@ class InventoryItem extends Model implements ImportableModel
             ],
             'inventory_type' => [
                 'table' => 'item_types',
+                'many_to_many' => false,
+                'match_on' => 'name',
+            ],
+            'facility' => [
+                'table' => 'facilities',
+                'many_to_many' => true,
                 'match_on' => 'name',
             ],
         ];

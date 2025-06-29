@@ -1,5 +1,8 @@
 <?php
 
+use App\Rules\ExistsByNumericOrString;
+use App\Rules\HasRelationMethod;
+
 return [
     'App\\Models\\InventoryItem' => [
         'local_name' => ['required'],
@@ -19,7 +22,8 @@ return [
         'to_order_amount' => ['nullable', 'numeric'],
         'average_consumption' => ['nullable'],
         'multiple_locations' => ['boolean'],
-        'laboratory' => ['nullable','exists:laboratories,id'],
+        'laboratory' => ['nullable', new ExistsByNumericOrString('facilities','facility')],
+        'facility' => ['nullable', new HasRelationMethod(App\Models\InventoryItem::class,'facilities') ,new ExistsByNumericOrString('facilities','facility')],
         'cupboard' => ['nullable','numeric'],
         'shelf' => ['nullable','string'],
         'storage_conditions' => ['nullable'],

@@ -103,9 +103,13 @@ class LaboratoryController extends Controller
      */
     public function store(StoreLaboratoryRequest $request): RedirectResponse
     {
+        Gate::authorize('create', Laboratory::class);
         $data = $request->validated();
         $newLab = Laboratory::create($data);
-        $newLab->facilities()->sync($data['facility']);
+
+        if(request()->user()->can('setFacility', $newLab)){
+            $newLab->facilities()->sync($data['facility']);
+        }
         
         return redirect()->route('laboratories.index')->with('success', __('actions.laboratory.created', ['name' => $request['name']]));
     }

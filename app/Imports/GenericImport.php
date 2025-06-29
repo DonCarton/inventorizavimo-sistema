@@ -65,8 +65,6 @@ class GenericImport implements ToCollection, WithHeadingRow
             return [$normalizedKey => $modelAttr];
         })->toArray();
 
-        $rules = $definition->validation_rules ?? [];
-
         $modelClass = $definition->model_class;
 
         $fullValidationPath = "{$this->validationFileName}.{$modelClass}";
@@ -74,6 +72,8 @@ class GenericImport implements ToCollection, WithHeadingRow
         $rules = Config::get($fullValidationPath, []);
 
         $foreignKeyLookups = $definition->foreign_key_lookups ?? $modelClass::getImportForeignKeyLookups();
+
+        $manyToManyCollection = [];
 
         foreach ($rows as $index => $row) {
 
@@ -84,9 +84,44 @@ class GenericImport implements ToCollection, WithHeadingRow
                 $input[$modelAttr] = $row[$csvKey] ?? null;
             }
 
+            $validator = Validator::make($input, $rules);
+
+            if ($validator->fails()) {
+                $this->buildValidationOutput($validator->errors()->getMessages(), $rowNumber, $input);
+                continue;
+            }
+
             foreach ($foreignKeyLookups as $fkAttr => $lookupConfig) {
                 \Log::debug($fkAttr);
-                if (!empty($input[$fkAttr])) {
+                $rawValue = $input[$fkAttr] ?? null;
+
+
+                if (empty($rawValue)) {
+                    continue;
+                }
+
+                if ($lookupConfig['many_to_many']) {
+                    
+                    $collectedValues = collect(explode('|',$rawValue))->map(fn($value) => trim($value))->filter();
+                    
+                    $resolvedIds = \DB::table($lookupConfig['table'])
+                        ->whereIn($lookupConfig['match_on'], $collectedValues)
+                        ->pluck('id')
+                        ->toArray();
+
+                    if (empty($resolvedIds)) {
+                        $this->errors[] = [
+                            'row' => $rowNumber,
+                            'errors' => [__('validation.custom.' . $fkAttr . '.no_valid_record', ['attribute' => __("validation.attributes.$fkAttr"), 'value' => $rawValue], $this->userLocale)]
+                        ];
+                        continue;
+                    }
+
+                    $manyToManyCollection[$fkAttr] = $resolvedIds;
+
+                    unset($input[$fkAttr]);
+
+                } else {
                     $resolvedId = $this->getIdByLookup($lookupConfig, $input[$fkAttr]);
 
                     if ($resolvedId) {
@@ -102,12 +137,12 @@ class GenericImport implements ToCollection, WithHeadingRow
             }
 
 
-            $validator = Validator::make($input, $rules);
+            /*$validator = Validator::make($input, $rules);
 
             if ($validator->fails()) {
                 $this->buildValidationOutput($validator->errors()->getMessages(), $rowNumber, $input);
                 continue;
-            }
+            }*/
 
             $uniqueBy = $modelClass::getImportUniqueBy();
 
@@ -120,10 +155,15 @@ class GenericImport implements ToCollection, WithHeadingRow
                     ...(!$existing ? ['created_by' => $this->createdBy] : [])
             ]);
 
-            $modelClass::updateOrCreate(
+            $updatedOrCreatedModel = $modelClass::updateOrCreate(
                 $uniqueValues,
                 $mergedArray
             );
+
+            foreach ($manyToManyCollection as $relation => $relatedIds){
+                $updatedOrCreatedModel->$relation()->sync($relatedIds);
+            }
+            
         }
 
         if (!empty($this->errors)) {
@@ -147,6 +187,27 @@ class GenericImport implements ToCollection, WithHeadingRow
 
             if ($foundId) {
                 return $foundId;
+            }
+        }
+        return null;
+    }
+
+    private function getMultipleIdsByLookup(array $configArray, $valueToLookup)
+    {
+        $matchFields = (array)$configArray['match_on'];
+        $foundIds = [];
+
+        foreach ($matchFields as $matchOn) {
+            $foundId = \DB::table($configArray['table'])->where($matchOn, $valueToLookup)->value('id');
+            
+            \Log::debug("Looked up [{$matchOn}] with value [{$valueToLookup}]", [
+                "Found object?" => $foundId ? "Yes" : "No",
+                "Object id" => $foundId ?: null,
+            ]);
+
+            if ($foundId) {
+                $foundIds[] = $foundId;
+                continue;
             }
         }
         return null;
