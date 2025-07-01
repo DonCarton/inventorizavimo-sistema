@@ -197,7 +197,7 @@ class InventoryItemController extends Controller
         Gate::authorize('create', InventoryItem::class);
         $createdInvItem = InventoryItem::create($request->all());
 
-        $createdInvItem->facilities()->sync($request['facility']);
+        $createdInvItem->facilities()->sync($request['facilities']);
 
         return to_route("inventoryItems.${redirectDestination}", $queryParams)->with('success', __('actions.inventoryItem.created', ['local_name' => $request['local_name']]));
     }
@@ -252,7 +252,7 @@ class InventoryItemController extends Controller
         $extraData = $request->except(array_keys($validatedData));
         $data = array_merge($validatedData, $extraData);
         $inventoryItem->update($data);
-        $inventoryItem->facilities()->sync($data['facility']);
+        $inventoryItem->facilities()->sync($data['facilities']);
         unset($data['query'],$data['referrer']);
         $changedData = array_diff_assoc($data, $originalData);
 

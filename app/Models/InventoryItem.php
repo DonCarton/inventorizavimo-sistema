@@ -66,6 +66,37 @@ class InventoryItem extends Model implements ImportableModel
         'updated_by',
     ];
 
+    public static function getImportableAttributes()
+    {
+        return [
+            'local_name',
+            'inventory_type',
+            'name',
+            'name_eng',
+            'formula',
+            'cas_nr',
+            'user_guide',
+            'provider',
+            'product_code',
+            'barcode',
+            'url_to_provider',
+            'alt_url_to_provider',
+            'total_amount',
+            'critical_amount',
+            'to_order_amount',
+            'average_consumption',
+            'multiple_locations',
+            'laboratory',
+            'facilities',
+            'cupboard',
+            'shelf',
+            'storage_conditions',
+            'asset_number',
+            'used_for',
+            'comments',
+        ];
+    }
+
     public const DISCLUDE_MODE = AttributeMerge::TRAITONLY;
 
     public static function getImportUniqueBy(): array
@@ -88,32 +119,34 @@ class InventoryItem extends Model implements ImportableModel
      */
     public function getStatusAttribute(): string
     {
-        $amountRemoved = $this->amountLogs()->where('action','=','REMOVE')->sum('amount');
-        $amountReturned = $this->amountLogs()->where('action','=','RETURN')->sum('amount');
+        $amountRemoved = $this->amountLogs()->where('action', '=', 'REMOVE')->sum('amount');
+        $amountReturned = $this->amountLogs()->where('action', '=', 'RETURN')->sum('amount');
 
         $totalPseudoAmount = $this->total_amount - ($amountRemoved - $amountReturned);
 
-        if ($this->total_amount <= 0 || $this->total_amount === null || $this->total_amount <= $this->critical_amount || $totalPseudoAmount <= $this->critical_amount)
-        { return InventoryStatusEnum::CRITICAL; }
+        if ($this->total_amount <= 0 || $this->total_amount === null || $this->total_amount <= $this->critical_amount || $totalPseudoAmount <= $this->critical_amount) {
+            return InventoryStatusEnum::CRITICAL;
+        }
 
-        if ($this->amountLogs()->count() > 0)
-        { return InventoryStatusEnum::TAKEN; }
+        if ($this->amountLogs()->count() > 0) {
+            return InventoryStatusEnum::TAKEN;
+        }
 
         return InventoryStatusEnum::NORMAL;
     }
 
-    protected static $recordEvents = ['created','updated'];
+    protected static $recordEvents = ['created', 'updated'];
 
     public function activities()
     {
-        return $this->morphMany(Activity::class,'subject')->orderBy('created_at', 'desc');
+        return $this->morphMany(Activity::class, 'subject')->orderBy('created_at', 'desc');
     }
 
     public function getActivitylogOptions(): logOptions
     {
         return LogOptions::defaults()
             ->logAll()
-            ->logExcept(['created_at','updated_at','created_by','updated_by','critical_amount_notified_at'])
+            ->logExcept(['created_at', 'updated_at', 'created_by', 'updated_by', 'critical_amount_notified_at'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
     }
@@ -140,7 +173,7 @@ class InventoryItem extends Model implements ImportableModel
      * @param InventoryItem
      * @return BelongsTo
      */
-    public  function createdBy(): BelongsTo
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by')->withTrashed();
     }
@@ -149,14 +182,14 @@ class InventoryItem extends Model implements ImportableModel
      * @param InventoryItem
      * @return BelongsTo
      */
-    public  function updatedBy(): BelongsTo
+    public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by')->withTrashed();
     }
 
     public function facilities(): BelongsToMany
     {
-        return $this->belongsToMany(Facility::class);
+        return $this->belongsToMany(Facility::class)->orderBy('name');
     }
 
     /*
@@ -188,7 +221,7 @@ class InventoryItem extends Model implements ImportableModel
                 'many_to_many' => false,
                 'match_on' => 'name',
             ],
-            'facility' => [
+            'facilities' => [
                 'table' => 'facilities',
                 'many_to_many' => true,
                 'match_on' => 'name',

@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Imports\Helpers\ImportHelper;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Collection;
@@ -28,8 +29,6 @@ class GenericImport implements ToCollection, WithHeadingRow
     protected string $userLocale;
 
     protected string $validationFileName = "steam_validations";
-
-    protected array $errors = [];
 
     public array $caughtErrors = [];
 
@@ -84,7 +83,9 @@ class GenericImport implements ToCollection, WithHeadingRow
                 $input[$modelAttr] = $row[$csvKey] ?? null;
             }
 
-            $validator = Validator::make($input, $rules);
+            $finalRules = ImportHelper::buildRowValidationRules($modelClass, $rules, $input);
+
+            $validator = Validator::make($input, $finalRules);
 
             if ($validator->fails()) {
                 $this->buildValidationOutput($validator->errors()->getMessages(), $rowNumber, $input);
@@ -92,9 +93,8 @@ class GenericImport implements ToCollection, WithHeadingRow
             }
 
             foreach ($foreignKeyLookups as $fkAttr => $lookupConfig) {
-                \Log::debug($fkAttr);
-                $rawValue = $input[$fkAttr] ?? null;
 
+                $rawValue = $input[$fkAttr] ?? null;
 
                 if (empty($rawValue)) {
                     continue;
@@ -110,7 +110,7 @@ class GenericImport implements ToCollection, WithHeadingRow
                         ->toArray();
 
                     if (empty($resolvedIds)) {
-                        $this->errors[] = [
+                        $this->caughtErrors[] = [
                             'row' => $rowNumber,
                             'errors' => [__('validation.custom.' . $fkAttr . '.no_valid_record', ['attribute' => __("validation.attributes.$fkAttr"), 'value' => $rawValue], $this->userLocale)]
                         ];
@@ -122,27 +122,20 @@ class GenericImport implements ToCollection, WithHeadingRow
                     unset($input[$fkAttr]);
 
                 } else {
+                    
                     $resolvedId = $this->getIdByLookup($lookupConfig, $input[$fkAttr]);
 
                     if ($resolvedId) {
                         $input[$fkAttr] = $resolvedId;
                     } else {
                         $translationKey = 'validation.custom.' . $fkAttr . '.no_valid_record';
-                        $this->errors[] = [
+                        $this->caughtErrors[] = [
                             'row' => $rowNumber,
                             'errors' => [__($translationKey, ['attribute' => __("validation.attributes.$fkAttr"), 'value' => $input[$fkAttr]], $this->userLocale)]
                         ];
                     }
                 }
             }
-
-
-            /*$validator = Validator::make($input, $rules);
-
-            if ($validator->fails()) {
-                $this->buildValidationOutput($validator->errors()->getMessages(), $rowNumber, $input);
-                continue;
-            }*/
 
             $uniqueBy = $modelClass::getImportUniqueBy();
 
@@ -166,7 +159,7 @@ class GenericImport implements ToCollection, WithHeadingRow
             
         }
 
-        if (!empty($this->errors)) {
+        if (!empty($this->caughtErrors)) {
             $this->sendFailureEmail();
         } else {
             $this->sendSuccessEmail();
@@ -179,35 +172,9 @@ class GenericImport implements ToCollection, WithHeadingRow
 
         foreach ($matchFields as $matchOn) {
             $foundId = \DB::table($configArray['table'])->where($matchOn, $valueToLookup)->value('id');
-            
-            \Log::debug("Looked up [{$matchOn}] with value [{$valueToLookup}]", [
-                "Found object?" => $foundId ? "Yes" : "No",
-                "Object id" => $foundId ?: null,
-            ]);
 
             if ($foundId) {
                 return $foundId;
-            }
-        }
-        return null;
-    }
-
-    private function getMultipleIdsByLookup(array $configArray, $valueToLookup)
-    {
-        $matchFields = (array)$configArray['match_on'];
-        $foundIds = [];
-
-        foreach ($matchFields as $matchOn) {
-            $foundId = \DB::table($configArray['table'])->where($matchOn, $valueToLookup)->value('id');
-            
-            \Log::debug("Looked up [{$matchOn}] with value [{$valueToLookup}]", [
-                "Found object?" => $foundId ? "Yes" : "No",
-                "Object id" => $foundId ?: null,
-            ]);
-
-            if ($foundId) {
-                $foundIds[] = $foundId;
-                continue;
             }
         }
         return null;
@@ -226,7 +193,7 @@ class GenericImport implements ToCollection, WithHeadingRow
 
         $this->importRun->update([
             'row_count' => $this->totalRowCount,
-            'error_count' => count($this->errors),
+            'error_count' => count($this->caughtErrors),
             'status' => 'completed_with_errors',
             'output_file_path' => $failedImportPath,
         ]);

@@ -211,7 +211,7 @@ export default function Show({auth, inventoryItem, laboratories, facilities, ite
                                                         value={StringHelper.__("Facility")}/>
                                             <div className="mt-1">
                                                 <FlexibleStaticSelect id="inventoryItems_local_facility" name="facility"  options={facilities.data} customPlaceHolder={StringHelper.__("Choose a facility")}
-                                                    value={inventoryItem.data.facility} customIsDisabled={true} customNoOptionsMessage={StringHelper.__("No facilities found")} customIsMulti={true}/>
+                                                    value={inventoryItem.data.facilities} customIsDisabled={true} customNoOptionsMessage={StringHelper.__("No facilities found")} customIsMulti={true}/>
                                             </div>
                                         </div>
                                         <div className="mt-4">

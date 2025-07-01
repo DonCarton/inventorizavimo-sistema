@@ -40,7 +40,7 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
         to_order_amount: '',
         multiple_locations: false,
         laboratory: '',
-        facility: [],
+        facilities: [],
         cupboard: '',
         shelf: '',
         storage_conditions: '',
@@ -101,7 +101,7 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
         setData('laboratory', e);
     }
     const handleFacilityChange = (e) => {
-        setData('facility', e);
+        setData('facilities', e);
     }
     const handleCupboardChange = (e) => {
         setData('cupboard', e.target.value);
@@ -412,10 +412,10 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
                                                     <span className="text-red-500">*</span>
                                                 </InputLabel>
                                                 <div className="mt-1">
-                                                    <FlexibleStaticSelect id="inventoryItems_facility" name="facility" options={facilities} customPlaceHolder={translate("Choose a facility")}
-                                                        value={data.facility} onChange={handleFacilityChange} customNoOptionsMessage={translate("No facilities found")} customIsMulti={true}/>
+                                                    <FlexibleStaticSelect id="inventoryItems_facility" name="facilities" options={facilities} customPlaceHolder={translate("Choose a facilities")}
+                                                        value={data.facilities} onChange={handleFacilityChange} customNoOptionsMessage={translate("No facilities found")} customIsMulti={true}/>
                                                 </div>
-                                                <InputError message={errors.facility} className="mt-2"/>
+                                                <InputError message={errors.facilities} className="mt-2"/>
                                             </div>
                                             <div>
                                                 <InputLabel

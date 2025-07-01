@@ -21,7 +21,7 @@ class HasRelationMethod implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!method_exists($this->modelClass, $this->relationName)) {
+        if (!method_exists($this->modelClass, $this->relationName)) {   
             $fail(__('validation.custom.relation_missing', [
                 'relation' => $this->relationName,
                 'model' => class_basename($this->modelClass)

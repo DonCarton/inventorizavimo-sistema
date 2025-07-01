@@ -26,7 +26,7 @@ class UpdateInventoryItemRequest extends FormRequest
             'name_eng' => ['required', 'min:2', 'max:255'],
             'inventory_type' => 'required:exists:item_types,id',
             'laboratory' => 'required:exists:laboratories,id',
-            'facility' => ['nullable','exists:facilities,id'],
+            'facilities' => ['nullable','exists:facilities,id'],
             'formula' => ['nullable', 'string'],
             'cas_nr' => ['nullable', 'string'],
             'user_guide' => ['nullable', 'string'],

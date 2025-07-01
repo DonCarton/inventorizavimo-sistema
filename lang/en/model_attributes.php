@@ -22,6 +22,7 @@ return [
         'average_consumption' => 'Average consumption',
         'multiple_locations' => 'In multiple locations?',
         'laboratory' => 'Laboratory',
+        'facility' => 'Facility',
         'cupboard' => 'Cupboard',
         'shelf' => 'Shelf',
         'storage_conditions' => 'Storage conditions',
