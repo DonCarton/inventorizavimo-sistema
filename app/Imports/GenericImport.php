@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\ImportRun;
 use App\Models\User;
 use App\Mail\ImportReportMail;
+
 class GenericImport implements ToCollection, WithHeadingRow
 {
     protected ImportRun $importRun;
@@ -99,6 +100,8 @@ class GenericImport implements ToCollection, WithHeadingRow
                 if (empty($rawValue)) {
                     continue;
                 }
+                
+                $translationKey = 'validation.custom.' . (string)$fkAttr . '.no_valid_record';
 
                 if ($lookupConfig['many_to_many']) {
                     
@@ -111,8 +114,11 @@ class GenericImport implements ToCollection, WithHeadingRow
 
                     if (empty($resolvedIds)) {
                         $this->caughtErrors[] = [
-                            'row' => $rowNumber,
-                            'errors' => [__('validation.custom.' . $fkAttr . '.no_valid_record', ['attribute' => __("validation.attributes.$fkAttr"), 'value' => $rawValue], $this->userLocale)]
+                            ucfirst(__('actions.imports.row', [], $this->userLocale)) => $rowNumber,
+                            ucfirst(__('actions.imports.field', [], $this->userLocale)) => ucfirst(__('validation.attributes.' . $fkAttr)),
+                            ucfirst(__('actions.imports.value', [], $this->userLocale)) => $input[$fkAttr] ?? null,
+                            ucfirst(__('actions.imports.error_type', [], $this->userLocale)) => ucfirst(__('actions.imports.issue_types.validation', [], $this->userLocale)),
+                            ucfirst(__('actions.imports.error_message', [], $this->userLocale)) => $translationKey,
                         ];
                         continue;
                     }
@@ -128,10 +134,12 @@ class GenericImport implements ToCollection, WithHeadingRow
                     if ($resolvedId) {
                         $input[$fkAttr] = $resolvedId;
                     } else {
-                        $translationKey = 'validation.custom.' . $fkAttr . '.no_valid_record';
                         $this->caughtErrors[] = [
-                            'row' => $rowNumber,
-                            'errors' => [__($translationKey, ['attribute' => __("validation.attributes.$fkAttr"), 'value' => $input[$fkAttr]], $this->userLocale)]
+                            ucfirst(__('actions.imports.row', [], $this->userLocale)) => $rowNumber,
+                            ucfirst(__('actions.imports.field', [], $this->userLocale)) => ucfirst(__('validation.attributes.' . $fkAttr)),
+                            ucfirst(__('actions.imports.value', [], $this->userLocale)) => $input[$fkAttr] ?? null,
+                            ucfirst(__('actions.imports.error_type', [], $this->userLocale)) => ucfirst(__('actions.imports.issue_types.validation', [], $this->userLocale)),
+                            ucfirst(__('actions.imports.error_message', [], $this->userLocale)) => $translationKey,
                         ];
                     }
                 }

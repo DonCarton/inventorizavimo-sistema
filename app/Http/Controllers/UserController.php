@@ -24,6 +24,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
+//TODO: Align User related facility variable to be plural.
 class UserController extends Controller
 {
     /**

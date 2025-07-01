@@ -133,7 +133,10 @@ class User extends Authenticatable
         return [
             'laboratory' => [
                 'table' => 'laboratories',
-                'match_on' => 'name',
+                'match_on' => [
+                    'name',
+                    'ident_code',
+                ],
             ],
         ];
     }

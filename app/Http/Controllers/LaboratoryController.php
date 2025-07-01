@@ -11,7 +11,6 @@ use App\Jobs\NotifyFailedImports;
 use App\Models\Facility;
 use App\Models\Laboratory;
 use Carbon\Carbon;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -21,6 +20,7 @@ use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
+//TODO: Align Laboratory related facility variable to be plural.
 class LaboratoryController extends Controller
 {
     /**
