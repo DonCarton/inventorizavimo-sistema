@@ -28,7 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::patch('/systemConfigurations/{systemConfiguration}', [SystemConfigurationController::class, 'update'])->middleware('includeUserId')->name('systemConfigurations.update');
     });
 
-    Route::group(['middleware' => ['role:admin']], function() {
+    Route::group(['middleware' => ['role:super-admin|admin']], function() {
         Route::get('/laboratories/{laboratory}/delete-impact',[LaboratoryController::class,'deleteImpact'])->name('laboratories.delete-impact');
         Route::get('/facilities/{facility}/delete-impact',[FacilityController::class,'deleteImpact'])->name('facilities.delete-impact');
     });
