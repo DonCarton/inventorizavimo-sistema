@@ -10,6 +10,7 @@ use App\Imports\LaboratoryImport;
 use App\Jobs\NotifyFailedImports;
 use App\Models\Facility;
 use App\Models\Laboratory;
+use App\Observers\LaboratoryObserver;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -108,7 +109,7 @@ class LaboratoryController extends Controller
         $newLab = Laboratory::create($data);
 
         if(request()->user()->can('setFacility', $newLab)){
-            $newLab->facilities()->sync($data['facility']);
+            $newLab->facilities()->sync($data['facilities']);
         }
         
         return redirect()->route('laboratories.index')->with('success', __('actions.laboratory.created', ['name' => $request['name']]));
@@ -132,8 +133,11 @@ class LaboratoryController extends Controller
         if(request()->user()->can('setFacility', $laboratory)){
             
             $oldFacilities = $laboratory->facilities->pluck('id')->toArray();
-            $laboratory->facilities()->sync($data['facility']);
-            $facilitiesChanged = $oldFacilities != $data['facility'];
+
+            $laboratory->facilities()->sync($data['facilities']);
+            LaboratoryObserver::syncUserFacilities($laboratory);
+
+            $facilitiesChanged = $oldFacilities != $data['facilities'];
 
         }
 

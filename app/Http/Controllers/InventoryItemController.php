@@ -230,8 +230,8 @@ class InventoryItemController extends Controller
             'cupboardOptions' => $configurations['cupboardOptions'],
             'shelfOptions' => $configurations['shelfOptions'],
             'can' => [
-                'alterLocalName' => $request->user()->hasRole(RoleEnum::SUPER_ADMIN),
-                'alterType' => $request->user()->hasRole(RoleEnum::SUPER_ADMIN),
+                'alterLocalName' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
+                'alterType' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
                 'alterLocation' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
                 'delete' => $request->user()->can('delete',$inventoryItem),
             ]

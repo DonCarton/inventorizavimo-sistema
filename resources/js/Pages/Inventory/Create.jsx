@@ -412,7 +412,7 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
                                                     <span className="text-red-500">*</span>
                                                 </InputLabel>
                                                 <div className="mt-1">
-                                                    <FlexibleStaticSelect id="inventoryItems_facility" name="facilities" options={facilities} customPlaceHolder={translate("Choose a facilities")}
+                                                    <FlexibleStaticSelect id="inventoryItems_facility" name="facilities" options={facilities} customPlaceHolder={translate("Choose a facility")}
                                                         value={data.facilities} onChange={handleFacilityChange} customNoOptionsMessage={translate("No facilities found")} customIsMulti={true}/>
                                                 </div>
                                                 <InputError message={errors.facilities} className="mt-2"/>

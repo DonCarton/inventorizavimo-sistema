@@ -44,7 +44,7 @@ class StoreInventoryItemRequest extends FormRequest
                 'multiple_locations' => ['boolean'],
                 'laboratory' => 'required:exists:laboratories,id',
                 'facilities' => 'required:exists:facilities,id',
-                'cupboard' => 'nullable|numeric',
+                'cupboard' => 'nullable|numeric|between:1,50',
                 'shelf' => 'nullable|string',
                 'storage_conditions' => ['nullable', 'string'],
                 'asset_number' => ['', new AssetNumberRequired($this->type)],

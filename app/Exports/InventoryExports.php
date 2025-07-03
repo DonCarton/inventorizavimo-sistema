@@ -81,11 +81,11 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
     {
         return [
             $row->local_name,
-            '',
             $row->name,
             $row->name_eng,
             $row->inventory_type ? ItemType::where('id', $row->inventory_type)->first()->name : '-',
             $row->laboratory ? Laboratory::where('id', $row->laboratory)->first()->name : '-',
+            $row->facilities->pluck('name')->implode('|'),
             $row->formula,
             $row->cas_nr,
             $row->provider,
@@ -110,13 +110,12 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
     public function headings(): array
     {
         return [
-            // 'Kodas',
-            'MERGE_1',
-            'MERGE_2',
+            'Kodas',
             'Pavadinimas',
             'Pavadinimas ENG',
             'Tipas',
             'Laboratorija',
+            'Patalpa',
             'Formulė',
             'CAS nr',
             'Tiekėjas',
@@ -137,8 +136,8 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->getRowDimension(1)->setRowHeight(110);
-        $sheet->mergeCells("A1:B1");
+        // $sheet->getRowDimension(1)->setRowHeight(110);
+        // $sheet->mergeCells("A1:B1");
         return [
             1 => [
                 'font' => ['bold' => true],
@@ -185,11 +184,11 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
                     ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
                     ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
                     
-                for ($row = 2; $row <= $highestRow; $row++) {
-                    $sheet->mergeCells("A{$row}:B{$row}");
-                }
+                // for ($row = 2; $row <= $highestRow; $row++) {
+                //     $sheet->mergeCells("A{$row}:B{$row}");
+                // }
                 
-                $sheet->setCellValue("A1","");
+                // $sheet->setCellValue("A1","");
             },
         ];
     }

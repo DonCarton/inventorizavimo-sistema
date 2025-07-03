@@ -18,7 +18,6 @@ export default function Show({ auth, user, userRole, roles, laboratories, facili
             </div>}
     >
         <Head title={StringHelper.__("Show") + " - " + user.data.email} />
-
         <div className="py-12">
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -44,7 +43,7 @@ export default function Show({ auth, user, userRole, roles, laboratories, facili
                         </div>
                         <div className="mt-4">
                             <InputLabel htmlFor="user_facility">{StringHelper.__("Facility")}</InputLabel>
-                            <FlexibleStaticSelect id="user_facility" value={user.data.facility} customIsDisabled={true} options={facilities}
+                            <FlexibleStaticSelect id="user_facility" value={user.data.facilities} customIsDisabled={true} options={facilities}
                                 customIsMulti={true} customPlaceHolder={StringHelper.__("Choose a facility")} customNoOptionsMessage={StringHelper.__("No options")} />
                         </div>
                         <div className="mt-4">

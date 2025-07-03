@@ -38,7 +38,7 @@ export default function Show({auth, laboratory, facilities }) {
                         </div>
                         <div className="mt-4">
                             <InputLabel htmlFor="laboratory_facility" value={StringHelper.__("Facility")}/>
-                            <FlexibleStaticSelect id="laboratory_facility" options={facilities} value={laboratory.facility} customIsDisabled={true} customIsMulti={true} customNoOptionsMessage=""/>
+                            <FlexibleStaticSelect id="laboratory_facility" options={facilities} value={laboratory.facilities} customIsDisabled={true} customIsMulti={true} customNoOptionsMessage=""/>
                         </div>
                     </ShowForm>
                 </div>

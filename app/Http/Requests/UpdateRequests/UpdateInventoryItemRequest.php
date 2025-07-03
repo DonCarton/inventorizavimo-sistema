@@ -40,7 +40,7 @@ class UpdateInventoryItemRequest extends FormRequest
             'to_order_amount' => ['nullable','numeric'],
             'average_consumption' => ['nullable','numeric'],
             'multiple_locations' => ['boolean'],
-            'cupboard' => ['nullable','int'],
+            'cupboard' => ['nullable','numeric','between:1,50'],
             'shelf' => ['nullable','string'],
             'storage_conditions' => ['nullable','string'],
             'asset_number' => ['nullable','string'],

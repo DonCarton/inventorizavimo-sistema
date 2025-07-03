@@ -40,7 +40,7 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
         average_consumption: inventoryItem.data.averageConsumption || '',
         multiple_locations: inventoryItem.data.multipleLocations || 0,
         laboratory: inventoryItem.data.laboratory || '',
-        facility: inventoryItem.data.facility || [],
+        facilities: inventoryItem.data.facilities || [],
         cupboard: inventoryItem.data.cupboard || 1,
         shelf: inventoryItem.data.shelf || 'A',
         storage_conditions: inventoryItem.data.storageConditions || '',
@@ -89,7 +89,7 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
         setData('shelf',e.target.value);
     }
     const handleFacilityChange = (e) => {
-        setData('facility', e);
+        setData('facilities', e);
     }
     return (
         <AuthenticatedLayout
@@ -287,9 +287,9 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
                                             </InputLabel>
                                             <div className="mt-1">
                                                 <FlexibleStaticSelect id="inventoryItems_local_facility" name="facility" options={facilityOptions} customPlaceHolder={StringHelper.__("Choose a facility")}
-                                                    value={data.facility} onChange={handleFacilityChange} customNoOptionsMessage={StringHelper.__("No facilities found")} customIsMulti={true}/>
+                                                    value={data.facilities} onChange={handleFacilityChange} customNoOptionsMessage={StringHelper.__("No facilities found")} customIsMulti={true}/>
                                             </div>
-                                            <InputError message={errors.facility} className="mt-2"/>
+                                            <InputError message={errors.facilities} className="mt-2"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_cupboard" value={StringHelper.__("Cupboard")} className="mb-1"/>

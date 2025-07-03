@@ -22,7 +22,7 @@ export default function Edit({ auth, user, userRole, roles, laboratories, facili
         role: userRole,
     })
     const [willedFacility, setWilledFacility] = useState(facilities[data.laboratory] || []);
-    const [mappedFacility, setMappedFacility] = useState(user.data.facility || []);
+    const [mappedFacility, setMappedFacility] = useState(user.data.facilities || []);
     useEffect(() => {
         setWilledFacility(facilities[data.laboratory]);
         let values = [];
@@ -96,7 +96,7 @@ export default function Edit({ auth, user, userRole, roles, laboratories, facili
                             <InputLabel htmlFor="user_facility">{StringHelper.__("Facility")}</InputLabel>
                             <FlexibleStaticSelect id="user_facility" value={mappedFacility} customIsDisabled={true} options={willedFacility}
                                 customIsMulti={true} customPlaceHolder="" customNoOptionsMessage={StringHelper.__("No options")} />
-                            <InputError message={errors.facility} className="mt-2"/>
+                            <InputError message={errors.facilities} className="mt-2"/>
                         </div>
                         <div className="mt-4">
                             <InputLabel htmlFor="user_role">{StringHelper.__("Role")}<span className="text-red-500">*</span></InputLabel>

@@ -13,11 +13,11 @@ export default function Edit({ auth, laboratory, facilities, can }) {
     const { data, setData, patch, delete: destroy, errors, processing } = useForm({
         name: laboratory.name,
         ident_code: laboratory.ident_code,
-        facility: laboratory.facility || [],
+        facilities: laboratory.facilities || [],
     })
 
     const handleFacilityChange = (e) => {
-        setData('facility', e);
+        setData('facilities', e);
     };
 
     const onSubmit = (e) => {
@@ -82,7 +82,7 @@ export default function Edit({ auth, laboratory, facilities, can }) {
                         </div>
                         <div className="mt-4">
                             <InputLabel htmlFor="laboratory_facility">{StringHelper.__("Facility")}</InputLabel>
-                            <FlexibleStaticSelect id="laboratory_facility" value={data.facility} onChange={handleFacilityChange} options={facilities}
+                            <FlexibleStaticSelect id="laboratory_facility" value={data.facilities} onChange={handleFacilityChange} options={facilities}
                                 customIsMulti={true} customIsDisabled={!can.setFacility} customPlaceHolder={StringHelper.__("Choose a facility")} customNoOptionsMessage={StringHelper.__("No options")}/>
                             <InputError message={errors.facility} className="mt-2"/>
                         </div>

@@ -11,11 +11,11 @@ export default function Create({auth,facilities}) {
     const {data, setData, post, errors} = useForm({
         name: '',
         ident_code: '',
-        facility: [],
+        facilities: [],
     })
 
     const handleFacilityChange = (e) => {
-        setData('facility', e);
+        setData('facilities', e);
     };
     
     const onSubmit = (e) => {
@@ -55,7 +55,7 @@ export default function Create({auth,facilities}) {
                             </div>
                             <div className="mt-4">
                                 <InputLabel htmlFor="laboratory_facility">{StringHelper.__("Facility")}</InputLabel>
-                                <FlexibleStaticSelect id="laboratory_facility" value={data.facility} onChange={handleFacilityChange} options={facilities}
+                                <FlexibleStaticSelect id="laboratory_facility" value={data.facilities} onChange={handleFacilityChange} options={facilities}
                                     customIsMulti={true} customPlaceHolder={StringHelper.__("Choose a facility")} customNoOptionsMessage={StringHelper.__("No options")}/>
                                 <InputError message={errors.facility} className="mt-2"/>
                             </div>
