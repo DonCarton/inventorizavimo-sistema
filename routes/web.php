@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DataFileImportController;
+use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\FetchDataToSelect;
 use App\Http\Controllers\HistoryQueryController;
 use App\Http\Controllers\ImportController;
@@ -27,6 +28,11 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::patch('/systemConfigurations/{systemConfiguration}', [SystemConfigurationController::class, 'update'])->middleware('includeUserId')->name('systemConfigurations.update');
     });
 
+    Route::group(['middleware' => ['role:admin']], function() {
+        Route::get('/laboratories/{laboratory}/delete-impact',[LaboratoryController::class,'deleteImpact'])->name('laboratories.delete-impact');
+        Route::get('/facilities/{facility}/delete-impact',[FacilityController::class,'deleteImpact'])->name('facilities.delete-impact');
+    });
+
     Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
         Route::prefix('imports')->name('imports.')->group(function() {
@@ -51,6 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
         });
 
         Route::resource('inventoryItems', InventoryItemController::class)->middleware('includeUserId');
+        Route::resource('facilities',FacilityController::class);
         Route::get('/inventoryItems/{inventoryItem}/editRaw', [InventoryItemController::class, 'editRaw'])->name('inventoryItems.editRaw')->middleware('includeUserId');
         Route::resource('itemTypes', ItemTypeController::class)->middleware('includeUserId');
 
@@ -123,12 +130,15 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/select/itemTypes', [FetchDataToSelect::class, 'listItemTypes'])->name('select.itemTypes');
     Route::get('/select/laboratories', [FetchDataToSelect::class, 'listLaboratories'])->name('select.laboratories');
+    Route::get('/select/facilities', [FetchDataToSelect::class, 'listFacilities'])->name('select.facilities');
     Route::get('/select/cupboards', [FetchDataToSelect::class, 'listCupboards'])->name('select.cupboards');
     Route::get('/select/cupboards/{id}', [FetchDataToSelect::class, 'getCupboard'])->name('select.cupboards.specific');
     Route::get('/select/shelves', [FetchDataToSelect::class, 'listShelves'])->name('select.shelves');
     Route::get('/select/shelves/{id}', [FetchDataToSelect::class, 'getShelf'])->name('select.shelves.specific');
     Route::get('/select/ident-code',[FetchDataToSelect::class,'listIdentCode'])->name('select.identCode');
     Route::get('/select/importable-fields',[FetchDataToSelect::class,'listImportableFields'])->name('select.importableFields');
+    Route::get('/select/{identCode}/facilities',[FetchDataToSelect::class,'facilitiesByIdentCode'])->name('select.facilitiesByIdentCode');
+    Route::get('/select/laboratory/{laboratoryId}/facilities',[FetchDataToSelect::class,'facilitiesByLaboratory'])->name('select.facilitiesByLaboratory');
 });
 
 require __DIR__.'/auth.php';

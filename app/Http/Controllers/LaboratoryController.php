@@ -8,9 +8,10 @@ use App\Http\Requests\UpdateRequests\UpdateLaboratoryRequest;
 use App\Http\Resources\LaboratoryResource;
 use App\Imports\LaboratoryImport;
 use App\Jobs\NotifyFailedImports;
+use App\Models\Facility;
 use App\Models\Laboratory;
+use App\Observers\LaboratoryObserver;
 use Carbon\Carbon;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -20,6 +21,7 @@ use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
+//TODO: Align Laboratory related facility variable to be plural.
 class LaboratoryController extends Controller
 {
     /**
@@ -58,8 +60,19 @@ class LaboratoryController extends Controller
      */
     public function show(Laboratory $laboratory): Response
     {
+        $facilities = Facility::select('id', 'name')
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(function($facility){
+                return [
+                    'value' => $facility->id,
+                    'label' => $facility->name,
+                ];
+            })
+            ->toArray();
         return Inertia::render('Laboratory/Show',[
-            'laboratory' => new LaboratoryResource($laboratory)
+            'laboratory' => new LaboratoryResource($laboratory),
+            'facilities' => $facilities,
         ]);
     }
 
@@ -68,7 +81,20 @@ class LaboratoryController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Laboratory/Create');
+        $facilities = Facility::select('id', 'name')
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(function($facility){
+                return [
+                    'value' => $facility->id,
+                    'label' => $facility->name,
+                ];
+            })
+            ->toArray();
+
+        return Inertia::render('Laboratory/Create',[
+            'facilities' => $facilities,
+        ]);
     }
 
     /**
@@ -78,8 +104,14 @@ class LaboratoryController extends Controller
      */
     public function store(StoreLaboratoryRequest $request): RedirectResponse
     {
+        Gate::authorize('create', Laboratory::class);
         $data = $request->validated();
-        Laboratory::create($data);
+        $newLab = Laboratory::create($data);
+
+        if(request()->user()->can('setFacility', $newLab)){
+            $newLab->facilities()->sync($data['facilities']);
+        }
+        
         return redirect()->route('laboratories.index')->with('success', __('actions.laboratory.created', ['name' => $request['name']]));
     }
 
@@ -91,12 +123,29 @@ class LaboratoryController extends Controller
      */
     public function update(UpdateLaboratoryRequest $request, Laboratory $laboratory): RedirectResponse
     {
+        Gate::authorize('update',$laboratory);
         $data = $request->validated();
+
         $laboratory->update($data);
-        if ($laboratory->wasChanged()) {
+
+        $facilitiesChanged = false;
+
+        if(request()->user()->can('setFacility', $laboratory)){
+            
+            $oldFacilities = $laboratory->facilities->pluck('id')->toArray();
+
+            $laboratory->facilities()->sync($data['facilities']);
+            LaboratoryObserver::syncUserFacilities($laboratory);
+
+            $facilitiesChanged = $oldFacilities != $data['facilities'];
+
+        }
+
+        if ($laboratory->wasChanged() || $facilitiesChanged) {
             return Redirect::route('laboratories.index')->with('success',(__('actions.laboratory.updated', ['name' => $request['name']])));
         }
-        return Redirect::route('laboratories.index');
+        
+        return Redirect::route(route: 'laboratories.index');
     }
 
     /**
@@ -105,9 +154,21 @@ class LaboratoryController extends Controller
      */
     public function edit(Laboratory $laboratory): Response
     {
+        $facilities = Facility::select('id', 'name')
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(function($facility){
+                return [
+                    'value' => $facility->id,
+                    'label' => $facility->name,
+                ];
+            })
+            ->toArray();
         return Inertia::render('Laboratory/Edit',[
             'laboratory' => new LaboratoryResource($laboratory),
+            'facilities' => $facilities,
             'can' => [
+                'setFacility' => request()->user()->can('setFacility', $laboratory),
                 'delete' => request()->user()->can('delete', $laboratory),
             ]
         ]);
@@ -116,18 +177,41 @@ class LaboratoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    //TODO: MAKE SURE THAT THE LAB DELETES PROPERLY IF THERE ARE ITEMS LINKED TO IT DIRECTLY ON THEIR TABLES,
+    //LIKE USERS, INVENTORY ITEMS
     public function destroy(Laboratory $laboratory): RedirectResponse
     {
         Gate::authorize('delete',$laboratory);
+        
         if ($laboratory->id == 1) { return to_route('laboratories.index')->with('failure', __('actions.invalidDelete')); }
+        
         if ($laboratory->inventoryItemsCount() >= 1 || $laboratory->userCount() >= 1) {
-            return to_route('laboratories.index')->with('failure', __('actions.invalidDelete')); }
+            return to_route('laboratories.index')->with('failure', __('actions.invalidDelete'));
+        }
+
         $totalLaboratories = Laboratory::count();
         if ($totalLaboratories <= 1) {
             return to_route('laboratories.index')->with('failure', __('actions.invalidDelete'));
         }
+        
         $laboratory->delete();
         return to_route('laboratories.index')->with('success',(__('actions.laboratory.deleted', ['name' => $laboratory['name']])));
+    }
+
+    public function deleteImpact(Laboratory $laboratory)
+    {
+        return response()->json([
+            'impactCounts' => [
+                'inventoryItems' => $laboratory->inventoryItemsCount(),
+                'facilities' => $laboratory->facilitiesCount(),
+                'users' => $laboratory->userCount(),
+            ],
+            'labels' => [
+                'inventoryItems' => $laboratory->inventoryItemsCount() > 1 ? __('objects.labels.plural.inventoryItem') : __('objects.labels.singular.inventoryItem'),
+                'facilities' => $laboratory->facilitiesCount() > 1 ? __('objects.labels.plural.facility') : __('objects.labels.singular.facility'),
+                'users' => $laboratory->userCount() > 1 ? __('objects.labels.plural.user') : __('objects.labels.singular.user'),
+            ]
+        ]);
     }
 
     /**

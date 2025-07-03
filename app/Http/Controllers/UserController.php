@@ -24,6 +24,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
+//TODO: Align User related facility variable to be plural.
 class UserController extends Controller
 {
     /**
@@ -57,9 +58,23 @@ class UserController extends Controller
         Gate::authorize('create', User::class);
         $roles = Role::query()->get();
         $laboratories = Laboratory::query()->get();
+
+        $facilities = [];
+
+        foreach ($laboratories as $laboratory){
+            $facilities[$laboratory->id] = $laboratory
+                                            ->facilities->map(function ($facility) {
+                                                return [
+                                                    'value' => $facility->id,
+                                                    'label' => $facility->name
+                                                ];
+                                            })->toArray();
+        }
+
         return Inertia::render('Users/Create', [
             'roles' => RolesForSelect::collection($roles),
-            'laboratories' => LaboratoriesForSelect::collection($laboratories)
+            'laboratories' => LaboratoriesForSelect::collection($laboratories),
+            'facilities' => $facilities,
         ]);
     }
 
@@ -93,11 +108,18 @@ class UserController extends Controller
         $roles = Role::query()->get();
         $roleName = $user->roles()->select('id')->get()->toArray();
         $laboratories = Laboratory::all()->toArray();
+        $facilities = $user->facilities->map(function ($facility) {
+                                                return [
+                                                    'value' => $facility->id,
+                                                    'label' => $facility->name
+                                                ];
+                                            })->toArray();
         return Inertia::render('Users/Show', [
             'user' => new UserResource($user),
             'userRole' => $roleName ? $roleName[0]['id'] : '',
             'roles' => RolesForSelect::collection($roles),
             'laboratories' => $laboratories,
+            'facilities' => $facilities,
         ]);
     }
 
@@ -112,11 +134,25 @@ class UserController extends Controller
         $roles = Role::query()->get();
         $roleName = $user->roles()->select('id')->get()->toArray();
         $laboratories = Laboratory::all()->select('id', 'name')->toArray();
+        $labsForFacs = Laboratory::query()->get();
+        $facilities = [];
+
+        foreach ($labsForFacs as $labForFacs){
+            $orderedFacs = $labForFacs->facilities()->orderBy('name','asc')->get();
+            $facilities[$labForFacs->id] = $orderedFacs->map(function ($orderFacility){
+                return [
+                    'value' => $orderFacility->id,
+                    'label' => $orderFacility->name,
+                ];
+            })->toArray();
+        }
+
         return Inertia::render('Users/Edit', [
             'user' => new UserResource($user),
             'userRole' => $roleName ? $roleName[0]['id'] : '',
             'roles' => RolesForSelect::collection($roles),
             'laboratories' => $laboratories,
+            'facilities' => $facilities,
             'failure' => session('failure'),
             'can' => [
                 'changeRole' => auth()->user()->can('changeRole', $user),

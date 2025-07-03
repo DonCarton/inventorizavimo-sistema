@@ -29,7 +29,7 @@ return [
     'between' => [
         'array' => 'The :attribute field must have between :min and :max items.',
         'file' => 'The :attribute field must be between :min and :max kilobytes.',
-        'numeric' => 'The :attribute field must be between :min and :max.',
+        'numeric' => 'Pateikta reikšmė neatitinka rėžių, :min ir :max.',
         'string' => 'The :attribute field must be between :min and :max characters.',
     ],
     'boolean' => ':Attribute laukelis turi būti pažymėtas.',
@@ -173,6 +173,12 @@ return [
     */
 
     'custom' => [
+        'relation' => [
+            'not_existing' => 'Ši patalpa nėra susieta su laboratorija.',
+            'facilities' => [
+                'not_existing' => 'Pateikta patalpa [:value1] nepriklauso šio įrašo laboratorijai [:value2].',
+            ],
+        ],
         'file' => [
             'required' => 'Importo failas yra privalomas.' 
         ],
@@ -272,6 +278,7 @@ return [
         'last_name' => 'pavardė',
         'email' => 'el. paštas',
         'laboratory' => 'laboratorija',
+        'facilities' => 'patalpa',
         'role' => 'rolė',
         'selectedRole' => 'rolė',
         'comment' => 'komentaras',
@@ -290,6 +297,7 @@ return [
         '*.critical_amount' => 'kritinis kiekis',
         '*.to_order' => 'užsakyti',
         '*.average_consumption' => 'vidutiniškai sunaudojama',
+        '*.facilities' => 'patalpa',
     ],
 
 ];

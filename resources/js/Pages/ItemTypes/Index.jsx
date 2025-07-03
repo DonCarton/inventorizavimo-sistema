@@ -8,6 +8,8 @@ import React from "react";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import WarningMessage from "@/Components/WarningMessage.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
+import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
+import MiscButton from '@/Components/Forms/MiscButton';
 
 export default function InventoryTypes({auth, itemTypes, success, warning}) {
     return (
@@ -62,11 +64,9 @@ export default function InventoryTypes({auth, itemTypes, success, warning}) {
                                             <td className="px-3 py-2">{itemType.updatedAt}</td>
                                             <td className="px-3 py-2">{itemType.updatedBy.email}</td>
                                             <td className="flex justify-start mt-1 px-2 py-1">
-                                                <Link href={route("itemTypes.edit", itemType.id)}
-                                                      className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
-                                                    <TbEdit
-                                                        className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
-                                                </Link>
+                                                <BulkActionsButton>
+                                                    <MiscButton classVariant="green" title={StringHelper.__("Edit")} as="link" to={route("itemTypes.edit", itemType.id)} icon={TbEdit} children={StringHelper.__("Edit")}/>
+                                                </BulkActionsButton>
                                             </td>
                                         </tr>
                                     ))}

@@ -24,6 +24,11 @@ trait ValidAttributes
             throw new \LogicException(static::class . " does not implement ImportableModel.");
         }
         $instance = new static;
+
+        if (method_exists($instance, 'getImportableAttributes')){
+            return $instance::getImportableAttributes();
+        }
+
         $fillable = $instance->getFillable();
             
         $defaultDisclude = static::resolveDisclude($instance);

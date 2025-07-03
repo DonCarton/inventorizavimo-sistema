@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Facility;
+use App\Observers\LaboratoryObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Models\Activity;
@@ -16,6 +20,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @method static findOrFail(int $id)
  * @method static find(int $id)
  */
+#[ObservedBy(LaboratoryObserver::class)]
 class Laboratory extends Model
 {
     use HasFactory, LogsActivity;
@@ -70,5 +75,15 @@ class Laboratory extends Model
     public  function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by')->withTrashed();
+    }
+
+    public function facilities(): BelongsToMany
+    {
+        return $this->belongsToMany(Facility::class);
+    }
+
+    public function facilitiesCount(): int
+    {
+        return $this->facilities()->count();
     }
 }

@@ -173,6 +173,12 @@ return [
     */
 
     'custom' => [
+        'relation' => [
+            'not_existing' => 'This facility is not tied with the laboratory.',
+            'facilities' => [
+                'not_existing' => 'The provided facility [:value1] is not related to the laboratory of the item [:value2].',
+            ],
+        ],
         'file' => [
             'required' => 'The importo file is required.' 
         ],
@@ -255,6 +261,7 @@ return [
         '*.critical_amount' => 'critical amount',
         '*.to_order' => 'to order',
         '*.average_consumption' => 'average consumption',
+        '*.facilities' => 'facility',
     ],
 
 ];

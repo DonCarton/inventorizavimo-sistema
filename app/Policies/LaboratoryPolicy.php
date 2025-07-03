@@ -17,6 +17,17 @@ class LaboratoryPolicy
     {
         return $user->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]) ? Response::allow() : Response::deny(__('validation.unauthorized_admin'));
     }
+
+    public function update(User $user, Laboratory $laboratory): Response
+    {
+        return $user->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]) ? Response::allow() : Response::deny(__('validation.unauthorized_admin'));
+    }
+
+    public function setFacility(User $user, Laboratory $facility): Response
+    {
+        return $user->hasRole(RoleEnum::SUPER_ADMIN) ? Response::allow() : Response::deny(__('validation.unauthorized_admin'));
+    }
+
     public function delete(User $user, Laboratory $laboratory): Response
     {
         return $user->hasRole(RoleEnum::SUPER_ADMIN) ? Response::allow() : Response::deny(__('validation.unauthorized_admin'));

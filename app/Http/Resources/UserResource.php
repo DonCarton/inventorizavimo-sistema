@@ -31,6 +31,7 @@ class UserResource extends JsonResource
             'last_name' => $this->last_name,
             'email' => $this->email,
             'laboratory' => $this->laboratory,
+            'facilities' => $this->facilities->pluck('id')->all(),
             'is_disabled' => $this->is_disabled,
             'created_by' => $this->createdBy->email
         ];

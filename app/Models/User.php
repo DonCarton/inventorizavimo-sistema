@@ -3,21 +3,19 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Interfaces\ImportableModel;
 use App\Observers\UserObserver;
 use App\ValidAttributes;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use PhpParser\Node\Expr\AssignOp\Mod;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
-use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -104,22 +102,43 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Laboratory::class, 'laboratory');
     }
+    
     public function rolesForDisplay(): HasManyThrough
     {
         return $this->hasManyThrough(Role::class, ModelHasRole::class, 'model_id', 'id', 'id', 'role_id');
     }
+    
     public function roleName()
     {
         return $this->rolesForDisplay->pluck('name')->implode(', ');
     }
+    
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by')->withTrashed();
     }
+    
     public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by')->withTrashed();
     }
 
+    public function facilities(): BelongsToMany
+    {
+        return $this->belongsToMany(Facility::class);
+    }
+
+    public static function getImportForeignKeyLookups(): array
+    {
+        return [
+            'laboratory' => [
+                'table' => 'laboratories',
+                'match_on' => [
+                    'name',
+                    'ident_code',
+                ],
+            ],
+        ];
+    }
 
 }

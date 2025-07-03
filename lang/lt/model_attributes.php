@@ -22,6 +22,7 @@ return [
         'average_consumption' => 'Vidutinis sunaudojimas',
         'multiple_locations' => 'Keliose vietose?',
         'laboratory' => 'Laboratorija',
+        'facility' => 'Patalpa',
         'cupboard' => 'Spinta',
         'shelf' => 'Lentyna',
         'storage_conditions' => 'Laikymo sąlygos',

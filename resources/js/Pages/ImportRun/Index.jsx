@@ -1,21 +1,54 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
 import StringHelper from "@/Libs/StringHelper.jsx";
-import { TbEdit } from "react-icons/tb";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import React from "react";
 import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
-import { VscDesktopDownload, VscDebugRerun } from "react-icons/vsc";
+import { VscDebugRerun } from "react-icons/vsc";
 import SteamDropdown from '@/Components/SteamDropdown';
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import WarningMessage from '@/Components/WarningMessage';
+import { IoMdRefresh } from "react-icons/io";
+import DeleteButton from '@/Components/Forms/DeleteButton';
+import EditButton from '@/Components/Forms/EditButton';
+import MiscButton from '@/Components/Forms/MiscButton';
+import { useState, useRef, useEffect } from 'react';
+import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
+import { TbEdit } from 'react-icons/tb';
+import { RiDeleteBin6Line } from 'react-icons/ri';
+
+/*TODO:
+Wrap the action button into a component that can be re-used through multiple views.
+As it stands, the single icon buttons are create, but it's not as clear of what the action will do.
+Making a button gives a bit more clarity for the action.
+*/
 
 export default function Index({ auth, importRuns, importStatuses, queryParams = null, flash }) {
+    // const [showObjectActionItems, setShowObjectActionItems] = useState(false);
+    // const dropdownRef2 = useRef(null);
+    // function exposeDropdown2(){
+    //     setShowObjectActionItems(!showObjectActionItems);
+    // }
+    // const handleClickOutside2 = (event) => {
+    //     if (dropdownRef2.current && !dropdownRef2.current.contains(event.target)) {
+    //         setShowObjectActionItems(false);
+    //     }
+    // };
+    const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
     queryParams = queryParams || {};
+    const {delete: destroy, processing} = useForm();
+    const handleDestroy = (value) => {
+        if (window.confirm(handleConfirmMessage)) {
+            destroy(route('import-runs.destroy', value));
+        }
+    }
+    const refreshPage = (e) => {
+        router.get(route('import-runs.index'), queryParams);
+    }
     const onSelectChange = (name, e) => {
         searchFieldChanged(name, e.target.value);
     }
@@ -47,6 +80,12 @@ export default function Index({ auth, importRuns, importStatuses, queryParams = 
     const handleRequeue = (value) => {
         router.patch(route('import-runs.requeue', value), { preserveScroll: true });
     };
+    // useEffect(() => {
+    //     document.addEventListener('click', handleClickOutside2);
+    //     return () => {
+    //         document.removeEventListener('click', handleClickOutside2);
+    //     };
+    // }, []);
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -60,8 +99,13 @@ export default function Index({ auth, importRuns, importStatuses, queryParams = 
                             placement="right-end" classname="bg-black" color="black"
                             classnameForIcon="w-5 h-5 ml-1 mt-1" />
                     </div>
-                    <div>
-                        <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={StringHelper.__("Actions")}>
+                    <div className="flex justify-between">
+                        <div className="pt-1 mr-2">
+                            <button title="Perkrauti puslapį" onClick={refreshPage} className="w-10 h-10 flex items-center justify-center rounded-lg hover:animate-pulse hover:bg-gray-300">
+                                <IoMdRefresh className="w-8 h-8"/>
+                            </button>
+                        </div>
+                        <GroupButtonDropdown id="dropdown-actions-import-runs" name="actions-inventory" nameOfDropdownButton={StringHelper.__("Actions")}>
                             {auth.can.create.importRun && <>
                                 <Link href={route("import-runs.create")}>
                                     <button type="button" disabled id="create-new-entry" title={StringHelper.__("Create a new entry in the current page")}
@@ -135,17 +179,12 @@ export default function Index({ auth, importRuns, importStatuses, queryParams = 
                                                 <td className="px-3 py-2">{importRun.model_class}</td>
                                                 <td className="px-3 py-2">{importRun.status}</td>
                                                 <td className="px-3 py-2">{importRun.created_by}</td>
-                                                <td className="flex justify-start mt-1 px-2 py-1">
-                                                    <Link title={StringHelper.__("Edit entry", { name: importRun.definition_name })} href={route("import-runs.edit", importRun.id)}
-                                                        className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
-                                                        <TbEdit
-                                                            className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50" />
-                                                    </Link>
-                                                    <a title={StringHelper.__("Rerun last import")} type="button" onClick={() => handleRequeue(importRun.id)}
-                                                        className="font-medium text-yellow-500 dark:text-yellow-400 hover:underline hover:cursor-pointer mx-1"
-                                                    >
-                                                        <VscDebugRerun className="w-8 h-8 text-amber-500 hover:text-amber-700 hover:animate-pulse hover:bg-gray-50" />
-                                                    </a>
+                                                <td className="flex justify-start mt-1 mb-1 px-2 py-1 space-x-2">
+                                                    <BulkActionsButton>
+                                                            <MiscButton classVariant="green" title={StringHelper.__("Edit")} as="link" to={route("import-runs.edit", importRun.id)} disabled={processing} icon={TbEdit} children={StringHelper.__("Edit")}/>
+                                                            <MiscButton title={StringHelper.__("Rerun last import")} as="button" onClick={() => handleRequeue(importRun.id)} disabled={processing} icon={VscDebugRerun} children={StringHelper.__("Rerun")}/>
+                                                            <MiscButton classVariant="red" title={StringHelper.__("Delete")} as="button" disabled={processing} onClick={() => handleDestroy(importRun.id)} icon={RiDeleteBin6Line} children={StringHelper.__("Delete")}/>
+                                                    </BulkActionsButton>
                                                 </td>
                                             </tr>
                                         ))}

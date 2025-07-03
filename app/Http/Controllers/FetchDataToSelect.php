@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Facility;
 use App\Models\ItemType;
 use App\Models\Laboratory;
 use Illuminate\Http\JsonResponse;
@@ -24,6 +25,21 @@ class FetchDataToSelect extends Controller
     {
         $laboratories = Laboratory::select('id', 'name')->get();
         return response()->json($laboratories);
+    }
+
+    public function listFacilities(): JsonResponse
+    {
+        $facilities = Facility::where('name','like','%' . request('search') . '%')
+            ->select('id', 'name')
+            ->get()
+            ->map(function($facility){
+                return [
+                    'value' => $facility->id,
+                    'label' => $facility->name,
+                ];
+            })
+            ->toArray();
+        return response()->json(['data' => $facilities]);
     }
 
     public function listCupboards(): ResourceCollection
@@ -69,6 +85,36 @@ class FetchDataToSelect extends Controller
             ->select('id','ident_code','name')
             ->paginate(10);
         return \App\Http\Resources\SelectObjectResources\IdentCodeForSelect::collection($identCodes);
+    }
+
+    public function facilitiesByIdentCode(string $identCode): JsonResponse
+    {
+        $laboratory = Laboratory::where('ident_code', $identCode)
+            ->with('facilities:id,name')
+            ->firstOrFail();
+
+        return response()->json([
+            'laboratory_id' => $laboratory->id,
+            'facilities' => \App\Http\Resources\SelectObjectResources\FacilityForSelect::collection($laboratory->facilities),
+        ]);
+    }
+
+    public function facilitiesByLaboratory(int $laboratoryId): JsonResponse
+    {
+        
+        if (!$laboratoryId) {
+            return response()->json(['facilities' => []]);
+        }
+
+        $laboratory = Laboratory::with('facilities:id,name')->find($laboratoryId);
+
+        if (!$laboratory) {
+            return response()->json(['facilities' => []]);
+        }
+
+        return response()->json([
+            'facilities' => \App\Http\Resources\SelectObjectResources\FacilityForSelect::collection($laboratory->facilities),
+        ]);
     }
 
     public function listImportableFields(Request $request)

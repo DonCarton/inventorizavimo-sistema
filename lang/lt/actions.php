@@ -22,9 +22,14 @@ return [
         'deletedUser' => 'Ištrintas naudotojas'
     ],
     'laboratory' => [
-        'created' => 'Nauja laboratorija :name sukurta.',
+        'created' => 'Nauja laboratorija [:name] sukurta.',
         'updated' => 'Laboratorija [:name] atnaujinta.',
         'deleted' => 'Laboratorija [:name] sėkmingai ištrinta.'
+    ],
+    'facility' => [
+        'created' => 'Nauja patalpa [:name] sukurta.',
+        'updated' => 'Patalpa [:name] atnaujinta.',
+        'deleted' => 'Patalpa [:name] sėkmingai ištrinta.'
     ],
     'inventoryItem' => [
         'created' => 'Naujas įrašas [:local_name] sukurtas.',

@@ -13,6 +13,8 @@ import { TbArrowsUpDown, TbEdit } from "react-icons/tb";
 import Pagination from "@/Components/Pagination.jsx";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
 import SteamDropdown from "@/Components/SteamDropdown";
+import BulkActionsButton from "@/Components/Actions/BulkActionsButton";
+import MiscButton from "@/Components/Forms/MiscButton";
 
 export default function MyLaboratory({ auth, inventoryItems, itemTypes, queryParams = null, success, failure }) {
     queryParams = queryParams || {};
@@ -83,29 +85,11 @@ export default function MyLaboratory({ auth, inventoryItems, itemTypes, queryPar
                                     className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
                                     {StringHelper.__("Create")}</button>
                             </Link>
-                            <Link href={route("import-definitions.index")}>
-                                <button type="button" id="import-entries" title="Import an existing Excel sheet of data."
-                                    className="px-2 py-1 bg-white border-2 border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                        <Link href={route("import-definitions.index")}>{StringHelper.__("Import")}</Link>
-                                </button>
-                                <button type="button" id="export-entries"
-                                     title="Export all data from the database or export a specific set with the defined search paramters in the table."
-                                     className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                    <a
-                                        href={route("exports.myLaboratoryInventoryItems", queryParams)}
-                                    >
-                                        {StringHelper.__("Export")}
-                                    </a>
-                                </button>
-                            </Link>
-                            <a
-                                href={route("exports.myLaboratoryInventoryItems", queryParams)}
-                            >
+                            <a href={route("exports.myLaboratoryInventoryItems", queryParams)}>
                                 <button type="button" id="export-entries"
                                     title="Export all data from the database or export a specific set with the defined search paramters in the table."
-                                    className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-
-                                    {StringHelper.__("Export")}
+                                    className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                        {StringHelper.__("Export")}
                                 </button>
                             </a>
                         </> :
@@ -238,25 +222,21 @@ export default function MyLaboratory({ auth, inventoryItems, itemTypes, queryPar
                                                 <td className="px-3 py-2">{inventoryItem.totalAmount}</td>
                                                 <td className="px-3 py-2">{inventoryItem.inventoryType}</td>
                                                 <td className="px-3 py-2">{inventoryItem.updatedBy}</td>
-                                                <td className="flex justify-start mt-1 px-2 py-1">
-                                                    <Link href={route("inventoryItems.editRaw", {
-                                                        inventoryItem: inventoryItem.id,
-                                                        query: queryParams,
-                                                        referrer: 'myLaboratory'
-                                                    })}
-                                                        className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
-                                                        <TbEdit
-                                                            className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50" />
-                                                    </Link>
-                                                    <Link href={route("inventoryItems.edit", {
-                                                        inventoryItem: inventoryItem.id,
-                                                        query: queryParams,
-                                                        referrer: 'myLaboratory'
-                                                    })}
-                                                        className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
-                                                        <TbArrowsUpDown
-                                                            className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50" />
-                                                    </Link>
+                                                <td className="flex justify-start mt-1 mb-1 px-2 py-1">
+                                                    <BulkActionsButton>
+                                                        <MiscButton as="link" to={route("inventoryItems.editRaw", {
+                                                                inventoryItem: inventoryItem.id,
+                                                                query: queryParams,
+                                                                referrer: 'myLaboratory'
+                                                            })} classVariant="green" title={StringHelper.__("Edit")}
+                                                            icon={TbEdit} children={StringHelper.__("Edit")}/>
+                                                        <MiscButton as="link" to={route("inventoryItems.edit", {
+                                                                inventoryItem: inventoryItem.id,
+                                                                query: queryParams,
+                                                                referrer: 'myLaboratory'
+                                                            })} classVariant="green" title={StringHelper.__("Edit amount")}
+                                                            icon={TbArrowsUpDown} children={StringHelper.__("Change amount")}/>
+                                                    </BulkActionsButton>
                                                 </td>
                                             </tr>
                                         ))}

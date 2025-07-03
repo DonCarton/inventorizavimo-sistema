@@ -11,6 +11,8 @@ import TableHeader from "@/Components/TableHeader.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
+import MiscButton from '@/Components/Forms/MiscButton';
+import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
 
 export default function Users({auth, users, queryParams = null, success, failure}) {
     queryParams = queryParams || {};
@@ -135,23 +137,19 @@ export default function Users({auth, users, queryParams = null, success, failure
                                                 </Link>
                                             </td>
                                             <th className="px-3 py-2">{user.created_by}</th>
-                                            <td className="flex justify-start mt-1 px-2 py-1">
-                                                <Link href={route("users.edit", user.id)}
-                                                      className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
-                                                    <TbEdit
-                                                        className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50"/>
-                                                </Link>
-                                                {
-                                                    user.is_disabled ?
-                                                        <a type="button" onClick={() => handleEnable(user.id)}>
-                                                            <RiLockLine
-                                                                className="w-8 h-8 text-red-500 hover:text-red-500 hover:animate-pulse hover:bg-gray-50"/>
-                                                        </a> :
-                                                        <a type="button" onClick={() => handleDisable(user.id)}>
-                                                            <RiLockUnlockLine
-                                                                className="w-8 h-8 text-blue-500 hover:text-blue-500 hover:animate-pulse hover:bg-gray-50"/>
-                                                        </a>
-                                                }
+                                            <td className="flex justify-start mt-1 mb-1 px-2 py-1 space-x-2">
+                                                <div>
+                                                    <BulkActionsButton>
+                                                        <MiscButton classVariant="green" title={StringHelper.__("Edit")} as="link" to={route("users.edit", user.id)} icon={TbEdit} children={StringHelper.__("Edit")}/>
+                                                        {
+                                                            user.is_disabled
+                                                            ?
+                                                            <MiscButton classVariant="blue" title={StringHelper.__("Unblock")} as="button" onClick={() => handleEnable(user.id)} icon={RiLockUnlockLine} children={StringHelper.__("Unblock")}/>
+                                                            :
+                                                            <MiscButton classVariant="red" title={StringHelper.__("Block")} as="button" onClick={() => handleDisable(user.id)} icon={RiLockLine} children={StringHelper.__("Block")}/>
+                                                        }
+                                                    </BulkActionsButton>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}

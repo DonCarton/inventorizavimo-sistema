@@ -38,15 +38,21 @@ export const customStyles = {
         ...provided,
         color: state.isDisabled ? '#FFFFFF' : '#1F2937',
     }),
-    multiValue: (provided) => ({
+    multiValue: (provided, state) => ({
         ...provided,
-        backgroundColor: '#BE185D',
+        backgroundColor: state.isDisabled ? '#9CA3AF' : '#BE185D',
         color: 'white',
         borderRadius: '3px'
+    }),
+    indicatorsContainer: (provided, state) => ({
+        ...provided,
+        display: state.isDisabled ? 'none' : 'flex',
     }),
     multiValueLabel: (provided) => ({
         ...provided,
         color: 'white',
+        fontSize: '0.875rem',
+        fontWeight: '400'
     }),
     input: (base) => ({
         ...base,
@@ -54,12 +60,20 @@ export const customStyles = {
             boxShadow: 'none',
         },
     }),
-    multiValueRemove: (provided) => ({
-        ...provided,
-        color: 'white',
-        '&:hover': {
-            backgroundColor: '#9D174D',
-            color: 'white'
+    multiValueRemove: (provided, state) => {
+        if (state.isDisabled) {
+            return {
+                ...provided,
+                display: 'none'
+            };
         }
-    })
+        return {
+            ...provided,
+            color: 'white',
+            '&:hover': {
+                backgroundColor: '#9D174D',
+                color: 'white'
+            }
+        };
+    }
 };

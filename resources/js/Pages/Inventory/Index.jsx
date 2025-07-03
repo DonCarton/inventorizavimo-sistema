@@ -13,6 +13,8 @@ import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import DownloadButton from "@/Components/Actions/DownloadButton.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import SteamDropdown from '@/Components/SteamDropdown';
+import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
+import MiscButton from '@/Components/Forms/MiscButton';
 
 export default function Index({ auth, inventoryItems, itemTypes, queryParams = null, success, failure }) {
     queryParams = queryParams || {};
@@ -231,17 +233,11 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams = n
                                                 <td className="px-3 py-2">{inventoryItem.inventoryType}</td>
                                                 <td className="px-3 py-2">{inventoryItem.laboratory}</td>
                                                 <td className="px-3 py-2">{inventoryItem.updatedBy}</td>
-                                                <td className="flex justify-start mt-1 px-2 py-1">
-                                                    {inventoryItem.can.edit && <Link href={route("inventoryItems.editRaw", { inventoryItem: inventoryItem.id, query: queryParams })} title={StringHelper.__("Edit") + '.'}
-                                                        className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
-                                                        <TbEdit
-                                                            className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50" />
-                                                    </Link>}
-                                                    <Link href={route("inventoryItems.edit", { inventoryItem: inventoryItem.id, query: queryParams })} title={StringHelper.__("Edit amount") + '.'}
-                                                        className="font-medium text-green-500 dark:text-green-400 hover:underline mx-1">
-                                                        <TbArrowsUpDown
-                                                            className="w-8 h-8 text-emerald-500 hover:text-emerald-700 hover:animate-pulse hover:bg-gray-50" />
-                                                    </Link>
+                                                <td className="flex justify-start mt-1 mb-1 px-2 py-1">
+                                                    <BulkActionsButton>
+                                                        {inventoryItem.can.edit && <MiscButton classVariant="green" title={StringHelper.__("Edit")} as="link" to={route("inventoryItems.editRaw", { inventoryItem: inventoryItem.id, query: queryParams })} icon={TbEdit} children={StringHelper.__("Edit")}/>}
+                                                        <MiscButton classVariant="green" title={StringHelper.__("Edit amount")} as="link" to={route("inventoryItems.edit", { inventoryItem: inventoryItem.id, query: queryParams })} icon={TbArrowsUpDown} children={StringHelper.__("Change amount")} />
+                                                    </BulkActionsButton>
                                                 </td>
                                             </tr>
                                         ))}

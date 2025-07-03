@@ -14,9 +14,13 @@ import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import DeleteButton from "@/Components/Forms/DeleteButton.jsx";
+import { useState, useEffect, useRef } from 'react';
+import FlexibleStaticSelect from '@/Components/Forms/FlexibleStaticSelect';
 
-export default function Edit({auth, inventoryItem, logsForItem, laboratories, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, can}) {
+export default function Edit({auth, inventoryItem, logsForItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, can}) {
+    const isFirstLoad = useRef(true);
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
+    const [facilityOptions, setFacilityOptions] = useState(facilities.data || []);
     const {data, setData, put, delete: destroy, errors, processing} = useForm({
         local_name: inventoryItem.data.localName || '',
         inventory_type: inventoryItem.data.inventoryType || '',
@@ -36,6 +40,7 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
         average_consumption: inventoryItem.data.averageConsumption || '',
         multiple_locations: inventoryItem.data.multipleLocations || 0,
         laboratory: inventoryItem.data.laboratory || '',
+        facilities: inventoryItem.data.facilities || [],
         cupboard: inventoryItem.data.cupboard || 1,
         shelf: inventoryItem.data.shelf || 'A',
         storage_conditions: inventoryItem.data.storageConditions || '',
@@ -43,6 +48,23 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
         used_for: inventoryItem.data.usedFor || '',
         comments: inventoryItem.data.comments || ''
     })
+    useEffect(() => {
+        if (!data.laboratory) {
+            setFacilityOptions([]);
+            setData('facility', []);
+            return;
+        }
+        axios.get(`/select/laboratory/${data.laboratory}/facilities`)
+        .then((response) => {
+            setFacilityOptions(response.data.facilities);
+            if (isFirstLoad.current){
+                isFirstLoad.current = false;
+            } else {
+                setData('facility', []);
+            }
+        });
+    },[data.laboratory]);
+
     const handleDestroy = (value) => {
         if (window.confirm(handleConfirmMessage)) {
             destroy(route('inventoryItems.destroy', value));
@@ -65,6 +87,9 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
     }
     const handleShelfChange = (e) => {
         setData('shelf',e.target.value);
+    }
+    const handleFacilityChange = (e) => {
+        setData('facilities', e);
     }
     return (
         <AuthenticatedLayout
@@ -254,6 +279,17 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, it
                                                                  options={laboratories.data}
                                                                  noValueText={StringHelper.__("Choose a value")}/>
                                             <InputError message={errors.laboratory} className="mt-2"/>
+                                        </div>
+                                        <div className="mt-4">
+                                            <InputLabel htmlFor="inventoryItems_local_facility">
+                                                {StringHelper.__("Facility")}
+                                                <span className="text-red-500">*</span>
+                                            </InputLabel>
+                                            <div className="mt-1">
+                                                <FlexibleStaticSelect id="inventoryItems_local_facility" name="facility" options={facilityOptions} customPlaceHolder={StringHelper.__("Choose a facility")}
+                                                    value={data.facilities} onChange={handleFacilityChange} customNoOptionsMessage={StringHelper.__("No facilities found")} customIsMulti={true}/>
+                                            </div>
+                                            <InputError message={errors.facilities} className="mt-2"/>
                                         </div>
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_cupboard" value={StringHelper.__("Cupboard")} className="mb-1"/>

@@ -5,8 +5,11 @@ import TextInput from "@/Components/TextInput.jsx";
 import StringHelper from "@/Libs/StringHelper.jsx";
 import ShowForm from "@/Components/Forms/ShowForm.jsx";
 import HistoryLog from "@/Components/Forms/HistoryLog.jsx";
+import FlexibleStaticSelect from "@/Components/Forms/FlexibleStaticSelect";
 
-export default function Show({auth, laboratory}) {
+//TODO: Field to showcase facilities linked to a laboratory.
+
+export default function Show({auth, laboratory, facilities }) {
     return (<AuthenticatedLayout
         user={auth.user}
         can={auth.can}
@@ -32,6 +35,10 @@ export default function Show({auth, laboratory}) {
                         <div className="mt-4">
                             <InputLabel htmlFor="laboratory_ident_code" value={StringHelper.__("Identification code")}/>
                             <TextInput id="laboratory_ident_code" type="text" name="laboratory_ident_code" value={laboratory.ident_code} className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white" readOnly={true} disabled={true}/>
+                        </div>
+                        <div className="mt-4">
+                            <InputLabel htmlFor="laboratory_facility" value={StringHelper.__("Facility")}/>
+                            <FlexibleStaticSelect id="laboratory_facility" options={facilities} value={laboratory.facilities} customIsDisabled={true} customIsMulti={true} customNoOptionsMessage=""/>
                         </div>
                     </ShowForm>
                 </div>
