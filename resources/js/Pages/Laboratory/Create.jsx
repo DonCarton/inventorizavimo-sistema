@@ -7,7 +7,7 @@ import InputError from "@/Components/InputError.jsx";
 import CreateForm from "@/Components/Forms/CreateForm.jsx";
 import FlexibleStaticSelect from "@/Components/Forms/FlexibleStaticSelect";
 
-export default function Create({auth,facilities}) {
+export default function Create({auth,facilities,can}) {
     const {data, setData, post, errors} = useForm({
         name: '',
         ident_code: '',
@@ -53,12 +53,14 @@ export default function Create({auth,facilities}) {
                                            className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                 <InputError message={errors.ident_code} className="mt-2"/>
                             </div>
+                            {can.setFacility && 
                             <div className="mt-4">
                                 <InputLabel htmlFor="laboratory_facility">{StringHelper.__("Facility")}</InputLabel>
                                 <FlexibleStaticSelect id="laboratory_facility" value={data.facilities} onChange={handleFacilityChange} options={facilities}
+                                    customIsDisabled={!can.setFacility}
                                     customIsMulti={true} customPlaceHolder={StringHelper.__("Choose a facility")} customNoOptionsMessage={StringHelper.__("No options")}/>
                                 <InputError message={errors.facility} className="mt-2"/>
-                            </div>
+                            </div>}
                         </CreateForm>
                     </div>
                 </div>

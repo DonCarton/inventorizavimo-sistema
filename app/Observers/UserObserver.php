@@ -54,6 +54,8 @@ class UserObserver implements ShouldHandleEventsAfterCommit
             $counter++;
         }
 
+        $user->facilities()->detach();
+
         $user->email = $uniqueEmail;
         $user->roles()->detach();
         $user->save();
