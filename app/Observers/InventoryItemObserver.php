@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Events\AmountRunningLow;
 use App\Models\InventoryItem;
+use App\Models\SystemConfiguration;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 use Illuminate\Support\Facades\Log;
 
@@ -26,9 +27,14 @@ class InventoryItemObserver implements ShouldHandleEventsAfterCommit
     {
         if ($inventoryItem->isDirty('total_amount')){
 
+            $notifyCriticalInventory = SystemConfiguration::where('key','=','critical_notification')->first();
+
             $criticalAmount = $inventoryItem->critical_amount;
             if ($inventoryItem->total_amount <= $criticalAmount && is_null($inventoryItem->critical_amount_notified_at)){
-                event(new AmountRunningLow($inventoryItem, false));
+
+                if ($notifyCriticalInventory != null && (int)$notifyCriticalInventory->value['value'] == 1){
+                    event(new AmountRunningLow($inventoryItem, false));
+                }                
                 $inventoryItem->critical_amount_notified_at = now();
                 $inventoryItem->save();
             }

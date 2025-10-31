@@ -95,7 +95,7 @@ class LaboratoryController extends Controller
         return Inertia::render('Laboratory/Create',[
             'facilities' => $facilities,
             'can' => [
-                'setFacility' => auth()->user()->can('setFacility'),
+                'setFacility' => auth()->user()->hasRole(\App\Enums\RoleEnum::SUPER_ADMIN),
             ],
         ]);
     }
