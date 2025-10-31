@@ -19,49 +19,68 @@ class ImportController extends Controller
     public function getImportableFields(Request $request)
     {
         $validated = $request->validate([
-            'model' => ['required', 'string'],
+            "model" => ["required", "string"],
         ]);
 
-        if (!class_exists($validated['model'])){
-            return response()->json(['error' => 'Selected object does not support imports'], 422);
+        if (!class_exists($validated["model"])) {
+            return response()->json(
+                ["error" => "Selected object does not support imports"],
+                422,
+            );
         }
-        
+
         $modelClass = $validated["model"];
 
-        $model = new $modelClass;
+        $model = new $modelClass();
 
-        $humanReadableFields = $model->makeHumanReadable($model->fetchValidFields(), 'InventoryItem');
-        
-        if (!in_array(\App\Interfaces\ImportableModel::class, class_implements($model))) {
-            return response()->json(['error' => 'Selected object does not support imports'], 400);
+        $humanReadableFields = $model->makeHumanReadable(
+            $model->fetchValidFields(),
+            "InventoryItem",
+        );
+
+        if (
+            !in_array(
+                \App\Interfaces\ImportableModel::class,
+                class_implements($model),
+            )
+        ) {
+            return response()->json(
+                ["error" => "Selected object does not support imports"],
+                400,
+            );
         }
 
         return response()->json([
-            'fields' => $model->fetchValidFields(),
-            'humanReadable' => $humanReadableFields,
+            "fields" => $model->fetchValidFields(),
+            "humanReadable" => $humanReadableFields,
         ]);
     }
     public function extractHeaders(Request $request)
     {
         $request->validate([
-            'file' => ['required', 'file', 'mimes:xlsx,csv,txt'],
+            "file" => ["required", "file|max:7168", "mimes:xlsx,csv,txt"],
         ]);
 
-        $file = $request->file('file');
+        $file = $request->file("file");
 
         $headings = $this->fetchHeaders($file);
 
         if (!is_array($headings)) {
-            return response()->json(['error' => 'Unable to extract headers.'], 422);
+            return response()->json(
+                ["error" => "Unable to extract headers."],
+                422,
+            );
         }
 
-        $normalizedHeaders = collect($headings)->map(function ($header) {
-            return $header ? Str::slug($header, '_') : null;
-        })->all();
+        $normalizedHeaders = collect($headings)
+            ->map(function ($header) {
+                return $header ? Str::slug($header, "_") : null;
+            })
+            ->all();
 
         return response()->json([
-            'rawHeaders' => $headings,
-            'normalizedHeaders' => $normalizedHeaders,
+            "rawHeaders" => $headings,
+            "normalizedHeaders" => $normalizedHeaders,
         ]);
     }
 
@@ -78,11 +97,11 @@ class ImportController extends Controller
         $headers = [];
 
         foreach ($firstRow as $header) {
-            if (is_null($header) || trim($header) === '') {
+            if (is_null($header) || trim($header) === "") {
                 break;
             }
 
-            $headers[] = trim((string)$header);
+            $headers[] = trim((string) $header);
         }
 
         return $headers;

@@ -26,10 +26,17 @@ class InventoryItemAmountCritical implements ShouldQueue
      */
     public function handle(AmountRunningLow $event): \Illuminate\Http\RedirectResponse
     {
+        
         $adminUsers = Role::findByName('admin')->users;
         foreach ($adminUsers as $adminUser) {
             Mail::to($adminUser->email)->send(new InventoryItemCriticalAmountReached($event->inventoryItem, $adminUser));
         }
+
+        $superAdminUsers = Role::findByName('super-admin')->users;
+        foreach ($superAdminUsers as $superAdminUser) {
+            Mail::to($superAdminUser->email)->send(new InventoryItemCriticalAmountReached($event->inventoryItem, $superAdminUser));
+        }
+        
         if($event->readerOrigin){
             return to_route('reader')
                 ->with('success', __('actions.inventoryItem.updated', [

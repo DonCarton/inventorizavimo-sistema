@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Events\AmountRunningLow;
 use App\Models\AmountLog;
+use App\Models\SystemConfiguration;
 
 class AmountLogObserver
 {
@@ -14,6 +15,9 @@ class AmountLogObserver
      */
     public function created(AmountLog $amountLog): void
     {
+
+        $notifyCriticalInventory = SystemConfiguration::where('key','=','critical_notification')->first();
+
         $totalAmountInInventory = $amountLog->inventoryItem->total_amount;
         $criticalAmountInInventory = $amountLog->inventoryItem->critical_amount;
 
@@ -23,7 +27,10 @@ class AmountLogObserver
         $remainingAmount = $totalAmountInInventory - ($amountRemoved - $amountReturned);
 
         if ($remainingAmount <= $criticalAmountInInventory && is_null($amountLog->inventoryItem->critical_amount_notified_at)) {
-            event(new AmountRunningLow($amountLog->inventoryItem, false));
+
+            if ($notifyCriticalInventory != null && (int)$notifyCriticalInventory->value['value'] == 1){
+                event(new AmountRunningLow($amountLog->inventoryItem, false));
+            }
             $amountLog->inventoryItem->critical_amount_notified_at = now();
             $amountLog->inventoryItem->saveQuietly();
         } else if ($remainingAmount > $criticalAmountInInventory && !is_null($amountLog->inventoryItem->critical_amount_notified_at)){
