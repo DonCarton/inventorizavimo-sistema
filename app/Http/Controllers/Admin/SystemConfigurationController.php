@@ -73,7 +73,7 @@ class SystemConfigurationController extends Controller
                         ) {
                             if (
                                 $configurationValue->configuration->key ===
-                                "cupboard_range"
+                                "shelf_range"
                             ) {
                                 $fail(
                                     __(
@@ -82,7 +82,7 @@ class SystemConfigurationController extends Controller
                                 );
                             } elseif (
                                 $configurationValue->configuration->key ===
-                                "shelf_range"
+                                "cupboard_range"
                             ) {
                                 $fail(
                                     __("validation.custom.value.range_numeric"),
@@ -107,9 +107,9 @@ class SystemConfigurationController extends Controller
 
         [$start, $end] = $rangeParts;
 
-        if ($key === "cupboard_range") {
+        if ($key === "shelf_range") {
             return $start === "A" && ctype_alpha($end) && $start <= $end;
-        } elseif ($key === "shelf_range") {
+        } elseif ($key === "cupboard_range") {
             return $start == 1 && ctype_digit($end) && $start <= $end;
         }
 
