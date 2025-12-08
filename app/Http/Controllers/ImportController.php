@@ -58,7 +58,7 @@ class ImportController extends Controller
     public function extractHeaders(Request $request)
     {
         $request->validate([
-            "file" => ["required", "file|max:7168", "mimes:xlsx,csv,txt"],
+            "file" => ["required", "file", "max:7168", "mimes:xlsx,csv,txt"],
         ]);
 
         $file = $request->file("file");
