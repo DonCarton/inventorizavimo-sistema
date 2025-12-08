@@ -16,7 +16,7 @@ class UserCreated
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $user;
     public $password;
-
+    public $randomExp;
     /**
      * Create a new event instance.
      * @param User $user
@@ -35,8 +35,6 @@ class UserCreated
      */
     public function broadcastOn(): array
     {
-        return [
-            new PrivateChannel('channel-name'),
-        ];
+        return [new PrivateChannel("channel-name")];
     }
 }
