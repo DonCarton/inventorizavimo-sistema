@@ -16,7 +16,6 @@ class UserCreated
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $user;
     public $password;
-    public $randomExp;
     /**
      * Create a new event instance.
      * @param User $user
