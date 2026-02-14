@@ -15,40 +15,16 @@ import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
 import MiscButton from '@/Components/Forms/MiscButton';
 import { TbEdit } from 'react-icons/tb';
 import { RiDeleteBin6Line } from 'react-icons/ri';
+import useSearchFilter from '@/Hooks/useSearchFilter';
 
-export default function Index({ auth, importDefinitions, queryParams = null, flash }) {
+export default function Index({ auth, importDefinitions, queryParams: initialQueryParams = null, flash }) {
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
-    queryParams = queryParams || {};
+    const { queryParams, searchFieldChanged, handleKeyDown, onSelectChange, sortChanged } = useSearchFilter("import-definitions.index", initialQueryParams || {});
     const {delete: destroy, processing} = useForm();
     const handleDestroy = (value) => {
         if (window.confirm(handleConfirmMessage)) {
             destroy(route('import-definitions.destroy', value));
         }
-    }
-    const searchFieldChanged = (name, value) => {
-        if (value) {
-            queryParams[name] = value;
-        } else {
-            delete queryParams[name];
-        }
-        router.get(route('import-definitions.index'), queryParams);
-    }
-    const onKeyPress = (name, e) => {
-        if (e.key !== 'Enter') return;
-        searchFieldChanged(name, e.target.value);
-    }
-    const sortChanged = (name) => {
-        if (name === queryParams.sort_field) {
-            if (queryParams.sort_direction === 'asc') {
-                queryParams.sort_direction = 'desc';
-            } else {
-                queryParams.sort_direction = 'asc';
-            }
-        } else {
-            queryParams.sort_field = name;
-            queryParams.sort_direction = 'asc';
-        }
-        router.get(route('import-definitions.index'), queryParams);
     }
     return (
         <AuthenticatedLayout
@@ -97,21 +73,11 @@ export default function Index({ auth, importDefinitions, queryParams = null, fla
                                     <thead
                                         className="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
-                                            <TableHeader
-                                                name="name"
-                                                sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
-                                                sortChanged={sortChanged}
-                                                children={StringHelper.__("Name")}
-                                            />
+                                            <TableHeader name="name" sort_field={queryParams.sort_field} sort_direction={queryParams.sort_direction}
+                                                sortChanged={sortChanged} children={StringHelper.__("Name")} />
                                             <th className="px-3 py-2">{StringHelper.__("Type")}</th>
-                                            <TableHeader
-                                                name="updated_at"
-                                                sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
-                                                sortChanged={sortChanged}
-                                                children={StringHelper.__("Updated at")}
-                                            />
+                                            <TableHeader name="updated_at" sort_field={queryParams.sort_field} sort_direction={queryParams.sort_direction}
+                                                sortChanged={sortChanged} children={StringHelper.__("Updated at")} />
                                             <th className="px-3 py-2">{StringHelper.__("Created by")}</th>
                                             <th className="px-3 py-2">{StringHelper.__("Actions")}</th>
                                         </tr>
@@ -120,12 +86,9 @@ export default function Index({ auth, importDefinitions, queryParams = null, fla
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
                                             <th className="px-3 py-2">
-                                                <TextInput
-                                                    className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={queryParams.name}
-                                                    placeholder={StringHelper.__("Name")}
-                                                    onBlur={e => searchFieldChanged('name', e.target.value)}
-                                                    onKeyPress={e => onKeyPress('name', e)} />
+                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={queryParams.name}
+                                                    placeholder={StringHelper.__("Name")} onBlur={e => searchFieldChanged('name', e.target.value)}
+                                                    onKeyDown={e => handleKeyDown('name', e)} />
                                             </th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>
@@ -135,8 +98,7 @@ export default function Index({ auth, importDefinitions, queryParams = null, fla
                                     </thead>
                                     <tbody>
                                         {importDefinitions.data.map(importDefinition => (
-                                            <tr key={importDefinition.id}
-                                                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 sm:text-base">
+                                            <tr key={importDefinition.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 sm:text-base">
                                                 <td className="px-3 py-2">
                                                     <Link href={route("import-definitions.edit", importDefinition.id)}
                                                         className="font-medium text-gray-700 dark:text-white hover:underline mx-1">
