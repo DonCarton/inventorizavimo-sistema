@@ -25,6 +25,11 @@ class ImportRun extends Model
         return $this->belongsTo(ImportDefinition::class,'import_definition_id');
     }
 
+    public function records()
+    {
+        return $this->hasMany(ImportRunRecord::class);
+    }
+
     /*
      * @param InventoryItem
      * @return BelongsTo

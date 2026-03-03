@@ -15,6 +15,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property DateTime $updated_at
  * @property BelongsTo $createdBy
  * @property BelongsTo $updatedBy
+ * @property BelongsTo $runs
  */
 class ImportDefinitionResource extends JsonResource
 {
@@ -31,6 +32,7 @@ class ImportDefinitionResource extends JsonResource
             'model_class' => ucfirst(__('objects.'.$this->model_class)),
             'updated_at' => $this->updated_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i'),
             'created_by' => (new UserResource($this->createdBy))->email,
+            'has_active_run' => $this->runs()->exists(),
         ];
     }
 }

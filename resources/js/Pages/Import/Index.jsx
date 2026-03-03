@@ -8,6 +8,7 @@ import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
+import WarningMessage from '@/Components/WarningMessage';
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import DeleteButton from '@/Components/Forms/DeleteButton';
 import EditButton from '@/Components/Forms/EditButton';
@@ -15,6 +16,7 @@ import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
 import MiscButton from '@/Components/Forms/MiscButton';
 import { TbEdit } from 'react-icons/tb';
 import { RiDeleteBin6Line } from 'react-icons/ri';
+import { VscDebugRerun } from 'react-icons/vsc';
 import useSearchFilter from '@/Hooks/useSearchFilter';
 
 export default function Index({ auth, importDefinitions, queryParams: initialQueryParams = null, flash }) {
@@ -25,6 +27,12 @@ export default function Index({ auth, importDefinitions, queryParams: initialQue
         if (window.confirm(handleConfirmMessage)) {
             destroy(route('import-definitions.destroy', value));
         }
+    }
+    const handleCreateRun = (definitionId) => {
+        router.post(route('import-runs.store'), {
+            import_definition_id: definitionId,
+            run_after_save: true,
+        });
     }
     return (
         <AuthenticatedLayout
@@ -65,6 +73,7 @@ export default function Index({ auth, importDefinitions, queryParams: initialQue
                 <div className="3xl:max-w-screen-3xl md:max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {flash.success && <SuccessMessage message={flash.success} />}
                     {flash.failure && <FailureMessage message={flash.failure} />}
+                    {flash.warning && <WarningMessage message={flash.warning} />}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <div className="overflow-auto">
@@ -111,6 +120,7 @@ export default function Index({ auth, importDefinitions, queryParams: initialQue
                                                 <td className="flex justify-start mt-1 mb-1 px-2 py-1 space-x-2">
                                                     <BulkActionsButton>
                                                         <MiscButton classVariant="green" title={StringHelper.__("Edit")} disabled={processing} as="link" to={route("import-definitions.edit", importDefinition.id)} icon={TbEdit} children={StringHelper.__("Edit")} />
+                                                        <MiscButton classVariant="blue" title={StringHelper.__("Create a new import run")} disabled={processing || importDefinition.has_active_run} as="button" onClick={() => handleCreateRun(importDefinition.id)} icon={VscDebugRerun} children={StringHelper.__("New run")}/>
                                                         <MiscButton classVariant="red" title={StringHelper.__("Delete")} disabled={processing} as="button" onClick={() => handleDestroy(importDefinition.id)} icon={RiDeleteBin6Line} children={StringHelper.__("Delete")}/>
                                                     </BulkActionsButton>
                                                 </td>

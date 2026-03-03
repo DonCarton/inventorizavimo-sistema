@@ -12,6 +12,7 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Facades\Validator;
 use App\Models\ImportRun;
+use App\Models\ImportRunRecord;
 use App\Models\User;
 use App\Mail\ImportReportMail;
 
@@ -160,6 +161,13 @@ class GenericImport implements ToCollection, WithHeadingRow
                 $uniqueValues,
                 $mergedArray
             );
+
+            ImportRunRecord::create([
+                'import_run_id'   => $this->importRun->id,
+                'recordable_type' => $modelClass,
+                'recordable_id'   => $updatedOrCreatedModel->id,
+                'action'          => $updatedOrCreatedModel->wasRecentlyCreated ? 'created' : 'updated',
+            ]);
 
             foreach ($manyToManyCollection as $relation => $relatedIds){
                 $updatedOrCreatedModel->$relation()->sync($relatedIds);
