@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Observers\ImportDefinitionObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 
+#[ObservedBy(ImportDefinitionObserver::class)]
 class ImportDefinition extends Model
 {
     protected $fillable = [

@@ -53,16 +53,27 @@ class ImportRunController extends Controller
 
         $importDefinition = ImportDefinition::findOrFail($validated['import_definition_id']);
 
+        $hasActiveRun = $importDefinition->runs()->whereIn('status', ['pending', 'running'])->exists();
+
+        if ($hasActiveRun) {
+            return redirect()->route('import-definitions.index')->with('warning', __('actions.importRun.already_active', [
+                'name' => $importDefinition->name,
+            ]));
+        }
+
+        $run = ImportRun::create([
+            'import_definition_id' => $importDefinition->id,
+            'file_path' => $importDefinition->file_path,
+            'status' => 'pending',
+            'created_by' => auth()->id(),
+            'updated_by' => auth()->id(),
+        ]);
+
         if ($request->boolean('run_after_save')) {
-            $run = ImportRun::create([
-                'import_definition_id' => $importDefinition->id,
-                'file_path' => $importDefinition->file_path,
-                'status' => 'pending',
-            ]);
             dispatch(new \App\Jobs\RunImportJob($run, auth()->user()));
         }
 
-        return redirect()->route('import-definitions.index')->with('success', __('actions.importRun.created', [
+        return redirect()->route('import-runs.index')->with('success', __('actions.importRun.created', [
             'name' => $importDefinition->name,
         ]));
     }

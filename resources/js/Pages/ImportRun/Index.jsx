@@ -20,6 +20,7 @@ import { useState, useRef, useEffect } from 'react';
 import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
 import { TbEdit } from 'react-icons/tb';
 import { RiDeleteBin6Line } from 'react-icons/ri';
+import useSearchFilter from '@/Hooks/useSearchFilter';
 
 /*TODO:
 Wrap the action button into a component that can be re-used through multiple views.
@@ -27,7 +28,7 @@ As it stands, the single icon buttons are create, but it's not as clear of what 
 Making a button gives a bit more clarity for the action.
 */
 
-export default function Index({ auth, importRuns, importStatuses, queryParams = null, flash }) {
+export default function Index({ auth, importRuns, importStatuses, queryParams: initialQueryParams = null, flash }) {
     // const [showObjectActionItems, setShowObjectActionItems] = useState(false);
     // const dropdownRef2 = useRef(null);
     // function exposeDropdown2(){
@@ -39,43 +40,17 @@ export default function Index({ auth, importRuns, importStatuses, queryParams = 
     //     }
     // };
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
-    queryParams = queryParams || {};
+    const { queryParams, searchFieldChanged, handleKeyDown, onSelectChange, sortChanged } = useSearchFilter("import-runs.index", initialQueryParams || {});
     const {delete: destroy, processing} = useForm();
     const handleDestroy = (value) => {
         if (window.confirm(handleConfirmMessage)) {
             destroy(route('import-runs.destroy', value));
         }
     }
-    const refreshPage = (e) => {
-        router.get(route('import-runs.index'), queryParams);
-    }
-    const onSelectChange = (name, e) => {
-        searchFieldChanged(name, e.target.value);
-    }
-    const searchFieldChanged = (name, value) => {
-        if (value) {
-            queryParams[name] = value;
-        } else {
-            delete queryParams[name];
-        }
-        router.get(route('import-runs.index'), queryParams);
-    }
+    const refreshPage = (e) => { router.get(route('import-runs.index'), queryParams); }
     const onKeyPress = (name, e) => {
         if (e.key !== 'Enter') return;
         searchFieldChanged(name, e.target.value);
-    }
-    const sortChanged = (name) => {
-        if (name === queryParams.sort_field) {
-            if (queryParams.sort_direction === 'asc') {
-                queryParams.sort_direction = 'desc';
-            } else {
-                queryParams.sort_direction = 'asc';
-            }
-        } else {
-            queryParams.sort_field = name;
-            queryParams.sort_direction = 'asc';
-        }
-        router.get(route('import-runs.index'), queryParams);
     }
     const handleRequeue = (value) => {
         router.patch(route('import-runs.requeue', value), { preserveScroll: true });
@@ -94,10 +69,8 @@ export default function Index({ auth, importRuns, importStatuses, queryParams = 
                 <div className="flex justify-between items-center">
                     <div className="flex justify-between">
                         <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Import runs")}</h2>
-                        <InformationIconToolTip
-                            content={StringHelper.__("Here you can view all of the defined import runs") + '.'}
-                            placement="right-end" classname="bg-black" color="black"
-                            classnameForIcon="w-5 h-5 ml-1 mt-1" />
+                        <InformationIconToolTip content={StringHelper.__("Here you can view all of the defined import runs") + '.'}
+                            placement="right-end" classname="bg-black" color="black" classnameForIcon="w-5 h-5 ml-1 mt-1" />
                     </div>
                     <div className="flex justify-between">
                         <div className="pt-1 mr-2">
@@ -141,13 +114,9 @@ export default function Index({ auth, importRuns, importStatuses, queryParams = 
                                         <tr className="text-nowrap">
                                             <th className="px-3 py-2">{StringHelper.__("Name")}</th>
                                             <th className="px-3 py-2">{StringHelper.__("Type")}</th>
-                                            <TableHeader
-                                                name="status"
-                                                sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
-                                                sortChanged={sortChanged}
-                                                children={StringHelper.__("Status")}
-                                            />
+                                            <TableHeader name="status" sort_field={queryParams.sort_field}
+                                                sort_direction={queryParams.sort_direction} sortChanged={sortChanged}
+                                                children={StringHelper.__("Status")}/>
                                             <th className="px-3 py-2">{StringHelper.__("Created by")}</th>
                                             <th className="px-3 py-2">{StringHelper.__("Actions")}</th>
                                         </tr>
@@ -156,12 +125,9 @@ export default function Index({ auth, importRuns, importStatuses, queryParams = 
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
                                             <th className="px-3 py-2">
-                                                <TextInput
-                                                    className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={queryParams.definition_name}
-                                                    placeholder={StringHelper.__("Name")}
-                                                    onBlur={e => searchFieldChanged('definition_name', e.target.value)}
-                                                    onKeyPress={e => onKeyPress('definition_name', e)} />
+                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={queryParams.definition_name}
+                                                    placeholder={StringHelper.__("Name")} onBlur={e => searchFieldChanged("definition_name", e.target.value)}
+                                                    onKeyDown={e => handleKeyDown("definition_name", e)} />
                                             </th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2">

@@ -5,7 +5,6 @@ import StringHelper from "@/Libs/StringHelper.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
-// import { TbEdit } from "react-icons/tb";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import React, { useState } from "react";
 import WarningMessage from "@/Components/WarningMessage.jsx";
@@ -14,51 +13,20 @@ import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
 import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
 import EditButton from '@/Components/Forms/EditButton';
+import useSearchFilter from '@/Hooks/useSearchFilter';
 
-export default function Index({ auth, laboratories, queryParams = null, success, warning, failure }) {
-    queryParams = queryParams || {};
+export default function Index({ auth, laboratories, queryParams: initialQueryParams = null, success, warning, failure }) {
+    const { queryParams, searchFieldChanged, handleKeyDown, onSelectChange, sortChanged } = useSearchFilter("laboratories.index", initialQueryParams || {});
     const [modalOpen, setModalOpen] = useState(false);
-    const { setData, post } = useForm({
-        title: '',
-        file: null,
-    });
-    const searchFieldChanged = (name, value) => {
-        if (value) {
-            queryParams[name] = value;
-        } else {
-            delete queryParams[name];
-        }
-        router.get(route('laboratories.index'), queryParams);
-    }
-    const onKeyPress = (name, e) => {
-        if (e.key !== 'Enter') return;
-        searchFieldChanged(name, e.target.value);
-    }
-    const sortChanged = (name) => {
-        if (name === queryParams.sort_field) {
-            if (queryParams.sort_direction === 'asc') {
-                queryParams.sort_direction = 'desc';
-            } else {
-                queryParams.sort_direction = 'asc';
-            }
-        } else {
-            queryParams.sort_field = name;
-            queryParams.sort_direction = 'asc';
-        }
-        router.get(route('laboratories.index'), queryParams);
-    }
-    const handleFileSelect = (file) => {
-        setData('file', file);
-    };
+    const { setData, post } = useForm({ title: '', file: null,});
+    const handleFileSelect = (file) => { setData('file', file); };
     function handleSubmit2() {
         post(route("adminImports.laboratories"));
         setModalOpen(false);
         setData("title", "");
         setData("file", null);
     }
-    function closeModal() {
-        setModalOpen(false);
-    }
+    function closeModal() { setModalOpen(false); }
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -112,27 +80,12 @@ export default function Index({ auth, laboratories, queryParams = null, success,
                                     <thead
                                         className="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
-                                            <TableHeader
-                                                name="name"
-                                                sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
-                                                sortChanged={sortChanged}
-                                                children={StringHelper.__("Name")}
-                                            />
-                                            <TableHeader
-                                                name="ident_code"
-                                                sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
-                                                sortChanged={sortChanged}
-                                                children={StringHelper.__("Identification code")}
-                                            />
-                                            <TableHeader
-                                                name="updated_at"
-                                                sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
-                                                sortChanged={sortChanged}
-                                                children={StringHelper.__("Updated at")}
-                                            />
+                                            <TableHeader name="name" sort_field={queryParams.sort_field} sort_direction={queryParams.sort_direction}
+                                                sortChanged={sortChanged} children={StringHelper.__("Name")}/>
+                                            <TableHeader name="ident_code" sort_field={queryParams.sort_field} sort_direction={queryParams.sort_direction}
+                                                sortChanged={sortChanged} children={StringHelper.__("Identification code")}/>
+                                            <TableHeader name="updated_at" sort_field={queryParams.sort_field} sort_direction={queryParams.sort_direction}
+                                                sortChanged={sortChanged} children={StringHelper.__("Updated at")}/>
                                             <th className="px-3 py-2">{StringHelper.__("Created by")}</th>
                                             <th className="px-3 py-2">{StringHelper.__("Updated by")}</th>
                                             <th className="px-3 py-2">{StringHelper.__("Actions")}</th>
@@ -142,28 +95,21 @@ export default function Index({ auth, laboratories, queryParams = null, success,
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
                                             <th className="px-3 py-2">
-                                                <TextInput
-                                                    className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={queryParams.name}
-                                                    placeholder={StringHelper.__("Name")}
-                                                    onBlur={e => searchFieldChanged('name', e.target.value)}
-                                                    onKeyPress={e => onKeyPress('name', e)} />
+                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={queryParams.name}
+                                                    placeholder={StringHelper.__("Name")} onBlur={e => searchFieldChanged("name", e.target.value)}
+                                                    onKeyDown={e => handleKeyDown("name", e)} />
                                             </th>
                                             <th className="px-3 py-2">
-                                                <TextInput
-                                                    className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={queryParams.ident_code}
-                                                    placeholder={StringHelper.__("Identification code")}
-                                                    onBlur={e => searchFieldChanged('ident_code', e.target.value)}
-                                                    onKeyPress={e => onKeyPress('ident_code', e)} />
+                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={queryParams.ident_code}
+                                                    placeholder={StringHelper.__("Identification code")} onBlur={e => searchFieldChanged("ident_code", e.target.value)}
+                                                    onKeyDown={e => handleKeyDown("ident_code", e)}/>
                                             </th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2">
                                                 <TextInput className="w-full 3xl:text-base text-sm" placeholder={StringHelper.__("Updated by")}
-                                                    defaultValue={queryParams.updated_by}
-                                                    onBlur={e => searchFieldChanged('updated_by', e.target.value)}
-                                                    onKeyPress={e => onKeyPress('updated_by', e)} />
+                                                    defaultValue={queryParams.updated_by} onBlur={e => searchFieldChanged('updated_by', e.target.value)}
+                                                    onKeyDown={e => handleKeyDown("updated_by", e)} />
                                             </th>
                                             <th className="px-3 py-2"></th>
                                         </tr>
@@ -171,11 +117,10 @@ export default function Index({ auth, laboratories, queryParams = null, success,
                                     <tbody>
                                         {laboratories.data.map(laboratory => (
                                             <tr key={laboratory.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 sm:text-base">
-                                                <td className="px-3 py-2"><Link
-                                                    href={route("laboratories.show", laboratory.id)}
-                                                    className="text-black dark:text-green-400 hover:underline mx-1"
-                                                >{laboratory.name}
-                                                </Link>
+                                                <td className="px-3 py-2">
+                                                    <Link href={route("laboratories.show", laboratory.id)} className="text-black dark:text-green-400 hover:underline mx-1">
+                                                        {laboratory.name}
+                                                    </Link>
                                                 </td>
                                                 <td className="px-3 py-2">{laboratory.ident_code}</td>
                                                 <td className="px-3 py-2">{laboratory.updated_at}</td>
