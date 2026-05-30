@@ -16,7 +16,7 @@ import EditButton from '@/Components/Forms/EditButton';
 import useSearchFilter from '@/Hooks/useSearchFilter';
 
 export default function Index({ auth, laboratories, queryParams: initialQueryParams = null, success, warning, failure }) {
-    const { queryParams, searchFieldChanged, handleKeyDown, onSelectChange, sortChanged } = useSearchFilter("laboratories.index", initialQueryParams || {});
+    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, resetFilters } = useSearchFilter("laboratories.index", initialQueryParams || {});
     const [modalOpen, setModalOpen] = useState(false);
     const { setData, post } = useForm({ title: '', file: null,});
     const handleFileSelect = (file) => { setData('file', file); };
@@ -54,7 +54,7 @@ export default function Index({ auth, laboratories, queryParams: initialQueryPar
                             </Link>
                             <button type="button" id="export-entries" title="Export all data from the database or export a specific set with the defined search paramters in the table."
                                 className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                <a href={route("adminExports.laboratories", queryParams)}>{StringHelper.__("Export")}</a></button></>
+                                <a href={route("adminExports.laboratories", filterValues)}>{StringHelper.__("Export")}</a></button></>
                         }
                     </GroupButtonDropdown>
                 </div>
@@ -80,11 +80,11 @@ export default function Index({ auth, laboratories, queryParams: initialQueryPar
                                     <thead
                                         className="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
-                                            <TableHeader name="name" sort_field={queryParams.sort_field} sort_direction={queryParams.sort_direction}
+                                            <TableHeader name="name" sort_field={filterValues.sort_field} sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged} children={StringHelper.__("Name")}/>
-                                            <TableHeader name="ident_code" sort_field={queryParams.sort_field} sort_direction={queryParams.sort_direction}
+                                            <TableHeader name="ident_code" sort_field={filterValues.sort_field} sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged} children={StringHelper.__("Identification code")}/>
-                                            <TableHeader name="updated_at" sort_field={queryParams.sort_field} sort_direction={queryParams.sort_direction}
+                                            <TableHeader name="updated_at" sort_field={filterValues.sort_field} sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged} children={StringHelper.__("Updated at")}/>
                                             <th className="px-3 py-2">{StringHelper.__("Created by")}</th>
                                             <th className="px-3 py-2">{StringHelper.__("Updated by")}</th>
@@ -95,20 +95,23 @@ export default function Index({ auth, laboratories, queryParams: initialQueryPar
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
                                             <th className="px-3 py-2">
-                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={queryParams.name}
-                                                    placeholder={StringHelper.__("Name")} onBlur={e => searchFieldChanged("name", e.target.value)}
+                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={filterValues.name}
+                                                    placeholder={StringHelper.__("Name")} onChange={(e) => onInputChange("name", e)}
+                                                    onBlur={e => onInputBlur("name", e)}
                                                     onKeyDown={e => handleKeyDown("name", e)} />
                                             </th>
                                             <th className="px-3 py-2">
-                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={queryParams.ident_code}
-                                                    placeholder={StringHelper.__("Identification code")} onBlur={e => searchFieldChanged("ident_code", e.target.value)}
+                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={filterValues.ident_code}
+                                                    placeholder={StringHelper.__("Identification code")} onChange={(e) => onInputChange("ident_code", e)}
+                                                    onBlur={e => onInputBlur("ident_code", e)}
                                                     onKeyDown={e => handleKeyDown("ident_code", e)}/>
                                             </th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2">
                                                 <TextInput className="w-full 3xl:text-base text-sm" placeholder={StringHelper.__("Updated by")}
-                                                    defaultValue={queryParams.updated_by} onBlur={e => searchFieldChanged('updated_by', e.target.value)}
+                                                    defaultValue={filterValues.updated_by} onChange={(e) => onInputChange("updated_by", e)}
+                                                    onBlur={e => onInputBlur('updated_by', e)}
                                                     onKeyDown={e => handleKeyDown("updated_by", e)} />
                                             </th>
                                             <th className="px-3 py-2"></th>

@@ -74,7 +74,6 @@ class InventoryItemController extends Controller
         }
 
         $inventoryItems = $query
-            ->orderByRaw('total_amount <= critical_amount DESC')
             ->orderBy($sortField, $sortDirection)
             ->paginate(50)
             ->withQueryString()->onEachSide(1);
@@ -114,7 +113,6 @@ class InventoryItemController extends Controller
             });
         }
         $inventoryItems = $query
-            ->orderByRaw('total_amount <= critical_amount DESC')
             ->orderBy($sortField, $sortDirection)
             ->paginate(50)
             ->withQueryString()->onEachSide(1);
@@ -170,7 +168,7 @@ class InventoryItemController extends Controller
     public function create(Request $request): Response
     {
         Gate::authorize('create', InventoryItem::class);
-        
+
         $laboratories = Laboratory::query()->get();
         $itemTypes = ItemType::query()->get();
 
@@ -472,7 +470,7 @@ class InventoryItemController extends Controller
 
         $import = new InventoryImport();
         Excel::import($import, $file);
-        
+
         if (!empty($import->caughtFailures)){
             NotifyFailedImports::dispatch($import->caughtFailures, auth()->user());
             return to_route("inventoryItems.${referrer}")->with('failure', __('actions.uploaded.not_fully', ['name' => $fileName]));

@@ -40,7 +40,7 @@ export default function Index({ auth, importRuns, importStatuses, queryParams: i
     //     }
     // };
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
-    const { queryParams, searchFieldChanged, handleKeyDown, onSelectChange, sortChanged } = useSearchFilter("import-runs.index", initialQueryParams || {});
+    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, resetFilters } = useSearchFilter("import-runs.index", initialQueryParams || {});
     const {delete: destroy, processing} = useForm();
     const handleDestroy = (value) => {
         if (window.confirm(handleConfirmMessage)) {
@@ -114,8 +114,8 @@ export default function Index({ auth, importRuns, importStatuses, queryParams: i
                                         <tr className="text-nowrap">
                                             <th className="px-3 py-2">{StringHelper.__("Name")}</th>
                                             <th className="px-3 py-2">{StringHelper.__("Type")}</th>
-                                            <TableHeader name="status" sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction} sortChanged={sortChanged}
+                                            <TableHeader name="status" sort_field={filterValues.sort_field}
+                                                sort_direction={filterValues.sort_direction} sortChanged={sortChanged}
                                                 children={StringHelper.__("Status")}/>
                                             <th className="px-3 py-2">{StringHelper.__("Created by")}</th>
                                             <th className="px-3 py-2">{StringHelper.__("Actions")}</th>
@@ -125,13 +125,15 @@ export default function Index({ auth, importRuns, importStatuses, queryParams: i
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
                                             <th className="px-3 py-2">
-                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={queryParams.definition_name}
-                                                    placeholder={StringHelper.__("Name")} onBlur={e => searchFieldChanged("definition_name", e.target.value)}
-                                                    onKeyDown={e => handleKeyDown("definition_name", e)} />
+                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={filterValues.definition_name}
+                                                    placeholder={StringHelper.__("Name")}
+                                                    onChange={(e) => onInputChange("definition_name", e)}
+                                                    onBlur={(e) => onInputBlur("definition_name", e)}
+                                                    onKeyDown={(e) => handleKeyDown("definition_name", e)} />
                                             </th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2">
-                                                <SteamDropdown name="import_run_query_select" className="w-full 3xl:text-base text-sm text-gray-500" value={queryParams.status} options={importStatuses} onChange={e => onSelectChange('status', e)} />
+                                                <SteamDropdown name="import_run_query_select" className="w-full 3xl:text-base text-sm text-gray-500" value={filterValues.status} options={importStatuses} onChange={e => onSelectChange('status', e)} />
                                             </th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>

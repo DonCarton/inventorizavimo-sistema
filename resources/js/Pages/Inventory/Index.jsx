@@ -18,7 +18,7 @@ import MiscButton from "@/Components/Forms/MiscButton";
 import useSearchFilter from "@/Hooks/useSearchFilter";
 
 export default function Index({ auth, inventoryItems, itemTypes, queryParams: initialQueryParams = null, success, failure }) {
-    const { queryParams, searchFieldChanged, handleKeyDown, onSelectChange, sortChanged, } = useSearchFilter("inventoryItems.index", initialQueryParams || {});
+    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, resetFilters } = useSearchFilter("inventoryItems.index", initialQueryParams || {});
     const [modalOpen, setModalOpen] = useState(false);
     const { setData, post } = useForm({ title: "",  file: null, failsViaMail: false });
     const handleCheckbox = (e) => { setData("failsViaMail", e.target.checked); };
@@ -54,7 +54,7 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams: in
                     <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory" nameOfDropdownButton={StringHelper.__("Actions")}>
                         {auth.can.create.inventoryItem ? (
                             <>
-                                <Link href={route("inventoryItems.create", {query: queryParams})}>
+                                <Link href={route("inventoryItems.create", {query: filterValues})}>
                                     <button type="button" id="create-new-entry" title="Create a new entry in the current page."
                                         className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150"
                                     >
@@ -70,7 +70,7 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams: in
                                         </Link>
                                     </button>
                                 </Link>
-                                <a href={route("exports.inventoryItems",queryParams)}>
+                                <a href={route("exports.inventoryItems",filterValues)}>
                                     <button type="button" id="export-entries" title="Export all data from the database or export a specific set with the defined search parameters in the table."
                                         className="px-2 py-1 bg-white border-b-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150"
                                     >
@@ -79,7 +79,7 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams: in
                                 </a>
                             </>
                         ) : (
-                            <DownloadButton linkToItem={route("exports.inventoryItems",queryParams)}>
+                            <DownloadButton linkToItem={route("exports.inventoryItems",filterValues)}>
                                 {StringHelper.__("Export")}
                             </DownloadButton>
                         )}
@@ -113,20 +113,20 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams: in
                                     <thead className="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
                                             <TableHeader
-                                                name="local_name" sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
+                                                name="local_name" sort_field={filterValues.sort_field}
+                                                sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged}
                                                 children={StringHelper.__("Local name")}
                                             />
                                             <TableHeader
-                                                name="name" sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
+                                                name="name" sort_field={filterValues.sort_field}
+                                                sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged}
                                                 children={StringHelper.__("Name")}
                                             />
                                             <TableHeader
-                                                name="name_eng" sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
+                                                name="name_eng" sort_field={filterValues.sort_field}
+                                                sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged}
                                                 children={StringHelper.__("Name ENG")}
                                             />
@@ -134,20 +134,20 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams: in
                                                 {StringHelper.__("Count")}
                                             </th>
                                             <TableHeader
-                                                name="inventory_type" sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
+                                                name="inventory_type" sort_field={filterValues.sort_field}
+                                                sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged}
                                                 children={StringHelper.__("Type")}
                                             />
                                             <TableHeader
-                                                name="laboratory" sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
+                                                name="laboratory" sort_field={filterValues.sort_field}
+                                                sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged}
                                                 children={StringHelper.__("Laboratory")}
                                             />
                                             <TableHeader
-                                                name="updated_by" sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
+                                                name="updated_by" sort_field={filterValues.sort_field}
+                                                sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged}
                                                 children={StringHelper.__("Updated by")}
                                             />
@@ -161,25 +161,31 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams: in
                                             <th className="px-3 py-2">
                                                 <TextInput
                                                     className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={queryParams.local_name || ''}
+                                                    defaultValue={filterValues.local_name || ''}
                                                     placeholder={StringHelper.__("Item search")}
-                                                    onKeyDown={(e) => handleKeyDown("local_name",e)}
+                                                    onChange={(e) => onInputChange("local_name", e)}
+                                                    onBlur={(e) => onInputBlur("local_name", e)}
+                                                    onKeyDown={(e) => handleKeyDown("local_name", e)}
                                                 />
                                             </th>
                                             <th className="px-3 py-2">
                                                 <TextInput
                                                     className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={queryParams.name}
+                                                    defaultValue={filterValues.name}
                                                     placeholder={StringHelper.__("Name")}
+                                                    onChange={(e) => onInputChange("name", e)}
+                                                    onBlur={(e) => onInputBlur("name", e)}
                                                     onKeyDown={(e) =>handleKeyDown("name", e)}
                                                 />
                                             </th>
                                             <th className="px-3 py-2">
                                                 <TextInput
                                                     className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={queryParams.name_eng}
+                                                    defaultValue={filterValues.name_eng}
                                                     placeholder={StringHelper.__("Name ENG")}
-                                                    onKeyDown={(e) => handleKeyDown("name_eng",e)}
+                                                    onChange={(e) => onInputChange("name_eng", e)}
+                                                    onBlur={(e) => onInputBlur("name_eng", e)}
+                                                    onKeyDown={(e) => handleKeyDown("name_eng", e)}
                                                 />
                                             </th>
                                             <th className="px-3 py-2"></th>
@@ -187,26 +193,28 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams: in
                                                 <SteamDropdown
                                                     name="inventory_type_query_select"
                                                     className="w-full 3xl:text-base text-sm text-gray-500"
-                                                    value={queryParams.inventory_type}
+                                                    value={filterValues.inventory_type}
+                                                    onChange={(e) => onSelectChange("inventory_type", e)}
                                                     options={itemTypes.data}
-                                                    onChange={(e) => onSelectChange("inventory_type",e)}
                                                 />
                                             </th>
                                             <th className="px-3 py-2">
                                                 <TextInput
                                                     className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={queryParams.laboratory}
+                                                    defaultValue={filterValues.laboratory}
                                                     placeholder={StringHelper.__("Laboratory")}
-                                                    onKeyDown={(e) => handleKeyDown("laboratory",e)}
+                                                    onChange={(e) => onInputChange("laboratory", e)}
+                                                    onBlur={(e) => onInputBlur("laboratory", e)}
+                                                    onKeyDown={(e) => handleKeyDown("laboratory", e)}
                                                 />
                                             </th>
                                             <th className="px-3 py-2">
                                                 <TextInput
                                                     className="w-full 3xl:text-base text-sm"
                                                     placeholder={StringHelper.__("Updated by")}
-                                                    defaultValue={queryParams.updated_by}
-                                                    onBlur={(e) =>searchFieldChanged("updated_by",e.target.value,)}
-                                                    onKeyDown={(e) => handleKeyDown("updated_by",e,)}
+                                                    defaultValue={filterValues.updated_by}
+                                                    onBlur={(e) => onInputBlur("updated_by", e)}
+                                                    onKeyDown={(e) => handleKeyDown("updated_by", e)}
                                                 />
                                             </th>
                                             <th className="px-3 py-2"></th>
@@ -226,7 +234,7 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams: in
                                                                 {
                                                                     inventoryItem:
                                                                         inventoryItem.id,
-                                                                    query: queryParams,
+                                                                    query: filterValues,
                                                                 },
                                                             )}
                                                             className="font-medium text-gray-700 dark:text-white hover:underline mx-1"
@@ -254,7 +262,7 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams: in
                                                                         {
                                                                             inventoryItem:
                                                                                 inventoryItem.id,
-                                                                            query: queryParams,
+                                                                            query: filterValues,
                                                                         }
                                                                     )}
                                                                     icon={TbEdit}
@@ -269,7 +277,7 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams: in
                                                                     {
                                                                         inventoryItem:
                                                                             inventoryItem.id,
-                                                                        query: queryParams,
+                                                                        query: filterValues,
                                                                     },
                                                                 )}
                                                                 icon={TbArrowsUpDown}
