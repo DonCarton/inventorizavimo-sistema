@@ -14,9 +14,10 @@ import FailureMessage from "@/Components/FailureMessage.jsx";
 import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
 import EditButton from '@/Components/Forms/EditButton';
 import useSearchFilter from '@/Hooks/useSearchFilter';
+import SearchInput from '@/Components/SearchInput';
 
 export default function Index({ auth, laboratories, queryParams: initialQueryParams = null, success, warning, failure }) {
-    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, resetFilters } = useSearchFilter("laboratories.index", initialQueryParams || {});
+    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, clearField, resetFilters } = useSearchFilter("laboratories.index", initialQueryParams || {});
     const [modalOpen, setModalOpen] = useState(false);
     const { setData, post } = useForm({ title: '', file: null,});
     const handleFileSelect = (file) => { setData('file', file); };
@@ -95,23 +96,23 @@ export default function Index({ auth, laboratories, queryParams: initialQueryPar
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
                                             <th className="px-3 py-2">
-                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={filterValues.name}
+                                                <SearchInput className="w-full 3xl:text-base text-sm" value={filterValues.name ?? ''}
                                                     placeholder={StringHelper.__("Name")} onChange={(e) => onInputChange("name", e)}
-                                                    onBlur={e => onInputBlur("name", e)}
+                                                    onBlur={e => onInputBlur("name", e)} onClear={() => clearField("name")}
                                                     onKeyDown={e => handleKeyDown("name", e)} />
                                             </th>
                                             <th className="px-3 py-2">
-                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={filterValues.ident_code}
+                                                <SearchInput className="w-full 3xl:text-base text-sm" value={filterValues.ident_code ?? ''}
                                                     placeholder={StringHelper.__("Identification code")} onChange={(e) => onInputChange("ident_code", e)}
-                                                    onBlur={e => onInputBlur("ident_code", e)}
+                                                    onBlur={e => onInputBlur("ident_code", e)} onClear={() => clearField("ident_code")}
                                                     onKeyDown={e => handleKeyDown("ident_code", e)}/>
                                             </th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2">
-                                                <TextInput className="w-full 3xl:text-base text-sm" placeholder={StringHelper.__("Updated by")}
-                                                    defaultValue={filterValues.updated_by} onChange={(e) => onInputChange("updated_by", e)}
-                                                    onBlur={e => onInputBlur('updated_by', e)}
+                                                <SearchInput className="w-full 3xl:text-base text-sm" placeholder={StringHelper.__("Updated by")}
+                                                    value={filterValues.updated_by ?? ''} onChange={(e) => onInputChange("updated_by", e)}
+                                                    onBlur={e => onInputBlur('updated_by', e)} onClear={() => clearField("updated_by")}
                                                     onKeyDown={e => handleKeyDown("updated_by", e)} />
                                             </th>
                                             <th className="px-3 py-2"></th>

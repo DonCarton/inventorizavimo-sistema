@@ -11,9 +11,10 @@ import React, {useState} from "react";
 import HistoryLog from "@/Components/Forms/HistoryLog.jsx";
 import ActionButton from '@/Components/Forms/ActionButton';
 import FlexibleStaticSelect from '@/Components/Forms/FlexibleStaticSelect';
+import LogsTable from "@/Components/Forms/LogsTable.jsx";
 
 
-export default function Show({auth, inventoryItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions}) {
+export default function Show({auth, inventoryItem, logsForItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions}) {
     const [openAll, setOpenAll] = useState(true);
     const toggleAllAccordions = () => {
         setOpenAll(!openAll);
@@ -280,6 +281,7 @@ export default function Show({auth, inventoryItem, laboratories, facilities, ite
                                 </div>
                             </div>
                         </div>
+                        {logsForItem.data.length > 0 && <LogsTable logsForItem={logsForItem}/>}
                     </div>
                 </div>
             </div>

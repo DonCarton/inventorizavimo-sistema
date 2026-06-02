@@ -14,9 +14,10 @@ import FailureMessage from "@/Components/FailureMessage.jsx";
 import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
 import EditButton from '@/Components/Forms/EditButton';
 import useSearchFilter from '@/Hooks/useSearchFilter';
+import SearchInput from '@/Components/SearchInput';
 
 export default function Index({ auth, facilities, queryParams: initialQueryParams = null, flash }) {
-    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, resetFilters } = useSearchFilter("facilities.index", initialQueryParams || {});
+    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, clearField, resetFilters } = useSearchFilter("facilities.index", initialQueryParams || {});
     const [modalOpen, setModalOpen] = useState(false);
     const { setData, post } = useForm({ title: '', file: null });
     return (
@@ -72,8 +73,9 @@ export default function Index({ auth, facilities, queryParams: initialQueryParam
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
                                             <th className="px-3 py-2">
-                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={filterValues.name}
+                                                <SearchInput className="w-full 3xl:text-base text-sm" value={filterValues.name ?? ''}
                                                     placeholder={StringHelper.__("Name")}
+                                                    onClear={() => clearField("name")}
                                                     onChange={(e) => onInputChange("name", e)}
                                                     onBlur={(e) => onInputBlur("name", e)}
                                                     onKeyDown={(e) => handleKeyDown("name", e)} />
@@ -81,8 +83,9 @@ export default function Index({ auth, facilities, queryParams: initialQueryParam
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2">
-                                                <TextInput className="w-full 3xl:text-base text-sm" placeholder={StringHelper.__("Updated by")}
-                                                    defaultValue={filterValues.updated_by}
+                                                <SearchInput className="w-full 3xl:text-base text-sm" placeholder={StringHelper.__("Updated by")}
+                                                    value={filterValues.updated_by ?? ''}
+                                                    onClear={() => clearField("updated_by")}
                                                     onChange={(e) => onInputChange("updated_by", e)}
                                                     onBlur={(e) => onInputBlur("updated_by", e)}
                                                     onKeyDown={(e) => handleKeyDown("updated_by", e)} />

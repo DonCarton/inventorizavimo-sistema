@@ -8,58 +8,32 @@ import FileUploadModal from "@/Components/FileUploadModal.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
 import TableHeader from "@/Components/TableHeader.jsx";
-import TextInput from "@/Components/TextInput.jsx";
 import { TbArrowsUpDown, TbEdit } from "react-icons/tb";
 import Pagination from "@/Components/Pagination.jsx";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
 import SteamDropdown from "@/Components/SteamDropdown";
 import BulkActionsButton from "@/Components/Actions/BulkActionsButton";
 import MiscButton from "@/Components/Forms/MiscButton";
+import useSearchFilter from "@/Hooks/useSearchFilter";
+import SearchInput from '@/Components/SearchInput';
 
-export default function MyLaboratory({ auth, inventoryItems, itemTypes, queryParams = null, success, failure }) {
-    queryParams = queryParams || {};
+export default function MyLaboratory({ auth, inventoryItems, itemTypes, queryParams: initialQueryParams = null, success, failure }) {
+    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, clearField, resetFilters } = useSearchFilter("inventoryItems.myLaboratory", initialQueryParams || {});
     const [modalOpen, setModalOpen] = useState(false);
     const { setData, post } = useForm({
         title: '',
         file: null,
         referrer: 'myLaboratory'
     });
-    const searchFieldChanged = (name, value) => {
-        if (value) {
-            queryParams[name] = value;
-        } else {
-            delete queryParams[name];
-        }
-        router.get(route('inventoryItems.myLaboratory'), queryParams);
-    }
-    const onKeyPress = (name, e) => {
-        if (e.key !== 'Enter') return;
-        searchFieldChanged(name, e.target.value);
-    }
-    const sortChanged = (name) => {
-        if (name === queryParams.sort_field) {
-            if (queryParams.sort_direction === 'asc') {
-                queryParams.sort_direction = 'desc';
-            } else {
-                queryParams.sort_direction = 'asc';
-            }
-        } else {
-            queryParams.sort_field = name;
-            queryParams.sort_direction = 'asc';
-        }
-        router.get(route('inventoryItems.myLaboratory'), queryParams);
-    }
     const handleFileSelect = (file) => {
         setData('file', file);
     };
-
     function handleSubmit2() {
         post(route("adminImports.inventoryItems"));
         setModalOpen(false);
         setData("title", "");
         setData("file", null);
     }
-
     function closeModal() {
         setModalOpen(false);
     }
@@ -80,12 +54,12 @@ export default function MyLaboratory({ auth, inventoryItems, itemTypes, queryPar
                     <GroupButtonDropdown id="dropdown-actions-inventory" name="actions-inventory"
                         nameOfDropdownButton={StringHelper.__("Actions")}>
                         {auth.can.create.inventoryItem ? <>
-                            <Link href={route("inventoryItems.create", { referrer: 'myLaboratory', query: queryParams })}>
+                            <Link href={route("inventoryItems.create", { referrer: 'myLaboratory', query: filterValues })}>
                                 <button type="button" id="create-new-entry" title="Create a new entry in the current page."
                                     className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
                                     {StringHelper.__("Create")}</button>
                             </Link>
-                            <a href={route("exports.myLaboratoryInventoryItems", queryParams)}>
+                            <a href={route("exports.myLaboratoryInventoryItems", filterValues)}>
                                 <button type="button" id="export-entries"
                                     title="Export all data from the database or export a specific set with the defined search paramters in the table."
                                     className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
@@ -93,7 +67,7 @@ export default function MyLaboratory({ auth, inventoryItems, itemTypes, queryPar
                                 </button>
                             </a>
                         </> :
-                            <DownloadButton linkToItem={route("exports.myLaboratoryInventoryItems", queryParams)}>{StringHelper.__("Export")}</DownloadButton>
+                            <DownloadButton linkToItem={route("exports.myLaboratoryInventoryItems", filterValues)}>{StringHelper.__("Export")}</DownloadButton>
                         }
                     </GroupButtonDropdown>
                 </div>
@@ -120,37 +94,37 @@ export default function MyLaboratory({ auth, inventoryItems, itemTypes, queryPar
                                         <tr className="text-nowrap">
                                             <TableHeader
                                                 name="local_name"
-                                                sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
+                                                sort_field={filterValues.sort_field}
+                                                sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged}
                                                 children={StringHelper.__("Local name")}
                                             />
                                             <TableHeader
                                                 name="name"
-                                                sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
+                                                sort_field={filterValues.sort_field}
+                                                sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged}
                                                 children={StringHelper.__("Name")}
                                             />
                                             <TableHeader
                                                 name="name_eng"
-                                                sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
+                                                sort_field={filterValues.sort_field}
+                                                sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged}
                                                 children={StringHelper.__("Name ENG")}
                                             />
                                             <th className="px-3 py-2">{StringHelper.__("Count")}</th>
                                             <TableHeader
                                                 name="inventory_type"
-                                                sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
+                                                sort_field={filterValues.sort_field}
+                                                sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged}
                                                 children={StringHelper.__("Type")}
                                             />
                                             <TableHeader
                                                 name="updated_by"
-                                                sort_field={queryParams.sort_field}
-                                                sort_direction={queryParams.sort_direction}
+                                                sort_field={filterValues.sort_field}
+                                                sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged}
                                                 children={StringHelper.__("Updated by")}
                                             />
@@ -161,40 +135,53 @@ export default function MyLaboratory({ auth, inventoryItems, itemTypes, queryPar
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
                                             <th className="px-3 py-2">
-                                                <TextInput
+                                                <SearchInput
                                                     className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={queryParams.local_name}
+                                                    value={filterValues.local_name ?? ''}
                                                     placeholder={StringHelper.__("Item search")}
-                                                    onKeyPress={e => onKeyPress('local_name', e)}
+                                                    onChange={(e) => onInputChange("local_name", e)}
+                                                    onBlur={(e) => onInputBlur("local_name", e)}
+                                                    onKeyDown={(e) => handleKeyDown("local_name", e)}
+                                                    onClear={() => clearField("local_name")}
                                                 />
                                             </th>
                                             <th className="px-3 py-2">
-                                                <TextInput
+                                                <SearchInput
                                                     className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={queryParams.name}
+                                                    value={filterValues.name ?? ''}
                                                     placeholder={StringHelper.__("Name")}
-                                                    onKeyPress={e => onKeyPress('name', e)} />
+                                                    onChange={(e) => onInputChange("name", e)}
+                                                    onBlur={(e) => onInputBlur("name", e)}
+                                                    onKeyDown={(e) => handleKeyDown("name", e)}
+                                                    onClear={() => clearField("name")}
+                                                />
                                             </th>
                                             <th className="px-3 py-2">
-                                                <TextInput
+                                                <SearchInput
                                                     className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={queryParams.name_eng}
+                                                    value={filterValues.name_eng ?? ''}
                                                     placeholder={StringHelper.__("Name ENG")}
-                                                    onKeyPress={e => onKeyPress('name_eng', e)} />
+                                                    onChange={(e) => onInputChange("name_eng", e)}
+                                                    onBlur={(e) => onInputBlur("name_eng", e)}
+                                                    onKeyDown={(e) => handleKeyDown("name_eng", e)}
+                                                    onClear={() => clearField("name_eng")}
+                                                />
                                             </th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2">
                                                 <SteamDropdown name="inventory_type_query_select"
                                                     className="w-full 3xl:text-base text-sm text-gray-500"
-                                                    value={queryParams.inventory_type} options={itemTypes.data}
-                                                    onChange={e => searchFieldChanged('inventory_type', e.target.value)} />
+                                                    value={filterValues.inventory_type} options={itemTypes.data}
+                                                    onChange={(e) => onSelectChange("inventory_type", e)} />
                                             </th>
                                             <th className="px-3 py-2">
-                                                <TextInput className="w-full 3xl:text-base text-sm"
+                                                <SearchInput className="w-full 3xl:text-base text-sm"
                                                     placeholder={StringHelper.__("Updated by")}
-                                                    defaultValue={queryParams.updated_by}
-                                                    onBlur={e => searchFieldChanged('updated_by', e.target.value)}
-                                                    onKeyPress={e => onKeyPress('updated_by', e)} />
+                                                    value={filterValues.updated_by ?? ''}
+                                                    onChange={(e) => onInputChange("updated_by", e)}
+                                                    onBlur={(e) => onInputBlur("updated_by", e)}
+                                                    onKeyDown={(e) => handleKeyDown("updated_by", e)}
+                                                    onClear={() => clearField("updated_by")} />
                                             </th>
                                             <th className="px-3 py-2"></th>
                                         </tr>
@@ -210,7 +197,7 @@ export default function MyLaboratory({ auth, inventoryItems, itemTypes, queryPar
                                                 <td className="px-3 py-2">
                                                     <Link href={route("inventoryItems.show", {
                                                         inventoryItem: inventoryItem.id,
-                                                        query: queryParams,
+                                                        query: filterValues,
                                                         referrer: 'myLaboratory'
                                                     })}
                                                         className="font-medium text-gray-700 dark:text-white hover:underline mx-1">
@@ -226,13 +213,13 @@ export default function MyLaboratory({ auth, inventoryItems, itemTypes, queryPar
                                                     <BulkActionsButton>
                                                         <MiscButton as="link" to={route("inventoryItems.editRaw", {
                                                                 inventoryItem: inventoryItem.id,
-                                                                query: queryParams,
+                                                                query: filterValues,
                                                                 referrer: 'myLaboratory'
                                                             })} classVariant="green" title={StringHelper.__("Edit")}
                                                             icon={TbEdit} children={StringHelper.__("Edit")}/>
                                                         <MiscButton as="link" to={route("inventoryItems.edit", {
                                                                 inventoryItem: inventoryItem.id,
-                                                                query: queryParams,
+                                                                query: filterValues,
                                                                 referrer: 'myLaboratory'
                                                             })} classVariant="green" title={StringHelper.__("Edit amount")}
                                                             icon={TbArrowsUpDown} children={StringHelper.__("Change amount")}/>
