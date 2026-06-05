@@ -4,7 +4,7 @@ import Pagination from "@/Components/Pagination.jsx";
 import StringHelper from "@/Libs/StringHelper.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import React from "react";
-import TextInput from "@/Components/TextInput.jsx";
+import SearchInput from '@/Components/SearchInput';
 import TableHeader from "@/Components/TableHeader.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
@@ -14,6 +14,7 @@ import DeleteButton from '@/Components/Forms/DeleteButton';
 import EditButton from '@/Components/Forms/EditButton';
 import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
 import MiscButton from '@/Components/Forms/MiscButton';
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import { TbEdit } from 'react-icons/tb';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { VscDebugRerun } from 'react-icons/vsc';
@@ -21,7 +22,7 @@ import useSearchFilter from '@/Hooks/useSearchFilter';
 
 export default function Index({ auth, importDefinitions, queryParams: initialQueryParams = null, flash }) {
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
-    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, resetFilters } = useSearchFilter("import-definitions.index", initialQueryParams || {});
+    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, clearField, resetFilters } = useSearchFilter("import-definitions.index", initialQueryParams || {});
     const {delete: destroy, processing} = useForm();
     const handleDestroy = (value) => {
         if (window.confirm(handleConfirmMessage)) {
@@ -95,8 +96,9 @@ export default function Index({ auth, importDefinitions, queryParams: initialQue
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
                                             <th className="px-3 py-2">
-                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={filterValues.name}
+                                                <SearchInput className="w-full 3xl:text-base text-sm" value={filterValues.name ?? ''}
                                                     placeholder={StringHelper.__("Name")}
+                                                    onClear={() => clearField("name")}
                                                     onChange={(e) => onInputChange("name", e)}
                                                     onBlur={(e) => onInputBlur("name", e)}
                                                     onKeyDown={(e) => handleKeyDown("name", e)} />
@@ -104,7 +106,13 @@ export default function Index({ auth, importDefinitions, queryParams: initialQue
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>
-                                            <th className="px-3 py-2"></th>
+                                            <th className="px-3 py-2">
+                                                {Object.values(filterValues).some(v => v !== '' && v != null) && <PrimaryButton onClick={resetFilters}
+                                                    className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 uppercase tracking-widest font-semibold whitespace-nowrap"
+                                                >
+                                                    {StringHelper.__("Clear all")}
+                                                </PrimaryButton>}
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>

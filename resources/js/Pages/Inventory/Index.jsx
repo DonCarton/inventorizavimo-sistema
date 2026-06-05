@@ -16,9 +16,11 @@ import SteamDropdown from "@/Components/SteamDropdown";
 import BulkActionsButton from "@/Components/Actions/BulkActionsButton";
 import MiscButton from "@/Components/Forms/MiscButton";
 import useSearchFilter from "@/Hooks/useSearchFilter";
+import SearchInput from "@/Components/SearchInput";
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
 export default function Index({ auth, inventoryItems, itemTypes, queryParams: initialQueryParams = null, success, failure }) {
-    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, resetFilters } = useSearchFilter("inventoryItems.index", initialQueryParams || {});
+    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, clearField, resetFilters } = useSearchFilter("inventoryItems.index", initialQueryParams || {});
     const [modalOpen, setModalOpen] = useState(false);
     const { setData, post } = useForm({ title: "",  file: null, failsViaMail: false });
     const handleCheckbox = (e) => { setData("failsViaMail", e.target.checked); };
@@ -159,33 +161,36 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams: in
                                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
                                             <th className="px-3 py-2">
-                                                <TextInput
-                                                    className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={filterValues.local_name || ''}
+                                                <SearchInput
+                                                    value={filterValues.local_name ?? ''}
                                                     placeholder={StringHelper.__("Item search")}
                                                     onChange={(e) => onInputChange("local_name", e)}
                                                     onBlur={(e) => onInputBlur("local_name", e)}
+                                                    onClear={() => clearField("local_name")}
                                                     onKeyDown={(e) => handleKeyDown("local_name", e)}
+                                                    className="w-full 3xl:text-base text-sm"
                                                 />
                                             </th>
                                             <th className="px-3 py-2">
-                                                <TextInput
-                                                    className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={filterValues.name}
+                                                <SearchInput
+                                                    value={filterValues.name ?? ''}
                                                     placeholder={StringHelper.__("Name")}
                                                     onChange={(e) => onInputChange("name", e)}
                                                     onBlur={(e) => onInputBlur("name", e)}
-                                                    onKeyDown={(e) =>handleKeyDown("name", e)}
+                                                    onKeyDown={(e) => handleKeyDown("name", e)}
+                                                    onClear={() => clearField("name")}
+                                                    className="w-full 3xl:text-base text-sm"
                                                 />
                                             </th>
                                             <th className="px-3 py-2">
-                                                <TextInput
-                                                    className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={filterValues.name_eng}
+                                                <SearchInput
+                                                    value={filterValues.name_eng ?? ''}
                                                     placeholder={StringHelper.__("Name ENG")}
                                                     onChange={(e) => onInputChange("name_eng", e)}
                                                     onBlur={(e) => onInputBlur("name_eng", e)}
                                                     onKeyDown={(e) => handleKeyDown("name_eng", e)}
+                                                    onClear={() => clearField("name_eng")}
+                                                    className="w-full 3xl:text-base text-sm"
                                                 />
                                             </th>
                                             <th className="px-3 py-2"></th>
@@ -193,31 +198,40 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams: in
                                                 <SteamDropdown
                                                     name="inventory_type_query_select"
                                                     className="w-full 3xl:text-base text-sm text-gray-500"
-                                                    value={filterValues.inventory_type}
+                                                    value={filterValues.inventory_type ?? ''}
                                                     onChange={(e) => onSelectChange("inventory_type", e)}
                                                     options={itemTypes.data}
                                                 />
                                             </th>
                                             <th className="px-3 py-2">
-                                                <TextInput
-                                                    className="w-full 3xl:text-base text-sm"
-                                                    defaultValue={filterValues.laboratory}
+                                                <SearchInput
+                                                    value={filterValues.laboratory ?? ''}
                                                     placeholder={StringHelper.__("Laboratory")}
                                                     onChange={(e) => onInputChange("laboratory", e)}
                                                     onBlur={(e) => onInputBlur("laboratory", e)}
                                                     onKeyDown={(e) => handleKeyDown("laboratory", e)}
+                                                    onClear={() => clearField("laboratory")}
+                                                    className="w-full 3xl:text-base text-sm"
                                                 />
                                             </th>
                                             <th className="px-3 py-2">
-                                                <TextInput
-                                                    className="w-full 3xl:text-base text-sm"
+                                                <SearchInput
+                                                    value={filterValues.updated_by ?? ''}
                                                     placeholder={StringHelper.__("Updated by")}
-                                                    defaultValue={filterValues.updated_by}
+                                                    onChange={(e) => onInputChange("updated_by", e)}
                                                     onBlur={(e) => onInputBlur("updated_by", e)}
                                                     onKeyDown={(e) => handleKeyDown("updated_by", e)}
+                                                    onClear={() => clearField("updated_by")}
+                                                    className="w-full 3xl:text-base text-sm"
                                                 />
                                             </th>
-                                            <th className="px-3 py-2"></th>
+                                            {Object.values(filterValues).some(v => v !== '' && v != null) && <th className="px-3 py-2">
+                                                <PrimaryButton onClick={resetFilters}
+                                                    className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 uppercase tracking-widest font-semibold whitespace-nowrap"
+                                                >
+                                                    {StringHelper.__("Clear all")}
+                                                </PrimaryButton>
+                                            </th>}
                                         </tr>
                                     </thead>
                                     <tbody>

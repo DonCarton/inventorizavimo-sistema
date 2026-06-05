@@ -14,9 +14,11 @@ import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import MiscButton from '@/Components/Forms/MiscButton';
 import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
 import useSearchFilter from "@/Hooks/useSearchFilter";
+import SearchInput from "@/Components/SearchInput";
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
 export default function Users({ auth, users, queryParams: initialQueryParams = null, success, failure }) {
-    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, resetFilters } = useSearchFilter("users.index", initialQueryParams || {});
+    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, clearField, resetFilters } = useSearchFilter("users.index", initialQueryParams || {});
 
     const handleDisableMessage = StringHelper.__("Are you sure you want to deactivate this user") + "?";
     const handleEnableMessage  = StringHelper.__("Are you sure you want to activate this user") + "?";
@@ -102,12 +104,17 @@ export default function Users({ auth, users, queryParams: initialQueryParams = n
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2">
-                                                <TextInput className="w-full 3xl:text-base text-sm" value={filterValues.email ?? ''}
-                                                    placeholder={StringHelper.__("Email")} onChange={(e) => onInputChange("email", e)}
-                                                    onBlur={(e) => onInputBlur("email", e)} onKeyDown={(e) => handleKeyDown("email", e)} />
+                                                <SearchInput value={filterValues.email ?? ''} onChange={(e) => onInputChange("email", e)}
+                                                    onClear={() => clearField("email")} placeholder={StringHelper.__("Email")} className="w-full 3xl:text-base text-sm" />
                                             </th>
                                             <th className="px-3 py-2"></th>
-                                            <th className="px-3 py-2"></th>
+                                            <th className="px-3 py-2">
+                                                {Object.values(filterValues).some(v => v !== '' && v != null) && <PrimaryButton onClick={resetFilters}
+                                                        className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 uppercase tracking-widest font-semibold whitespace-nowrap"
+                                                    >
+                                                        {StringHelper.__("Clear all")}
+                                                    </PrimaryButton>}
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>

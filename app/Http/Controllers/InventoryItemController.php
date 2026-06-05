@@ -418,6 +418,7 @@ class InventoryItemController extends Controller
 
         return Inertia::render('Inventory/Show', [
             'inventoryItem' => new InventoryItemResource($inventoryItem),
+            'logsForItem' => AmountLogResource::collection($inventoryItem->amountLogs),
             'laboratories' => LaboratoryResourceForMulti::collection($laboratories),
             'facilities' => FacilityForSelect::collection($facilities),
             'itemTypes' => ItemTypeForSelect::collection($itemTypes),

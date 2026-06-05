@@ -4,7 +4,7 @@ import Pagination from "@/Components/Pagination.jsx";
 import StringHelper from "@/Libs/StringHelper.jsx";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import React from "react";
-import TextInput from "@/Components/TextInput.jsx";
+import SearchInput from '@/Components/SearchInput';
 import TableHeader from "@/Components/TableHeader.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
@@ -16,6 +16,7 @@ import { IoMdRefresh } from "react-icons/io";
 import DeleteButton from '@/Components/Forms/DeleteButton';
 import EditButton from '@/Components/Forms/EditButton';
 import MiscButton from '@/Components/Forms/MiscButton';
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import { useState, useRef, useEffect } from 'react';
 import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
 import { TbEdit } from 'react-icons/tb';
@@ -40,7 +41,7 @@ export default function Index({ auth, importRuns, importStatuses, queryParams: i
     //     }
     // };
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
-    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, resetFilters } = useSearchFilter("import-runs.index", initialQueryParams || {});
+    const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, clearField, resetFilters } = useSearchFilter("import-runs.index", initialQueryParams || {});
     const {delete: destroy, processing} = useForm();
     const handleDestroy = (value) => {
         if (window.confirm(handleConfirmMessage)) {
@@ -125,8 +126,9 @@ export default function Index({ auth, importRuns, importStatuses, queryParams: i
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                                         <tr className="text-nowrap">
                                             <th className="px-3 py-2">
-                                                <TextInput className="w-full 3xl:text-base text-sm" defaultValue={filterValues.definition_name}
+                                                <SearchInput className="w-full 3xl:text-base text-sm" value={filterValues.definition_name ?? ''}
                                                     placeholder={StringHelper.__("Name")}
+                                                    onClear={() => clearField("definition_name")}
                                                     onChange={(e) => onInputChange("definition_name", e)}
                                                     onBlur={(e) => onInputBlur("definition_name", e)}
                                                     onKeyDown={(e) => handleKeyDown("definition_name", e)} />
@@ -136,7 +138,13 @@ export default function Index({ auth, importRuns, importStatuses, queryParams: i
                                                 <SteamDropdown name="import_run_query_select" className="w-full 3xl:text-base text-sm text-gray-500" value={filterValues.status} options={importStatuses} onChange={e => onSelectChange('status', e)} />
                                             </th>
                                             <th className="px-3 py-2"></th>
-                                            <th className="px-3 py-2"></th>
+                                            <th className="px-3 py-2">
+                                                {Object.values(filterValues).some(v => v !== '' && v != null) && <PrimaryButton onClick={resetFilters}
+                                                    className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 uppercase tracking-widest font-semibold whitespace-nowrap"
+                                                >
+                                                    {StringHelper.__("Clear all")}
+                                                </PrimaryButton>}
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>

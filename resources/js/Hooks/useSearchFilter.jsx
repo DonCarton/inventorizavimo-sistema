@@ -115,6 +115,12 @@ export default function useSearchFilter(routeName, initialParams = {}, debounceM
         flushNavigate({});
     }, [flushNavigate]);
 
+    const clearField = useCallback((name) => {
+        pendingParams.current = { ...pendingParams.current, [name]: '' };
+        setFilterValues(prev => ({ ...prev, [name]: '' }));
+        flushNavigate(pendingParams.current);
+    }, [flushNavigate]);
+
     return {
         filterValues,   // bind to controlled input `value` props
         onInputChange,
@@ -122,6 +128,7 @@ export default function useSearchFilter(routeName, initialParams = {}, debounceM
         handleKeyDown,
         onSelectChange,
         sortChanged,
+        clearField,
         resetFilters,
     };
 }

@@ -200,5 +200,6 @@
     "Block": "Užblokuoti",
     "Unblock": "Atblokuoti",
     "File size": "Klaida, įkeltas failo dydis viršija limitą. Leistinas dydis: :maxSize MB",
-    "Changing the object type reset the mappings, do you wish to proceed?": "Keičiant įrašo tipą, importavimo laukų reikšmės bus anuliuotos, ar tikrai norite pakeisti įrašo tipą?"
+    "Changing the object type reset the mappings, do you wish to proceed?": "Keičiant įrašo tipą, importavimo laukų reikšmės bus anuliuotos, ar tikrai norite pakeisti įrašo tipą?",
+    "Clear all": "Išvalyti visus filtrus"
 }
