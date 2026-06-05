@@ -175,6 +175,9 @@ export default function Authenticated({ user, header, children, can }) {
                         {can.view.laboratory && <ResponsiveNavLink className="text-white" href={route('laboratories.index')} active={route().current('laboratories.index')}>
                             {translate("Laboratories")}
                         </ResponsiveNavLink>}
+                        {can.view.facility && <ResponsiveNavLink className="text-white" href={route('facilities.index')} active={route().current('facilities.index')}>
+                            {translate("Facilities")}
+                        </ResponsiveNavLink>}
                         <ResponsiveNavLink className="text-white" href={route('reader')} active={route().current('reader')}>
                             {translate("Reader")}
                         </ResponsiveNavLink>

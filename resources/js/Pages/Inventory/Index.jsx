@@ -17,6 +17,7 @@ import BulkActionsButton from "@/Components/Actions/BulkActionsButton";
 import MiscButton from "@/Components/Forms/MiscButton";
 import useSearchFilter from "@/Hooks/useSearchFilter";
 import SearchInput from "@/Components/SearchInput";
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
 export default function Index({ auth, inventoryItems, itemTypes, queryParams: initialQueryParams = null, success, failure }) {
     const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, clearField, resetFilters } = useSearchFilter("inventoryItems.index", initialQueryParams || {});
@@ -197,7 +198,7 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams: in
                                                 <SteamDropdown
                                                     name="inventory_type_query_select"
                                                     className="w-full 3xl:text-base text-sm text-gray-500"
-                                                    value={filterValues.inventory_type}
+                                                    value={filterValues.inventory_type ?? ''}
                                                     onChange={(e) => onSelectChange("inventory_type", e)}
                                                     options={itemTypes.data}
                                                 />
@@ -224,7 +225,13 @@ export default function Index({ auth, inventoryItems, itemTypes, queryParams: in
                                                     className="w-full 3xl:text-base text-sm"
                                                 />
                                             </th>
-                                            <th className="px-3 py-2"></th>
+                                            {Object.values(filterValues).some(v => v !== '' && v != null) && <th className="px-3 py-2">
+                                                <PrimaryButton onClick={resetFilters}
+                                                    className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 uppercase tracking-widest font-semibold whitespace-nowrap"
+                                                >
+                                                    {StringHelper.__("Clear all")}
+                                                </PrimaryButton>
+                                            </th>}
                                         </tr>
                                     </thead>
                                     <tbody>

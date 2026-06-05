@@ -14,6 +14,7 @@ import DeleteButton from '@/Components/Forms/DeleteButton';
 import EditButton from '@/Components/Forms/EditButton';
 import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
 import MiscButton from '@/Components/Forms/MiscButton';
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import { TbEdit } from 'react-icons/tb';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { VscDebugRerun } from 'react-icons/vsc';
@@ -105,7 +106,13 @@ export default function Index({ auth, importDefinitions, queryParams: initialQue
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>
-                                            <th className="px-3 py-2"></th>
+                                            <th className="px-3 py-2">
+                                                {Object.values(filterValues).some(v => v !== '' && v != null) && <PrimaryButton onClick={resetFilters}
+                                                    className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 uppercase tracking-widest font-semibold whitespace-nowrap"
+                                                >
+                                                    {StringHelper.__("Clear all")}
+                                                </PrimaryButton>}
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>

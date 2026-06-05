@@ -15,6 +15,7 @@ import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
 import EditButton from '@/Components/Forms/EditButton';
 import useSearchFilter from '@/Hooks/useSearchFilter';
 import SearchInput from '@/Components/SearchInput';
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
 export default function Index({ auth, facilities, queryParams: initialQueryParams = null, flash }) {
     const { filterValues, onInputChange, onInputBlur, handleKeyDown, onSelectChange, sortChanged, clearField, resetFilters } = useSearchFilter("facilities.index", initialQueryParams || {});
@@ -90,7 +91,13 @@ export default function Index({ auth, facilities, queryParams: initialQueryParam
                                                     onBlur={(e) => onInputBlur("updated_by", e)}
                                                     onKeyDown={(e) => handleKeyDown("updated_by", e)} />
                                             </th>
-                                            <th className="px-3 py-2"></th>
+                                            <th className="px-3 py-2">
+                                                {Object.values(filterValues).some(v => v !== '' && v != null) && <PrimaryButton onClick={resetFilters}
+                                                        className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 uppercase tracking-widest font-semibold whitespace-nowrap"
+                                                    >
+                                                        {StringHelper.__("Clear all")}
+                                                    </PrimaryButton>}
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
