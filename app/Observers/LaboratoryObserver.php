@@ -8,11 +8,9 @@ class LaboratoryObserver
 {
     public static function syncUserFacilities(Laboratory $laboratory)
     {
-        $facilityIds = $laboratory->facilities()->pluck('facilities.id')->all();
-
         foreach ($laboratory->users as $user)
         {
-            $user->facilities()->sync($facilityIds);
+            $user->syncFacilitiesFromLaboratories();
         }
     }
     /**

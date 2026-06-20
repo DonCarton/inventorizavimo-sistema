@@ -51,13 +51,17 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
                 $query->where('inventory_type', '=', $this->data['inventory_type']);
             }
             if (isset($this->data['laboratory'])) {
-                $query->whereHas('belongsToLaboratory', function ($query) {
-                    if (gettype($this->data['laboratory']) === "integer"){
-                        $query->where('id', '=', $this->data['laboratory']);
-                    } else {
-                        $query->where('name', 'like', '%' . $this->data['laboratory'] . '%');
-                    }
-                });
+                if (is_array($this->data['laboratory'])) {
+                    $query->whereIn('laboratory', $this->data['laboratory']);
+                } else {
+                    $query->whereHas('belongsToLaboratory', function ($query) {
+                        if (gettype($this->data['laboratory']) === "integer"){
+                            $query->where('id', '=', $this->data['laboratory']);
+                        } else {
+                            $query->where('name', 'like', '%' . $this->data['laboratory'] . '%');
+                        }
+                    });
+                }
             }
             if (isset($this->data['updated_by'])) {
                 $query->whereHas('updatedBy', function ($query) {

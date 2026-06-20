@@ -3,6 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\InventoryItem;
+use App\Models\ItemType;
+use App\Models\Laboratory;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -25,13 +28,12 @@ class InventoryItemFactory extends Factory
         $prefix = $prefixes[intdiv($index, 999) % count($prefixes)];
         $suffixNumber = str_pad(($index % 999) + 1, 3, '0', STR_PAD_LEFT);
         $postfix = $this->faker->randomElement($postfixes);
-        $inventoryTypes = [1, 2, 3, 4, 5];
         $index++;
 
         $nameValue = $this->faker->words($this->faker->randomElement([1, 2, 3, 4, 5]),true);
         return [
             'local_name' => $prefix . $suffixNumber . '-' . $postfix,
-            'inventory_type' => $this->faker->randomElement($inventoryTypes),
+            'inventory_type' => ItemType::query()->inRandomOrder()->value('id'),
             'name' => $nameValue,
             'name_eng' => $nameValue,
             'formula' => $this->faker->regexify('[A-Z0-9]{8}'),
@@ -45,13 +47,13 @@ class InventoryItemFactory extends Factory
             'total_amount' => $this->faker->randomDigitNotZero(),
             'critical_amount' => $this->faker->randomDigitNotZero(),
             'multiple_locations' => $this->faker->boolean(),
-            'laboratory' => 1,
+            'laboratory' => Laboratory::query()->inRandomOrder()->value('id'),
             'storage_conditions' => $this->faker->text(50),
             'asset_number' => $this->faker->uuid,
             'used_for' => $this->faker->text(50),
             'comments' => $this->faker->text(50),
-            'created_by' => 1,
-            'updated_by' => 1,
+            'created_by' => User::system()->id,
+            'updated_by' => User::system()->id,
         ];
     }
 }

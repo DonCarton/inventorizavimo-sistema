@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $systemUserId = User::system()->id;
 
         $adminRole = [
             'id' => 1,
@@ -42,8 +43,8 @@ class DatabaseSeeder extends Seeder
             'is_disabled' => false,
             'email_verified_at' => time(),
             'locale' => 'lt',
-            'created_by' => 1,
-            'updated_by' => 1
+            'created_by' => $systemUserId,
+            'updated_by' => $systemUserId
         ]);
 
         $adminUser->assignRole('admin');
@@ -57,8 +58,8 @@ class DatabaseSeeder extends Seeder
             'is_disabled' => false,
             'email_verified_at' => time(),
             'locale' => 'lt',
-            'created_by' => 1,
-            'updated_by' => 1
+            'created_by' => $systemUserId,
+            'updated_by' => $systemUserId
         ]);
 
         $regularUser->assignRole('user');
@@ -69,46 +70,44 @@ class DatabaseSeeder extends Seeder
             'updated_by' => $adminUser->id
         ]);
 
-        $adminUser->laboratory = $laboratory->id;
-        $adminUser->save();
-        $regularUser->laboratory = $laboratory->id;
-        $regularUser->save();
+        $adminUser->laboratories()->sync([$laboratory->id]);
+        $adminUser->syncFacilitiesFromLaboratories();
+        $regularUser->laboratories()->sync([$laboratory->id]);
+        $regularUser->syncFacilitiesFromLaboratories();
 
         ItemType::factory()->create([
             'name' => 'Atsargos (kitos sunaudojamos atsargos)',
             'change_acc_amount' => 1,
-            'created_by' => 1,
-            'updated_by' => 1
+            'created_by' => $systemUserId,
+            'updated_by' => $systemUserId
         ]);
 
         ItemType::factory()->create([
             'name' => 'Ilgalaikis (kompiuterinė t..)',
             'change_acc_amount' => 0,
-            'created_by' => 1,
-            'updated_by' => 1
+            'created_by' => $systemUserId,
+            'updated_by' => $systemUserId
         ]);
 
         ItemType::factory()->create([
             'name' => 'Ilgalaikis (laboratorinė technika)',
             'change_acc_amount' => 0,
-            'created_by' => 1,
-            'updated_by' => 1
+            'created_by' => $systemUserId,
+            'updated_by' => $systemUserId
         ]);
 
         ItemType::factory()->create([
             'name' => 'Trumpalaikis (susidėvinčios priemonės)',
             'change_acc_amount' => 0,
-            'created_by' => 1,
-            'updated_by' => 1
+            'created_by' => $systemUserId,
+            'updated_by' => $systemUserId
         ]);
 
         ItemType::factory()->create([
             'name' => 'Atsargos (Reagentai)',
             'change_acc_amount' => 1,
-            'created_by' => 1,
-            'updated_by' => 1
+            'created_by' => $systemUserId,
+            'updated_by' => $systemUserId
         ]);
-
-        $regularUser->save(['laboratory' => 1]);
     }
 }

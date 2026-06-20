@@ -12,7 +12,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $first_name
  * @property string $last_name
  * @property string $email
- * @property int $laboratory
  * @property boolean $is_disabled
  * @property BelongsTo $createdBy
  */
@@ -30,7 +29,7 @@ class UserResource extends JsonResource
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'email' => $this->email,
-            'laboratory' => $this->laboratory,
+            'laboratories' => $this->laboratories->pluck('id')->all(),
             'facilities' => $this->facilities->pluck('id')->all(),
             'is_disabled' => $this->is_disabled,
             'created_by' => $this->createdBy->email

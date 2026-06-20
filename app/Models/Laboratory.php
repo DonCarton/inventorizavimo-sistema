@@ -60,9 +60,9 @@ class Laboratory extends Model
     {
         return $this->inventoryItems()->count();
     }
-    public function users(): HasMany
+    public function users(): BelongsToMany
     {
-        return $this->hasMany(User::class,'laboratory');
+        return $this->belongsToMany(User::class);
     }
     public function userCount():int
     {

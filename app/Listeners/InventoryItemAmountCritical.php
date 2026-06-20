@@ -2,52 +2,24 @@
 
 namespace App\Listeners;
 
+use App\Enums\RoleEnum;
 use App\Events\AmountRunningLow;
 use App\Mail\InventoryItemCriticalAmountReached;
-use App\Mail\UserCreatedNotification;
+use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Spatie\Permission\Models\Role;
 
 class InventoryItemAmountCritical implements ShouldQueue
 {
     /**
-     * Create the event listener.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
      * Handle the event.
      */
-    public function handle(AmountRunningLow $event): \Illuminate\Http\RedirectResponse
+    public function handle(AmountRunningLow $event): void
     {
-        
-        $adminUsers = Role::findByName('admin')->users;
-        foreach ($adminUsers as $adminUser) {
-            Mail::to($adminUser->email)->send(new InventoryItemCriticalAmountReached($event->inventoryItem, $adminUser));
-        }
+        $recipients = User::role([RoleEnum::ADMIN, RoleEnum::SUPER_ADMIN])->get();
 
-        $superAdminUsers = Role::findByName('super-admin')->users;
-        foreach ($superAdminUsers as $superAdminUser) {
-            Mail::to($superAdminUser->email)->send(new InventoryItemCriticalAmountReached($event->inventoryItem, $superAdminUser));
-        }
-        
-        if($event->readerOrigin){
-            return to_route('reader')
-                ->with('success', __('actions.inventoryItem.updated', [
-                            'local_name' => $event->inventoryItem->local_name]
-                    ) . '.');
-        }
-        else {
-            return to_route('inventoryItems.index')
-                ->with('success', __('actions.inventoryItem.updated', [
-                            'local_name' => $event->inventoryItem->local_name]
-                    ) . '.');
+        foreach ($recipients as $recipient) {
+            Mail::to($recipient->email)->queue(new InventoryItemCriticalAmountReached($event->inventoryItem, $recipient));
         }
     }
 }

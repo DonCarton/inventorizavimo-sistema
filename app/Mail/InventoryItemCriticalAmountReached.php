@@ -11,7 +11,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class InventoryItemCriticalAmountReached extends Mailable
+class InventoryItemCriticalAmountReached extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -20,7 +20,7 @@ class InventoryItemCriticalAmountReached extends Mailable
      */
     public function __construct(public InventoryItem $inventoryItem, public User $user)
     {
-        //
+        $this->locale($this->user->locale);
     }
 
     /**
@@ -28,7 +28,7 @@ class InventoryItemCriticalAmountReached extends Mailable
      */
     public function envelope(): Envelope
     {
-        $subject = 'Inventorius '.($this->inventoryItem->local_name).' pasiekė kritinį kiekį.';
+        $subject = __('messages.Inventory.Critical amount subject', ['localName' => $this->inventoryItem->local_name]);
         return new Envelope(
             subject: $subject,
         );

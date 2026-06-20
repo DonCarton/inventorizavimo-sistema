@@ -35,11 +35,9 @@ export default function Show({ auth, user, userRole, roles, laboratories, facili
                             <TextInput id="user_email" type="email" name="email" value={user.data.email} className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white" readOnly={true} disabled={true} />
                         </div>
                         <div className="mt-4">
-                            <InputLabel htmlFor="user_laboratory" value={StringHelper.__("Laboratory")} />
-                            <select disabled={true} className="disabled:bg-gray-400 disabled:text-white border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={user.data.laboratory}>
-                                <option>{StringHelper.__("Choose a value")}</option>
-                                {laboratories.map((laboratory) => (<option key={laboratory.id} value={laboratory.id}>{laboratory.name}</option>))}
-                            </select>
+                            <InputLabel htmlFor="user_laboratories" value={StringHelper.__("Laboratories")} />
+                            <FlexibleStaticSelect id="user_laboratories" value={user.data.laboratories} customIsDisabled={true} options={laboratories.data}
+                                customIsMulti={true} customPlaceHolder={StringHelper.__("Choose a value")} customNoOptionsMessage={StringHelper.__("No options")} />
                         </div>
                         <div className="mt-4">
                             <InputLabel htmlFor="user_facility">{StringHelper.__("Facility")}</InputLabel>
