@@ -2,52 +2,50 @@
 
 namespace App\Listeners;
 
+use App\Enums\RoleEnum;
 use App\Events\AmountRunningLow;
 use App\Mail\InventoryItemCriticalAmountReached;
-use App\Mail\UserCreatedNotification;
+use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Spatie\Permission\Models\Role;
+use Throwable;
 
 class InventoryItemAmountCritical implements ShouldQueue
 {
+    public int $tries = 3;
+
     /**
-     * Create the event listener.
+     * Seconds to wait before each retry: 1 minute, then 5, then 15.
+     *
+     * @return array<int, int>
      */
-    public function __construct()
+    public function backoff(): array
     {
-        //
+        return [60, 300, 900];
     }
 
     /**
      * Handle the event.
      */
-    public function handle(AmountRunningLow $event): \Illuminate\Http\RedirectResponse
+    public function handle(AmountRunningLow $event): void
     {
-        
-        $adminUsers = Role::findByName('admin')->users;
-        foreach ($adminUsers as $adminUser) {
-            Mail::to($adminUser->email)->send(new InventoryItemCriticalAmountReached($event->inventoryItem, $adminUser));
-        }
+        $recipients = User::role([RoleEnum::ADMIN, RoleEnum::SUPER_ADMIN])->get();
 
-        $superAdminUsers = Role::findByName('super-admin')->users;
-        foreach ($superAdminUsers as $superAdminUser) {
-            Mail::to($superAdminUser->email)->send(new InventoryItemCriticalAmountReached($event->inventoryItem, $superAdminUser));
+        foreach ($recipients as $recipient) {
+            Mail::to($recipient->email)->queue(new InventoryItemCriticalAmountReached($event->inventoryItem, $recipient));
         }
-        
-        if($event->readerOrigin){
-            return to_route('reader')
-                ->with('success', __('actions.inventoryItem.updated', [
-                            'local_name' => $event->inventoryItem->local_name]
-                    ) . '.');
-        }
-        else {
-            return to_route('inventoryItems.index')
-                ->with('success', __('actions.inventoryItem.updated', [
-                            'local_name' => $event->inventoryItem->local_name]
-                    ) . '.');
-        }
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(AmountRunningLow $event, Throwable $exception): void
+    {
+        Log::error('Failed to notify admins about critical inventory amount', [
+            'inventory_item_id' => $event->inventoryItem->id,
+            'local_name' => $event->inventoryItem->local_name,
+            'exception' => $exception->getMessage(),
+        ]);
     }
 }

@@ -31,6 +31,19 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles, LogsActivity, SoftDeletes, ValidAttributes;
 
+    public const SYSTEM_EMAIL = 'system@internal.local';
+
+    protected static ?self $systemUser = null;
+
+    /**
+     * The bootstrapped system user used as created_by/updated_by for actions
+     * that aren't performed by a real, logged-in user (seeders, imports, jobs).
+     */
+    public static function system(): self
+    {
+        return static::$systemUser ??= static::where('email', self::SYSTEM_EMAIL)->firstOrFail();
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -44,7 +57,6 @@ class User extends Authenticatable
         'password',
         'locale',
         'is_disabled',
-        'laboratory',
         'created_by',
         'updated_by'
     ];
@@ -87,7 +99,7 @@ class User extends Authenticatable
     public function getActivitylogOptions(): logOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['first_name','last_name','email','laboratory'])
+            ->logOnly(['first_name','last_name','email'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
     }
@@ -98,9 +110,9 @@ class User extends Authenticatable
         return $role?->name;
     }
 
-    public function belongsToLaboratory(): BelongsTo
+    public function laboratories(): BelongsToMany
     {
-        return $this->belongsTo(Laboratory::class, 'laboratory');
+        return $this->belongsToMany(Laboratory::class);
     }
     
     public function rolesForDisplay(): HasManyThrough
@@ -128,15 +140,27 @@ class User extends Authenticatable
         return $this->belongsToMany(Facility::class);
     }
 
+    public function syncFacilitiesFromLaboratories(): void
+    {
+        $facilityIds = $this->laboratories()
+            ->with('facilities')
+            ->get()
+            ->pluck('facilities')
+            ->flatten()
+            ->pluck('id')
+            ->unique()
+            ->all();
+
+        $this->facilities()->sync($facilityIds);
+    }
+
     public static function getImportForeignKeyLookups(): array
     {
         return [
-            'laboratory' => [
+            'laboratories' => [
                 'table' => 'laboratories',
-                'match_on' => [
-                    'name',
-                    'ident_code',
-                ],
+                'many_to_many' => true,
+                'match_on' => 'name',
             ],
         ];
     }

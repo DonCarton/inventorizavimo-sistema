@@ -38,7 +38,10 @@ return [
         'first_name' => ['required'],
         'last_name' => ['required'],
         'email' => ['required'],
-        'laboratory' => ['required', new ExistsByNumericOrString(table: 'laboratories',attributeName: 'laboratory')],
+        'laboratories' => ['required',
+            new HasRelationMethod(modelClass: App\Models\User::class, relationName: 'laboratories'),
+            new ExistsByNumericOrString(table: 'laboratories', attributeName: 'laboratories', idColumn: 'id', nameColumn: 'name', allowPipeSeparated: true),
+        ],
     ],
     'App\\Models\\Laboratory' => [
         'name' => ['required'],

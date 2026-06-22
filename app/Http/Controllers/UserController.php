@@ -34,7 +34,7 @@ class UserController extends Controller
     public function index(): Response
     {
         Gate::authorize('viewAny', User::class);
-        $query = User::query();
+        $query = User::query()->where('email', '!=', User::SYSTEM_EMAIL);
         $sortField = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", 'desc');
         if (request('email')) {
@@ -87,11 +87,16 @@ class UserController extends Controller
     {
         Gate::authorize('store', User::class);
         $password = Str::random(10);
-        $request['is_disabled'] = false;
-        $request['locale'] = env('APP_LOCALE');
-        $request['password'] = Hash::make($password);
-        $request['name'] = $request['first_name'] . ' ' . $request['last_name'];
-        $newUser = User::create($request->all())->assignRole(Role::findById($request['selectedRole'])->name);
+        $data = $request->all();
+        $laboratoryIds = $data['laboratories'];
+        unset($data['laboratories']);
+        $data['is_disabled'] = false;
+        $data['locale'] = env('APP_LOCALE');
+        $data['password'] = Hash::make($password);
+        $data['name'] = $data['first_name'] . ' ' . $data['last_name'];
+        $newUser = User::create($data)->assignRole(Role::findById($request['selectedRole'])->name);
+        $newUser->laboratories()->sync($laboratoryIds);
+        $newUser->syncFacilitiesFromLaboratories();
         $newUser->email_verified_at = now();
         $newUser->save();
         event(new UserCreated($newUser, $password));
@@ -107,7 +112,7 @@ class UserController extends Controller
     {
         $roles = Role::query()->get();
         $roleName = $user->roles()->select('id')->get()->toArray();
-        $laboratories = Laboratory::all()->toArray();
+        $laboratories = Laboratory::query()->get();
         $facilities = $user->facilities->map(function ($facility) {
                                                 return [
                                                     'value' => $facility->id,
@@ -118,7 +123,7 @@ class UserController extends Controller
             'user' => new UserResource($user),
             'userRole' => $roleName ? $roleName[0]['id'] : '',
             'roles' => RolesForSelect::collection($roles),
-            'laboratories' => $laboratories,
+            'laboratories' => LaboratoriesForSelect::collection($laboratories),
             'facilities' => $facilities,
         ]);
     }
@@ -133,7 +138,6 @@ class UserController extends Controller
         Gate::authorize('edit',$user);
         $roles = Role::query()->get();
         $roleName = $user->roles()->select('id')->get()->toArray();
-        $laboratories = Laboratory::all()->select('id', 'name')->toArray();
         $labsForFacs = Laboratory::query()->get();
         $facilities = [];
 
@@ -151,7 +155,7 @@ class UserController extends Controller
             'user' => new UserResource($user),
             'userRole' => $roleName ? $roleName[0]['id'] : '',
             'roles' => RolesForSelect::collection($roles),
-            'laboratories' => $laboratories,
+            'laboratories' => LaboratoriesForSelect::collection($labsForFacs),
             'facilities' => $facilities,
             'failure' => session('failure'),
             'can' => [
@@ -176,8 +180,15 @@ class UserController extends Controller
             $user->syncRoles(Role::findById($request['role'])->name);
         }
         $roleChanged = $currentUserRole == $user->currentlyAssignedRole();
-        $user->update($request->validated());
-        if ($user->wasChanged() || !$roleChanged) {
+        $data = $request->validated();
+        $laboratoryIds = $data['laboratories'];
+        unset($data['laboratories']);
+        $oldLaboratoryIds = $user->laboratories->pluck('id')->sort()->values()->all();
+        $user->update($data);
+        $user->laboratories()->sync($laboratoryIds);
+        $user->syncFacilitiesFromLaboratories();
+        $laboratoriesChanged = $oldLaboratoryIds !== collect($laboratoryIds)->sort()->values()->all();
+        if ($user->wasChanged() || $laboratoriesChanged || !$roleChanged) {
             return Redirect::route('users.index')->with('success', __('actions.user.updated', ['email' => $user->email]));
         }
         return Redirect::route('users.index');
@@ -192,7 +203,10 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         Gate::authorize('delete',$user);
-        $userCount = User::query()->count();
+        if ($user->email === User::SYSTEM_EMAIL) {
+            return to_route('users.edit',$user)->with('failure',__('actions.user.noUsersLeft'));
+        }
+        $userCount = User::query()->where('email', '!=', User::SYSTEM_EMAIL)->count();
         if ($user->hasRole('super-admin')){
             Gate::authorize('delete',$user);
         }

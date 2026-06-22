@@ -12,9 +12,11 @@ import HistoryLog from "@/Components/Forms/HistoryLog.jsx";
 import ActionButton from '@/Components/Forms/ActionButton';
 import FlexibleStaticSelect from '@/Components/Forms/FlexibleStaticSelect';
 import LogsTable from "@/Components/Forms/LogsTable.jsx";
+import MiscButton from "@/Components/Forms/MiscButton.jsx";
+import { TbEdit, TbArrowsUpDown } from "react-icons/tb";
 
 
-export default function Show({auth, inventoryItem, logsForItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions}) {
+export default function Show({auth, inventoryItem, logsForItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, can}) {
     const [openAll, setOpenAll] = useState(true);
     const toggleAllAccordions = () => {
         setOpenAll(!openAll);
@@ -35,6 +37,24 @@ export default function Show({auth, inventoryItem, logsForItem, laboratories, fa
                             nameOfCloseButton={StringHelper.__("Close")}
                         ></HistoryLog>
                         <ActionButton onClick={toggleAllAccordions} title={StringHelper.__("Toggle if the form should be fully expanded or collapsed") + '.'} className="text-lg">{openAll ? StringHelper.__("Collapse form") : StringHelper.__("Expand form")}</ActionButton>
+                        {can.edit && (
+                            <MiscButton
+                                classVariant="green"
+                                title={StringHelper.__("Edit")}
+                                as="link"
+                                to={route("inventoryItems.editRaw", {inventoryItem: inventoryItem.data.id, query: queryParams, referrer: referrer})}
+                                icon={TbEdit}
+                                children={StringHelper.__("Edit")}
+                            />
+                        )}
+                        <MiscButton
+                            classVariant="green"
+                            title={StringHelper.__("Edit amount")}
+                            as="link"
+                            to={route("inventoryItems.edit", {inventoryItem: inventoryItem.data.id, query: queryParams, referrer: referrer})}
+                            icon={TbArrowsUpDown}
+                            children={StringHelper.__("Change amount")}
+                        />
                     </div>
                 </div>
             }

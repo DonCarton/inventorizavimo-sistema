@@ -17,8 +17,10 @@ import NumericInput from "@/Components/Forms/NumericInput.jsx";
 import {FaQrcode} from "react-icons/fa";
 import {MdClose} from "react-icons/md";
 import LogsTable from "@/Components/Forms/LogsTable.jsx";
+import MiscButton from "@/Components/Forms/MiscButton.jsx";
+import { TbEye, TbEdit } from "react-icons/tb";
 
-export default function Edit({auth, inventoryItem, logsForItem, totalInUse, laboratories, redirectToReader, queryParams, referrer}) {
+export default function Edit({auth, inventoryItem, logsForItem, totalInUse, laboratories, redirectToReader, queryParams, referrer, can}) {
     const [actionFromUser, setActionFromUser] = useState('REMOVE');
     const {data, setData, patch, errors} = useForm({
         total_amount: inventoryItem.total_amount,
@@ -51,6 +53,28 @@ export default function Edit({auth, inventoryItem, logsForItem, totalInUse, labo
             header={
                 <div className="flex justify-between items-center">
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Change amount")} - {inventoryItem.local_name} - {inventoryItem.name}</h2>
+                    {!redirectToReader && (
+                        <div className="flex space-x-2 h-12">
+                            <MiscButton
+                                classVariant="blue"
+                                title={StringHelper.__("View")}
+                                as="link"
+                                to={route("inventoryItems.show", {inventoryItem: inventoryItem.id, query: queryParams, referrer: referrer})}
+                                icon={TbEye}
+                                children={StringHelper.__("View")}
+                            />
+                            {can.edit && (
+                                <MiscButton
+                                    classVariant="green"
+                                    title={StringHelper.__("Full edit")}
+                                    as="link"
+                                    to={route("inventoryItems.editRaw", {inventoryItem: inventoryItem.id, query: queryParams, referrer: referrer})}
+                                    icon={TbEdit}
+                                    children={StringHelper.__("Full edit")}
+                                />
+                            )}
+                        </div>
+                    )}
                 </div>
             }
         >

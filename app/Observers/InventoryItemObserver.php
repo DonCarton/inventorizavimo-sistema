@@ -2,11 +2,9 @@
 
 namespace App\Observers;
 
-use App\Events\AmountRunningLow;
 use App\Models\InventoryItem;
 use App\Models\SystemConfiguration;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
-use Illuminate\Support\Facades\Log;
 
 class InventoryItemObserver implements ShouldHandleEventsAfterCommit
 {
@@ -25,24 +23,11 @@ class InventoryItemObserver implements ShouldHandleEventsAfterCommit
      */
     public function updated(InventoryItem $inventoryItem): void
     {
-        if ($inventoryItem->isDirty('total_amount')){
+        if ($inventoryItem->isDirty('total_amount')) {
+            $notifyCriticalInventory = SystemConfiguration::where('key', '=', 'critical_notification')->first();
+            $notificationsEnabled = $notifyCriticalInventory != null && (int)$notifyCriticalInventory->value['value'] == 1;
 
-            $notifyCriticalInventory = SystemConfiguration::where('key','=','critical_notification')->first();
-
-            $criticalAmount = $inventoryItem->critical_amount;
-            if ($inventoryItem->total_amount <= $criticalAmount && is_null($inventoryItem->critical_amount_notified_at)){
-
-                if ($notifyCriticalInventory != null && (int)$notifyCriticalInventory->value['value'] == 1){
-                    event(new AmountRunningLow($inventoryItem, false));
-                }                
-                $inventoryItem->critical_amount_notified_at = now();
-                $inventoryItem->save();
-            }
-            else if ($inventoryItem->total_amount > $criticalAmount && !is_null($inventoryItem->critical_amount_notified_at)){
-                $inventoryItem->critical_amount_notified_at = null;
-                $inventoryItem->save();
-            }
-
+            $inventoryItem->evaluateCriticalAmount($inventoryItem->total_amount, $notificationsEnabled);
         }
     }
 

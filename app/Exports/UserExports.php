@@ -2,7 +2,6 @@
 
 namespace App\Exports;
 
-use App\Models\Laboratory;
 use App\Models\User;
 use DateTimeZone;
 use Illuminate\Support\Collection;
@@ -30,7 +29,7 @@ class UserExports implements FromCollection, WithMapping, WithHeadings, WithStyl
      */
     public function collection(): Collection
     {
-        $query = User::query();
+        $query = User::query()->with('laboratories')->where('email', '!=', User::SYSTEM_EMAIL);
         if (!empty($this->data)) {
             if (isset($this->data['email'])) {
                 $query->where('email', 'like', '%' . $this->data['email'] . '%');
@@ -49,7 +48,7 @@ class UserExports implements FromCollection, WithMapping, WithHeadings, WithStyl
             $row->first_name,
             $row->last_name,
             $row->email,
-            $row->laboratory ? Laboratory::where('id', $row->laboratory)->first()->name : '-',
+            $row->laboratories->isNotEmpty() ? $row->laboratories->pluck('name')->implode('|') : '-',
             $row->created_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
         ];
     }
