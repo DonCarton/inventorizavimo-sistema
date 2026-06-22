@@ -17,6 +17,12 @@ class RunImportJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * Imports use updateOrCreate per row but aren't fully idempotent (duplicate
+     * audit records, duplicate success/failure emails), so retries are disabled.
+     */
+    public int $tries = 1;
+
     public ImportRun $importRun;
     public User $user;
 
@@ -67,5 +73,23 @@ class RunImportJob implements ShouldQueue
     public function displayName()
     {
         return "Import job (Definition ID: [{$this->importRun->definition->name}], Run By: User [{$this->user->email}])";
+    }
+
+    /**
+     * Handle a job failure. The internal try/catch in handle() already covers
+     * import-logic failures; this is a safety net for anything that escapes it
+     * (e.g. the importRun->update() calls themselves failing).
+     */
+    public function failed(\Throwable $exception): void
+    {
+        Log::error('Import job failed outside the expected error handling', [
+            'import_run_id' => $this->importRun->id,
+            'error' => $exception->getMessage(),
+        ]);
+
+        $this->importRun->update([
+            'status' => 'failed',
+            'finished_at' => now(),
+        ]);
     }
 }

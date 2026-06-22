@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\InventoryStatusEnum;
 use App\Enums\AttributeMerge;
+use App\Events\AmountRunningLow;
 use App\Interfaces\ImportableModel;
 use App\Observers\InventoryItemObserver;
 use App\ValidAttributes;
@@ -240,6 +241,24 @@ class InventoryItem extends Model implements ImportableModel
         return \DB::table($lookup['table'])
             ->where($lookup['match_on'], $value)
             ->value('id');
+    }
+
+    /**
+     * Shared by InventoryItemObserver (direct total_amount edits) and AmountLogObserver
+     * (take-out/return log flow) so the critical-amount notification rule lives in one place.
+     */
+    public function evaluateCriticalAmount(float $remainingAmount, bool $notificationsEnabled): void
+    {
+        if ($remainingAmount <= $this->critical_amount && is_null($this->critical_amount_notified_at)) {
+            if ($notificationsEnabled) {
+                event(new AmountRunningLow($this));
+            }
+            $this->critical_amount_notified_at = now();
+            $this->saveQuietly();
+        } elseif ($remainingAmount > $this->critical_amount && !is_null($this->critical_amount_notified_at)) {
+            $this->critical_amount_notified_at = null;
+            $this->saveQuietly();
+        }
     }
 
 }

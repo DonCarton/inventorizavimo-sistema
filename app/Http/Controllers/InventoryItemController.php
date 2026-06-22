@@ -91,7 +91,7 @@ class InventoryItemController extends Controller
 
     public function userOwnInventory(): Response
     {
-        $query = InventoryItem::query()->where('laboratory', auth()->user()->laboratory);
+        $query = InventoryItem::query()->whereIn('laboratory', auth()->user()->laboratories()->pluck('laboratories.id'));
         $sortField = request("sort_field", 'updated_at');
         $sortDirection = request("sort_direction", 'desc');
 
@@ -313,6 +313,9 @@ class InventoryItemController extends Controller
         if (request('urlForReader')) { $redirectToReader = true; }
         $laboratories = Laboratory::query()->whereNotIn('id',[$inventoryItem->laboratory])->get();
         $itemTypes = ItemType::query()->get();
+        $can = [
+            'edit' => $request->user()->can('edit', $inventoryItem),
+        ];
         if ($inventoryItem->itemType->change_acc_amount) {
             return Inertia::render('User/Edit', [
                 'inventoryItem' => new CRUDInventoryItemResource($inventoryItem),
@@ -321,6 +324,7 @@ class InventoryItemController extends Controller
                 'redirectToReader' => $redirectToReader,
                 'queryParams' => $queryParams,
                 'referrer' => $request->query('referrer'),
+                'can' => $can,
             ]);
         } else {
             $amountLogs = $inventoryItem->amountLogs;
@@ -334,6 +338,7 @@ class InventoryItemController extends Controller
                 'redirectToReader' => $redirectToReader,
                 'queryParams' => $queryParams,
                 'referrer' => $request->query('referrer'),
+                'can' => $can,
             ]);
         }
     }
@@ -426,6 +431,9 @@ class InventoryItemController extends Controller
             'referrer' => $request->query('referrer'),
             'cupboardOptions' => $configurations['cupboardOptions'],
             'shelfOptions' => $configurations['shelfOptions'],
+            'can' => [
+                'edit' => $request->user()->can('edit', $inventoryItem),
+            ],
         ]);
     }
 
@@ -453,7 +461,7 @@ class InventoryItemController extends Controller
     {
         $validateData = $exportRequest->validated();
         if (str_ends_with($exportRequest->url(),'myLaboratory')) {
-            $validateData['laboratory'] = auth()->user()->laboratory;
+            $validateData['laboratory'] = auth()->user()->laboratories()->pluck('laboratories.id')->all();
         }
         $dateTimeNow = Carbon::now('Europe/Vilnius')->toDateTimeString();
         return Excel::download(new InventoryExports($validateData), $dateTimeNow . '_inventory_export.xlsx');

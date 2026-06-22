@@ -16,6 +16,8 @@ import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import DeleteButton from "@/Components/Forms/DeleteButton.jsx";
 import { useState, useEffect, useRef } from 'react';
 import FlexibleStaticSelect from '@/Components/Forms/FlexibleStaticSelect';
+import MiscButton from "@/Components/Forms/MiscButton.jsx";
+import { TbEye } from "react-icons/tb";
 
 export default function Edit({auth, inventoryItem, logsForItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, can}) {
     const isFirstLoad = useRef(true);
@@ -98,6 +100,16 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
             header={
                 <div className="flex justify-between items-center">
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Edit")} - {inventoryItem.data.name}</h2>
+                    <div className="flex space-x-2 h-12">
+                        <MiscButton
+                            classVariant="blue"
+                            title={StringHelper.__("View")}
+                            as="link"
+                            to={route("inventoryItems.show", {inventoryItem: inventoryItem.data.id, query: queryParams, referrer: referrer})}
+                            icon={TbEye}
+                            children={StringHelper.__("View")}
+                        />
+                    </div>
                 </div>
             }
         >

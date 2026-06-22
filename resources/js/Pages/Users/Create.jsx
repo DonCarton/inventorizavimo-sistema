@@ -17,19 +17,25 @@ export default function Create({ auth, roles, laboratories, facilities }) {
         last_name: '',
         email: '',
         password: '',
-        laboratory: '',
+        laboratories: [],
         selectedRole: '',
     });
     useEffect(() => {
-        setWilledFacility(facilities[data.laboratory]);
-        let values = [];
-        if (data.laboratory !== '') {
-            facilities[data.laboratory].forEach(facility => {
-                values.push(facility.value);
+        const unionFacilities = [];
+        data.laboratories.forEach(laboratoryId => {
+            (facilities[laboratoryId] || []).forEach(facility => {
+                if (!unionFacilities.some(existing => existing.value === facility.value)) {
+                    unionFacilities.push(facility);
+                }
             });
-        }
-        setMappedFacility(values);
-    }, [data.laboratory]);
+        });
+        setWilledFacility(unionFacilities);
+        setMappedFacility(unionFacilities.map(facility => facility.value));
+    }, [data.laboratories]);
+
+    const handleLaboratoryChange = (e) => {
+        setData('laboratories', e);
+    };
 
     const onSubmit = (e) => {
         e.preventDefault();
@@ -72,12 +78,10 @@ export default function Create({ auth, roles, laboratories, facilities }) {
                             <InputError message={errors.email} className="mt-2" />
                         </div>
                         <div className="mt-4">
-                            <InputLabel htmlFor="user_laboratory">{StringHelper.__("Laboratory")}<span className="text-red-500">*</span></InputLabel>
-                            <select className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" value={data.laboratory} onChange={e => setData('laboratory', e.target.value)}>
-                                <option value="">{StringHelper.__("Choose a value")}</option>
-                                {laboratories.data.map((laboratory) => (<option key={laboratory.value} value={laboratory.value}>{laboratory.label}</option>))}
-                            </select>
-                            <InputError message={errors.laboratory} className="mt-2" />
+                            <InputLabel htmlFor="user_laboratories">{StringHelper.__("Laboratories")}<span className="text-red-500">*</span></InputLabel>
+                            <FlexibleStaticSelect id="user_laboratories" value={data.laboratories} onChange={handleLaboratoryChange} options={laboratories.data}
+                                customIsMulti={true} customPlaceHolder={StringHelper.__("Choose a value")} customNoOptionsMessage={StringHelper.__("No options")} />
+                            <InputError message={errors.laboratories} className="mt-2" />
                         </div>
                         <div className="mt-4">
                             <InputLabel htmlFor="user_facility">{StringHelper.__("Facility")}</InputLabel>

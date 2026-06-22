@@ -172,6 +172,10 @@ class GenericImport implements ToCollection, WithHeadingRow
             foreach ($manyToManyCollection as $relation => $relatedIds){
                 $updatedOrCreatedModel->$relation()->sync($relatedIds);
             }
+
+            if (method_exists($updatedOrCreatedModel, 'syncFacilitiesFromLaboratories')) {
+                $updatedOrCreatedModel->syncFacilitiesFromLaboratories();
+            }
             
         }
 

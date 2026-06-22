@@ -57,7 +57,8 @@ class UpdateUserRequest extends FormRequest
             'first_name' => ['required','string','max:50'],
             'last_name' => ['required','string','max:50'],
             'email' => ['required','string','lowercase','email','max:60',Rule::unique('users')->ignore($userId)->whereNull('deleted_at')],
-            'laboratory' => ['required','integer','exists:laboratories,id'],
+            'laboratories' => ['required', 'array', 'min:1'],
+            'laboratories.*' => ['integer', 'exists:laboratories,id'],
             'role' => 'required|exists:roles,id',
             'updated_by' => ['required']
         ];
