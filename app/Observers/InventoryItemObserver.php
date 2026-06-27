@@ -2,12 +2,21 @@
 
 namespace App\Observers;
 
+use App\LogsPivotChanges;
 use App\Models\InventoryItem;
 use App\Models\SystemConfiguration;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
 class InventoryItemObserver implements ShouldHandleEventsAfterCommit
 {
+    use LogsPivotChanges;
+
+    public static function syncFacilities(InventoryItem $inventoryItem, array $facilityIds): void
+    {
+        $syncResult = $inventoryItem->facilities()->sync($facilityIds);
+        self::logPivotSync($inventoryItem, 'facilities', $syncResult);
+    }
+
     /**
      * Handle the InventoryItem "created" event.
      */

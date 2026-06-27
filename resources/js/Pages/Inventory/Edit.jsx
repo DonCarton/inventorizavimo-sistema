@@ -103,11 +103,11 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
                     <div className="flex space-x-2 h-12">
                         <MiscButton
                             classVariant="blue"
-                            title={StringHelper.__("View")}
+                            title={StringHelper.__("Show")}
                             as="link"
                             to={route("inventoryItems.show", {inventoryItem: inventoryItem.data.id, query: queryParams, referrer: referrer})}
                             icon={TbEye}
-                            children={StringHelper.__("View")}
+                            children={StringHelper.__("Show")}
                         />
                     </div>
                 </div>

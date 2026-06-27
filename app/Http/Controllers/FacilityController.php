@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Resources\FacilityResource;
 use App\Models\Facility;
 use App\Models\Laboratory;
+use App\Observers\FacilityObserver;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Gate;
 
 class FacilityController extends Controller
 {
+
     public function index()
     {
         Gate::authorize('viewAny', Facility::class);
@@ -116,7 +118,7 @@ class FacilityController extends Controller
         if(request()->user()->can('setLaboratory', $facility)){
             
             $oldFacilities = $facility->laboratories->pluck('id')->toArray();
-            $facility->laboratories()->sync($data['laboratory']);
+            FacilityObserver::syncLaboratories($facility, $data['laboratory']);
             $laboratoriesChanged = $oldFacilities != $data['laboratory'];
 
         }

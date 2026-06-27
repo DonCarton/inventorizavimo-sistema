@@ -48,20 +48,20 @@ export default function Edit({auth, inventoryItem, redirectToReader, queryParams
                         <div className="flex space-x-2 h-12">
                             <MiscButton
                                 classVariant="blue"
-                                title={StringHelper.__("View")}
+                                title={StringHelper.__("Show")}
                                 as="link"
                                 to={route("inventoryItems.show", {inventoryItem: inventoryItem.id, query: queryParams, referrer: referrer})}
                                 icon={TbEye}
-                                children={StringHelper.__("View")}
+                                children={StringHelper.__("Show")}
                             />
                             {can.edit && (
                                 <MiscButton
                                     classVariant="green"
-                                    title={StringHelper.__("Full edit")}
+                                    title={StringHelper.__("Edit")}
                                     as="link"
                                     to={route("inventoryItems.editRaw", {inventoryItem: inventoryItem.id, query: queryParams, referrer: referrer})}
                                     icon={TbEdit}
-                                    children={StringHelper.__("Full edit")}
+                                    children={StringHelper.__("Edit")}
                                 />
                             )}
                         </div>

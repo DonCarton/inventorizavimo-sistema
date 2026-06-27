@@ -14,6 +14,7 @@ export default function HistoryLog({
     objectType,
     nameOfButton,
     nameOfCloseButton,
+    renderTrigger,
 }) {
     const [logs, setLogs] = useState([]);
     const [perPage, setPerPage] = useState(10);
@@ -64,7 +65,9 @@ export default function HistoryLog({
     }, [perPage, fetchTrigger]);
     return (
         <div>
-            <ActionButton onClick={handleGetData} className="h-full text-lg">{nameOfButton}<TbHistory className="ml-1"/></ActionButton>
+            {renderTrigger
+                ? renderTrigger(handleGetData)
+                : <ActionButton onClick={handleGetData} className="h-full text-lg">{nameOfButton}<TbHistory className="ml-1"/></ActionButton>}
                 <Modal show={showModal} closeable maxWidth="7xl" className="w-full">
                     <div className="p-6">
                         <h2 className="text-xl font-medium text-gray-900 dark:text-gray-100">

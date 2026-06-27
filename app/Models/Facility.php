@@ -7,15 +7,32 @@ use App\Models\Laboratory;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Facility extends Model
 {
+    use LogsActivity;
 
     protected $fillable = [
         'name',
         'created_by',
         'updated_by'
     ];
+
+    public function activities()
+    {
+        return $this->morphMany(Activity::class, 'subject')->orderBy('created_at', 'desc');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
+    }
 
     public function createdBy()
     {

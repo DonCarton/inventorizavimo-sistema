@@ -23,6 +23,7 @@ return [
         'multiple_locations' => 'Keliose vietose?',
         'laboratory' => 'Laboratorija',
         'facility' => 'Patalpa',
+        'facilities' => 'Patalpos',
         'cupboard' => 'Spinta',
         'shelf' => 'Lentyna',
         'storage_conditions' => 'Laikymo sąlygos',
@@ -41,9 +42,11 @@ return [
         'last_name' => 'Pavardė',
         'email' => 'El. paštas',
         'laboratory' => 'Laboratorija',
+        'laboratories' => 'Laboratorijos',
     ],
     'laboratory' => [
         'name' => 'Pavadinimas',
+        'facilities' => 'Patalpos',
     ],
     'item_type' => [
         'name' => 'Pavadinimas',

@@ -13,7 +13,9 @@ import ActionButton from '@/Components/Forms/ActionButton';
 import FlexibleStaticSelect from '@/Components/Forms/FlexibleStaticSelect';
 import LogsTable from "@/Components/Forms/LogsTable.jsx";
 import MiscButton from "@/Components/Forms/MiscButton.jsx";
-import { TbEdit, TbArrowsUpDown } from "react-icons/tb";
+import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
+import MenuActionButton from "@/Components/Actions/MenuActionButton.jsx";
+import { TbEdit, TbArrowsUpDown, TbHistory } from "react-icons/tb";
 
 
 export default function Show({auth, inventoryItem, logsForItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, can}) {
@@ -28,7 +30,7 @@ export default function Show({auth, inventoryItem, logsForItem, laboratories, fa
             header={
                 <div className="flex justify-between items-center">
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{StringHelper.__("Show")} - {inventoryItem.data.name}</h2>
-                    <div className="flex space-x-2 h-12">
+                    <div className="hidden lg:flex space-x-2 h-12">
                         <HistoryLog
                             nameOfObject={inventoryItem.data.localName}
                             objectId={inventoryItem.data.id}
@@ -55,6 +57,51 @@ export default function Show({auth, inventoryItem, logsForItem, laboratories, fa
                             icon={TbArrowsUpDown}
                             children={StringHelper.__("Change amount")}
                         />
+                    </div>
+                    <div className="flex lg:hidden">
+                        <GroupButtonDropdown nameOfDropdownButton={StringHelper.__("Actions")} panelWidthClass="w-56">
+                            <div className="flex flex-col p-2 gap-2">
+                                <HistoryLog
+                                    nameOfObject={inventoryItem.data.localName}
+                                    objectId={inventoryItem.data.id}
+                                    objectType="inventory_item"
+                                    nameOfButton={StringHelper.__("History")}
+                                    nameOfCloseButton={StringHelper.__("Close")}
+                                    renderTrigger={(onClick) => (
+                                        <MenuActionButton onClick={onClick} icon={TbHistory} colorVariant="maroon">
+                                            {StringHelper.__("History")}
+                                        </MenuActionButton>
+                                    )}
+                                ></HistoryLog>
+                                <MenuActionButton
+                                    onClick={toggleAllAccordions}
+                                    colorVariant="maroon"
+                                    title={StringHelper.__("Toggle if the form should be fully expanded or collapsed") + '.'}
+                                >
+                                    {openAll ? StringHelper.__("Collapse form") : StringHelper.__("Expand form")}
+                                </MenuActionButton>
+                                {can.edit && (
+                                    <MenuActionButton
+                                        as="link"
+                                        to={route("inventoryItems.editRaw", {inventoryItem: inventoryItem.data.id, query: queryParams, referrer: referrer})}
+                                        icon={TbEdit}
+                                        colorVariant="green"
+                                        title={StringHelper.__("Edit")}
+                                    >
+                                        {StringHelper.__("Edit")}
+                                    </MenuActionButton>
+                                )}
+                                <MenuActionButton
+                                    as="link"
+                                    to={route("inventoryItems.edit", {inventoryItem: inventoryItem.data.id, query: queryParams, referrer: referrer})}
+                                    icon={TbArrowsUpDown}
+                                    colorVariant="green"
+                                    title={StringHelper.__("Edit amount")}
+                                >
+                                    {StringHelper.__("Change amount")}
+                                </MenuActionButton>
+                            </div>
+                        </GroupButtonDropdown>
                     </div>
                 </div>
             }

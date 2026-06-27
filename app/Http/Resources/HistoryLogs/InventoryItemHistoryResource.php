@@ -3,6 +3,7 @@
 namespace App\Http\Resources\HistoryLogs;
 
 use App\Enums\ModelTypeValid;
+use App\Models\Facility;
 use App\Models\ItemType;
 use App\Models\Laboratory;
 use Carbon\Carbon;
@@ -27,6 +28,9 @@ class InventoryItemHistoryResource extends ResourceCollection
     {
         return [
             'data' => $this->collection->transform(function ($entry) {
+                if ($this->isPivotSyncEntry($entry)) {
+                    return $this->transformPivotSyncEntry($entry);
+                }
                 $newPropertiesOfHistory = [];
                 $oldPropertiesOfHistory = [];
                 $fields = [];
@@ -71,6 +75,56 @@ class InventoryItemHistoryResource extends ResourceCollection
     private function getTranslationKey(string $property): string
     {
         return "model_attributes.{$this->modelType->value}.{$property}";
+    }
+
+    /**
+     * Pivot syncs (App\LogsPivotChanges::logPivotSync) log a flat
+     * ['relation' => ..., 'added' => [...], 'removed' => [...]] shape with no
+     * 'attributes'/'old' keys, unlike the automatic LogsActivity entries.
+     */
+    private function isPivotSyncEntry($entry): bool
+    {
+        return $entry->properties->has('relation');
+    }
+
+    private function transformPivotSyncEntry($entry): array
+    {
+        $relation = $entry->properties['relation'];
+        $translatedField = __($this->getTranslationKey($relation));
+        if ($translatedField === $this->getTranslationKey($relation)) {
+            $translatedField = ucfirst($relation);
+        }
+
+        $relatedModelClass = match ($relation) {
+            'laboratories' => Laboratory::class,
+            'facilities' => Facility::class,
+            default => null,
+        };
+
+        return [
+            'definitionOfChanges' => [
+                'created_at' => $this->setUserFriendlyDateCarbon($entry->created_at),
+                'object' => optional($entry->subject)->name ?? $entry->subject_id,
+                'action' => $entry->event,
+                'causeUser' => optional($entry->causer)->email ?? __('actions.user.deletedUser'),
+            ],
+            'changesForObject' => [
+                'fields' => [$translatedField],
+                'old_values' => [$this->describeRelatedIds($relatedModelClass, $entry->properties['removed'])],
+                'new_values' => [$this->describeRelatedIds($relatedModelClass, $entry->properties['added'])],
+            ],
+        ];
+    }
+
+    private function describeRelatedIds(?string $relatedModelClass, array $ids): string
+    {
+        if (empty($ids)) {
+            return '-';
+        }
+        if ($relatedModelClass === null) {
+            return implode(', ', $ids);
+        }
+        return $relatedModelClass::whereIn('id', $ids)->pluck('name')->implode(', ');
     }
 
     private function transformValue(string $property, mixed $value)

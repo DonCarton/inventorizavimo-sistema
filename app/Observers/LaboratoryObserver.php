@@ -2,16 +2,26 @@
 
 namespace App\Observers;
 
+use App\LogsPivotChanges;
 use App\Models\Laboratory;
 
 class LaboratoryObserver
 {
+    use LogsPivotChanges;
+
     public static function syncUserFacilities(Laboratory $laboratory)
     {
         foreach ($laboratory->users as $user)
         {
             $user->syncFacilitiesFromLaboratories();
         }
+    }
+
+    public static function syncFacilities(Laboratory $laboratory, array $facilityIds): void
+    {
+        $syncResult = $laboratory->facilities()->sync($facilityIds);
+        self::logPivotSync($laboratory, 'facilities', $syncResult);
+        self::syncUserFacilities($laboratory);
     }
     /**
      * Handle the Laboratory "created" event.
