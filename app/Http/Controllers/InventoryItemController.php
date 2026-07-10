@@ -25,6 +25,7 @@ use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
 use App\Models\SystemConfiguration;
+use App\Observers\InventoryItemObserver;
 use App\Rules\NonNegativeAmount;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -195,7 +196,7 @@ class InventoryItemController extends Controller
         Gate::authorize('create', InventoryItem::class);
         $createdInvItem = InventoryItem::create($request->all());
 
-        $createdInvItem->facilities()->sync($request['facilities']);
+        InventoryItemObserver::syncFacilities($createdInvItem, $request['facilities']);
 
         return to_route("inventoryItems.${redirectDestination}", $queryParams)->with('success', __('actions.inventoryItem.created', ['local_name' => $request['local_name']]));
     }
@@ -250,7 +251,7 @@ class InventoryItemController extends Controller
         $extraData = $request->except(array_keys($validatedData));
         $data = array_merge($validatedData, $extraData);
         $inventoryItem->update($data);
-        $inventoryItem->facilities()->sync($data['facilities']);
+        InventoryItemObserver::syncFacilities($inventoryItem, $data['facilities']);
         unset($data['query'],$data['referrer']);
         $changedData = array_diff_assoc($data, $originalData);
 

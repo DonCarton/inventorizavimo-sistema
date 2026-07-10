@@ -12,6 +12,7 @@ use App\Http\Resources\SelectObjectResources\RolesForSelect;
 use App\Http\Resources\UserResource;
 use App\Models\Laboratory;
 use App\Models\User;
+use App\Observers\UserObserver;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
@@ -95,8 +96,7 @@ class UserController extends Controller
         $data['password'] = Hash::make($password);
         $data['name'] = $data['first_name'] . ' ' . $data['last_name'];
         $newUser = User::create($data)->assignRole(Role::findById($request['selectedRole'])->name);
-        $newUser->laboratories()->sync($laboratoryIds);
-        $newUser->syncFacilitiesFromLaboratories();
+        UserObserver::syncLaboratories($newUser, $laboratoryIds);
         $newUser->email_verified_at = now();
         $newUser->save();
         event(new UserCreated($newUser, $password));
@@ -185,8 +185,7 @@ class UserController extends Controller
         unset($data['laboratories']);
         $oldLaboratoryIds = $user->laboratories->pluck('id')->sort()->values()->all();
         $user->update($data);
-        $user->laboratories()->sync($laboratoryIds);
-        $user->syncFacilitiesFromLaboratories();
+        UserObserver::syncLaboratories($user, $laboratoryIds);
         $laboratoriesChanged = $oldLaboratoryIds !== collect($laboratoryIds)->sort()->values()->all();
         if ($user->wasChanged() || $laboratoriesChanged || !$roleChanged) {
             return Redirect::route('users.index')->with('success', __('actions.user.updated', ['email' => $user->email]));

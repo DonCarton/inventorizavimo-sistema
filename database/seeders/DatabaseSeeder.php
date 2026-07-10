@@ -6,9 +6,11 @@ use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
 use App\Models\User;
+use App\Observers\UserObserver;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\CauserResolver;
 use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
@@ -18,7 +20,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $systemUserId = User::system()->id;
+        $systemUser = User::system();
+        $systemUserId = $systemUser->id;
+        app(CauserResolver::class)->setCauser($systemUser);
 
         $adminRole = [
             'id' => 1,
@@ -70,10 +74,8 @@ class DatabaseSeeder extends Seeder
             'updated_by' => $adminUser->id
         ]);
 
-        $adminUser->laboratories()->sync([$laboratory->id]);
-        $adminUser->syncFacilitiesFromLaboratories();
-        $regularUser->laboratories()->sync([$laboratory->id]);
-        $regularUser->syncFacilitiesFromLaboratories();
+        UserObserver::syncLaboratories($adminUser, [$laboratory->id]);
+        UserObserver::syncLaboratories($regularUser, [$laboratory->id]);
 
         ItemType::factory()->create([
             'name' => 'Atsargos (kitos sunaudojamos atsargos)',

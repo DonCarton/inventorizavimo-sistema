@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 //TODO: Align Laboratory related facility variable to be plural.
 class LaboratoryController extends Controller
 {
+
     /**
      * @return Response
      */
@@ -112,7 +113,7 @@ class LaboratoryController extends Controller
         $newLab = Laboratory::create($data);
 
         if(request()->user()->can('setFacility', $newLab)){
-            $newLab->facilities()->sync($data['facilities']);
+            LaboratoryObserver::syncFacilities($newLab, $data['facilities']);
         }
         
         return redirect()->route('laboratories.index')->with('success', __('actions.laboratory.created', ['name' => $request['name']]));
@@ -137,8 +138,7 @@ class LaboratoryController extends Controller
             
             $oldFacilities = $laboratory->facilities->pluck('id')->toArray();
 
-            $laboratory->facilities()->sync($data['facilities']);
-            LaboratoryObserver::syncUserFacilities($laboratory);
+            LaboratoryObserver::syncFacilities($laboratory, $data['facilities']);
 
             $facilitiesChanged = $oldFacilities != $data['facilities'];
 

@@ -23,6 +23,7 @@ return [
         'multiple_locations' => 'In multiple locations?',
         'laboratory' => 'Laboratory',
         'facility' => 'Facility',
+        'facilities' => 'Facilities',
         'cupboard' => 'Cupboard',
         'shelf' => 'Shelf',
         'storage_conditions' => 'Storage conditions',
@@ -41,9 +42,11 @@ return [
         'last_name' => 'Last name',
         'email' => 'Email',
         'laboratory' => 'Laboratory',
+        'laboratories' => 'Laboratories',
     ],
     'laboratory' => [
         'name' => 'Name',
+        'facilities' => 'Facilities',
     ],
     'item_type' => [
         'name' => 'Name',

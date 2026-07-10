@@ -2,11 +2,20 @@
 
 namespace App\Observers;
 
+use App\LogsPivotChanges;
 use App\Models\User;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
 class UserObserver implements ShouldHandleEventsAfterCommit
 {
+    use LogsPivotChanges;
+
+    public static function syncLaboratories(User $user, array $laboratoryIds): void
+    {
+        $syncResult = $user->laboratories()->sync($laboratoryIds);
+        self::logPivotSync($user, 'laboratories', $syncResult);
+        $user->syncFacilitiesFromLaboratories();
+    }
 
     public function deleting(User $user)
     {

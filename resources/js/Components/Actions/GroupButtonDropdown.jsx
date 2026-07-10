@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from "react";
 
-export default function GroupButtonDropdown({nameOfDropdownButton = 'Actions', children}){
+export default function GroupButtonDropdown({nameOfDropdownButton = 'Actions', panelWidthClass = 'w-44', children}){
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
     function exposeDropdown(){
@@ -33,7 +33,7 @@ export default function GroupButtonDropdown({nameOfDropdownButton = 'Actions', c
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M19 9l-7 7-7-7"/>
                 </svg>
             </button>
-            {showDropdown ? <div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg">{children}</div> : null}
+            {showDropdown ? <div className={`absolute z-50 right-0 mt-2 ${panelWidthClass} bg-white rounded-lg shadow-lg`}>{children}</div> : null}
         </div>
     )
 }
