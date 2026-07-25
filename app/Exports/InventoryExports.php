@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Exports\BrandedExport;
 use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
@@ -13,7 +14,8 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
-//use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use Maatwebsite\Excel\Concerns\WithCustomStartCell;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use Maatwebsite\Excel\Events\AfterSheet;
@@ -22,12 +24,26 @@ use Maatwebsite\Excel\Events\AfterSheet;
  * TODO: IMPROVE IT SO THAT IT ALSO STAMPS THE LOGO IN THE UPPER LEFT CORNER OF THE DOCUMENT.
  */
 
-class InventoryExports implements FromCollection, WithMapping, WithHeadings, WithStyles, WithEvents, ShouldAutoSize
+class InventoryExports extends BrandedExport implements FromCollection, WithMapping
 {
     private array $data;
+    private string $sortDirection = 'asc';
+    private string $sortField = 'local_name';
+
+    private const SORTABLE_FIELDS = [
+        'local_name', 'name', 'name_eng', 'inventory_type',
+        'laboratory', 'updated_by'
+    ];
+
+    public function exportTitle(): string
+    {
+        return "Inventoriaus įrašai";
+    }
 
     public function __construct(array $data = [])
     {
+        //$this->sortField = in_array($data['sort_field'] ?? null, self::SORTABLE_FIELDS, true) ? $data['sort_field'] : 'local_name';
+        //$this->sortDirection = strtolower($data['sort_direction'] ?? 'asc') === 'desc' ? 'desc' : 'asc';
         $this->data = array_diff_key($data, array_flip(['sort_direction', 'sort_field']));
     }
 
@@ -69,13 +85,8 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
                 });
             }
         }
-        return $query->get();
+        return $query->orderBy($this->sortField,$this->sortDirection)->get();
     }
-
-    /*public function startCell(): string
-    {
-        return 'C1';
-    }*/
 
     /**
      * @param $row
@@ -150,12 +161,15 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
         ];
     }
 
+    /*public function startCell(): string
+    {
+        return 'A2';
+    }
+
     public function styles(Worksheet $sheet)
     {
-        // $sheet->getRowDimension(1)->setRowHeight(110);
-        // $sheet->mergeCells("A1:B1");
         return [
-            1 => [
+            2 => [
                 'font' => ['bold' => true],
                 'borders' => [
                     'outline' => [
@@ -164,12 +178,12 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
                 ],
             ],
         ];
-    }
+    }*/
 
     /**
      * @return array
      */
-    public function registerEvents(): array
+    /*public function registerEvents(): array
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
@@ -177,35 +191,38 @@ class InventoryExports implements FromCollection, WithMapping, WithHeadings, Wit
                 $highestRow = $sheet->getHighestRow();
                 $highestColumn = $sheet->getHighestColumn();
 
-                /*$drawing = new Drawing();
-                $drawing->setName('SteamLT_LOGO');
-                $drawing->setDescription('SteamLT logotipas');
-                $drawing->setPath(public_path('/img/path_to_image.jpg'));
-                $drawing->setHeight(110);
-                $drawing->setCoordinates('A1');
-                $drawing->setWorksheet($sheet);*/
+                $sheet->getRowDimension(1)->setRowHeight(60);
+                $sheet->mergeCells("A1:{$highestColumn}1"); // full-width band for the logo
 
-                $sheet->getStyle("A2:{$highestColumn}{$highestRow}")
-                    ->getBorders()
-                    ->getAllBorders()
-                    ->setBorderStyle(Border::BORDER_THIN);
+                $logoPath = config('branding.logo_path');
+                if ($logoPath && file_exists(public_path($logoPath))) {
+                    $drawing = new Drawing();
+                    $drawing->setName('Logo');
+                    $drawing->setDescription('Application logo');
+                    $drawing->setPath(public_path($logoPath));
+                    $drawing->setResizeProportional(true);
+                    $drawing->setHeight(50);
+                    $drawing->setCoordinates('A1');
+                    $drawing->setOffsetX(5);
+                    $drawing->setOffsetY(5);
+                    $drawing->setWorksheet($sheet);
+                }
 
-                $sheet->getStyle("C1:{$highestColumn}1")
-                    ->getBorders()
-                    ->getAllBorders()
-                    ->setBorderStyle(Border::BORDER_MEDIUM);
+                $sheet->getStyle("A3:{$highestColumn}{$highestRow}")
+                     ->getBorders()
+                     ->getAllBorders()
+                     ->setBorderStyle(Border::BORDER_THIN);
 
-                $sheet->getStyle("C1:{$highestColumn}1")
-                    ->getAlignment()
-                    ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
-                    ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-                    
-                // for ($row = 2; $row <= $highestRow; $row++) {
-                //     $sheet->mergeCells("A{$row}:B{$row}");
-                // }
-                
-                // $sheet->setCellValue("A1","");
+                $sheet->getStyle("A2:{$highestColumn}2")
+                     ->getBorders()
+                     ->getAllBorders()
+                     ->setBorderStyle(Border::BORDER_MEDIUM);
+
+                $sheet->getStyle("A2:{$highestColumn}2")
+                     ->getAlignment()
+                     ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+                     ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
             },
         ];
-    }
+    }*/
 }

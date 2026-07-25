@@ -180,7 +180,7 @@ return [
             ],
         ],
         'file' => [
-            'required' => 'Importo failas yra privalomas.' 
+            'required' => 'Importo failas yra privalomas.'
         ],
         'field_mappings' => [
             'required' => 'Bent vienas importavimo laukas turi būti nurodytas.',
@@ -235,6 +235,9 @@ return [
         'laboratory' => [
             'no_valid_record' => ':Attribute su pateikta reikšme [:value] nerasta.',
         ],
+        'laboratories' => [
+            'required' => ':Attribute yra privalomas laukas.',
+        ]
     ],
 
     /*
@@ -298,6 +301,8 @@ return [
         '*.to_order' => 'užsakyti',
         '*.average_consumption' => 'vidutiniškai sunaudojama',
         '*.facilities' => 'patalpa',
+        'laboratories' => 'laboratorijos',
+        'facility' => 'patalpa',
     ],
 
 ];
