@@ -24,6 +24,8 @@ class InventoryItemExportRequest extends FormRequest
             'inventory_type' => 'nullable|integer|string',
             'laboratory' => 'nullable|string',
             'updated_by' => 'nullable|string',
+            //'sort_field' => 'nullable|string|in:local_name,name,name_eng,inventory_type,laboratory,updated_by',
+            //'sort_direction' => 'nullable|string|in:asc,desc',
         ];
     }
 }

@@ -28,7 +28,9 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('overrule-all', function (User $user) {
             return $user->hasRole('super-admin');
         });
-        Inertia::share('appLogoPath', env('APP_LOGO_PATH'));
-        Inertia::share('appLogoPathColour', env('APP_LOGO_PATH_COLOUR'));
+        //Inertia::share('appLogoPath', env('APP_LOGO_PATH'));
+        //Inertia::share('appLogoPathColour', env('APP_LOGO_PATH_COLOUR'));
+        Inertia::share('appLogoPath', config('branding.logo_path'));
+        Inertia::share('appLogoPathColour', config('branding.logo_path_colour'));
     }
 }
