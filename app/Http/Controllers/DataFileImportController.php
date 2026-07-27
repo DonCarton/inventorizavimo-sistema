@@ -55,7 +55,7 @@ class DataFileImportController extends Controller
     public function index(Request $request): Response
     {
 
-        $query = ImportDefinition::query();
+        $query = ImportDefinition::query()->with('latestRun');
         $sortField = $request->input("sort_field", "updated_at");
         $sortDirection = $request->input("sort_direction", "desc");
 
@@ -151,6 +151,7 @@ class DataFileImportController extends Controller
             'importableObjects' => DataFileImportController::getImportableModels(),
             'rawHeaders' => $headings,
             'normalizedHeaders' => $normalizedHeaders,
+            'sampleRows' => ImportController::fetchSampleRows($existingfile),
             'originalFilename' => basename($importDefinition->file_path),
             'importDefinition' => $importDefinition,
         ]);

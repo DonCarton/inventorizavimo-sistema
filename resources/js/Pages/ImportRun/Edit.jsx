@@ -61,6 +61,37 @@ export default function Create({ auth, importRun, importStatuses }) {
                             <InputLabel>{StringHelper.__("Status")}</InputLabel>
                             <SteamDropdown className="w-full disabled:bg-gray-400 disabled:text-white" options={importStatuses} disabled={true} value={importRun.status}/>
                         </div>
+                        <div className="mt-4 grid grid-cols-2 gap-4">
+                            <div>
+                                <InputLabel>{StringHelper.__("Started at")}</InputLabel>
+                                <TextInput className="w-full disabled:bg-gray-300" disabled readOnly value={importRun.started_at ?? '—'} />
+                            </div>
+                            <div>
+                                <InputLabel>{StringHelper.__("Finished at")}</InputLabel>
+                                <TextInput className="w-full disabled:bg-gray-300" disabled readOnly value={importRun.finished_at ?? '—'} />
+                            </div>
+                            <div>
+                                <InputLabel>{StringHelper.__("Rows")}</InputLabel>
+                                <TextInput className="w-full disabled:bg-gray-300" disabled readOnly value={importRun.row_count ?? '—'} />
+                            </div>
+                            <div>
+                                <InputLabel>{StringHelper.__("Errors")}</InputLabel>
+                                <TextInput className="w-full disabled:bg-gray-300" disabled readOnly value={importRun.error_count ?? '—'} />
+                            </div>
+                        </div>
+                        {importRun.has_failure_report && (
+                            <div className="mt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => window.open(route('import-runs.download-report', importRun.id), '_blank')}
+                                    className="flex items-center justify-center p-2 border border-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    title={StringHelper.__("Download failure report")}
+                                >
+                                    <FiDownload/>
+                                    <span className="ml-2">{StringHelper.__("Download failure report")}</span>
+                                </button>
+                            </div>
+                        )}
                         <div className="mt-4">
                             <InputLabel htmlFor="file">{StringHelper.__("File for import definition")}</InputLabel>
                             <div className="flex items-center space-x-2">

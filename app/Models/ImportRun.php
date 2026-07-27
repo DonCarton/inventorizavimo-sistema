@@ -19,6 +19,10 @@ class ImportRun extends Model
         'updated_by'
     ];
 
+    protected $casts = [
+        'started_at' => 'datetime',
+        'finished_at' => 'datetime',
+    ];
 
     public function definition()
     {

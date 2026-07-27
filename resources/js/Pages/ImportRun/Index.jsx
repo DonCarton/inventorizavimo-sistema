@@ -9,6 +9,7 @@ import TableHeader from "@/Components/TableHeader.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
 import FailureMessage from "@/Components/FailureMessage.jsx";
 import { VscDebugRerun } from "react-icons/vsc";
+import { FiDownload } from "react-icons/fi";
 import SteamDropdown from '@/Components/SteamDropdown';
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import WarningMessage from '@/Components/WarningMessage';
@@ -80,19 +81,13 @@ export default function Index({ auth, importRuns, importStatuses, queryParams: i
                             </button>
                         </div>
                         <GroupButtonDropdown id="dropdown-actions-import-runs" name="actions-inventory" nameOfDropdownButton={StringHelper.__("Actions")}>
-                            {auth.can.create.importRun && <>
-                                <Link href={route("import-runs.create")}>
-                                    <button type="button" disabled id="create-new-entry" title={StringHelper.__("Create a new entry in the current page")}
-                                        className="px-2 py-1 bg-white border-t-2 border-l-2 border-r-2 rounded-t-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                        {StringHelper.__("Create")}
-                                    </button>
-                                </Link>
+                            {auth.can.create.importRun &&
                                 <Link href={route("import-definitions.index")}>
                                     <button type="button" id="import-entries" title={StringHelper.__("Import definitions")}
-                                        className="px-2 py-1 bg-white border-2 rounded-b-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                        className="px-2 py-1 bg-white border-2 rounded-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
                                         {StringHelper.__("Import definitions")}
                                     </button>
-                                </Link></>
+                                </Link>
                             }
                         </GroupButtonDropdown>
                     </div>
@@ -118,6 +113,13 @@ export default function Index({ auth, importRuns, importStatuses, queryParams: i
                                             <TableHeader name="status" sort_field={filterValues.sort_field}
                                                 sort_direction={filterValues.sort_direction} sortChanged={sortChanged}
                                                 children={StringHelper.__("Status")}/>
+                                            <TableHeader name="started_at" sort_field={filterValues.sort_field}
+                                                sort_direction={filterValues.sort_direction} sortChanged={sortChanged}
+                                                children={StringHelper.__("Started at")}/>
+                                            <TableHeader name="finished_at" sort_field={filterValues.sort_field}
+                                                sort_direction={filterValues.sort_direction} sortChanged={sortChanged}
+                                                children={StringHelper.__("Finished at")}/>
+                                            <th className="px-3 py-2">{StringHelper.__("Rows")}</th>
                                             <th className="px-3 py-2">{StringHelper.__("Created by")}</th>
                                             <th className="px-3 py-2">{StringHelper.__("Actions")}</th>
                                         </tr>
@@ -138,6 +140,9 @@ export default function Index({ auth, importRuns, importStatuses, queryParams: i
                                                 <SteamDropdown name="import_run_query_select" className="w-full 3xl:text-base text-sm text-gray-500" value={filterValues.status} options={importStatuses} onChange={e => onSelectChange('status', e)} />
                                             </th>
                                             <th className="px-3 py-2"></th>
+                                            <th className="px-3 py-2"></th>
+                                            <th className="px-3 py-2"></th>
+                                            <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2">
                                                 {Object.values(filterValues).some(v => v !== '' && v != null) && <PrimaryButton onClick={resetFilters}
                                                     className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 uppercase tracking-widest font-semibold whitespace-nowrap"
@@ -154,11 +159,21 @@ export default function Index({ auth, importRuns, importStatuses, queryParams: i
                                                 <td className="px-3 py-2">{importRun.definition_name}</td>
                                                 <td className="px-3 py-2">{importRun.model_class}</td>
                                                 <td className="px-3 py-2">{importRun.status}</td>
+                                                <td className="px-3 py-2">{importRun.started_at ?? '—'}</td>
+                                                <td className="px-3 py-2">{importRun.finished_at ?? '—'}</td>
+                                                <td className="px-3 py-2">
+                                                    {importRun.row_count != null
+                                                        ? `${importRun.row_count}${importRun.error_count ? ` (${importRun.error_count} ${StringHelper.__("errors")})` : ''}`
+                                                        : '—'}
+                                                </td>
                                                 <td className="px-3 py-2">{importRun.created_by}</td>
                                                 <td className="flex justify-start mt-1 mb-1 px-2 py-1 space-x-2">
                                                     <BulkActionsButton>
                                                             <MiscButton classVariant="green" title={StringHelper.__("Edit")} as="link" to={route("import-runs.edit", importRun.id)} disabled={processing} icon={TbEdit} children={StringHelper.__("Edit")}/>
                                                             <MiscButton title={StringHelper.__("Rerun last import")} as="button" onClick={() => handleRequeue(importRun.id)} disabled={processing} icon={VscDebugRerun} children={StringHelper.__("Rerun")}/>
+                                                            {importRun.has_failure_report &&
+                                                                <MiscButton classVariant="blue" title={StringHelper.__("Download failure report")} as="button" onClick={() => window.open(route("import-runs.download-report", importRun.id), '_blank')} icon={FiDownload} children={StringHelper.__("Report")}/>
+                                                            }
                                                             <MiscButton classVariant="red" title={StringHelper.__("Delete")} as="button" disabled={processing} onClick={() => handleDestroy(importRun.id)} icon={RiDeleteBin6Line} children={StringHelper.__("Delete")}/>
                                                     </BulkActionsButton>
                                                 </td>
