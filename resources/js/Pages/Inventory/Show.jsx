@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head, Link} from "@inertiajs/react";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
+import ExternalLinkField from "@/Components/ExternalLinkField.jsx";
 import StringHelper from '@/Libs/StringHelper';
 import SelectForSingleItem from "@/Components/Forms/SelectForSingleItem.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
@@ -245,18 +246,30 @@ export default function Show({auth, inventoryItem, logsForItem, laboratories, fa
                                         <div className="mt-4">
                                             <InputLabel htmlFor="inventoryItems_provider_url"
                                                         value={StringHelper.__("Provider url")}/>
-                                            <TextInput id="inventoryItems_provider" type="text" disabled={true}
-                                                       readOnly={true} name="provider"
-                                                       value={inventoryItem.data.urlToProviderSite || ''}
-                                                       className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            {inventoryItem.data.urlToProviderSite ? (
+                                                <ExternalLinkField id="inventoryItems_provider_url"
+                                                                   value={inventoryItem.data.urlToProviderSite}
+                                                                   className="mt-1 w-full"/>
+                                            ) : (
+                                                <TextInput id="inventoryItems_provider_url" type="text" disabled={true}
+                                                           readOnly={true} name="provider_url"
+                                                           value=""
+                                                           className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            )}
                                         </div>
                                         <div className="mt-2">
                                             <InputLabel htmlFor="inventoryItems_alt_url_to_provider"
                                                         value={StringHelper.__("Alt url to provider")}/>
-                                            <TextInput id="inventoryItems_provider" type="text" disabled={true}
-                                                       readOnly={true} name="provider"
-                                                       value={inventoryItem.data.altUrlToProviderSite || ''}
-                                                       className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            {inventoryItem.data.altUrlToProviderSite ? (
+                                                <ExternalLinkField id="inventoryItems_alt_url_to_provider"
+                                                                   value={inventoryItem.data.altUrlToProviderSite}
+                                                                   className="mt-1 w-full"/>
+                                            ) : (
+                                                <TextInput id="inventoryItems_alt_url_to_provider" type="text" disabled={true}
+                                                           readOnly={true} name="alt_url_to_provider"
+                                                           value=""
+                                                           className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            )}
                                         </div>
                                     </div>
                                 </AccordionWithManualIndex>

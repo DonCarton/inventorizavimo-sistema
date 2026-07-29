@@ -101,13 +101,13 @@ class GenericImport implements ToCollection, WithHeadingRow
                 if (empty($rawValue)) {
                     continue;
                 }
-                
+
                 $translationKey = 'validation.custom.' . (string)$fkAttr . '.no_valid_record';
 
                 if ($lookupConfig['many_to_many']) {
-                    
+
                     $collectedValues = collect(explode('|',$rawValue))->map(fn($value) => trim($value))->filter();
-                    
+
                     $resolvedIds = \DB::table($lookupConfig['table'])
                         ->whereIn($lookupConfig['match_on'], $collectedValues)
                         ->pluck('id')
@@ -129,7 +129,7 @@ class GenericImport implements ToCollection, WithHeadingRow
                     unset($input[$fkAttr]);
 
                 } else {
-                    
+
                     $resolvedId = $this->getIdByLookup($lookupConfig, $input[$fkAttr]);
 
                     if ($resolvedId) {
@@ -151,7 +151,7 @@ class GenericImport implements ToCollection, WithHeadingRow
             $uniqueValues = collect($uniqueBy)->mapWithKeys(fn($key) => [$key => $input[$key] ?? null])->toArray();
 
             $existing = $modelClass::where($uniqueValues)->exists();
-            
+
             $mergedArray = array_merge($input, [
                     'updated_by' => $this->updatedBy,
                     ...(!$existing ? ['created_by' => $this->createdBy] : [])
@@ -176,7 +176,7 @@ class GenericImport implements ToCollection, WithHeadingRow
             if (method_exists($updatedOrCreatedModel, 'syncFacilitiesFromLaboratories')) {
                 $updatedOrCreatedModel->syncFacilitiesFromLaboratories();
             }
-            
+
         }
 
         if (!empty($this->caughtErrors)) {

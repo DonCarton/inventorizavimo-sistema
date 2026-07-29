@@ -23,6 +23,14 @@ export default function FieldMappingSummary({ rawHeaders, normalizedHeaders, fie
 
     return (
         <div className="divide-y divide-gray-200 dark:divide-gray-700 border border-gray-200 dark:border-gray-700 rounded-md">
+            <div className="flex items-center gap-4 px-4 py-2 bg-gray-50 dark:bg-gray-700">
+                <span className="w-1/2 text-xs font-semibold uppercase text-gray-700 dark:text-gray-400">
+                    {StringHelper.__("Field in file")}
+                </span>
+                <span className="text-xs font-semibold uppercase text-gray-700 dark:text-gray-400">
+                    {StringHelper.__("Field in system")}
+                </span>
+            </div>
             {rows.map((row) => (
                 <div key={row.display} className="flex items-center gap-4 px-4 py-2">
                     <span className="font-medium w-1/2">{row.display}</span>

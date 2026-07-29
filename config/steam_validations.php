@@ -5,7 +5,7 @@ use App\Rules\HasRelationMethod;
 
 return [
     'App\\Models\\InventoryItem' => [
-        'local_name' => ['required'],
+        'local_name' => ['required','regex:/^[A-Z]{3,4}\d{3}-[A-Z]$/'],
         'inventory_type' => ['nullable', new ExistsByNumericOrString('item_types', 'inventory_type')],
         'name' => ['nullable', 'string', 'max:255'],
         'name_eng' => ['nullable', 'string', 'max:255'],
