@@ -1,9 +1,5 @@
 import { FiExternalLink } from "react-icons/fi";
 
-// Displays a stored URL value as a tappable link, styled to match the disabled
-// TextInput boxes used elsewhere on read-only detail pages. The whole box is the
-// anchor (not just the text) for a larger mobile tap target. Backend only validates
-// these fields as plain strings, so a scheme is prepended defensively if missing.
 export default function ExternalLinkField({ id, value, className = "" }) {
     const href = /^https?:\/\//i.test(value) ? value : `https://${value}`;
 
