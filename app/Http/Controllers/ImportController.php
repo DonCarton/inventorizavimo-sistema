@@ -81,7 +81,26 @@ class ImportController extends Controller
         return response()->json([
             "rawHeaders" => $headings,
             "normalizedHeaders" => $normalizedHeaders,
+            "sampleRows" => $this->fetchSampleRows($file),
         ]);
+    }
+
+    public static function fetchSampleRows(UploadedFile $file, int $limit = 10): array
+    {
+        $rows = Excel::toArray(null, $file);
+
+        if (empty($rows) || empty($rows[0])) {
+            return [];
+        }
+
+        return collect($rows[0])
+            ->slice(1, $limit)
+            ->map(fn($row) => array_map(
+                fn($cell) => is_null($cell) ? null : (string) $cell,
+                $row,
+            ))
+            ->values()
+            ->all();
     }
 
     public static function fetchHeaders(UploadedFile $file)

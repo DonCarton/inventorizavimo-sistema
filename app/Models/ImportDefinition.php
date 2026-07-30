@@ -54,4 +54,9 @@ class ImportDefinition extends Model
     {
         return $this->hasMany(ImportRun::class);
     }
+
+    public function latestRun()
+    {
+        return $this->hasOne(ImportRun::class)->latestOfMany();
+    }
 }

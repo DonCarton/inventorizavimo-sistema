@@ -1,16 +1,21 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
 import { Head, Link, useForm } from "@inertiajs/react";
-import { useState } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
+import axios from "axios";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import StringHelper from "@/Libs/StringHelper";
 import SteamDropdown from "@/Components/SteamDropdown";
-import FieldMappingForm from "@/Components/Forms/FieldMappingForm";
+import FieldMappingSummary from "@/Components/Forms/FieldMappingSummary";
 import { FiDownload } from "react-icons/fi";
 
-export default function Create({ auth, importableObjects, rawHeaders, normalizedHeaders, importDefinition, originalFilename }) {
+// react-spreadsheet-import pulls in Chakra UI/Emotion/react-data-grid (~1MB minified) —
+// lazy-load so that weight is only fetched once the user opens the mapping modal.
+const SpreadsheetImportModal = lazy(() => import("@/Components/Forms/SpreadsheetImportModal"));
+
+export default function Create({ auth, importableObjects, rawHeaders, normalizedHeaders, sampleRows, importDefinition, originalFilename }) {
     const confirmMessage = StringHelper.__("Changing the object type reset the mappings, do you wish to proceed?");
     const { data, setData, patch, errors, processing } = useForm({
         name: importDefinition.name || '',
@@ -18,15 +23,47 @@ export default function Create({ auth, importableObjects, rawHeaders, normalized
         file: importDefinition.file || null,
         field_mappings: importDefinition.field_mappings || {},
     });
+    const [importableFields, setImportableFields] = useState([]);
+    const [isMappingModalOpen, setIsMappingModalOpen] = useState(false);
 
     const handleModelChange = (e) => {
         if (confirm(confirmMessage)) {
             const model = e.target.value
-            setData('model_class', model)
+            // Inertia's useForm().setData(key, value) reads from the closure-captured `data`,
+            // so two separate calls in one handler would clobber each other — merge into one.
+            setData((current) => ({ ...current, model_class: model, field_mappings: {} }))
         } else {
             return;
         }
     };
+
+    useEffect(() => {
+        if (!data.model_class) {
+            setImportableFields([]);
+            return;
+        }
+
+        let cancelled = false;
+
+        axios
+            .post(route("imports.importableFields", { model: data.model_class }))
+            .then((response) => {
+                if (cancelled) return;
+                setImportableFields(
+                    Object.entries(response.data.humanReadable).map(
+                        ([key, label]) => ({
+                            key,
+                            label,
+                            fieldType: { type: "input" },
+                        }),
+                    ),
+                );
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [data.model_class]);
 
     const handleDownloadClick = (e) => {
         console.log(e);
@@ -105,19 +142,40 @@ export default function Create({ auth, importableObjects, rawHeaders, normalized
                             <InputLabel className="mb-2" htmlFor="import_definition_field_mappings">{StringHelper.__("Mappings")}<span className="text-red-500">*</span></InputLabel>
                             <InputError message={errors.field_mappings} className="mb-2" />
 
-                            {data.model_class.length > 0 && (<>
-                                <div className="grid grid-cols-2">
-                                    <div className="text-xl font-bold">{StringHelper.__("Field in file")}</div>
-                                    <div className="text-xl font-bold">{StringHelper.__("Field in system")}</div>
+                            {data.model_class.length > 0 && (
+                                <div id="import_definition_field_mappings">
+                                    <PrimaryButton
+                                        type="button"
+                                        onClick={() => setIsMappingModalOpen(true)}
+                                        disabled={importableFields.length === 0}
+                                    >
+                                        {Object.keys(data.field_mappings).length > 0
+                                            ? StringHelper.__("Edit mapping")
+                                            : StringHelper.__("Map fields")}
+                                    </PrimaryButton>
+                                    <div className="mt-4">
+                                        <FieldMappingSummary
+                                            rawHeaders={rawHeaders}
+                                            normalizedHeaders={normalizedHeaders}
+                                            fieldMappings={data.field_mappings}
+                                            fields={importableFields}
+                                        />
+                                    </div>
+                                    {isMappingModalOpen && (
+                                        <Suspense fallback={null}>
+                                            <SpreadsheetImportModal
+                                                isOpen={isMappingModalOpen}
+                                                onClose={() => setIsMappingModalOpen(false)}
+                                                fields={importableFields}
+                                                rawHeaders={rawHeaders}
+                                                normalizedHeaders={normalizedHeaders}
+                                                sampleRows={sampleRows}
+                                                onMapped={mapping => setData('field_mappings', mapping)}
+                                            />
+                                        </Suspense>
+                                    )}
                                 </div>
-                                <FieldMappingForm id="import_definition_field_mappings"
-                                    model={data.model_class}
-                                    fileHeaders={normalizedHeaders}
-                                    rawHeaders={rawHeaders}
-                                    value={data.field_mappings}
-                                    onChange={mapping => setData('field_mappings', mapping)}
-                                />
-                            </>)}
+                            )}
                         </div>
 
                         <div className="mt-2">

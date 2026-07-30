@@ -32,7 +32,11 @@ class ImportDefinitionResource extends JsonResource
             'model_class' => ucfirst(__('objects.'.$this->model_class)),
             'updated_at' => $this->updated_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i'),
             'created_by' => (new UserResource($this->createdBy))->email,
-            'has_active_run' => $this->runs()->exists(),
+            'has_active_run' => $this->runs()->whereIn('status', ['pending', 'running'])->exists(),
+            'latest_run' => $this->whenLoaded('latestRun', fn () => $this->latestRun ? [
+                'status' => __('model_attributes.import_run.status.' . $this->latestRun->status),
+                'updated_at' => $this->latestRun->updated_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i'),
+            ] : null),
         ];
     }
 }

@@ -89,6 +89,7 @@ export default function Index({ auth, importDefinitions, queryParams: initialQue
                                             <TableHeader name="updated_at" sort_field={filterValues.sort_field} sort_direction={filterValues.sort_direction}
                                                 sortChanged={sortChanged} children={StringHelper.__("Updated at")} />
                                             <th className="px-3 py-2">{StringHelper.__("Created by")}</th>
+                                            <th className="px-3 py-2">{StringHelper.__("Last run")}</th>
                                             <th className="px-3 py-2">{StringHelper.__("Actions")}</th>
                                         </tr>
                                     </thead>
@@ -103,6 +104,7 @@ export default function Index({ auth, importDefinitions, queryParams: initialQue
                                                     onBlur={(e) => onInputBlur("name", e)}
                                                     onKeyDown={(e) => handleKeyDown("name", e)} />
                                             </th>
+                                            <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>
                                             <th className="px-3 py-2"></th>
@@ -127,6 +129,16 @@ export default function Index({ auth, importDefinitions, queryParams: initialQue
                                                 <td className="px-3 py-2">{importDefinition.model_class}</td>
                                                 <td className="px-3 py-2">{importDefinition.updated_at}</td>
                                                 <td className="px-3 py-2">{importDefinition.created_by}</td>
+                                                <td className="px-3 py-2">
+                                                    {importDefinition.latest_run ? (
+                                                        <Link href={route("import-runs.index", {
+                                                            import_definition_id: importDefinition.id,
+                                                            definition_name: importDefinition.name,
+                                                        })} className="hover:underline">
+                                                            {importDefinition.latest_run.status} — {importDefinition.latest_run.updated_at}
+                                                        </Link>
+                                                    ) : StringHelper.__("Never run")}
+                                                </td>
                                                 <td className="flex justify-start mt-1 mb-1 px-2 py-1 space-x-2">
                                                     <BulkActionsButton>
                                                         <MiscButton classVariant="green" title={StringHelper.__("Edit")} disabled={processing} as="link" to={route("import-definitions.edit", importDefinition.id)} icon={TbEdit} children={StringHelper.__("Edit")} />

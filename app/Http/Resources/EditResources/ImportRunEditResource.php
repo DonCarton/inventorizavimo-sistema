@@ -19,6 +19,11 @@ class ImportRunEditResource extends JsonResource
             'id' => $this->id,
             'status' => $this->status,
             'file_path' => str_replace('imports/','',$this->file_path),
+            'started_at' => $this->started_at?->setTimezone('Europe/Vilnius')->format('Y-m-d H:i'),
+            'finished_at' => $this->finished_at?->setTimezone('Europe/Vilnius')->format('Y-m-d H:i'),
+            'row_count' => $this->row_count,
+            'error_count' => $this->error_count,
+            'has_failure_report' => !is_null($this->output_file_path),
         ];
     }
 }

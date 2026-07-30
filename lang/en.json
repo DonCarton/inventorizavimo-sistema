@@ -193,5 +193,17 @@
     "Import runs": "Importo runs",
     "Parsing file": "Parsing file",
     "File size": "Error, the uploaded file's size s too high. Permitted size: :maxSize MB",
-    "Changing the object type reset the mappings, do you wish to proceed?": "Changing the object type reset the mappings, do you wish to proceed?"
+    "Changing the object type reset the mappings, do you wish to proceed?": "Changing the object type reset the mappings, do you wish to proceed?",
+    "Map fields": "Map fields",
+    "Edit mapping": "Edit mapping",
+    "No fields mapped yet": "No fields mapped yet",
+    "Started at": "Started at",
+    "Finished at": "Finished at",
+    "Rows": "Rows",
+    "errors": "errors",
+    "Errors": "Errors",
+    "Download failure report": "Download failure report",
+    "Report": "Report",
+    "Last run": "Last run",
+    "Never run": "Never run"
 }

@@ -6,7 +6,6 @@ use App\Http\Resources\EditResources\ImportRunEditResource;
 use App\Http\Resources\ImportRunResource;
 use App\Models\ImportDefinition;
 use App\Models\ImportRun;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Inertia\Inertia;
@@ -29,6 +28,9 @@ class ImportRunController extends Controller
                 $query->where('name', 'like', '%' . $request["definition_name"] . '%');
             });
         }
+        if ($request["import_definition_id"]) {
+            $query->where('import_definition_id', '=', $request["import_definition_id"]);
+        }
         if ($request["status"]) {
             $query->where('status', '=', $request["status"]);
         }
@@ -38,11 +40,6 @@ class ImportRunController extends Controller
             'importStatuses' => $this->getImportStatuses(),
             'queryParams' => $request->query() ?: null,
         ]);
-    }
-
-    public function create(): RedirectResponse
-    {
-        return redirect()->route('import-runs.index')->with('warning',__('actions.unavailable'));
     }
 
     public function store(Request $request)

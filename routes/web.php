@@ -45,11 +45,14 @@ Route::middleware(['auth', 'verified'])->group(function (){
         
         Route::prefix('import-runs')->name('import-runs.')->group(function() {
                 Route::get('/', [ImportRunController::class,'index'])->name('index');
-                Route::get('/create', [ImportRunController::class,'create'])->name('create');
                 Route::get('/{importRun}/edit', [ImportRunController::class,'edit'])->name('edit');
                 Route::get('{importRun}/download', function (ImportRun $importRun) {
                     return Storage::download($importRun->file_path);
                 })->name('download');
+                Route::get('{importRun}/download-report', function (ImportRun $importRun) {
+                    abort_unless($importRun->output_file_path, 404);
+                    return Storage::download($importRun->output_file_path);
+                })->name('download-report');
                 Route::post('/', [ImportRunController::class,'store'])->name('store');
                 Route::patch('/{importRun}', [ImportRunController::class,'update'])->name('update');
                 Route::patch('/requeue/{importRun}',[ImportRunController::class,'requeue'])->name('requeue');
