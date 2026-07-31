@@ -285,6 +285,7 @@ return [
         'role' => 'rolė',
         'selectedRole' => 'rolė',
         'comment' => 'komentaras',
+        'term' => 'skolinimosi terminas',
         'change_acc_amount' => 'gali literaliai keisti likutį?',
         'cupboard' => 'spinta',
         'shelf' => 'lentyna',

@@ -381,6 +381,7 @@ class InventoryItemController extends Controller
             'action' => $request->input('action'),
             'amount' => $request->input('amount'),
             'comment' => $request->input('comment'),
+            'term' => $request->input('term'),
             'created_by' => $request->user()->id,
             'updated_by' => $request->user()->id,
         ]);

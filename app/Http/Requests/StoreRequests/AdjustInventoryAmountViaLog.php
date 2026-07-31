@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
  * @property float $amount
  * @property int $laboratory_id
  * @property string $comment
+ * @property string $term
  * @property int $created_by
  * @property int $updated_by
  * @property boolean $urlToRedirect
@@ -40,6 +41,7 @@ class AdjustInventoryAmountViaLog extends FormRequest
                 'min:1',
             ],
             'comment' => ['required', 'min:5', 'max:100'],
+            'term' => ['required_if:action,REMOVE', 'nullable', 'string', 'max:100'],
             'created_by' => 'required|exists:users,id',
             'updated_by' => 'required|exists:users,id',
             'urlToRedirect' => 'boolean',
