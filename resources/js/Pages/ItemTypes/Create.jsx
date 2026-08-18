@@ -7,20 +7,31 @@ import InputError from "@/Components/InputError.jsx";
 import {useState} from "react";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
+import NumericInput from "@/Components/Forms/NumericInput.jsx";
 
-export default function Create({auth}) {
+export default function Create({auth, loanTermLimitsEnabled}) {
     const [checked, setChecked] = useState(false);
     const {data, setData, post, errors, processing} = useForm({
         name: '',
-        change_acc_amount: false
+        change_acc_amount: false,
+        min_loan_term_days: '',
+        max_loan_term_days: '',
     })
     const onSubmit = (e) => {
         e.preventDefault();
         post(route('itemTypes.store'));
     }
     const handleCheckbox = (e) => {
-        setData('change_acc_amount', e.target.checked);
-        setChecked(e.target.checked);
+        const isChecked = e.target.checked;
+        // Inertia's useForm().setData(key, value) reads from the closure-captured `data`,
+        // so clearing the loan-term fields needs to happen in the same functional-form call.
+        setData((current) => ({
+            ...current,
+            change_acc_amount: isChecked,
+            min_loan_term_days: isChecked ? '' : current.min_loan_term_days,
+            max_loan_term_days: isChecked ? '' : current.max_loan_term_days,
+        }));
+        setChecked(isChecked);
     };
     return (
         <AuthenticatedLayout
@@ -55,6 +66,28 @@ export default function Create({auth}) {
                                         {StringHelper.__("Can change literal amount")}?<span className="text-red-500">*</span>
                                     </label>
                                 </div>
+                                {loanTermLimitsEnabled && !checked && (
+                                    <div className="mt-4">
+                                        <h3 className="font-semibold text-gray-700 dark:text-gray-300">{StringHelper.__("Loan term limits")}</h3>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">{StringHelper.__("Leave both empty for no limit")}.</p>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 mt-2">
+                                            <div>
+                                                <InputLabel htmlFor="itemType_min_loan_term_days">{StringHelper.__("Minimum loan term (days)")}</InputLabel>
+                                                <NumericInput id="itemType_min_loan_term_days" name="min_loan_term_days"
+                                                              value={data.min_loan_term_days} className="mt-1 block w-full"
+                                                              onChange={e => setData('min_loan_term_days', e.target.value)}/>
+                                                <InputError message={errors.min_loan_term_days} className="mt-2"/>
+                                            </div>
+                                            <div>
+                                                <InputLabel htmlFor="itemType_max_loan_term_days">{StringHelper.__("Maximum loan term (days)")}</InputLabel>
+                                                <NumericInput id="itemType_max_loan_term_days" name="max_loan_term_days"
+                                                              value={data.max_loan_term_days} className="mt-1 block w-full"
+                                                              onChange={e => setData('max_loan_term_days', e.target.value)}/>
+                                                <InputError message={errors.max_loan_term_days} className="mt-2"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="mt-4">
                                     <Link href="/itemTypes"><SecondaryButton>{StringHelper.__("Cancel")}</SecondaryButton></Link>
                                     <PrimaryButton className="ml-2" disabled={processing}>{StringHelper.__("Create")}</PrimaryButton>

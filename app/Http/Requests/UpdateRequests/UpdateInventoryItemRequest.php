@@ -46,6 +46,8 @@ class UpdateInventoryItemRequest extends FormRequest
             'asset_number' => ['nullable','string'],
             'used_for' => ['nullable', 'string'],
             'comments' => ['nullable', 'string'],
+            'min_loan_term_days' => ['nullable', 'integer', 'min:0'],
+            'max_loan_term_days' => ['nullable', 'integer', 'min:0', 'gte:min_loan_term_days'],
             'updated_by' => 'required|exists:users,id'
         ];
     }

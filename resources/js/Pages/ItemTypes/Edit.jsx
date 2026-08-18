@@ -8,21 +8,32 @@ import React, {useState} from "react";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import DeleteButton from "@/Components/Forms/DeleteButton.jsx";
+import NumericInput from "@/Components/Forms/NumericInput.jsx";
 
-export default function Edit({ auth, itemType, can }) {
+export default function Edit({ auth, itemType, can, loanTermLimitsEnabled }) {
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
     const [checked, setChecked] = useState(itemType.data.changeAccAmount);
     const {data, setData, put, delete: destroy, errors, processing} = useForm({
         name: itemType.data.name || '',
         change_acc_amount: itemType.data.changeAccAmount || false,
+        min_loan_term_days: itemType.data.minLoanTermDays ?? '',
+        max_loan_term_days: itemType.data.maxLoanTermDays ?? '',
     })
     const onSubmit = (e) => {
         e.preventDefault();
         put(route('itemTypes.update', itemType.data.id));
     }
     const handleCheckbox = (e) => {
-        setData('change_acc_amount', e.target.checked);
-        setChecked(e.target.checked);
+        const isChecked = e.target.checked;
+        // Inertia's useForm().setData(key, value) reads from the closure-captured `data`,
+        // so clearing the loan-term fields needs to happen in the same functional-form call.
+        setData((current) => ({
+            ...current,
+            change_acc_amount: isChecked,
+            min_loan_term_days: isChecked ? '' : current.min_loan_term_days,
+            max_loan_term_days: isChecked ? '' : current.max_loan_term_days,
+        }));
+        setChecked(isChecked);
     };
     const handleDestroy = (value) => {
         if (window.confirm(handleConfirmMessage)) {
@@ -63,6 +74,28 @@ export default function Edit({ auth, itemType, can }) {
                                     </label>
                                     <InputError message={errors.change_acc_amount} className="mt-2"/>
                                 </div>
+                                {loanTermLimitsEnabled && !checked && (
+                                    <div className="mt-4">
+                                        <h3 className="font-semibold text-gray-700 dark:text-gray-300">{StringHelper.__("Loan term limits")}</h3>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">{StringHelper.__("Leave both empty for no limit")}.</p>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 mt-2">
+                                            <div>
+                                                <InputLabel htmlFor="itemType_min_loan_term_days">{StringHelper.__("Minimum loan term (days)")}</InputLabel>
+                                                <NumericInput id="itemType_min_loan_term_days" name="min_loan_term_days"
+                                                              value={data.min_loan_term_days} className="mt-1 block w-full"
+                                                              onChange={e => setData('min_loan_term_days', e.target.value)}/>
+                                                <InputError message={errors.min_loan_term_days} className="mt-2"/>
+                                            </div>
+                                            <div>
+                                                <InputLabel htmlFor="itemType_max_loan_term_days">{StringHelper.__("Maximum loan term (days)")}</InputLabel>
+                                                <NumericInput id="itemType_max_loan_term_days" name="max_loan_term_days"
+                                                              value={data.max_loan_term_days} className="mt-1 block w-full"
+                                                              onChange={e => setData('max_loan_term_days', e.target.value)}/>
+                                                <InputError message={errors.max_loan_term_days} className="mt-2"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="flex justify-between mt-4">
                                     <div>
                                         <Link href="/itemTypes"><SecondaryButton

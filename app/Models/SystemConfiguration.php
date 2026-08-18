@@ -16,4 +16,10 @@ class SystemConfiguration extends Model
     {
         return $this->hasOne(ConfigurationValue::class, 'configuration_id');
     }
+
+    public static function isEnabled(string $key): bool
+    {
+        $config = static::with('value')->where('key', $key)->first();
+        return $config && $config->value && (int) $config->value->value === 1;
+    }
 }

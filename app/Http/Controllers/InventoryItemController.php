@@ -228,10 +228,12 @@ class InventoryItemController extends Controller
             'referrer' => $request->query('referrer'),
             'cupboardOptions' => $configurations['cupboardOptions'],
             'shelfOptions' => $configurations['shelfOptions'],
+            'loanTermLimitsEnabled' => SystemConfiguration::isEnabled('loan_term_limits_enabled'),
             'can' => [
                 'alterLocalName' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
                 'alterType' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
                 'alterLocation' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
+                'alterLoanTermRange' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
                 'delete' => $request->user()->can('delete',$inventoryItem),
             ]
         ]);
@@ -340,6 +342,7 @@ class InventoryItemController extends Controller
                 'queryParams' => $queryParams,
                 'referrer' => $request->query('referrer'),
                 'can' => $can,
+                'loanTermRange' => $inventoryItem->loanTermRange(),
             ]);
         }
     }
@@ -433,6 +436,7 @@ class InventoryItemController extends Controller
             'referrer' => $request->query('referrer'),
             'cupboardOptions' => $configurations['cupboardOptions'],
             'shelfOptions' => $configurations['shelfOptions'],
+            'loanTermRange' => $inventoryItem->loanTermRange(),
             'can' => [
                 'edit' => $request->user()->can('edit', $inventoryItem),
             ],

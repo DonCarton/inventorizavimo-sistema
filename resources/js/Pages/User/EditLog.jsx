@@ -20,7 +20,7 @@ import LogsTable from "@/Components/Forms/LogsTable.jsx";
 import MiscButton from "@/Components/Forms/MiscButton.jsx";
 import { TbEye, TbEdit } from "react-icons/tb";
 
-export default function Edit({auth, inventoryItem, logsForItem, totalInUse, laboratories, redirectToReader, queryParams, referrer, can}) {
+export default function Edit({auth, inventoryItem, logsForItem, totalInUse, laboratories, redirectToReader, queryParams, referrer, can, loanTermRange}) {
     const [actionFromUser, setActionFromUser] = useState('REMOVE');
     const {data, setData, patch, errors} = useForm({
         total_amount: inventoryItem.total_amount,
@@ -140,6 +140,27 @@ export default function Edit({auth, inventoryItem, logsForItem, totalInUse, labo
                                                       onChange={e => setData('amount', e.target.value)}></NumericInput>
                                         <InputError message={errors.amount} className="mt-2"/>
                                     </div>
+                                    {data.action === 'REMOVE' && (
+                                        <div className="mt-4">
+                                            <InputLabel htmlFor="inventoryItems_term">
+                                                {StringHelper.__("Term")}
+                                                {loanTermRange && ` (${loanTermRange[0]}-${loanTermRange[1]} ${StringHelper.__("days")})`}
+                                                <span className="text-red-500">*</span>
+                                            </InputLabel>
+                                            {loanTermRange ? (
+                                                <NumericInput type="text" className="mt-1 block w-full"
+                                                              id="inventoryItems_term" name="term"
+                                                              value={data.term}
+                                                              onChange={e => setData('term', e.target.value)}/>
+                                            ) : (
+                                                <TextInput type="text" className="mt-1 block w-full"
+                                                           id="inventoryItems_term" name="term"
+                                                           value={data.term}
+                                                           onChange={e => setData('term', e.target.value)}/>
+                                            )}
+                                            <InputError message={errors.term} className="mt-2"/>
+                                        </div>
+                                    )}
                                     <div className="mt-4">
                                         <InputLabel htmlFor="inventoryItems_comment">{StringHelper.__("Comment")}<span
                                             className="text-red-500">*</span></InputLabel>
@@ -148,17 +169,6 @@ export default function Edit({auth, inventoryItem, logsForItem, totalInUse, labo
                                                         onChange={e => setData('comment', e.target.value)}/>
                                         <InputError message={errors.comment} className="mt-2"/>
                                     </div>
-                                    {data.action === 'REMOVE' && (
-                                        <div className="mt-4">
-                                            <InputLabel htmlFor="inventoryItems_term">{StringHelper.__("Term")}<span
-                                                className="text-red-500">*</span></InputLabel>
-                                            <TextInput type="text" className="mt-1 block w-full"
-                                                       id="inventoryItems_term" name="term"
-                                                       value={data.term}
-                                                       onChange={e => setData('term', e.target.value)}/>
-                                            <InputError message={errors.term} className="mt-2"/>
-                                        </div>
-                                    )}
                                 </div>
                                 <div className="mt-2">
                                     <SecondaryButton className="hover:bg-gray-100 mr-2"

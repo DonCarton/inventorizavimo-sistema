@@ -41,10 +41,27 @@ class AdjustInventoryAmountViaLog extends FormRequest
                 'min:1',
             ],
             'comment' => ['required', 'min:5', 'max:100'],
-            'term' => ['required_if:action,REMOVE', 'nullable', 'string', 'max:100'],
+            'term' => $this->termRules(),
             'created_by' => 'required|exists:users,id',
             'updated_by' => 'required|exists:users,id',
             'urlToRedirect' => 'boolean',
         ];
+    }
+
+    /**
+     * Free text by default; if the borrowed item resolves a loan-term day range
+     * (global toggle + item/item-type min-max — see InventoryItem::loanTermRange()),
+     * `term` becomes a bounded integer day count instead.
+     */
+    private function termRules(): array
+    {
+        $inventoryItem = $this->route('inventoryItem');
+        $range = $inventoryItem?->loanTermRange();
+
+        if ($range) {
+            return ['required_if:action,REMOVE', 'nullable', 'integer', 'min:' . $range[0], 'max:' . $range[1]];
+        }
+
+        return ['required_if:action,REMOVE', 'nullable', 'string', 'max:100'];
     }
 }
