@@ -20,7 +20,7 @@ import LogsTable from "@/Components/Forms/LogsTable.jsx";
 import MiscButton from "@/Components/Forms/MiscButton.jsx";
 import { TbEye, TbEdit } from "react-icons/tb";
 
-export default function Edit({auth, inventoryItem, logsForItem, totalInUse, laboratories, redirectToReader, queryParams, referrer, can}) {
+export default function Edit({auth, inventoryItem, logsForItem, totalInUse, laboratories, redirectToReader, queryParams, referrer, can, loanTermRange}) {
     const [actionFromUser, setActionFromUser] = useState('REMOVE');
     const {data, setData, patch, errors} = useForm({
         total_amount: inventoryItem.total_amount,
@@ -28,6 +28,7 @@ export default function Edit({auth, inventoryItem, logsForItem, totalInUse, labo
         action: actionFromUser,
         amount: '',
         comment: '',
+        term: '',
         total_available: totalInUse,
         urlToRedirect: redirectToReader,
     })
@@ -36,6 +37,16 @@ export default function Edit({auth, inventoryItem, logsForItem, totalInUse, labo
     const [open2, setOpen2] = useState(2);
     const handleOpen = (value) => setOpen(open === value ? 0 : value);
     const handleOpen2 = (value) => setOpen2(open2 === value ? 0 : value);
+    const handleActionChange = (e) => {
+        const action = e.target.value;
+        // Inertia's useForm().setData(key, value) reads from the closure-captured `data`,
+        // so clearing `term` needs to happen in the same functional-form call as `action`.
+        setData((current) => ({
+            ...current,
+            action,
+            term: action === 'REMOVE' ? current.term : '',
+        }));
+    };
     const onSubmit2 = (e) => {
         e.preventDefault();
         patch(route('inventoryItems.takeOutAmountLog', {inventoryItem: inventoryItem.id, query: queryParams, referrer: referrer}));
@@ -114,7 +125,7 @@ export default function Edit({auth, inventoryItem, logsForItem, totalInUse, labo
                                             className="text-red-500">*</span></InputLabel>
                                         <select
                                             className={data.action === 'REMOVE' ? "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full bg-red-300" : "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full bg-emerald-300 option:"}
-                                            onChange={e => setData('action', e.target.value)} value={data.action}>
+                                            onChange={handleActionChange} value={data.action}>
                                             {actionsOnInventory.map(action => (
                                                 <option key={action.value} value={action.value}
                                                         className={action.className}>{StringHelper.__(action.label)}</option>
@@ -129,6 +140,27 @@ export default function Edit({auth, inventoryItem, logsForItem, totalInUse, labo
                                                       onChange={e => setData('amount', e.target.value)}></NumericInput>
                                         <InputError message={errors.amount} className="mt-2"/>
                                     </div>
+                                    {data.action === 'REMOVE' && (
+                                        <div className="mt-4">
+                                            <InputLabel htmlFor="inventoryItems_term">
+                                                {StringHelper.__("Term")}
+                                                {loanTermRange && ` (${loanTermRange[0]}-${loanTermRange[1]} ${StringHelper.__("days")})`}
+                                                <span className="text-red-500">*</span>
+                                            </InputLabel>
+                                            {loanTermRange ? (
+                                                <NumericInput type="text" className="mt-1 block w-full"
+                                                              id="inventoryItems_term" name="term"
+                                                              value={data.term}
+                                                              onChange={e => setData('term', e.target.value)}/>
+                                            ) : (
+                                                <TextInput type="text" className="mt-1 block w-full"
+                                                           id="inventoryItems_term" name="term"
+                                                           value={data.term}
+                                                           onChange={e => setData('term', e.target.value)}/>
+                                            )}
+                                            <InputError message={errors.term} className="mt-2"/>
+                                        </div>
+                                    )}
                                     <div className="mt-4">
                                         <InputLabel htmlFor="inventoryItems_comment">{StringHelper.__("Comment")}<span
                                             className="text-red-500">*</span></InputLabel>

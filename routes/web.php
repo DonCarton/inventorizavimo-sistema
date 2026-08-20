@@ -38,6 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::prefix('imports')->name('imports.')->group(function() {
             Route::post('importable-fields', [ImportController::class, 'getImportableFields'])->name('importableFields');
             Route::post('preview-headers', [ImportController::class, 'extractHeaders'])->name('previewHeaders');
+            Route::post('dry-run', [ImportController::class, 'dryRun'])->name('dryRun');
             Route::get('{definition}/download', function (ImportDefinition $definition) {
                 return Storage::download($definition->file_path);
             })->name('download');

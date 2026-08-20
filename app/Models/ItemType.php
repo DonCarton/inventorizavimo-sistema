@@ -22,6 +22,8 @@ class ItemType extends Model
     protected $fillable = [
         'name',
         'change_acc_amount',
+        'min_loan_term_days',
+        'max_loan_term_days',
         'created_by',
         'updated_by'
     ];

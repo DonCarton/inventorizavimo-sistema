@@ -6,6 +6,7 @@ use App\Http\Requests\StoreRequests\StoreItemTypeRequest;
 use App\Http\Requests\UpdateRequests\UpdateItemTypeRequest;
 use App\Http\Resources\ItemTypeResource;
 use App\Models\ItemType;
+use App\Models\SystemConfiguration;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -40,7 +41,9 @@ class ItemTypeController extends Controller
      */
     public  function create(): Response
     {
-        return Inertia::render('ItemTypes/Create');
+        return Inertia::render('ItemTypes/Create', [
+            'loanTermLimitsEnabled' => SystemConfiguration::isEnabled('loan_term_limits_enabled'),
+        ]);
     }
 
     /**
@@ -51,7 +54,8 @@ class ItemTypeController extends Controller
     public function show(ItemType $itemType): Response
     {
         return Inertia::render('ItemTypes/Show', [
-            'itemType' => new ItemTypeResource($itemType)
+            'itemType' => new ItemTypeResource($itemType),
+            'loanTermLimitsEnabled' => SystemConfiguration::isEnabled('loan_term_limits_enabled'),
         ]);
     }
 
@@ -76,6 +80,7 @@ class ItemTypeController extends Controller
     {
         return Inertia::render('ItemTypes/Edit',[
             'itemType' => new ItemTypeResource($itemType),
+            'loanTermLimitsEnabled' => SystemConfiguration::isEnabled('loan_term_limits_enabled'),
             'can' => [
                 'delete' => request()->user()->can('delete', $itemType),
             ]

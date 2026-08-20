@@ -19,7 +19,7 @@ import FlexibleStaticSelect from '@/Components/Forms/FlexibleStaticSelect';
 import MiscButton from "@/Components/Forms/MiscButton.jsx";
 import { TbEye } from "react-icons/tb";
 
-export default function Edit({auth, inventoryItem, logsForItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, can}) {
+export default function Edit({auth, inventoryItem, logsForItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, can, loanTermLimitsEnabled}) {
     const isFirstLoad = useRef(true);
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
     const [facilityOptions, setFacilityOptions] = useState(facilities.data || []);
@@ -48,7 +48,9 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
         storage_conditions: inventoryItem.data.storageConditions || '',
         asset_number: inventoryItem.data.assetNumber || '',
         used_for: inventoryItem.data.usedFor || '',
-        comments: inventoryItem.data.comments || ''
+        comments: inventoryItem.data.comments || '',
+        min_loan_term_days: inventoryItem.data.minLoanTermDays ?? '',
+        max_loan_term_days: inventoryItem.data.maxLoanTermDays ?? '',
     })
     useEffect(() => {
         if (!data.laboratory) {
@@ -80,6 +82,10 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
         if (!can.alterType) { return; }
         setData('inventory_type',e.target.value);
     }
+    // Loan-term limits only apply to item types that use the borrow/return log flow
+    // (change_acc_amount === false) — hide the override fields when the selected type
+    // allows direct amount edits instead, since they'd never take effect.
+    const selectedItemTypeAllowsLoanTerm = !itemTypes.data.find(t => t.value == data.inventory_type)?.assetRequired;
     const handleCupboardChange = (e) => {
         if (e.target.value === undefined){
             return;
@@ -227,6 +233,26 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
                                                        onChange={e => setData('average_consumption', e.target.value)}/>
                                             <InputError message={errors.average_consumption} className="mt-2"/>
                                         </div>
+                                        {can.alterLoanTermRange && loanTermLimitsEnabled && selectedItemTypeAllowsLoanTerm && (<>
+                                            <div className="mt-4 w-full">
+                                                <InputLabel htmlFor="inventoryItems_min_loan_term_days"
+                                                            value={StringHelper.__("Minimum loan term (days)")}/>
+                                                <NumericInput id="inventoryItems_min_loan_term_days" type="text"
+                                                           name="min_loan_term_days" value={data.min_loan_term_days}
+                                                           className="mt-1 block w-full"
+                                                           onChange={e => setData('min_loan_term_days', e.target.value)}/>
+                                                <InputError message={errors.min_loan_term_days} className="mt-2"/>
+                                            </div>
+                                            <div className="mt-4 w-full">
+                                                <InputLabel htmlFor="inventoryItems_max_loan_term_days"
+                                                            value={StringHelper.__("Maximum loan term (days)")}/>
+                                                <NumericInput id="inventoryItems_max_loan_term_days" type="text"
+                                                           name="max_loan_term_days" value={data.max_loan_term_days}
+                                                           className="mt-1 block w-full"
+                                                           onChange={e => setData('max_loan_term_days', e.target.value)}/>
+                                                <InputError message={errors.max_loan_term_days} className="mt-2"/>
+                                            </div>
+                                        </>)}
                                     </div>
                                 </AccordionWithManualIndex>
                                 <AccordionWithManualIndex expandedByDefault={false} indexOfAcc={4} headerName={StringHelper.__("Order information")}>

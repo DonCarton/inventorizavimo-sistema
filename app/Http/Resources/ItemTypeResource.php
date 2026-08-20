@@ -30,6 +30,8 @@ class ItemTypeResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'changeAccAmount' => $this->change_acc_amount,
+            'minLoanTermDays' => $this->min_loan_term_days,
+            'maxLoanTermDays' => $this->max_loan_term_days,
             'createdAt' => $this->created_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updated_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
             'createdBy' => new UserResource($this->createdBy),

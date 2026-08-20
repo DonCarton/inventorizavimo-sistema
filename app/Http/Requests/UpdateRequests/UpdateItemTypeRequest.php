@@ -24,6 +24,8 @@ class UpdateItemTypeRequest extends FormRequest
         return [
             'name' => 'required|min:3|max:100',
             'change_acc_amount' => 'required|boolean',
+            'min_loan_term_days' => ['nullable', 'integer', 'min:0'],
+            'max_loan_term_days' => ['nullable', 'integer', 'min:0', 'gte:min_loan_term_days'],
             'updated_by' => 'required|exists:users,id'
         ];
     }

@@ -63,6 +63,8 @@ class InventoryItem extends Model implements ImportableModel
         'used_for',
         'comments',
         'critical_amount_notified_at',
+        'min_loan_term_days',
+        'max_loan_term_days',
         'created_by',
         'updated_by',
     ];
@@ -241,6 +243,37 @@ class InventoryItem extends Model implements ImportableModel
         return \DB::table($lookup['table'])
             ->where($lookup['match_on'], $value)
             ->value('id');
+    }
+
+    /**
+     * Resolves the [min, max] loan-term day range that gates the free-text `term` field on
+     * AmountLog borrows, if any. Order: off entirely unless the global `loan_term_limits_enabled`
+     * SystemConfiguration is on; then this item's own min/max override; then its ItemType's
+     * default; else null (no constraint — term stays free text). Meaningless (and always null)
+     * for item types with change_acc_amount = true — those items never go through the
+     * borrow/return AmountLog flow at all, only direct total_amount edits.
+     * @return array{0: int, 1: int}|null
+     */
+    public function loanTermRange(): ?array
+    {
+        if ($this->itemType?->change_acc_amount) {
+            return null;
+        }
+
+        if (!SystemConfiguration::isEnabled('loan_term_limits_enabled')) {
+            return null;
+        }
+
+        if (!is_null($this->min_loan_term_days) || !is_null($this->max_loan_term_days)) {
+            return [$this->min_loan_term_days ?? 0, $this->max_loan_term_days ?? PHP_INT_MAX];
+        }
+
+        $itemType = $this->itemType;
+        if ($itemType && (!is_null($itemType->min_loan_term_days) || !is_null($itemType->max_loan_term_days))) {
+            return [$itemType->min_loan_term_days ?? 0, $itemType->max_loan_term_days ?? PHP_INT_MAX];
+        }
+
+        return null;
     }
 
     /**

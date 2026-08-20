@@ -19,7 +19,7 @@ import MenuActionButton from "@/Components/Actions/MenuActionButton.jsx";
 import { TbEdit, TbArrowsUpDown, TbHistory } from "react-icons/tb";
 
 
-export default function Show({auth, inventoryItem, logsForItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, can}) {
+export default function Show({auth, inventoryItem, logsForItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, can, loanTermRange}) {
     const [openAll, setOpenAll] = useState(true);
     const toggleAllAccordions = () => {
         setOpenAll(!openAll);
@@ -216,6 +216,16 @@ export default function Show({auth, inventoryItem, logsForItem, laboratories, fa
                                                        value={inventoryItem.data.averageConsumption || ''}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
+                                        {loanTermRange && (
+                                            <div className="mt-4 w-full">
+                                                <InputLabel htmlFor="inventoryItems_loan_term_range"
+                                                            value={StringHelper.__("Term")}/>
+                                                <TextInput id="inventoryItems_loan_term_range" type="text" disabled={true}
+                                                           readOnly={true} name="loan_term_range"
+                                                           value={`${loanTermRange[0]}-${loanTermRange[1]} ${StringHelper.__("days")}`}
+                                                           className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            </div>
+                                        )}
                                     </div>
                                 </AccordionWithManualIndex>
                                 <AccordionWithManualIndex expandedByDefault={openAll} indexOfAcc={2}

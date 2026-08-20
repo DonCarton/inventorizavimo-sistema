@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
@@ -24,7 +25,9 @@ use Maatwebsite\Excel\Events\AfterSheet;
  * TODO: IMPROVE IT SO THAT IT ALSO STAMPS THE LOGO IN THE UPPER LEFT CORNER OF THE DOCUMENT.
  */
 
-class InventoryExports extends BrandedExport implements FromCollection, WithMapping
+// WithStrictNullComparison: without it, false and 0 are written as empty cells,
+// which made "multiple locations = no" indistinguishable from a missing value on re-import.
+class InventoryExports extends BrandedExport implements FromCollection, WithMapping, WithStrictNullComparison
 {
     private array $data;
     private string $sortDirection = 'asc';

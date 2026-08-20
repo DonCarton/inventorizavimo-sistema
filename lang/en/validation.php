@@ -235,6 +235,12 @@ return [
         'laboratory' => [
             'no_valid_record' => ':Attribute with the provided value of [:value] could not be found.',
         ],
+        'laboratories' => [
+            'no_valid_record' => ':Attribute with the provided value of [:value] could not be found.',
+        ],
+        'facilities' => [
+            'no_valid_record' => ':Attribute with the provided value of [:value] could not be found.',
+        ],
 
     ],
 

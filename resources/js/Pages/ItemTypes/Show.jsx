@@ -5,7 +5,7 @@ import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import {useState} from "react";
 
-export default function Show({ auth, itemType, previousUrl }) {
+export default function Show({ auth, itemType, previousUrl, loanTermLimitsEnabled }) {
     const [previousUrlPage] = useState(previousUrl);
     return (
         <AuthenticatedLayout
@@ -35,6 +35,15 @@ export default function Show({ auth, itemType, previousUrl }) {
                                         {StringHelper.__("Can change literal amount")}?
                                     </label>
                                 </div>
+                                {loanTermLimitsEnabled && !itemType.data.changeAccAmount &&
+                                    (itemType.data.minLoanTermDays !== null || itemType.data.maxLoanTermDays !== null) && (
+                                    <div className="mt-4">
+                                        <InputLabel htmlFor="itemType_loan_term_range">{StringHelper.__("Term")}</InputLabel>
+                                        <TextInput id="itemType_loan_term_range" type="text" name="loan_term_range"
+                                                   value={`${itemType.data.minLoanTermDays ?? 0}-${itemType.data.maxLoanTermDays ?? '∞'} ${StringHelper.__("days")}`}
+                                                   className="mt-1 block w-full disabled:text-white disabled:bg-gray-400" disabled={true} readOnly={true}/>
+                                    </div>
+                                )}
                                 <div className="mt-4">
                                     <Link href={previousUrlPage}
                                           className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"

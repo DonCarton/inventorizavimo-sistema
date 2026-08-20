@@ -14,6 +14,7 @@ export default function LogsTable({logsForItem}) {
                         <th className="px-3 py-2">{StringHelper.__("Action")}</th>
                         <th className="px-3 py-2">{StringHelper.__("Amount")}</th>
                         <th className="px-3 py-2">{StringHelper.__("Comment")}</th>
+                        <th className="px-3 py-2">{StringHelper.__("Term")}</th>
                         <th className="px-3 py-2">{StringHelper.__("Created by")}</th>
                         <th className="px-3 py-2">{StringHelper.__("Created at")}</th>
                     </tr>
@@ -28,6 +29,7 @@ export default function LogsTable({logsForItem}) {
                             <td className="px-3 py-2">{StringHelper.__(logForItem.action_taken)}</td>
                             <td className="px-3 py-2">{logForItem.amount_handled}</td>
                             <td className="px-3 py-2">{logForItem.comment}</td>
+                            <td className="px-3 py-2">{logForItem.term}</td>
                             <td className="px-3 py-2">
                                 <Link href={route("users.show", logForItem.created_by.id)}
                                       className="font-medium text-white hover:underline mx-1"> {logForItem.created_by.email} </Link>

@@ -1,6 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head, useForm} from '@inertiajs/react';
-import UpdateConfiguration from './Partials/UpdateConfiguration';
 import FailureMessage from '@/Components/FailureMessage';
 import Modal from '../../Components/Modal';
 import React, {useEffect, useState} from "react";
@@ -8,6 +7,7 @@ import StringHelper from "@/Libs/StringHelper.jsx";
 import InputError from "@/Components/InputError.jsx";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
+import Checkbox2 from "@/Components/Checkbox2";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
@@ -86,7 +86,9 @@ export default function Index({ auth, myConfigurations, flash }) {
                                                     className="text-blue-500 underline cursor-pointer"
                                                     onClick={() => loadModal(config)}
                                                 >
-                                                    {config.value.value}
+                                                    {config.value_type === 'boolean'
+                                                        ? StringHelper.__(config.value.value === '1' ? 'True' : 'False')
+                                                        : config.value.value}
                                                 </span>
                                             </li>
                                         ))}
@@ -101,8 +103,26 @@ export default function Index({ auth, myConfigurations, flash }) {
                             <form onSubmit={handleSubmit}>
                                 <div>
                                     <div className="mb-4">
-                                        <InputLabel className="md:text-base" htmlFor={"system-configuration-config-" + selectedConfig.key} value={selectedConfig.name + ":"}/>
-                                        <TextInput id={"system-configuration-config-" + selectedConfig.key} className="mt-1 w-full" value={data.value} onChange={(e) => setData('value',e.target.value)} />
+                                        {selectedConfig.value_type === 'boolean' ? (
+                                            <Checkbox2
+                                                label={selectedConfig.name}
+                                                checked={data.value === '1'}
+                                                onChange={(e) => setData('value', e.target.checked ? '1' : '0')}
+                                            />
+                                        ) : (<>
+                                            <InputLabel className="md:text-base" htmlFor={"system-configuration-config-" + selectedConfig.key} value={selectedConfig.name + ":"}/>
+                                            {selectedConfig.value_type === 'int' ? (
+                                                <input
+                                                    id={"system-configuration-config-" + selectedConfig.key}
+                                                    type="number"
+                                                    className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 w-full"
+                                                    value={data.value}
+                                                    onChange={(e) => setData('value', e.target.value)}
+                                                />
+                                            ) : (
+                                                <TextInput id={"system-configuration-config-" + selectedConfig.key} className="mt-1 w-full" value={data.value} onChange={(e) => setData('value',e.target.value)} />
+                                            )}
+                                        </>)}
                                         <InputError message={errors.value} className="mt-2" />
                                     </div>
                                     <div className="flex justify-start space-x-2">

@@ -23,6 +23,7 @@ class AmountLog extends Model
         'action',
         'amount',
         'comment',
+        'term',
         'created_by',
         'updated_by'
     ];
