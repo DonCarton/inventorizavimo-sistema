@@ -205,5 +205,13 @@
     "Download failure report": "Download failure report",
     "Report": "Report",
     "Last run": "Last run",
-    "Never run": "Never run"
+    "Never run": "Never run",
+    "Term": "Term",
+    "days": "days",
+    "Minimum loan term (days)": "Minimum loan term (days)",
+    "Maximum loan term (days)": "Maximum loan term (days)",
+    "Loan term limits": "Loan term limits",
+    "Leave both empty for no limit": "Leave both empty for no limit",
+    "True": "True",
+    "False": "False"
 }

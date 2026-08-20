@@ -15,6 +15,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $action
  * @property double $amount
  * @property string $comment
+ * @property string $term
  * @property BelongsTo $createdBy
  * @property DateTime $created_at
  */
@@ -35,6 +36,7 @@ class AmountLogResource extends JsonResource
             'action_taken' => $this->action,
             'amount_handled' => $this->amount,
             'comment' => $this->comment,
+            'term' => $this->action === 'REMOVE' ? $this->term : null,
             'created_by' => new UserResource($this->createdBy),
             'created_at' => $this->created_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i'),
         ];

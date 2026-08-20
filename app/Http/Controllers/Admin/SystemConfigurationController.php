@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Resources\IndexResources\SystemConfigurationIndexResource;
-use App\Models\ConfigurationValue;
 use App\Models\SystemConfiguration;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -28,31 +25,11 @@ class SystemConfigurationController extends Controller
             "failure" => session("failure"),
         ]);
     }
-    public function edit(): Response|RedirectResponse
-    {
-        if (strcasecmp(config("app.env"), string2: "local") != 0) {
-            return redirect()->back();
-        }
-
-        $systemConfiguration = SystemConfiguration::all()->groupBy("category");
-        $myConfigurations = SystemConfiguration::with("value")
-            ->get()
-            ->groupBy("category");
-        return Inertia::render("Admin/Edit", [
-            "systemConfiguration" => $systemConfiguration,
-            "myConfigurations" => $myConfigurations,
-            "success" => session("success"),
-            "failure" => session("failure"),
-        ]);
-    }
-
     public function update(
         SystemConfiguration $systemConfiguration,
         Request $request,
     ): JsonResponse|RedirectResponse {
-        $configurationValue = ConfigurationValue::findOrFail(
-            $systemConfiguration->id,
-        );
+        $configurationValue = $systemConfiguration->value()->firstOrFail();
 
         $validated = $request->validate([
             "value" => [

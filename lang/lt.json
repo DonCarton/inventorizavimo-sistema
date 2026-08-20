@@ -82,7 +82,7 @@
     "Changed from": "Pakeitė iš",
     "Changed to": "Pakeitė į",
     "Field": "Laukelį",
-    "Comment": "Pasiskolinimo priežastis",
+    "Comment": "Priežastis",
     "Comments": "Komentarai",
     "Edit": "Redaguoti",
     "Edit amount": "Keisti inventoriaus kiekį ar sukurti įrašą, kur jis perkeltas ar iš kur grąžintas",
@@ -213,5 +213,13 @@
     "Download failure report": "Atsisiųsti klaidų ataskaitą",
     "Report": "Ataskaita",
     "Last run": "Paskutinis vykdymas",
-    "Never run": "Dar nevykdyta"
+    "Never run": "Dar nevykdyta",
+    "Term": "Skolinimosi terminas",
+    "days": "d.",
+    "Minimum loan term (days)": "Minimalus skolinimosi terminas (dienomis)",
+    "Maximum loan term (days)": "Maksimalus skolinimosi terminas (dienomis)",
+    "Loan term limits": "Skolinimosi termino ribos",
+    "Leave both empty for no limit": "Palikite abu laukelius tuščius, jei norite netaikyti ribojimo",
+    "True": "Taip",
+    "False": "Ne"
 }

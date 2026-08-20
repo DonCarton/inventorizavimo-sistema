@@ -76,6 +76,8 @@ class InventoryItemResource extends JsonResource
             'assetNumber' => $this->asset_number,
             'usedFor' => $this->used_for,
             'comments' => $this->comments,
+            'minLoanTermDays' => $this->min_loan_term_days,
+            'maxLoanTermDays' => $this->max_loan_term_days,
             'created_at' => $this->created_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->setTimezone(new DateTimeZone('Europe/Vilnius'))->format('Y-m-d H:i:s'),
             'created_by' => (new UserResource($this->createdBy))->email,

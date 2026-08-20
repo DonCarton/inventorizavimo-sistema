@@ -95,7 +95,7 @@ return [
     'max' => [
         'array' => 'The :attribute field must not have more than :max items.',
         'file' => 'The :attribute field must not be greater than :max kilobytes.',
-        'numeric' => 'The :attribute field must not be greater than :max.',
+        'numeric' => ':Attribute negali būti didesnis nei :max.',
         'string' => ':Attribute privalo būti mažesnis nei :max simbolių.',
     ],
     'max_digits' => 'The :attribute field must not have more than :max digits.',
@@ -217,6 +217,15 @@ return [
                 'numeric' => 'Turimas kiekis bazinėje vietoje yra mažesnis nei bandoma išimti. Prieinamas kiekis: :value.',
             ],
         ],
+        'term' => [
+            'required_if' => 'Skolinimosi terminas yra privalomas, kai veiksmas yra "Pasiskolinti".',
+            'min' => [
+                'numeric' => 'Skolinimosi terminas turi būti bent :min d.',
+            ],
+            'max' => [
+                'numeric' => 'Skolinimosi terminas negali viršyti :max d.',
+            ],
+        ],
         'amount_removed' => [
             'lt' => [
                 'numeric' => ':Attribute turi būti mažesnis negu esamas kiekis inventoriuje (:value).',
@@ -285,6 +294,7 @@ return [
         'role' => 'rolė',
         'selectedRole' => 'rolė',
         'comment' => 'komentaras',
+        'term' => 'skolinimosi terminas',
         'change_acc_amount' => 'gali literaliai keisti likutį?',
         'cupboard' => 'spinta',
         'shelf' => 'lentyna',
