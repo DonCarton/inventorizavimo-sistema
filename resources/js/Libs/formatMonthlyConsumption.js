@@ -7,8 +7,8 @@ import StringHelper from "@/Libs/StringHelper";
  */
 export default function formatMonthlyConsumption(item) {
     if (item.averageConsumption === null || item.averageConsumption === undefined) {
-        return "—";
+        return "-";
     }
-    const unit = item.measurementUnit ? ` ${item.measurementUnit.code}` : "";
-    return `${item.averageConsumption}${unit} / ${StringHelper.__("month")}`;
+    const unit = item.measurementUnit ? `${item.measurementUnit.code}` : "";
+    return `${item.averageConsumption}${unit}/${StringHelper.__("month")}`;
 }

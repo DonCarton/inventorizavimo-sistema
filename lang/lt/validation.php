@@ -173,10 +173,6 @@ return [
     */
 
     'custom' => [
-        'amount' => [
-            'whole_numbers' => ':Attribute turi būti sveikasis skaičius matavimo vienetui :unit.',
-            'decimal_places' => ':Attribute gali turėti ne daugiau kaip :decimals skaitmenis po kablelio matavimo vienetui :unit.',
-        ],
         'local_name' => [
             'unknown_unit' => 'Kodas turi baigtis brūkšneliu ir žinomu matavimo vieneto kodu (:units).',
         ],
@@ -223,6 +219,8 @@ return [
             'lte'  => [
                 'numeric' => 'Turimas kiekis bazinėje vietoje yra mažesnis nei bandoma išimti. Prieinamas kiekis: :value.',
             ],
+            'whole_numbers' => ':Attribute turi būti sveikasis skaičius matavimo vienetui :unit.',
+            'decimal_places' => ':Attribute gali turėti ne daugiau kaip :decimals skaitmenis po kablelio matavimo vienetui :unit.',
         ],
         'term' => [
             'required_if' => 'Skolinimosi terminas yra privalomas, kai veiksmas yra "Pasiskolinti".',

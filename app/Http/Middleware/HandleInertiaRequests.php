@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\RoleEnum;
 use App\Models\Facility;
 use App\Models\ImportDefinition;
 use App\Models\ImportRun;
@@ -70,6 +71,8 @@ class HandleInertiaRequests extends Middleware
                         'facility' => Auth::user()->can('viewAny',Facility::class),
                         'importDefinition' => Auth::user()->can('viewAny', ImportDefinition::class),
                         'importRun' => Auth::user()->can('viewAny', ImportRun::class),
+                        // Same roles as the systemConfigurations routes.
+                        'systemConfiguration' => Auth::user()->hasAnyRole([RoleEnum::ADMIN, RoleEnum::SUPER_ADMIN]),
                     ]
                 ] : null
             ],

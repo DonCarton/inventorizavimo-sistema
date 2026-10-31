@@ -60,7 +60,7 @@ return new class extends Migration
     {
         match ($driver) {
             'sqlite' => DB::statement('PRAGMA foreign_keys = ' . ($enabled ? 'ON' : 'OFF')),
-            'mysql' => DB::statement('SET FOREIGN_KEY_CHECKS=' . ($enabled ? 1 : 0)),
+            'mysql', 'mariadb' => DB::statement('SET FOREIGN_KEY_CHECKS=' . ($enabled ? 1 : 0)),
             default => null,
         };
     }

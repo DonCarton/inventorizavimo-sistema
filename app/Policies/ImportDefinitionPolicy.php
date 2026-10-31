@@ -9,9 +9,10 @@ use Illuminate\Auth\Access\Response;
 
 class ImportDefinitionPolicy
 {
+    // Admin-only, matching the routes (role:super-admin|admin); also drives the menu link.
     public function viewAny(User $user): Response
     {
-        return $user->hasAnyRole([RoleEnum::ADMIN,RoleEnum::USER,RoleEnum::SUPER_ADMIN]) ? Response::allow() : Response::deny(__('validation.unauthorized'));
+        return $user->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]) ? Response::allow() : Response::deny(__('validation.unauthorized'));
     }
     public function create(User $user): Response
     {

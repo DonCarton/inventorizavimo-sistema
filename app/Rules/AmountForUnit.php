@@ -14,12 +14,20 @@ use Illuminate\Contracts\Validation\ValidationRule;
  * K = up to 3 decimals, ...). Without a given unit, it is resolved from the row being
  * validated (imports): the existing item's unit, else the unit matching the code suffix.
  * Items without a unit are not restricted.
+ *
+ * A value equal to what is already stored is always accepted, so items with legacy
+ * amounts (e.g. 2.5 packages from before units had decimal places) can still be saved
+ * and re-imported; only new amounts must follow the unit.
  */
 class AmountForUnit implements ValidationRule, DataAwareRule
 {
     protected array $data = [];
 
-    public function __construct(protected ?MeasurementUnit $unit = null)
+    /**
+     * @param MeasurementUnit|null $unit unit to check against; resolved from the row when null
+     * @param float|null $storedValue the item's current value for this field; unchanged values pass
+     */
+    public function __construct(protected ?MeasurementUnit $unit = null, protected ?float $storedValue = null)
     {
     }
 
@@ -36,7 +44,17 @@ class AmountForUnit implements ValidationRule, DataAwareRule
             return;
         }
 
-        $unit = $this->unit ?? $this->unitFromRow();
+        if ($this->isUnchanged($value, $this->storedValue)) {
+            return;
+        }
+
+        $unit = $this->unit;
+        if (!$unit) {
+            [$unit, $stored] = $this->unitAndStoredValueFromRow($attribute);
+            if ($this->isUnchanged($value, $stored)) {
+                return;
+            }
+        }
 
         if (!$unit || MeasurementUnit::decimalsIn($value) <= $unit->decimal_places) {
             return;
@@ -48,14 +66,30 @@ class AmountForUnit implements ValidationRule, DataAwareRule
         )->translate(['unit' => $unit->name, 'decimals' => $unit->decimal_places]);
     }
 
-    protected function unitFromRow(): ?MeasurementUnit
+    protected function isUnchanged(mixed $value, ?float $stored): bool
+    {
+        return $stored !== null && abs((float) $value - $stored) < 1e-9;
+    }
+
+    /**
+     * For a row being imported: the unit (existing item's, else from the code suffix)
+     * and the existing item's current value of the validated field.
+     *
+     * @return array{0: ?MeasurementUnit, 1: ?float}
+     */
+    protected function unitAndStoredValueFromRow(string $attribute): array
     {
         $code = $this->data['local_name'] ?? null;
         if (!is_string($code) || $code === '') {
-            return null;
+            return [null, null];
         }
 
-        return InventoryItem::where('local_name', $code)->first()?->measurementUnit
-            ?? MeasurementUnit::where('code', ItemCode::unitCode($code))->first();
+        $existing = InventoryItem::with('measurementUnit')->where('local_name', $code)->first();
+        if ($existing) {
+            $stored = $existing->getAttribute($attribute);
+            return [$existing->measurementUnit, $stored === null ? null : (float) $stored];
+        }
+
+        return [MeasurementUnit::where('code', ItemCode::unitCode($code))->first(), null];
     }
 }

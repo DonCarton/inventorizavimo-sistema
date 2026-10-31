@@ -1,18 +1,49 @@
 import { useState } from 'react';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
+import NavDropdown from '@/Components/NavDropdown';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
 import { useTranslation } from "@/Libs/useTranslation.jsx";
 import ApplicationLogoWhite from "@/Components/ApplicationLogoWhite.jsx";
-import MegaMenuNavLink from "@/Components/MegaMenuNavLink.jsx";
-import {ChevronDownIcon} from "@heroicons/react/24/solid/index.js";
 
 export default function Authenticated({ user, header, children, can }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-    const [showMegaMenuDropdown, setShowMegaMenuDropdown] = useState(false);
-    const [showLabMegaMenuDropdown, setShowLabMegaMenuDropdown] = useState(false);
     const { translate } = useTranslation();
+    const isCurrent = (...patterns) => patterns.some((pattern) => route().current(pattern));
+
+    // Admin pages, grouped as in the "Administravimas" menu; each link only if permitted.
+    const adminSections = [
+        {
+            heading: translate("Users and laboratories"),
+            links: [
+                can.view.user && { href: route('users.index'), active: isCurrent('users*'), label: translate("Users") },
+                can.view.laboratory && { href: route('laboratories.index'), active: isCurrent('laboratories*'), label: translate("Laboratories") },
+                can.view.facility && { href: route('facilities.index'), active: isCurrent('facilities*'), label: translate("Facilities") },
+            ].filter(Boolean),
+        },
+        {
+            heading: translate("Inventory settings"),
+            links: [
+                can.view.itemType && { href: route('itemTypes.index'), active: isCurrent('itemTypes*'), label: translate("Types") },
+                can.view.measurementUnit && { href: route('measurementUnits.index'), active: isCurrent('measurementUnits*'), label: translate("Units") },
+            ].filter(Boolean),
+        },
+        {
+            heading: translate("Imports"),
+            links: [
+                can.view.importDefinition && { href: route('import-definitions.index'), active: isCurrent('import-definitions*'), label: translate("Import definitions") },
+                can.view.importRun && { href: route('import-runs.index'), active: isCurrent('import-runs*'), label: translate("Import runs") },
+            ].filter(Boolean),
+        },
+    ].filter((section) => section.links.length > 0);
+    const adminActive = adminSections.some((section) => section.links.some((link) => link.active));
+
+    const inventoryLinks = [
+        { href: route('inventoryItems.index'), active: isCurrent('inventoryItems.*') && !isCurrent('inventoryItems.myLaboratory'), label: translate("Inventory") },
+        { href: route('inventoryItems.myLaboratory'), active: isCurrent('inventoryItems.myLaboratory'), label: translate("My inventory") },
+    ];
+
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
             <nav className="bg-pink-800 border-b border-gray-100 dark:border-gray-700">
@@ -25,73 +56,27 @@ export default function Authenticated({ user, header, children, can }) {
                                 </Link>
                             </div>
 
-                            <div className="hidden space-x-8 lg:-my-px lg:ms-10 lg:flex">
-                                <NavLink className="2xl:text-lg xl:text-base text-white" href={route('dashboard')} active={route().current('dashboard')}>
+                            <div className="hidden space-x-6 xl:space-x-8 lg:-my-px lg:ms-10 lg:flex">
+                                <NavLink className="2xl:text-lg xl:text-base text-white whitespace-nowrap" href={route('dashboard')} active={isCurrent('dashboard')}>
                                     {translate("Dashboard")}
                                 </NavLink>
-                                {can.view.user &&
-                                    <NavLink className="2xl:text-lg xl:text-base text-white" href={route('users.index')} active={route().current('users*')}>
-                                    {translate("Users")}</NavLink>
-                                }
-                                <button type="button" onClick={() => setShowMegaMenuDropdown(!showMegaMenuDropdown)} onMouseEnter={() => setShowMegaMenuDropdown(true)} onMouseLeave={() => setShowMegaMenuDropdown(false)}
-                                        className={`inline-flex items-center 2xl:text-lg xl:text-base text-white px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none hover:border-b-2 hover:border-b-indigo-400 border-transparent dark:text-gray-400 hover:text-teal-100 dark:hover:text-gray-300 hover:border-indigo-500 dark:hover:border-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700 ${route().current('inventoryItems*') ? 'border-b-indigo-400 bg-pink-700' : ''}`}>
-                                    {translate("Inventory")}
-                                    <ChevronDownIcon className="ml-1 w-5 h-5"/>
-                                    {showMegaMenuDropdown &&
-                                        <div className="absolute z-10 grid w-auto mt-40 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 dark:bg-gray-700">
-                                            <div className="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
-                                                <ul className="space-y-4" aria-labelledby="mega-menu-dropdown-button">
-                                                    <li>
-                                                        <MegaMenuNavLink className="2xl:text-lg xl:text-base" href={route('inventoryItems.index')} active={route().current('inventoryItems.index') && !route().current('inventoryItems.myLaboratory')}>
-                                                            {translate("Inventory")}
-                                                        </MegaMenuNavLink>
-                                                    </li>
-                                                    <li>
-                                                        <MegaMenuNavLink className="2xl:text-lg xl:text-base" href={route('inventoryItems.myLaboratory')} active={route().current('inventoryItems.myLaboratory')}>
-                                                            {translate("My inventory")}
-                                                        </MegaMenuNavLink>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>}
-                                </button>
-                                {can.view.itemType &&
-                                    <NavLink className="2xl:text-lg xl:text-base text-white"
-                                             href={route('itemTypes.index')} active={route().current('itemTypes*')}>
-                                        {translate("Types")}
-                                    </NavLink>}
-                                {can.view.measurementUnit &&
-                                    <NavLink className="2xl:text-lg xl:text-base text-white"
-                                             href={route('measurementUnits.index')} active={route().current('measurementUnits*')}>
-                                        {translate("Units")}
-                                    </NavLink>}
-                                {can.view.laboratory &&
-                                <button type="button" onClick={() => setShowMegaMenuDropdown(!showLabMegaMenuDropdown)} onMouseEnter={() => setShowLabMegaMenuDropdown(true)} onMouseLeave={() => setShowLabMegaMenuDropdown(false)}
-                                        className={`inline-flex items-center 2xl:text-lg xl:text-base text-white px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none hover:border-b-2 hover:border-b-indigo-400 border-transparent dark:text-gray-400 hover:text-teal-100 dark:hover:text-gray-300 hover:border-indigo-500 dark:hover:border-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700 ${route().current('laboratories*') ? 'border-b-indigo-400 bg-pink-700' : ''}`}>
-                                    {translate("Laboratory")}
-                                    <ChevronDownIcon className="ml-1 w-5 h-5"/>
-                                    {showLabMegaMenuDropdown &&
-                                        <div className="absolute z-10 grid w-auto mt-40 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 dark:bg-gray-700">
-                                            <div className="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
-                                                <ul className="space-y-4" aria-labelledby="mega-menu-dropdown-button">
-                                                    <li>
-                                                        <MegaMenuNavLink className="2xl:text-lg xl:text-base" href={route('laboratories.index')} active={route().current('laboratories.index') && !route().current('facilities.index')}>
-                                                            {translate("Laboratory")}
-                                                        </MegaMenuNavLink>
-                                                    </li>
-                                                    <li>
-                                                        <MegaMenuNavLink className="2xl:text-lg xl:text-base" href={route('facilities.index')} active={route().current('facilities.index')}>
-                                                            {translate("Facility")}
-                                                        </MegaMenuNavLink>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>}
-                                </button>}
-                                <NavLink className="2xl:text-lg xl:text-base text-white"
-                                         href={route('reader')} active={route().current('reader')}>
+                                <NavDropdown label={translate("Inventory")} active={isCurrent('inventoryItems*')}>
+                                    {inventoryLinks.map((link) => (
+                                        <NavDropdown.Item key={link.href} href={link.href} active={link.active}>{link.label}</NavDropdown.Item>
+                                    ))}
+                                </NavDropdown>
+                                <NavLink className="2xl:text-lg xl:text-base text-white whitespace-nowrap" href={route('reader')} active={isCurrent('reader')}>
                                     {translate("Reader")}
                                 </NavLink>
+                                {adminSections.length > 0 &&
+                                    <NavDropdown label={translate("Administration")} active={adminActive}>
+                                        {adminSections.map((section) => [
+                                            <NavDropdown.Heading key={section.heading}>{section.heading}</NavDropdown.Heading>,
+                                            ...section.links.map((link) => (
+                                                <NavDropdown.Item key={link.href} href={link.href} active={link.active}>{link.label}</NavDropdown.Item>
+                                            )),
+                                        ])}
+                                    </NavDropdown>}
                             </div>
                         </div>
 
@@ -102,9 +87,10 @@ export default function Authenticated({ user, header, children, can }) {
                                         <span className="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center px-3 py-2 border border-transparent 4xl:text-lg 2xl:text-base xl:text-sm text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
+                                                className="inline-flex items-center whitespace-nowrap px-3 py-2 border border-transparent 4xl:text-lg 2xl:text-base xl:text-sm text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
+                                                title={`${user.first_name} ${user.last_name}`}
                                             >
-                                                {`${user.first_name} ${user.last_name}`}
+                                                <span className="max-w-[14rem] truncate">{`${user.first_name} ${user.last_name}`}</span>
 
                                                 <svg
                                                     className="ms-2 -me-0.5 h-4 w-4"
@@ -123,8 +109,8 @@ export default function Authenticated({ user, header, children, can }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
-                                        <Dropdown.Link href={route("import-definitions.index")}>{translate("Import definitions")}</Dropdown.Link>
-                                        <Dropdown.Link href={route("import-runs.index")}>{translate("Import runs")}</Dropdown.Link>
+                                        {can.view.systemConfiguration &&
+                                            <Dropdown.Link href={route('systemConfigurations.index')}>{translate("System configuration")}</Dropdown.Link>}
                                         <Dropdown.Link href={route('profile.edit')}>{translate("Profile")}</Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
                                             {translate("Log out")}
@@ -162,33 +148,23 @@ export default function Authenticated({ user, header, children, can }) {
 
                 <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' lg:hidden'}>
                     <div className="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink className="text-white" href={route('dashboard')} active={route().current('dashboard')}>
+                        <ResponsiveNavLink className="text-white" href={route('dashboard')} active={isCurrent('dashboard')}>
                             {translate("Dashboard")}
                         </ResponsiveNavLink>
-                        {can.view.user && <ResponsiveNavLink className="text-white" href={route('users.index')} active={route().current('users.index')}>
-                            {translate("Users")}
-                        </ResponsiveNavLink>}
-                        <ResponsiveNavLink className="text-white" href={route('inventoryItems.index')} active={route().current('inventoryItems.index')}>
-                            {translate("Inventory")}
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink className="text-white" href={route('inventoryItems.myLaboratory')} active={route().current('inventoryItems.myLaboratory')}>
-                            {translate("My inventory")}
-                        </ResponsiveNavLink>
-                        {can.view.itemType && <ResponsiveNavLink className="text-white" href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
-                            {translate("Types")}
-                        </ResponsiveNavLink>}
-                        {can.view.measurementUnit && <ResponsiveNavLink className="text-white" href={route('measurementUnits.index')} active={route().current('measurementUnits.index')}>
-                            {translate("Units")}
-                        </ResponsiveNavLink>}
-                        {can.view.laboratory && <ResponsiveNavLink className="text-white" href={route('laboratories.index')} active={route().current('laboratories.index')}>
-                            {translate("Laboratories")}
-                        </ResponsiveNavLink>}
-                        {can.view.facility && <ResponsiveNavLink className="text-white" href={route('facilities.index')} active={route().current('facilities.index')}>
-                            {translate("Facilities")}
-                        </ResponsiveNavLink>}
-                        <ResponsiveNavLink className="text-white" href={route('reader')} active={route().current('reader')}>
+                        {inventoryLinks.map((link) => (
+                            <ResponsiveNavLink key={link.href} className="text-white" href={link.href} active={link.active}>{link.label}</ResponsiveNavLink>
+                        ))}
+                        <ResponsiveNavLink className="text-white" href={route('reader')} active={isCurrent('reader')}>
                             {translate("Reader")}
                         </ResponsiveNavLink>
+                        {adminSections.map((section) => (
+                            <div key={section.heading} className="pt-2">
+                                <div className="ps-4 pb-1 text-xs font-semibold uppercase tracking-wide text-pink-200">{section.heading}</div>
+                                {section.links.map((link) => (
+                                    <ResponsiveNavLink key={link.href} className="text-white" href={link.href} active={link.active}>{link.label}</ResponsiveNavLink>
+                                ))}
+                            </div>
+                        ))}
                     </div>
 
                     <div className="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
@@ -198,10 +174,9 @@ export default function Authenticated({ user, header, children, can }) {
                         </div>
 
                         <div className="mt-3 space-y-1">
-                            {/*TODO FOR SOME REASON, THE TRANSLATIONS HERE ARE CAUSING ISSUES*/}
-                            <ResponsiveNavLink className="text-white" href={route("import-definitions.index")}>{translate("Import definitions")}</ResponsiveNavLink>
-                            <ResponsiveNavLink className="text-white" href={route("import-runs.index")}>{translate("Import runs")}</ResponsiveNavLink>
-                            <ResponsiveNavLink className="text-white" href={route('profile.edit')}>{translate("Profile")}</ResponsiveNavLink>
+                            {can.view.systemConfiguration &&
+                                <ResponsiveNavLink className="text-white" href={route('systemConfigurations.index')} active={isCurrent('systemConfigurations*')}>{translate("System configuration")}</ResponsiveNavLink>}
+                            <ResponsiveNavLink className="text-white" href={route('profile.edit')} active={isCurrent('profile*')}>{translate("Profile")}</ResponsiveNavLink>
                             <ResponsiveNavLink className="text-white" method="post" href={route('logout')} as="button">
                                 {translate("Log out")}
                             </ResponsiveNavLink>

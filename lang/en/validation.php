@@ -173,10 +173,6 @@ return [
     */
 
     'custom' => [
-        'amount' => [
-            'whole_numbers' => ':Attribute must be a whole number for unit :unit.',
-            'decimal_places' => ':Attribute may have at most :decimals decimal places for unit :unit.',
-        ],
         'local_name' => [
             'unknown_unit' => 'The code must end with a dash and a known unit code (:units).',
         ],
@@ -223,6 +219,8 @@ return [
             'lte'  => [
                 'numeric' => 'The current amount in the base location is less than the amount being removed. Available amount: :value.',
             ],
+            'whole_numbers' => ':Attribute must be a whole number for unit :unit.',
+            'decimal_places' => ':Attribute may have at most :decimals decimal places for unit :unit.',
         ],
         'amount_removed' => [
             'lt' => [

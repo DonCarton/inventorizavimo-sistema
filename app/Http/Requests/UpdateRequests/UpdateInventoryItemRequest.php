@@ -27,8 +27,12 @@ class UpdateInventoryItemRequest extends FormRequest
      */
     public function rules(): array
     {
-        // Amounts follow the unit the item will have after saving.
-        $unit = MeasurementUnit::find($this->input('measurement_unit_id')) ?? $this->route('inventoryItem')?->measurementUnit;
+        // Amounts follow the unit the item will have after saving. While the unit stays the
+        // same, unchanged (possibly legacy) amounts are accepted as they are.
+        $item = $this->route('inventoryItem');
+        $unit = MeasurementUnit::find($this->input('measurement_unit_id')) ?? $item?->measurementUnit;
+        $unitChanged = $item && (int) $unit?->id !== (int) $item->measurement_unit_id;
+        $stored = fn(string $field) => $unitChanged || $item?->$field === null ? null : (float) $item->$field;
 
         return [
             'local_name' => ['required', Rule::unique('inventory_items', 'local_name')->ignore($this->route('inventoryItem'))],
@@ -46,9 +50,9 @@ class UpdateInventoryItemRequest extends FormRequest
             'barcode' => ['nullable', 'string'],
             'url_to_provider' => ['nullable', 'string'],
             'alt_url_to_provider' => ['nullable', 'string'],
-            'total_amount' => ['required', 'numeric', 'min:0', new AmountForUnit($unit)],
-            'critical_amount' => ['nullable', 'numeric', new AmountForUnit($unit)],
-            'to_order_amount' => ['nullable', 'numeric', new AmountForUnit($unit)],
+            'total_amount' => ['required', 'numeric', 'min:0', new AmountForUnit($unit, $stored('total_amount'))],
+            'critical_amount' => ['nullable', 'numeric', new AmountForUnit($unit, $stored('critical_amount'))],
+            'to_order_amount' => ['nullable', 'numeric', new AmountForUnit($unit, $stored('to_order_amount'))],
             'multiple_locations' => ['boolean'],
             'cupboard' => ['nullable','numeric','between:1,50'],
             'shelf' => ['nullable','string'],

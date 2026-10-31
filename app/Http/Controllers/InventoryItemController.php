@@ -292,8 +292,7 @@ class InventoryItemController extends Controller
         $queryParams = $request->query('query');
         $redirectDestination = $request->query('referrer', 'index');
         $data = $request->validated();
-        // Start from the stored total (not the one the browser sent) and keep the
-        // result rounded to the unit's decimals so float leftovers don't accumulate.
+        // Start from the stored total (not the one the browser sent).
         $total = (float) $inventoryItem->total_amount;
 
         if ((float) ($data['amount_removed'] ?? 0) > 0) {
@@ -312,8 +311,11 @@ class InventoryItemController extends Controller
             $total += $inventoryItem->roundAmount((float) $data['amount_added']);
         }
 
+        // The added/removed amount follows the unit; the total is only cleaned of float
+        // noise, so legacy totals with more decimals than the unit (e.g. 2.5 packages)
+        // keep their fraction instead of being silently rounded.
         $inventoryItem->update([
-            'total_amount' => $inventoryItem->roundAmount($total),
+            'total_amount' => round($total, MeasurementUnit::MAX_DECIMAL_PLACES),
             'updated_by' => $data['updated_by']
         ]);
         if ($request['urlToRedirect']){
@@ -363,7 +365,7 @@ class InventoryItemController extends Controller
             return Inertia::render('User/EditLog', [
                 'inventoryItem' => new CRUDInventoryItemResource($inventoryItem),
                 'logsForItem' => AmountLogResource::collection($amountLogs),
-                'totalInUse' => $inventoryItem->total_amount - $totalTaken + $totalReturned,
+                'totalInUse' => $inventoryItem->roundAmount($inventoryItem->total_amount - $totalTaken + $totalReturned),
                 'laboratories' => LaboratoryResource::collection($laboratories),
                 'redirectToReader' => $redirectToReader,
                 'queryParams' => $queryParams,
@@ -400,8 +402,10 @@ class InventoryItemController extends Controller
                 ->where('laboratory_id', $laboratoryId)
                 ->where('action', 'RETURN')
                 ->sum('amount');
-            $availableInLaboratory = $amountInLaboratory - $amountReturned;
-            if ($request->amount > $availableInLaboratory) {
+            // Sums of decimal amounts carry float noise (0.3 - 0.1 = 0.19999999999999998),
+            // so compare at the unit's precision instead of exactly.
+            $availableInLaboratory = $inventoryItem->roundAmount($amountInLaboratory - $amountReturned);
+            if ($inventoryItem->roundAmount((float) $request->amount) > $availableInLaboratory) {
                 return back()->withErrors(['amount' => __("actions.inventoryItem.volumeMismatch")]);
             }
         }
@@ -423,7 +427,9 @@ class InventoryItemController extends Controller
             ->where('laboratory_id', $laboratoryId)
             ->where('action', 'RETURN')
             ->sum('amount');
-        if ($totalTakenInLab == $totalReturnedInLab) {
+        // Everything this lab borrowed is back: clear its loan entries (compared at the
+        // unit's precision, as 0.1 + 0.2 is not exactly 0.3 in floating point).
+        if ($inventoryItem->roundAmount($totalTakenInLab - $totalReturnedInLab) <= 0) {
             AmountLog::where('inventory_item_id', $inventoryItem->id)
                 ->where('laboratory_id', $laboratoryId)
                 ->delete();

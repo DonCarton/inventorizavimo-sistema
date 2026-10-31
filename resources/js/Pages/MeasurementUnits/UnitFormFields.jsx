@@ -29,7 +29,7 @@ export default function UnitFormFields({data, setData, errors}) {
                 <select id="measurementUnit_decimal_places" name="decimal_places" value={data.decimal_places}
                         onChange={e => setData('decimal_places', Number(e.target.value))}
                         className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full">
-                    <option value={0}>0 — {StringHelper.__("whole numbers only")}</option>
+                    <option value={0}>0 - {StringHelper.__("whole numbers only")}</option>
                     <option value={1}>1 (0.1)</option>
                     <option value={2}>2 (0.01)</option>
                     <option value={3}>3 (0.001)</option>
