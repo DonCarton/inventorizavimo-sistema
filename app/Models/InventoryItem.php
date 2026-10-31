@@ -7,6 +7,7 @@ use App\Enums\AttributeMerge;
 use App\Events\AmountRunningLow;
 use App\Interfaces\ImportableModel;
 use App\Observers\InventoryItemObserver;
+use App\Support\ItemCode;
 use App\ValidAttributes;
 use DateTime;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -14,7 +15,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\LogOptions;
@@ -25,6 +29,7 @@ use Spatie\Activitylog\LogOptions;
  * @property int $amountLogs
  * @property ItemType $itemType
  * @property string $local_name
+ * @property int|null $measurement_unit_id
  * @property int $laboratory
  * @property double $total_amount
  * @property double $critical_amount
@@ -39,6 +44,7 @@ class InventoryItem extends Model implements ImportableModel
     use HasFactory, LogsActivity, ValidAttributes;
     protected $fillable = [
         'local_name',
+        'measurement_unit_id',
         'inventory_type',
         'name',
         'name_eng',
@@ -53,7 +59,6 @@ class InventoryItem extends Model implements ImportableModel
         'total_amount',
         'critical_amount',
         'to_order_amount',
-        'average_consumption',
         'multiple_locations',
         'laboratory',
         'cupboard',
@@ -87,7 +92,6 @@ class InventoryItem extends Model implements ImportableModel
             'total_amount',
             'critical_amount',
             'to_order_amount',
-            'average_consumption',
             'multiple_locations',
             'laboratory',
             'facilities',
@@ -114,6 +118,117 @@ class InventoryItem extends Model implements ImportableModel
     public function itemType(): BelongsTo
     {
         return $this->belongsTo(ItemType::class, 'inventory_type');
+    }
+
+    public function measurementUnit(): BelongsTo
+    {
+        return $this->belongsTo(MeasurementUnit::class);
+    }
+
+    public function consumptionLogs(): HasMany
+    {
+        return $this->hasMany(ConsumptionLog::class);
+    }
+
+    /** Average consumption and the usage chart both look at this many calendar months (incl. the current one). */
+    public const CONSUMPTION_MONTHS = 12;
+
+    public static function consumptionWindowStart(): Carbon
+    {
+        return now()->startOfMonth()->subMonths(self::CONSUMPTION_MONTHS - 1);
+    }
+
+    /**
+     * Amount used per month over the last 12 months, rounded to the unit's decimals;
+     * null when nothing was ever consumed. See averageMonthlyConsumptionFor().
+     */
+    public function averageMonthlyConsumption(): ?float
+    {
+        return static::averageMonthlyConsumptionFor(collect([$this]))[$this->id] ?? null;
+    }
+
+    /**
+     * Average monthly consumption for many items with a single query: the amount used
+     * in the window divided by the months counted. Months are counted from the item's
+     * first consumption (or the window start, whichever is later) through the current
+     * month, so an item first used this month is divided by 1, not 12.
+     *
+     * @param Collection<int, InventoryItem> $items
+     * @return array<int, float|null> keyed by item id
+     */
+    public static function averageMonthlyConsumptionFor(Collection $items): array
+    {
+        if ($items->isEmpty()) {
+            return [];
+        }
+
+        $windowStart = static::consumptionWindowStart();
+
+        $stats = ConsumptionLog::query()
+            ->whereIn('inventory_item_id', $items->pluck('id'))
+            ->groupBy('inventory_item_id')
+            ->selectRaw('inventory_item_id, SUM(CASE WHEN created_at >= ? THEN amount ELSE 0 END) AS window_sum, MIN(created_at) AS first_at', [$windowStart])
+            ->get()
+            ->keyBy('inventory_item_id');
+
+        // Accept plain collections too (e.g. collect([$item])); units are needed for rounding.
+        $items = (new EloquentCollection($items->all()))->loadMissing('measurementUnit');
+        $currentMonth = now()->year * 12 + now()->month;
+
+        return $items->mapWithKeys(function (InventoryItem $item) use ($stats, $windowStart, $currentMonth) {
+            $row = $stats->get($item->id);
+            if (!$row) {
+                return [$item->id => null];
+            }
+
+            $start = Carbon::parse($row->first_at)->max($windowStart);
+            $months = max(1, min(self::CONSUMPTION_MONTHS, $currentMonth - ($start->year * 12 + $start->month) + 1));
+
+            return [$item->id => $item->roundAmount((float) $row->window_sum / $months)];
+        })->all();
+    }
+
+    /**
+     * Consumption per calendar month for the usage chart, oldest first, with months
+     * without usage as 0: [['month' => '2026-03', 'amount' => 1.25], ...].
+     */
+    public function monthlyConsumption(): array
+    {
+        $windowStart = static::consumptionWindowStart();
+
+        $byMonth = $this->consumptionLogs()
+            ->where('created_at', '>=', $windowStart)
+            ->get(['amount', 'created_at'])
+            ->groupBy(fn(ConsumptionLog $log) => $log->created_at->format('Y-m'))
+            ->map(fn($logs) => $logs->sum('amount'));
+
+        return collect(range(0, self::CONSUMPTION_MONTHS - 1))
+            ->map(function (int $offset) use ($windowStart, $byMonth) {
+                $month = $windowStart->copy()->addMonths($offset)->format('Y-m');
+                return ['month' => $month, 'amount' => $this->roundAmount((float) ($byMonth[$month] ?? 0))];
+            })
+            ->all();
+    }
+
+    /**
+     * Rounds an amount to the decimals of this item's unit (3 when it has none).
+     */
+    public function roundAmount(float $value): float
+    {
+        return $this->measurementUnit ? $this->measurementUnit->round($value) : round($value, MeasurementUnit::MAX_DECIMAL_PLACES);
+    }
+
+    /**
+     * Items saved without a unit (imports, factories, older code paths) are linked
+     * to the unit whose code matches their code suffix, when there is one.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (InventoryItem $item) {
+            if ($item->measurement_unit_id === null && ($unitCode = ItemCode::unitCode($item->local_name))) {
+                $item->measurement_unit_id = MeasurementUnit::where('code', $unitCode)->value('id');
+            }
+        });
     }
 
     /*

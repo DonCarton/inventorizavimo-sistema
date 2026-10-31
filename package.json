@@ -31,6 +31,7 @@
         "react-icons": "^5.2.1",
         "react-select": "^5.8.0",
         "react-spreadsheet-import": "^4.7.1",
-        "react-tailwindcss-select": "^1.8.5"
+        "react-tailwindcss-select": "^1.8.5",
+        "recharts": "2.15.0"
     }
 }

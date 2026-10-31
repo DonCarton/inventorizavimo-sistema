@@ -6,15 +6,15 @@ import InputError from "@/Components/InputError.jsx";
 import {useState} from "react";
 import { useTranslation } from "@/Libs/useTranslation.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
-import {measureOptions} from "@/Configurations/SelectConfigurations.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import FlexibleSelect from "@/Components/Forms/FlexibleSelect.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
 import FlexibleAsyncSelect from "@/Components/Forms/FlexibleAsyncSelect.jsx";
 import FlexibleStaticSelect from "@/Components/Forms/FlexibleStaticSelect";
+import NumericInput from "@/Components/Forms/NumericInput.jsx";
 
-export default function Create({auth, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions}) {
+export default function Create({auth, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, measurementUnits = []}) {
     const { translate } = useTranslation();
     const [postNumber, setPostNumber] = useState(null);
     const [activeTab, setActiveTab] = useState(1);
@@ -23,6 +23,7 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
     const [facilities, setFacilities] = useState([]);
     const {data, setData, post, processing, errors} = useForm({
         local_name: postNumber || '',
+        measurement_unit_id: '',
         ident_code: '',
         inventory_type: '',
         name: '',
@@ -60,7 +61,8 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
                 const response = await axios.post('/inventoryItems/fetch-post-number', {prefix_option_id: prefixId});
                 const {post_number} = response.data;
                 setPostNumber(post_number);
-                setData('local_name', post_number);
+                const unit = measurementUnits.find((option) => String(option.id) === String(selectedMeasurement));
+                setData('local_name', unit ? `${post_number}-${unit.code}` : post_number);
                 try {
                     const miscResponse = await axios.get(`/select/${prefixId}/facilities`);
                     const laboratoryId = miscResponse.data.laboratory_id;
@@ -75,17 +77,22 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
             }
         }
     };
+    // Amounts follow the chosen unit's decimal places (0 = whole numbers only).
+    const selectedUnit = measurementUnits.find((option) => String(option.id) === String(selectedMeasurement));
+    const unitDecimals = selectedUnit ? selectedUnit.decimal_places : null;
+    const unitSuffix = selectedUnit ? ` (${selectedUnit.code})` : '';
     const handleMeasureChoice = (e) => {
-        const measureValue = e.target.value;
-        let localName = postNumber;
-        if (e.target.value !== '') {
-            localName = `${localName}-${measureValue}`;
-            setSelectedMeasurement(e.target.value);
-            setData('local_name', localName);
+        const unitId = e.target.value;
+        const unit = measurementUnits.find((option) => String(option.id) === unitId);
+        setSelectedMeasurement(unitId);
+        // Code and unit change together (one functional update, see useForm note in other forms).
+        setData((current) => ({
+            ...current,
+            measurement_unit_id: unit ? unit.id : '',
+            local_name: unit ? `${postNumber}-${unit.code}` : postNumber,
+        }));
+        if (unit) {
             handleTabChange(2);
-        } else {
-            setSelectedMeasurement(measureValue);
-            setData('local_name', postNumber);
         }
     }
     const handleTabChange = (tabNumber) => {
@@ -164,8 +171,8 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
                                             value={selectedMeasurement}
                                             onChange={handleMeasureChoice}>
                                         <option id="0" value="">{translate("Choose a value")}</option>
-                                        {measureOptions.map(option => (
-                                            <option key={option.value} value={option.value}>{translate(option.label)}</option>
+                                        {measurementUnits.map(unit => (
+                                            <option key={unit.id} value={unit.id}>{unit.name} ({unit.code})</option>
                                         ))}
                                     </select>
                                 </div>
@@ -345,9 +352,10 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_total_amount">
-                                                    {translate("Count")} <span className="text-red-500">*</span>
+                                                    {translate("Count")}{unitSuffix} <span className="text-red-500">*</span>
                                                 </InputLabel>
-                                                <TextInput
+                                                <NumericInput
+                                                    decimals={unitDecimals}
                                                     id="inventoryItems_total_amount"
                                                     type="text"
                                                     name="total_amount"
@@ -359,9 +367,10 @@ export default function Create({auth, itemTypes, queryParams, referrer, cupboard
                                             </div>
                                             <div>
                                                 <InputLabel htmlFor="inventoryItems_critical_amount">
-                                                    {translate("Critical amount")} <span className="text-red-500">*</span>
+                                                    {translate("Critical amount")}{unitSuffix} <span className="text-red-500">*</span>
                                                 </InputLabel>
-                                                <TextInput
+                                                <NumericInput
+                                                    decimals={unitDecimals}
                                                     id="inventoryItems_critical_amount"
                                                     type="text"
                                                     name="critical_amount"

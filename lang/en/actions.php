@@ -44,6 +44,12 @@ return [
         'deleted' => 'Type [:name] has been deleted successfully.',
         'still_related' => 'The type still has inventory items which use it as a definition [:count], unable to delete.'
     ],
+    'measurementUnit' => [
+        'created' => 'New measurement unit [:code] has been created.',
+        'updated' => 'Measurement unit [:code] has been updated.',
+        'deleted' => 'Measurement unit [:code] has been deleted.',
+        'still_related' => 'The measurement unit is used by inventory items [:count] and cannot be deleted. Deactivate it instead.',
+    ],
     'noItemFound' => 'Code recognized [:name], but entry not found.',
     'true' => 'True',
     'false' => 'False',

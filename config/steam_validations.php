@@ -1,11 +1,14 @@
 <?php
 
 use App\Rules\ExistsByNumericOrString;
+use App\Rules\AmountForUnit;
 use App\Rules\HasRelationMethod;
+use App\Rules\KnownUnitSuffix;
+use App\Support\ItemCode;
 
 return [
     'App\\Models\\InventoryItem' => [
-        'local_name' => ['required','regex:/^[A-Z]{3,4}\d{3}-[A-Z]$/'],
+        'local_name' => ['required', 'regex:' . ItemCode::PATTERN, new KnownUnitSuffix()],
         'inventory_type' => ['nullable', new ExistsByNumericOrString('item_types', 'inventory_type')],
         'name' => ['nullable', 'string', 'max:255'],
         'name_eng' => ['nullable', 'string', 'max:255'],
@@ -17,10 +20,9 @@ return [
         'barcode' => ['nullable'],
         'url_to_provider' => ['nullable', 'string'],
         'alt_url_to_provider' => ['nullable', 'string'],
-        'total_amount' => ['nullable', 'numeric', 'min:0'],
-        'critical_amount' => ['nullable', 'numeric'],
-        'to_order_amount' => ['nullable', 'numeric'],
-        'average_consumption' => ['nullable'],
+        'total_amount' => ['nullable', 'numeric', 'min:0', new AmountForUnit()],
+        'critical_amount' => ['nullable', 'numeric', new AmountForUnit()],
+        'to_order_amount' => ['nullable', 'numeric', new AmountForUnit()],
         'multiple_locations' => ['boolean'],
         'laboratory' => ['nullable', new ExistsByNumericOrString(table: 'laboratories',attributeName: 'laboratory')],
         'facilities' => ['nullable',

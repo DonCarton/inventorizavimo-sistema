@@ -6,6 +6,8 @@ use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
 use App\Rules\ExistsByNumericOrString;
+use App\Rules\KnownUnitSuffix;
+use App\Support\ItemCode;
 use Illuminate\Database\Eloquent\Model;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
@@ -26,7 +28,7 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsO
     public function rules(): array
     {
         return [
-            '*.local_name' => ['required','regex:/^[A-Z]{3,4}\d{3}-[A-Z]$/'],
+            '*.local_name' => ['required', 'regex:' . ItemCode::PATTERN, new KnownUnitSuffix()],
             '*.inventory_type' => [
                 'nullable',
                 new ExistsByNumericOrString('item_types','inventory_type')
@@ -36,11 +38,10 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsO
                 new ExistsByNumericOrString('laboratories','laboratory')
             ],
             '*.cupboard' => ['nullable','numeric','gte:0','lte:40'],
-            '*.shelf' => ['nullable','string','regex:/[A-Z]/'],
+            '*.shelf' => ['nullable','string','regex:/\p{Lu}/u'],
             '*.total_amount' => ['nullable','numeric'],
             '*.critical_amount' => ['nullable','numeric'],
             '*.to_order' => ['nullable','numeric'],
-            '*.average_consumption' => ['nullable','numeric'],
         ];
     }
 
@@ -70,7 +71,6 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsO
                 'total_amount'      => $row['total_count'],
                 'critical_amount'  => $row['critical_amount'],
                 'to_order_amount'  => $row['to_order'],
-                'average_consumption' => $row['average_consumption'],
                 'multiple_locations' => $row['multiple_locations'],
                 'laboratory'       => $laboratory?->id,
                 'cupboard'         => $row['cupboard'],

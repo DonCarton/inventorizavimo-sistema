@@ -88,7 +88,7 @@ export default function Edit({auth, inventoryItem, redirectToReader, queryParams
                                             <InputLabel
                                                 htmlFor="inventoryItems_amount_removed">{StringHelper.__("Amount being taken out")}</InputLabel>
                                             <div className="flex justify-between">
-                                                <NumericInput id="inventoryItems_amount_removed" name="amount_removed" className="mt-1 block w-full bg-red-400 text-white disabled:bg-gray-400"
+                                                <NumericInput decimals={inventoryItem.unit_decimals ?? null} id="inventoryItems_amount_removed" name="amount_removed" className="mt-1 block w-full bg-red-400 text-white disabled:bg-gray-400"
                                                 onChange={handleAmountChangeForRemoving} disabled={!removingAllowed}/>
                                                 <InformationIconToolTip classname="bg-black"
                                                                         content={StringHelper.__("In this field, the amount which will be removed is specified") + '.'}
@@ -108,7 +108,7 @@ export default function Edit({auth, inventoryItem, redirectToReader, queryParams
                                             <InputLabel
                                                 htmlFor="inventoryItems_amount_added">{StringHelper.__("Amount being added")}</InputLabel>
                                             <div className="flex justify-between">
-                                                <NumericInput id="inventoryItems_amount_added" name="amount_added" className="mt-1 block w-full bg-emerald-500 text-white disabled:bg-gray-400"
+                                                <NumericInput decimals={inventoryItem.unit_decimals ?? null} id="inventoryItems_amount_added" name="amount_added" className="mt-1 block w-full bg-emerald-500 text-white disabled:bg-gray-400"
                                                               onChange={handleAmountChangeForAdding} disabled={!addingAllowed}/>
                                                 <InformationIconToolTip classname="bg-black"
                                                                         content={StringHelper.__("In this field, the amount which will be added is specified") + '.'}

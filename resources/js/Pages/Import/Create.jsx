@@ -1,7 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
 import { FiUpload } from "react-icons/fi";
 import { Head, Link, useForm } from "@inertiajs/react";
-import { useState, useRef, useEffect, lazy, Suspense } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
@@ -9,12 +9,9 @@ import InputError from "@/Components/InputError.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import StringHelper from "@/Libs/StringHelper";
 import SteamDropdown from "@/Components/SteamDropdown";
-import FieldMappingSummary from "@/Components/Forms/FieldMappingSummary";
 import Checkbox2 from "@/Components/Checkbox2";
-
-// react-spreadsheet-import pulls in Chakra UI/Emotion/react-data-grid (~1MB minified) —
-// lazy-load so that weight is only fetched once the user opens the mapping modal.
-const SpreadsheetImportModal = lazy(() => import("@/Components/Forms/SpreadsheetImportModal"));
+import ImportMappingSection from "@/Components/Forms/ImportMappingSection";
+import useImportCheck from "@/Libs/useImportCheck";
 
 export default function Create({ auth, importableObjects }) {
     const [rawHeaders, setRawHeaders] = useState([]);
@@ -24,7 +21,7 @@ export default function Create({ auth, importableObjects }) {
     const [selectedFileName, setSelectedFileName] = useState(null);
     const [invalidFile, setInvalidFile] = useState(false);
     const [importableFields, setImportableFields] = useState([]);
-    const [isMappingModalOpen, setIsMappingModalOpen] = useState(false);
+    const [fieldAliases, setFieldAliases] = useState({});
     const fileInputRef = useRef(null);
     const { data, setData, post, errors, processing } = useForm({
         name: "",
@@ -33,6 +30,13 @@ export default function Create({ auth, importableObjects }) {
         field_mappings: {},
         import: true,
     });
+    const check = useImportCheck([data.file, data.model_class, data.field_mappings]);
+    const runCheck = () =>
+        check.runCheck({
+            file: data.file,
+            modelClass: data.model_class,
+            fieldMappings: data.field_mappings,
+        });
     const handleButtonClick = (e) => {
         e.preventDefault();
         fileInputRef.current.click();
@@ -51,6 +55,7 @@ export default function Create({ auth, importableObjects }) {
     useEffect(() => {
         if (!data.model_class) {
             setImportableFields([]);
+            setFieldAliases({});
             return;
         }
 
@@ -60,13 +65,10 @@ export default function Create({ auth, importableObjects }) {
             .post(route("imports.importableFields", { model: data.model_class }))
             .then((response) => {
                 if (cancelled) return;
+                setFieldAliases(response.data.aliases || {});
                 setImportableFields(
                     Object.entries(response.data.humanReadable).map(
-                        ([key, label]) => ({
-                            key,
-                            label,
-                            fieldType: { type: "input" },
-                        }),
+                        ([key, label]) => ({ key, label }),
                     ),
                 );
             });
@@ -84,6 +86,9 @@ export default function Create({ auth, importableObjects }) {
         }
 
         setData((current) => ({ ...current, file, field_mappings: {} }));
+        setRawHeaders([]);
+        setNormalizedHeaders([]);
+        setSampleRows([]);
 
         const maxSize = 7.5 * 1024 * 1024;
 
@@ -172,7 +177,7 @@ export default function Create({ auth, importableObjects }) {
                             <SteamDropdown
                                 id="import_definition_model_class"
                                 name="import_definition_model_class"
-                                value={data.model}
+                                value={data.model_class}
                                 disabled={loadingHeaders}
                                 onChange={handleModelChange}
                                 options={importableObjects}
@@ -265,62 +270,23 @@ export default function Create({ auth, importableObjects }) {
                                 className="mb-2"
                             />
                             {normalizedHeaders.length > 0 &&
-                                data.model_class.length > 0 && (
+                                data.model_class.length > 0 &&
+                                importableFields.length > 0 && (
                                     <div id="import_definition_field_mappings">
-                                        <PrimaryButton
-                                            type="button"
-                                            onClick={() =>
-                                                setIsMappingModalOpen(true)
+                                        <ImportMappingSection
+                                            rawHeaders={rawHeaders}
+                                            normalizedHeaders={normalizedHeaders}
+                                            sampleRows={sampleRows}
+                                            fields={importableFields}
+                                            aliases={fieldAliases}
+                                            autoMapOnEmpty
+                                            mapping={data.field_mappings}
+                                            onMappingChange={(mapping) =>
+                                                setData("field_mappings", mapping)
                                             }
-                                            disabled={
-                                                importableFields.length === 0
-                                            }
-                                        >
-                                            {Object.keys(data.field_mappings)
-                                                .length > 0
-                                                ? StringHelper.__(
-                                                      "Edit mapping",
-                                                  )
-                                                : StringHelper.__(
-                                                      "Map fields",
-                                                  )}
-                                        </PrimaryButton>
-                                        <div className="mt-4">
-                                            <FieldMappingSummary
-                                                rawHeaders={rawHeaders}
-                                                normalizedHeaders={
-                                                    normalizedHeaders
-                                                }
-                                                fieldMappings={
-                                                    data.field_mappings
-                                                }
-                                                fields={importableFields}
-                                            />
-                                        </div>
-                                        {isMappingModalOpen && (
-                                            <Suspense fallback={null}>
-                                                <SpreadsheetImportModal
-                                                    isOpen={isMappingModalOpen}
-                                                    onClose={() =>
-                                                        setIsMappingModalOpen(
-                                                            false,
-                                                        )
-                                                    }
-                                                    fields={importableFields}
-                                                    rawHeaders={rawHeaders}
-                                                    normalizedHeaders={
-                                                        normalizedHeaders
-                                                    }
-                                                    sampleRows={sampleRows}
-                                                    onMapped={(mapping) =>
-                                                        setData(
-                                                            "field_mappings",
-                                                            mapping,
-                                                        )
-                                                    }
-                                                />
-                                            </Suspense>
-                                        )}
+                                            check={check}
+                                            onCheck={runCheck}
+                                        />
                                     </div>
                                 )}
                         </div>
@@ -344,10 +310,15 @@ export default function Create({ auth, importableObjects }) {
                             </Link>
                             <PrimaryButton
                                 className="ml-2"
-                                disabled={processing}
+                                disabled={processing || !check.result?.passed}
                             >
                                 {StringHelper.__("Create")}
                             </PrimaryButton>
+                            {!check.result?.passed && (
+                                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                    {StringHelper.__("Run a successful file check before saving")}
+                                </p>
+                            )}
                         </div>
                     </form>
                 </div>

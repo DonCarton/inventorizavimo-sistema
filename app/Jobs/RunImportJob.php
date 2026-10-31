@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Imports\GenericImport;
+use App\Imports\Helpers\ImportFile;
 use App\Models\ImportRun;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -47,7 +48,7 @@ class RunImportJob implements ShouldQueue
             }
 
             $importer = new GenericImport($this->importRun, $this->user->locale, $this->user);
-            Excel::import($importer, $path);
+            Excel::import($importer, ImportFile::readable($path));
             
         } catch (\Throwable $e) {
 

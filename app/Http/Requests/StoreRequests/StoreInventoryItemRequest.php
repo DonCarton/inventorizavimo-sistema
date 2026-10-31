@@ -3,8 +3,12 @@
 namespace App\Http\Requests\StoreRequests;
 
 use App\Models\ItemType;
+use App\Models\MeasurementUnit;
+use App\Rules\AmountForUnit;
 use App\Rules\AssetNumberRequired;
+use App\Support\ItemCode;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreInventoryItemRequest extends FormRequest
 {
@@ -26,7 +30,9 @@ class StoreInventoryItemRequest extends FormRequest
             'inventory_type' => ['required','exists:item_types,id'],
         ];
         if ($this->type) {
+            $unit = MeasurementUnit::find($this->input('measurement_unit_id'));
             $additionalRules = [
+                'measurement_unit_id' => ['required', Rule::exists('measurement_units', 'id')->where('is_active', true)],
                 'local_name' => ['required', 'unique:inventory_items,local_name'],
                 'name' => ['required', 'string', 'max:255'],
                 'name_eng' => ['required', 'string', 'max:255'],
@@ -38,9 +44,9 @@ class StoreInventoryItemRequest extends FormRequest
                 'barcode' => ['nullable', 'string'],
                 'url_to_provider' => ['nullable', 'string'],
                 'alt_url_to_provider' => ['nullable', 'string'],
-                'total_amount' => ['required', 'numeric', 'min:0'],
-                'critical_amount' => ['required', 'numeric'],
-                'to_order_amount' => ['nullable', 'numeric'],
+                'total_amount' => ['required', 'numeric', 'min:0', new AmountForUnit($unit)],
+                'critical_amount' => ['required', 'numeric', new AmountForUnit($unit)],
+                'to_order_amount' => ['nullable', 'numeric', new AmountForUnit($unit)],
                 'multiple_locations' => ['boolean'],
                 'laboratory' => 'required:exists:laboratories,id',
                 'facilities' => 'required:exists:facilities,id',
@@ -60,5 +66,12 @@ class StoreInventoryItemRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->type = $this->input('inventory_type') ? ItemType::find($this->input('inventory_type')) : null;
+
+        // The server decides the unit suffix of the code from the chosen unit, so the
+        // uniqueness check below runs on the code that will actually be saved.
+        $unit = $this->input('measurement_unit_id') ? MeasurementUnit::find($this->input('measurement_unit_id')) : null;
+        if ($unit && is_string($this->input('local_name')) && $this->input('local_name') !== '') {
+            $this->merge(['local_name' => ItemCode::withUnit($this->input('local_name'), $unit->code)]);
+        }
     }
 }

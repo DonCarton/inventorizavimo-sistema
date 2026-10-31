@@ -60,6 +60,11 @@ export default function Authenticated({ user, header, children, can }) {
                                              href={route('itemTypes.index')} active={route().current('itemTypes*')}>
                                         {translate("Types")}
                                     </NavLink>}
+                                {can.view.measurementUnit &&
+                                    <NavLink className="2xl:text-lg xl:text-base text-white"
+                                             href={route('measurementUnits.index')} active={route().current('measurementUnits*')}>
+                                        {translate("Units")}
+                                    </NavLink>}
                                 {can.view.laboratory &&
                                 <button type="button" onClick={() => setShowMegaMenuDropdown(!showLabMegaMenuDropdown)} onMouseEnter={() => setShowLabMegaMenuDropdown(true)} onMouseLeave={() => setShowLabMegaMenuDropdown(false)}
                                         className={`inline-flex items-center 2xl:text-lg xl:text-base text-white px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none hover:border-b-2 hover:border-b-indigo-400 border-transparent dark:text-gray-400 hover:text-teal-100 dark:hover:text-gray-300 hover:border-indigo-500 dark:hover:border-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700 ${route().current('laboratories*') ? 'border-b-indigo-400 bg-pink-700' : ''}`}>
@@ -171,6 +176,9 @@ export default function Authenticated({ user, header, children, can }) {
                         </ResponsiveNavLink>
                         {can.view.itemType && <ResponsiveNavLink className="text-white" href={route('itemTypes.index')} active={route().current('itemTypes.index')}>
                             {translate("Types")}
+                        </ResponsiveNavLink>}
+                        {can.view.measurementUnit && <ResponsiveNavLink className="text-white" href={route('measurementUnits.index')} active={route().current('measurementUnits.index')}>
+                            {translate("Units")}
                         </ResponsiveNavLink>}
                         {can.view.laboratory && <ResponsiveNavLink className="text-white" href={route('laboratories.index')} active={route().current('laboratories.index')}>
                             {translate("Laboratories")}

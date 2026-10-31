@@ -35,6 +35,8 @@ class CRUDInventoryItemResource extends JsonResource
         return [
             'id' => $this->id,
             'local_name' => $this->local_name,
+            'unit_code' => $this->measurementUnit?->code,
+            'unit_decimals' => $this->measurementUnit?->decimal_places,
             'inventory_type' => new ItemTypeForSelect($this->itemType),
             'laboratory' => new LaboratoryName(Laboratory::find($this->laboratory)),
             'name' => $this->name,

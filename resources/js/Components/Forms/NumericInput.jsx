@@ -1,6 +1,7 @@
 import {forwardRef, useEffect, useRef} from 'react';
 
-export default forwardRef(function TextInput({ type = 'text', className = '', isFocused = false, ...props }, ref) {
+// `decimals`: optional number of decimals the field's unit allows; 0 blocks the decimal separator.
+export default forwardRef(function TextInput({ type = 'text', className = '', isFocused = false, decimals = null, ...props }, ref) {
     const input = ref ? ref : useRef();
 
     useEffect(() => {
@@ -23,6 +24,10 @@ export default forwardRef(function TextInput({ type = 'text', className = '', is
         ) {
             e.preventDefault();
         }
+        if (isDotOrComma && decimals === 0) {
+            e.preventDefault();
+            return;
+        }
         if (isDotOrComma) {
             if (currentValue.includes('.') || currentValue.includes(',')) {
                 e.preventDefault();
@@ -42,7 +47,8 @@ export default forwardRef(function TextInput({ type = 'text', className = '', is
             }
             ref={input}
             onKeyDown={handleNumericInput}
-            pattern="[0-9,.]*"
+            pattern={decimals === 0 ? "[0-9]*" : "[0-9,.]*"}
+            inputMode={decimals === 0 ? "numeric" : "decimal"}
         />
     );
 });

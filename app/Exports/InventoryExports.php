@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
@@ -24,9 +25,12 @@ use Maatwebsite\Excel\Events\AfterSheet;
  * TODO: IMPROVE IT SO THAT IT ALSO STAMPS THE LOGO IN THE UPPER LEFT CORNER OF THE DOCUMENT.
  */
 
-class InventoryExports extends BrandedExport implements FromCollection, WithMapping
+// WithStrictNullComparison: without it, false and 0 are written as empty cells,
+// which made "multiple locations = no" indistinguishable from a missing value on re-import.
+class InventoryExports extends BrandedExport implements FromCollection, WithMapping, WithStrictNullComparison
 {
     private array $data;
+    private array $averageConsumption = [];
     private string $sortDirection = 'asc';
     private string $sortField = 'local_name';
 
@@ -85,7 +89,11 @@ class InventoryExports extends BrandedExport implements FromCollection, WithMapp
                 });
             }
         }
-        return $query->orderBy($this->sortField,$this->sortDirection)->get();
+        $items = $query->orderBy($this->sortField,$this->sortDirection)->get();
+        // One grouped query for every exported item instead of one per row.
+        $this->averageConsumption = InventoryItem::averageMonthlyConsumptionFor($items);
+
+        return $items;
     }
 
     /**
@@ -114,7 +122,7 @@ class InventoryExports extends BrandedExport implements FromCollection, WithMapp
             $row->total_amount,
             $row->critical_amount,
             $row->to_order_amount,
-            $row->average_consumption,
+            $this->averageConsumption[$row->id] ?? null,
             (bool)$row->multiple_locations,
             $row->storage_conditions,
             $row->asset_number,

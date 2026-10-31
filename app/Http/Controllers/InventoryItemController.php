@@ -21,12 +21,13 @@ use App\Http\Resources\SelectObjectResources\LaboratoryResourceForMulti;
 use App\Imports\InventoryImport;
 use App\Jobs\NotifyFailedImports;
 use App\Models\AmountLog;
+use App\Models\ConsumptionLog;
 use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
+use App\Models\MeasurementUnit;
 use App\Models\SystemConfiguration;
 use App\Observers\InventoryItemObserver;
-use App\Rules\NonNegativeAmount;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -181,8 +182,23 @@ class InventoryItemController extends Controller
             'referrer' => $request->query('referrer'),
             'queryParams' => $request->query('query'),
             'cupboardOptions' => $configurations['cupboardOptions'],
-            'shelfOptions' => $configurations['shelfOptions']
+            'shelfOptions' => $configurations['shelfOptions'],
+            'measurementUnits' => $this->measurementUnitOptions(),
         ]);
+    }
+
+    /**
+     * Units offered in the create/edit forms: active ones, plus the item's current
+     * unit when it has been deactivated since.
+     */
+    private function measurementUnitOptions(?int $currentUnitId = null): array
+    {
+        return MeasurementUnit::query()
+            ->where('is_active', true)
+            ->when($currentUnitId, fn($query) => $query->orWhere('id', $currentUnitId))
+            ->orderBy('code')
+            ->get(['id', 'code', 'name', 'decimal_places'])
+            ->toArray();
     }
 
     /**
@@ -228,6 +244,7 @@ class InventoryItemController extends Controller
             'referrer' => $request->query('referrer'),
             'cupboardOptions' => $configurations['cupboardOptions'],
             'shelfOptions' => $configurations['shelfOptions'],
+            'measurementUnits' => $this->measurementUnitOptions($inventoryItem->measurement_unit_id),
             'loanTermLimitsEnabled' => SystemConfiguration::isEnabled('loan_term_limits_enabled'),
             'can' => [
                 'alterLocalName' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
@@ -274,19 +291,29 @@ class InventoryItemController extends Controller
     {
         $queryParams = $request->query('query');
         $redirectDestination = $request->query('referrer', 'index');
-        if ($request['amount_removed'] > 0) {
-            $data = $request->validate([
-                'amount_removed' => ['numeric', new NonNegativeAmount($inventoryItem->total_amount)],
-                'total_amount' => 'numeric',
-                'updated_by' => 'required'
-            ]);
-            $data['total_amount'] = $data['total_amount'] - $data['amount_removed'];
+        $data = $request->validated();
+        // Start from the stored total (not the one the browser sent) and keep the
+        // result rounded to the unit's decimals so float leftovers don't accumulate.
+        $total = (float) $inventoryItem->total_amount;
+
+        if ((float) ($data['amount_removed'] ?? 0) > 0) {
+            $removed = $inventoryItem->roundAmount((float) $data['amount_removed']);
+            $total -= $removed;
+
+            // Using up a consumable is what average consumption is calculated from.
+            if ($inventoryItem->itemType?->change_acc_amount) {
+                ConsumptionLog::create([
+                    'inventory_item_id' => $inventoryItem->id,
+                    'amount' => $removed,
+                    'created_by' => $request->user()->id,
+                ]);
+            }
         } else {
-            $data = $request->only(['amount_added', 'total_amount', 'updated_by']);
-            $data['total_amount'] = $data['total_amount'] + $data['amount_added'];
+            $total += $inventoryItem->roundAmount((float) $data['amount_added']);
         }
+
         $inventoryItem->update([
-            'total_amount' => $data['total_amount'],
+            'total_amount' => $inventoryItem->roundAmount($total),
             'updated_by' => $data['updated_by']
         ]);
         if ($request['urlToRedirect']){
@@ -382,7 +409,7 @@ class InventoryItemController extends Controller
             'inventory_item_id' => $inventoryItem->id,
             'laboratory_id' => $request->input('laboratory_id'),
             'action' => $request->input('action'),
-            'amount' => $request->input('amount'),
+            'amount' => $inventoryItem->roundAmount((float) $request->input('amount')),
             'comment' => $request->input('comment'),
             'term' => $request->input('term'),
             'created_by' => $request->user()->id,
@@ -437,6 +464,8 @@ class InventoryItemController extends Controller
             'cupboardOptions' => $configurations['cupboardOptions'],
             'shelfOptions' => $configurations['shelfOptions'],
             'loanTermRange' => $inventoryItem->loanTermRange(),
+            // Usage chart: only consumables have consumption history.
+            'consumptionByMonth' => $inventoryItem->itemType?->change_acc_amount ? $inventoryItem->monthlyConsumption() : null,
             'can' => [
                 'edit' => $request->user()->can('edit', $inventoryItem),
             ],
