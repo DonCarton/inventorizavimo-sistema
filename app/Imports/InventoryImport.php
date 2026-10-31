@@ -26,7 +26,7 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsO
     public function rules(): array
     {
         return [
-            '*.local_name' => ['required','regex:/^[A-Z]{3,4}\d{3}-[A-Z]$/'],
+            '*.local_name' => ['required','regex:/^\p{Lu}{3,4}\d{3}-\p{Lu}$/u'],
             '*.inventory_type' => [
                 'nullable',
                 new ExistsByNumericOrString('item_types','inventory_type')
@@ -36,7 +36,7 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, SkipsO
                 new ExistsByNumericOrString('laboratories','laboratory')
             ],
             '*.cupboard' => ['nullable','numeric','gte:0','lte:40'],
-            '*.shelf' => ['nullable','string','regex:/[A-Z]/'],
+            '*.shelf' => ['nullable','string','regex:/\p{Lu}/u'],
             '*.total_amount' => ['nullable','numeric'],
             '*.critical_amount' => ['nullable','numeric'],
             '*.to_order' => ['nullable','numeric'],

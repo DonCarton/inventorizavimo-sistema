@@ -246,7 +246,11 @@ return [
         ],
         'laboratories' => [
             'required' => ':Attribute yra privalomas laukas.',
-        ]
+            'no_valid_record' => ':Attribute su pateikta reikšme [:value] nerasta.',
+        ],
+        'facilities' => [
+            'no_valid_record' => ':Attribute su pateikta reikšme [:value] nerasta.',
+        ],
     ],
 
     /*

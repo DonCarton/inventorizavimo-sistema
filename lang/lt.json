@@ -221,5 +221,21 @@
     "Loan term limits": "Skolinimosi termino ribos",
     "Leave both empty for no limit": "Palikite abu laukelius tuščius, jei norite netaikyti ribojimo",
     "True": "Taip",
-    "False": "Ne"
+    "False": "Ne",
+    "Example value": "Pavyzdinė reikšmė",
+    "Do not map": "Nepriskirti",
+    "Row": "Eilutė",
+    "Value": "Reikšmė",
+    "Reason": "Priežastis",
+    "First :count rows of the file, as they will be imported": "Pirmos :count failo eilutės taip, kaip jos bus importuotos",
+    "Check file": "Patikrinti failą",
+    "Checking file": "Tikrinamas failas",
+    "File check passed: all :count rows can be imported": "Failo patikra sėkminga: visos eilutės (:count) gali būti importuotos",
+    "File check failed: :errors errors found while checking :count rows": "Failo patikra nepavyko: patikrinus :count eil. rasta klaidų: :errors. Pataisykite failą arba laukų priskyrimą ir patikrinkite dar kartą",
+    "Showing the first :shown of :total errors": "Rodomos pirmos :shown iš :total klaidų",
+    "The file check could not be completed": "Failo patikros atlikti nepavyko",
+    "Run a successful file check before saving": "Prieš išsaugant sėkmingai patikrinkite failą",
+    "Auto-map matching columns": "Automatiškai priskirti sutampančius stulpelius",
+    "Columns mapped automatically by matching names: :count. Please review them": "Automatiškai priskirta stulpelių pagal sutampančius pavadinimus: :count. Peržiūrėkite juos",
+    "No more columns with matching names were found": "Daugiau stulpelių su sutampančiais pavadinimais nerasta"
 }

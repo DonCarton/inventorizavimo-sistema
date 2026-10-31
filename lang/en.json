@@ -213,5 +213,21 @@
     "Loan term limits": "Loan term limits",
     "Leave both empty for no limit": "Leave both empty for no limit",
     "True": "True",
-    "False": "False"
+    "False": "False",
+    "Example value": "Example value",
+    "Do not map": "Do not map",
+    "Row": "Row",
+    "Value": "Value",
+    "Reason": "Reason",
+    "First :count rows of the file, as they will be imported": "First :count rows of the file, as they will be imported",
+    "Check file": "Check file",
+    "Checking file": "Checking file",
+    "File check passed: all :count rows can be imported": "File check passed: all :count rows can be imported",
+    "File check failed: :errors errors found while checking :count rows": "File check failed: :errors error(s) found while checking :count rows. Fix the file or the mapping and check again",
+    "Showing the first :shown of :total errors": "Showing the first :shown of :total errors",
+    "The file check could not be completed": "The file check could not be completed",
+    "Run a successful file check before saving": "Run a successful file check before saving",
+    "Auto-map matching columns": "Auto-map matching columns",
+    "Columns mapped automatically by matching names: :count. Please review them": "Columns mapped automatically by matching names: :count. Please review them",
+    "No more columns with matching names were found": "No more columns with matching names were found"
 }

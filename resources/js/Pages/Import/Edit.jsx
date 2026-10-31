@@ -1,6 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
 import { Head, Link, useForm } from "@inertiajs/react";
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import axios from "axios";
 import InputLabel from "@/Components/Forms/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
@@ -8,12 +8,16 @@ import InputError from "@/Components/InputError.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import StringHelper from "@/Libs/StringHelper";
 import SteamDropdown from "@/Components/SteamDropdown";
-import FieldMappingSummary from "@/Components/Forms/FieldMappingSummary";
+import ImportMappingSection from "@/Components/Forms/ImportMappingSection";
+import useImportCheck from "@/Libs/useImportCheck";
 import { FiDownload } from "react-icons/fi";
 
-// react-spreadsheet-import pulls in Chakra UI/Emotion/react-data-grid (~1MB minified) —
-// lazy-load so that weight is only fetched once the user opens the mapping modal.
-const SpreadsheetImportModal = lazy(() => import("@/Components/Forms/SpreadsheetImportModal"));
+// Mapping comparison that ignores key order and unmapped (empty) entries.
+const sameMapping = (a = {}, b = {}) => {
+    const normalize = (mapping) =>
+        JSON.stringify(Object.entries(mapping).filter(([, field]) => field).sort(([x], [y]) => x.localeCompare(y)));
+    return normalize(a) === normalize(b);
+};
 
 export default function Create({ auth, importableObjects, rawHeaders, normalizedHeaders, sampleRows, importDefinition, originalFilename }) {
     const confirmMessage = StringHelper.__("Changing the object type reset the mappings, do you wish to proceed?");
@@ -24,7 +28,19 @@ export default function Create({ auth, importableObjects, rawHeaders, normalized
         field_mappings: importDefinition.field_mappings || {},
     });
     const [importableFields, setImportableFields] = useState([]);
-    const [isMappingModalOpen, setIsMappingModalOpen] = useState(false);
+    const [fieldAliases, setFieldAliases] = useState({});
+    const check = useImportCheck([data.model_class, data.field_mappings]);
+    // Renaming alone doesn't need a check; changing what gets imported does.
+    const importChanged =
+        data.model_class !== importDefinition.model_class ||
+        !sameMapping(data.field_mappings, importDefinition.field_mappings || {});
+    const canSave = !processing && (!importChanged || check.result?.passed);
+    const runCheck = () =>
+        check.runCheck({
+            importDefinitionId: importDefinition.id,
+            modelClass: data.model_class,
+            fieldMappings: data.field_mappings,
+        });
 
     const handleModelChange = (e) => {
         if (confirm(confirmMessage)) {
@@ -40,6 +56,7 @@ export default function Create({ auth, importableObjects, rawHeaders, normalized
     useEffect(() => {
         if (!data.model_class) {
             setImportableFields([]);
+            setFieldAliases({});
             return;
         }
 
@@ -49,13 +66,10 @@ export default function Create({ auth, importableObjects, rawHeaders, normalized
             .post(route("imports.importableFields", { model: data.model_class }))
             .then((response) => {
                 if (cancelled) return;
+                setFieldAliases(response.data.aliases || {});
                 setImportableFields(
                     Object.entries(response.data.humanReadable).map(
-                        ([key, label]) => ({
-                            key,
-                            label,
-                            fieldType: { type: "input" },
-                        }),
+                        ([key, label]) => ({ key, label }),
                     ),
                 );
             });
@@ -136,44 +150,25 @@ export default function Create({ auth, importableObjects, rawHeaders, normalized
                             </div>
                         </div>
 
-                        {data.model_class.length > 0 && <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"/>}
+                        {data.model_class.length > 0 && <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"/>}
 
                         <div className="mt-4">
                             <InputLabel className="mb-2" htmlFor="import_definition_field_mappings">{StringHelper.__("Mappings")}<span className="text-red-500">*</span></InputLabel>
                             <InputError message={errors.field_mappings} className="mb-2" />
 
-                            {data.model_class.length > 0 && (
+                            {data.model_class.length > 0 && importableFields.length > 0 && (
                                 <div id="import_definition_field_mappings">
-                                    <PrimaryButton
-                                        type="button"
-                                        onClick={() => setIsMappingModalOpen(true)}
-                                        disabled={importableFields.length === 0}
-                                    >
-                                        {Object.keys(data.field_mappings).length > 0
-                                            ? StringHelper.__("Edit mapping")
-                                            : StringHelper.__("Map fields")}
-                                    </PrimaryButton>
-                                    <div className="mt-4">
-                                        <FieldMappingSummary
-                                            rawHeaders={rawHeaders}
-                                            normalizedHeaders={normalizedHeaders}
-                                            fieldMappings={data.field_mappings}
-                                            fields={importableFields}
-                                        />
-                                    </div>
-                                    {isMappingModalOpen && (
-                                        <Suspense fallback={null}>
-                                            <SpreadsheetImportModal
-                                                isOpen={isMappingModalOpen}
-                                                onClose={() => setIsMappingModalOpen(false)}
-                                                fields={importableFields}
-                                                rawHeaders={rawHeaders}
-                                                normalizedHeaders={normalizedHeaders}
-                                                sampleRows={sampleRows}
-                                                onMapped={mapping => setData('field_mappings', mapping)}
-                                            />
-                                        </Suspense>
-                                    )}
+                                    <ImportMappingSection
+                                        rawHeaders={rawHeaders}
+                                        normalizedHeaders={normalizedHeaders}
+                                        sampleRows={sampleRows}
+                                        fields={importableFields}
+                                        aliases={fieldAliases}
+                                        mapping={data.field_mappings}
+                                        onMappingChange={mapping => setData('field_mappings', mapping)}
+                                        check={check}
+                                        onCheck={runCheck}
+                                    />
                                 </div>
                             )}
                         </div>
@@ -184,7 +179,12 @@ export default function Create({ auth, importableObjects, rawHeaders, normalized
                             >
                                 {StringHelper.__("Cancel")}
                             </Link>
-                            <PrimaryButton className="ml-2" disabled={processing}>{StringHelper.__("Save")}</PrimaryButton>
+                            <PrimaryButton className="ml-2" disabled={!canSave}>{StringHelper.__("Save")}</PrimaryButton>
+                            {importChanged && !check.result?.passed && (
+                                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                    {StringHelper.__("Run a successful file check before saving")}
+                                </p>
+                            )}
                         </div>
                     </form>
                 </div>
