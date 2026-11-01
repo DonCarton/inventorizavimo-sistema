@@ -2,7 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head, Link} from '@inertiajs/react';
 import Pagination from "@/Components/Pagination.jsx";
 import StringHelper from "@/Libs/StringHelper.jsx";
-import {TbEdit} from "react-icons/tb";
+import {TbEdit, TbEye} from "react-icons/tb";
 import InformationIconToolTip from "@/Components/InformationIconToolTip.jsx";
 import React from "react";
 import SuccessMessage from "@/Components/SuccessMessage.jsx";
@@ -11,7 +11,7 @@ import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import BulkActionsButton from '@/Components/Actions/BulkActionsButton';
 import MiscButton from '@/Components/Forms/MiscButton';
 
-export default function Index({auth, measurementUnits, success, warning}) {
+export default function Index({auth, measurementUnits, success, warning, can = {}}) {
     return (
         <AuthenticatedLayout user={auth.user}
                              can={auth.can}
@@ -25,13 +25,15 @@ export default function Index({auth, measurementUnits, success, warning}) {
                                              classnameForIcon="w-5 h-5 ml-1 mt-1"/>
                                      </div>
 
-                                     <GroupButtonDropdown id="dropdown-actions-units" name="actions-units" nameOfDropdownButton={StringHelper.__("Actions")}>
-                                         {auth.can.create.measurementUnit && <>
-                                             <button type="button" id="create-new-entry"
-                                                  className="px-2 py-1 bg-white border-2 rounded-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
-                                                 <Link href={route("measurementUnits.create")}>{StringHelper.__("Create")}</Link></button></>
-                                         }
-                                     </GroupButtonDropdown>
+                                     {/* Only super-admins may create units; admins don't get an empty Actions menu. */}
+                                     {auth.can.create.measurementUnit && (
+                                         <GroupButtonDropdown id="dropdown-actions-units" name="actions-units" nameOfDropdownButton={StringHelper.__("Actions")}>
+                                             <Link href={route("measurementUnits.create")} id="create-new-entry"
+                                                   className="block px-2 py-1 bg-white border-2 rounded-lg border-gray-300 dark:border-gray-500 w-full font-semibold text-center sm:text-base 2xl:text-xl text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition ease-in-out duration-150">
+                                                 {StringHelper.__("Create")}
+                                             </Link>
+                                         </GroupButtonDropdown>
+                                     )}
                                  </div>}
         >
             <Head title={StringHelper.__("Units")}/>
@@ -58,7 +60,12 @@ export default function Index({auth, measurementUnits, success, warning}) {
                                     <tbody>
                                     {measurementUnits.data.map(unit => (
                                         <tr key={unit.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 sm:text-base">
-                                            <td className="px-3 py-2 font-medium text-gray-700 dark:text-white">{unit.code}</td>
+                                            <td className="px-3 py-2">
+                                                <Link href={route("measurementUnits.show", unit.id)}
+                                                      className="font-medium text-gray-700 dark:text-white hover:underline">
+                                                    {unit.code}
+                                                </Link>
+                                            </td>
                                             <td className="px-3 py-2">{unit.name}</td>
                                             <td className="px-3 py-2">{unit.decimalPlaces}</td>
                                             <td className="px-3 py-2">{unit.isActive ? StringHelper.__("True") : StringHelper.__("False")}</td>
@@ -66,7 +73,10 @@ export default function Index({auth, measurementUnits, success, warning}) {
                                             <td className="px-3 py-2">{unit.updatedAt}</td>
                                             <td className="flex justify-start mt-1 px-2 py-1">
                                                 <BulkActionsButton>
-                                                    <MiscButton classVariant="green" title={StringHelper.__("Edit")} as="link" to={route("measurementUnits.edit", unit.id)} icon={TbEdit} children={StringHelper.__("Edit")}/>
+                                                    <MiscButton classVariant="blue" title={StringHelper.__("Show")} as="link" to={route("measurementUnits.show", unit.id)} icon={TbEye} children={StringHelper.__("Show")}/>
+                                                    {can.update && (
+                                                        <MiscButton classVariant="green" title={StringHelper.__("Edit")} as="link" to={route("measurementUnits.edit", unit.id)} icon={TbEdit} children={StringHelper.__("Edit")}/>
+                                                    )}
                                                 </BulkActionsButton>
                                             </td>
                                         </tr>

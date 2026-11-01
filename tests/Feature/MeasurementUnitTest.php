@@ -88,9 +88,9 @@ class MeasurementUnitTest extends TestCase
 
     // --- Units admin ---------------------------------------------------------
 
-    public function test_admin_creates_a_unit_and_the_code_is_normalized(): void
+    public function test_super_admin_creates_a_unit_and_the_code_is_normalized(): void
     {
-        $this->actingAs($this->admin)
+        $this->actingAs($this->superAdmin)
             ->post(route('measurementUnits.store'), ['code' => ' v ', 'name' => 'Vienetai'])
             ->assertRedirect(route('measurementUnits.index'))
             ->assertSessionHasNoErrors();
@@ -106,6 +106,17 @@ class MeasurementUnitTest extends TestCase
             ->assertSessionHasErrors('code');
         $this->actingAs($this->admin)->post(route('measurementUnits.store'), ['code' => 'K1', 'name' => 'Digit'])
             ->assertSessionHasErrors('code');
+    }
+
+    public function test_admins_can_view_units_but_only_super_admins_change_them(): void
+    {
+        $this->actingAs($this->admin)->get(route('measurementUnits.index'))->assertOk();
+        $this->actingAs($this->admin)->post(route('measurementUnits.store'), ['code' => 'V', 'name' => 'Vienetai'])->assertForbidden();
+        $this->actingAs($this->admin)
+            ->put(route('measurementUnits.update', $this->unit('P')), ['code' => 'PK', 'name' => 'Pakuotės'])
+            ->assertForbidden();
+        $this->assertSame('P', $this->unit('P')->code);
+        $this->assertFalse(MeasurementUnit::where('code', 'V')->exists());
     }
 
     public function test_regular_users_cannot_manage_units(): void
@@ -132,7 +143,7 @@ class MeasurementUnitTest extends TestCase
     {
         $item = $this->item('ŠVIE102-P');
 
-        $this->actingAs($this->admin)
+        $this->actingAs($this->superAdmin)
             ->put(route('measurementUnits.update', $this->unit('P')), ['code' => 'PK', 'name' => 'Pakuotės', 'is_active' => true])
             ->assertSessionHasNoErrors();
 
@@ -275,5 +286,42 @@ class MeasurementUnitTest extends TestCase
 
         $this->assertSame([], $this->importRows(['ŠVIE102-P']));
         $this->assertSame($this->unit('PK')->id, $item->refresh()->measurement_unit_id);
+    }
+
+    // --- Viewing units (admins) vs changing them (super-admins) -------------
+
+    public function test_admins_see_the_units_list_and_details_without_edit_rights(): void
+    {
+        $unit = $this->unit('K');
+
+        $this->actingAs($this->admin)->get(route('measurementUnits.index'))
+            ->assertInertia(fn(\Inertia\Testing\AssertableInertia $page) => $page
+                ->component('MeasurementUnits/Index')
+                ->where('can.update', false));
+
+        $this->actingAs($this->admin)->get(route('measurementUnits.show', $unit))
+            ->assertOk()
+            ->assertInertia(fn(\Inertia\Testing\AssertableInertia $page) => $page
+                ->component('MeasurementUnits/Show')
+                ->where('measurementUnit.data.code', 'K')
+                ->where('can.update', false));
+
+        $this->actingAs($this->admin)->get(route('measurementUnits.edit', $unit))->assertForbidden();
+    }
+
+    public function test_super_admins_get_edit_rights_on_list_and_details(): void
+    {
+        $unit = $this->unit('K');
+
+        $this->actingAs($this->superAdmin)->get(route('measurementUnits.index'))
+            ->assertInertia(fn(\Inertia\Testing\AssertableInertia $page) => $page->where('can.update', true));
+        $this->actingAs($this->superAdmin)->get(route('measurementUnits.show', $unit))
+            ->assertInertia(fn(\Inertia\Testing\AssertableInertia $page) => $page->where('can.update', true));
+        $this->actingAs($this->superAdmin)->get(route('measurementUnits.edit', $unit))->assertOk();
+    }
+
+    public function test_regular_users_cannot_open_unit_details(): void
+    {
+        $this->actingAs($this->regularUser)->get(route('measurementUnits.show', $this->unit('K')))->assertForbidden();
     }
 }

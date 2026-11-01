@@ -18,7 +18,7 @@ class NavigationPermissionsTest extends TestCase
 
     private const ADMIN_PAGES = [
         'user', 'laboratory', 'facility', 'itemType', 'measurementUnit',
-        'importDefinition', 'importRun', 'systemConfiguration',
+        'importDefinition', 'importRun',
     ];
 
     protected function setUp(): void
@@ -49,7 +49,7 @@ class NavigationPermissionsTest extends TestCase
     {
         $flags = $this->viewFlagsFor('user');
 
-        foreach (self::ADMIN_PAGES as $page) {
+        foreach ([...self::ADMIN_PAGES, 'systemConfiguration'] as $page) {
             $this->assertFalse($flags[$page], "user should not see {$page}");
         }
         $this->assertTrue($flags['inventoryItem']);
@@ -63,6 +63,12 @@ class NavigationPermissionsTest extends TestCase
                 $this->assertTrue($flags[$page], "{$role} should see {$page}");
             }
         }
+    }
+
+    public function test_only_super_admins_see_system_configuration(): void
+    {
+        $this->assertFalse($this->viewFlagsFor('admin')['systemConfiguration']);
+        $this->assertTrue($this->viewFlagsFor('super-admin')['systemConfiguration']);
     }
 
     public function test_hidden_import_pages_are_also_closed_to_regular_users(): void

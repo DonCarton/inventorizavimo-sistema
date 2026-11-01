@@ -28,6 +28,9 @@ class MeasurementUnitController extends Controller
             'measurementUnits' => MeasurementUnitResource::collection($units),
             'success' => session('success'),
             'warning' => session('warning'),
+            'can' => [
+                'update' => request()->user()->can('update', new MeasurementUnit()),
+            ],
         ]);
     }
 
@@ -48,9 +51,21 @@ class MeasurementUnitController extends Controller
             ->with('success', __('actions.measurementUnit.created', ['code' => $unit->code]));
     }
 
-    public function show(MeasurementUnit $measurementUnit): RedirectResponse
+    /**
+     * Read-only details, for everyone who may view units (also those who can't edit them).
+     */
+    public function show(MeasurementUnit $measurementUnit): Response
     {
-        return to_route('measurementUnits.edit', $measurementUnit);
+        Gate::authorize('viewAny', MeasurementUnit::class);
+
+        $measurementUnit->loadCount('inventoryItems');
+
+        return Inertia::render('MeasurementUnits/Show', [
+            'measurementUnit' => new MeasurementUnitResource($measurementUnit),
+            'can' => [
+                'update' => request()->user()->can('update', $measurementUnit),
+            ],
+        ]);
     }
 
     public function edit(MeasurementUnit $measurementUnit): Response
