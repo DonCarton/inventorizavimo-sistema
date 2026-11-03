@@ -2,11 +2,13 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\RoleEnum;
 use App\Models\Facility;
 use App\Models\ImportDefinition;
 use App\Models\ImportRun;
 use App\Models\InventoryItem;
 use App\Models\ItemType;
+use App\Models\MeasurementUnit;
 use App\Models\Laboratory;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -54,6 +56,7 @@ class HandleInertiaRequests extends Middleware
                         'user' => Auth::user()->can('create', User::class),
                         'inventoryItem' => Auth::user()->can('create', InventoryItem::class),
                         'itemType' => Auth::user()->can('create', ItemType::class),
+                        'measurementUnit' => Auth::user()->can('create', MeasurementUnit::class),
                         'laboratory' => Auth::user()->can('create', Laboratory::class),
                         'facility' => Auth::user()->can('create',Facility::class),
                         'importDefinition' => Auth::user()->can('create', ImportDefinition::class),
@@ -63,10 +66,12 @@ class HandleInertiaRequests extends Middleware
                         'user' => Auth::user()->can('viewAny', User::class),
                         'inventoryItem' => Auth::user()->can('viewAny', InventoryItem::class),
                         'itemType' => Auth::user()->can('viewAny', ItemType::class),
+                        'measurementUnit' => Auth::user()->can('viewAny', MeasurementUnit::class),
                         'laboratory' => Auth::user()->can('viewAny', Laboratory::class),
                         'facility' => Auth::user()->can('viewAny',Facility::class),
                         'importDefinition' => Auth::user()->can('viewAny', ImportDefinition::class),
                         'importRun' => Auth::user()->can('viewAny', ImportRun::class),
+                        'systemConfiguration' => Auth::user()->hasRole([RoleEnum::SUPER_ADMIN]),
                     ]
                 ] : null
             ],

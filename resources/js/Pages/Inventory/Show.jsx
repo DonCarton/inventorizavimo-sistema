@@ -8,7 +8,7 @@ import SelectForSingleItem from "@/Components/Forms/SelectForSingleItem.jsx";
 import Checkbox from "@/Components/Checkbox.jsx";
 import TextInputExtra from "@/Components/Forms/TextInputExtra.jsx";
 import AccordionWithManualIndex from "@/Components/Forms/AccordionWithManualIndex.jsx";
-import React, {useState} from "react";
+import React, {useState, lazy, Suspense} from "react";
 import HistoryLog from "@/Components/Forms/HistoryLog.jsx";
 import ActionButton from '@/Components/Forms/ActionButton';
 import FlexibleStaticSelect from '@/Components/Forms/FlexibleStaticSelect';
@@ -17,9 +17,13 @@ import MiscButton from "@/Components/Forms/MiscButton.jsx";
 import GroupButtonDropdown from "@/Components/Actions/GroupButtonDropdown.jsx";
 import MenuActionButton from "@/Components/Actions/MenuActionButton.jsx";
 import { TbEdit, TbArrowsUpDown, TbHistory } from "react-icons/tb";
+import formatMonthlyConsumption from "@/Libs/formatMonthlyConsumption";
+
+// recharts is only needed here, so it is split into its own chunk.
+const ConsumptionChart = lazy(() => import("@/Components/Charts/ConsumptionChart.jsx"));
 
 
-export default function Show({auth, inventoryItem, logsForItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, can, loanTermRange}) {
+export default function Show({auth, inventoryItem, logsForItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, can, loanTermRange, consumptionByMonth = null}) {
     const [openAll, setOpenAll] = useState(true);
     const toggleAllAccordions = () => {
         setOpenAll(!openAll);
@@ -126,6 +130,14 @@ export default function Show({auth, inventoryItem, logsForItem, laboratories, fa
                                                 className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                         </div>
                                         <div className="mt-4">
+                                            <InputLabel htmlFor="inventoryItems_measurement_unit">{StringHelper.__("Unit")}</InputLabel>
+                                            <TextInput
+                                                id="inventoryItems_measurement_unit"
+                                                type="text" disabled={true} readOnly={true} name="measurement_unit"
+                                                value={inventoryItem.data.measurementUnit ? `${inventoryItem.data.measurementUnit.name} (${inventoryItem.data.measurementUnit.code})` : '-'}
+                                                className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                        </div>
+                                        <div className="mt-4">
                                             <InputLabel
                                                 htmlFor="inventoryItems_inventory_type">{StringHelper.__("Type")}</InputLabel>
                                             <SelectForSingleItem value={inventoryItem.data.inventoryType}
@@ -213,8 +225,9 @@ export default function Show({auth, inventoryItem, logsForItem, laboratories, fa
                                             <TextInput id="inventoryItems_average_consumption" type="text"
                                                        disabled={true} readOnly={true}
                                                        name="average_consumption"
-                                                       value={inventoryItem.data.averageConsumption || ''}
+                                                       value={formatMonthlyConsumption(inventoryItem.data)}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{StringHelper.__("Calculated per month from usage in the last 12 months")}.</p>
                                         </div>
                                         {loanTermRange && (
                                             <div className="mt-4 w-full">
@@ -227,6 +240,25 @@ export default function Show({auth, inventoryItem, logsForItem, laboratories, fa
                                             </div>
                                         )}
                                     </div>
+                                    {consumptionByMonth && (
+                                        <div className="mt-6">
+                                            <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+                                                {StringHelper.__("Usage per month")}{inventoryItem.data.measurementUnit ? ` (${inventoryItem.data.measurementUnit.code})` : ''}
+                                            </h3>
+                                            {consumptionByMonth.some(entry => entry.amount > 0) ? (
+                                                <Suspense fallback={<div className="h-64"/>}>
+                                                    <ConsumptionChart
+                                                        data={consumptionByMonth}
+                                                        unitCode={inventoryItem.data.measurementUnit?.code ?? ''}
+                                                        decimals={inventoryItem.data.measurementUnit?.decimalPlaces ?? 3}
+                                                        labels={{title: StringHelper.__("Usage per month"), used: StringHelper.__("Used")}}
+                                                    />
+                                                </Suspense>
+                                            ) : (
+                                                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{StringHelper.__("No recorded usage yet")}.</p>
+                                            )}
+                                        </div>
+                                    )}
                                 </AccordionWithManualIndex>
                                 <AccordionWithManualIndex expandedByDefault={openAll} indexOfAcc={2}
                                                           headerName={StringHelper.__("Order information")}>

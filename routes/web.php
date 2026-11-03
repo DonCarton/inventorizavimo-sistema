@@ -10,6 +10,7 @@ use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BarcodesController;
 use App\Http\Controllers\ItemTypeController;
+use App\Http\Controllers\MeasurementUnitController;
 use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\SystemConfigurationController;
@@ -64,6 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::resource('facilities',FacilityController::class);
         Route::get('/inventoryItems/{inventoryItem}/editRaw', [InventoryItemController::class, 'editRaw'])->name('inventoryItems.editRaw')->middleware('includeUserId');
         Route::resource('itemTypes', ItemTypeController::class)->middleware('includeUserId');
+        Route::resource('measurementUnits', MeasurementUnitController::class)->middleware('includeUserId');
 
         Route::resource('users', UserController::class)->middleware('includeUserId');
         Route::resource('import-definitions',DataFileImportController::class)->middleware('includeUserId');

@@ -1,9 +1,3 @@
-const measureOptions = [
-    { label: 'Kilograms', value: 'K' },
-    { label: 'Litres', value: 'L' },
-    { label: 'Packs', value: 'P' },
-];
-
 const labPrefixOptions = [
     {value: 'BIO', label: 'Gyvybės mokslų (BIO)'},
     {value: 'CHE', label: 'Chemijos (CHE)'},
@@ -21,4 +15,4 @@ export const actionsOnInventory = [
     { value: 'RETURN', label: "Return", className: 'bg-emerald-400'}
 ]
 
-export {measureOptions, labPrefixOptions};
+export {labPrefixOptions};

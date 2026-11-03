@@ -65,8 +65,8 @@ class ImportDryRunTest extends TestCase
     public function test_valid_file_passes_and_nothing_is_persisted(): void
     {
         $response = $this->dryRun($this->csv([
-            ['ABC001-A', 'Acetone', 'Chemistry', ''],
-            ['ABC002-A', 'Ethanol', 'Chemistry', ''],
+            ['ABC001-K', 'Acetone', 'Chemistry', ''],
+            ['ABC002-K', 'Ethanol', 'Chemistry', ''],
         ]));
 
         $response->assertOk()->assertJson([
@@ -81,8 +81,8 @@ class ImportDryRunTest extends TestCase
     {
         $response = $this->dryRun($this->csv([
             ['bad-code', 'Acetone', 'Chemistry', ''],
-            ['ABC002-A', 'Ethanol', 'Unknown lab', ''],
-            ['ABC003-A', 'Water', 'Chemistry', ''],
+            ['ABC002-K', 'Ethanol', 'Unknown lab', ''],
+            ['ABC003-K', 'Water', 'Chemistry', ''],
         ]));
 
         $response->assertOk()->assertJson(['passed' => false, 'total_rows' => 3]);
@@ -112,7 +112,7 @@ class ImportDryRunTest extends TestCase
         $this->failSavingItemsNamed('Explodes');
 
         $response = $this->dryRun($this->csv([
-            ['ABC001-A', 'Explodes', 'Chemistry', ''],
+            ['ABC001-K', 'Explodes', 'Chemistry', ''],
             ['bad-code', 'Ethanol', 'Chemistry', ''],
         ]));
 
@@ -136,15 +136,15 @@ class ImportDryRunTest extends TestCase
         );
 
         $errors = $processor->process(collect([
-            ['kodas' => 'ABC001-A', 'pavadinimas' => 'Explodes', 'laboratorija' => 'Chemistry', 'spinta' => null],
-            ['kodas' => 'ABC002-A', 'pavadinimas' => 'Ethanol', 'laboratorija' => (string) Laboratory::first()->id, 'spinta' => null],
+            ['kodas' => 'ABC001-K', 'pavadinimas' => 'Explodes', 'laboratorija' => 'Chemistry', 'spinta' => null],
+            ['kodas' => 'ABC002-K', 'pavadinimas' => 'Ethanol', 'laboratorija' => (string) Laboratory::first()->id, 'spinta' => null],
         ]));
 
         $this->assertCount(1, $errors);
         $this->assertSame(2, $errors[0]['row']);
-        $this->assertFalse(InventoryItem::where('local_name', 'ABC001-A')->exists());
+        $this->assertFalse(InventoryItem::where('local_name', 'ABC001-K')->exists());
         // Numeric laboratory id is accepted, same as the validation rule allows.
-        $this->assertSame(Laboratory::first()->id, (int) InventoryItem::where('local_name', 'ABC002-A')->value('laboratory'));
+        $this->assertSame(Laboratory::first()->id, (int) InventoryItem::where('local_name', 'ABC002-K')->value('laboratory'));
     }
 
     private function lithuanianFixtures(): array
@@ -178,7 +178,7 @@ class ImportDryRunTest extends TestCase
         $this->lithuanianFixtures();
 
         $response = $this->lithuanianDryRun(
-            "Kodas,Laboratorija,Patalpa\nŠVIE102-P,Šviesos laboratorija,Švarioji patalpa\nŽČĄ001-Ė,Šviesos laboratorija,\n"
+            "Kodas,Laboratorija,Patalpa\nŠVIE102-P,Šviesos laboratorija,Švarioji patalpa\nŽČĄ001-L,Šviesos laboratorija,\n"
         );
 
         $response->assertOk()->assertJson(['passed' => true, 'total_rows' => 2, 'error_count' => 0]);
@@ -240,16 +240,16 @@ class ImportDryRunTest extends TestCase
     public function test_boolean_values_are_normalized(): void
     {
         $cases = [
-            'ABC001-A' => [null, false],
-            'ABC002-A' => ['', false],
-            'ABC003-A' => ['Taip', true],
-            'ABC004-A' => ['NE', false],
-            'ABC005-A' => ['TRUE', true],
-            'ABC006-A' => ['false', false],
-            'ABC007-A' => ['yes', true],
-            'ABC008-A' => [' 1 ', true],
-            'ABC009-A' => [0, false],
-            'ABC010-A' => [true, true],
+            'ABC001-K' => [null, false],
+            'ABC002-K' => ['', false],
+            'ABC003-K' => ['Taip', true],
+            'ABC004-K' => ['NE', false],
+            'ABC005-K' => ['TRUE', true],
+            'ABC006-K' => ['false', false],
+            'ABC007-K' => ['yes', true],
+            'ABC008-K' => [' 1 ', true],
+            'ABC009-K' => [0, false],
+            'ABC010-K' => [true, true],
         ];
 
         $errors = $this->booleanProcessor()->process(collect($cases)->map(
@@ -265,7 +265,7 @@ class ImportDryRunTest extends TestCase
     public function test_unrecognized_boolean_value_is_rejected_with_its_original_value(): void
     {
         $errors = $this->booleanProcessor()->process(collect([
-            ['kodas' => 'ABC001-A', 'keliose_vietose' => 'maybe'],
+            ['kodas' => 'ABC001-K', 'keliose_vietose' => 'maybe'],
         ]));
 
         $this->assertCount(1, $errors);
@@ -276,7 +276,7 @@ class ImportDryRunTest extends TestCase
 
     public function test_boolean_column_missing_from_file_keeps_existing_value(): void
     {
-        $this->booleanProcessor()->process(collect([['kodas' => 'ABC001-A', 'keliose_vietose' => 'taip']]));
+        $this->booleanProcessor()->process(collect([['kodas' => 'ABC001-K', 'keliose_vietose' => 'taip']]));
 
         $withoutColumn = new ImportRowProcessor(
             modelClass: InventoryItem::class,
@@ -287,18 +287,18 @@ class ImportDryRunTest extends TestCase
             updatedBy: $this->admin->id,
         );
         $errors = $withoutColumn->process(collect([
-            ['kodas' => 'ABC001-A', 'pavadinimas' => 'Renamed'],
-            ['kodas' => 'ABC002-A', 'pavadinimas' => 'New item'],
+            ['kodas' => 'ABC001-K', 'pavadinimas' => 'Renamed'],
+            ['kodas' => 'ABC002-K', 'pavadinimas' => 'New item'],
         ]));
 
         $this->assertSame([], $errors);
-        $this->assertTrue((bool) InventoryItem::where('local_name', 'ABC001-A')->value('multiple_locations'));
-        $this->assertNull(InventoryItem::where('local_name', 'ABC002-A')->value('multiple_locations'));
+        $this->assertTrue((bool) InventoryItem::where('local_name', 'ABC001-K')->value('multiple_locations'));
+        $this->assertNull(InventoryItem::where('local_name', 'ABC002-K')->value('multiple_locations'));
     }
 
     public function test_export_writes_false_instead_of_an_empty_cell(): void
     {
-        $this->booleanProcessor()->process(collect([['kodas' => 'ABC001-A', 'keliose_vietose' => 'ne']]));
+        $this->booleanProcessor()->process(collect([['kodas' => 'ABC001-K', 'keliose_vietose' => 'ne']]));
 
         $path = tempnam(sys_get_temp_dir(), 'export_') . '.xlsx';
         file_put_contents($path, Excel::raw(new InventoryExports(), \Maatwebsite\Excel\Excel::XLSX));
@@ -306,7 +306,7 @@ class ImportDryRunTest extends TestCase
         @unlink($path);
 
         $headerRow = collect($rows)->first(fn($row) => in_array('Keliose vietose', $row, true));
-        $itemRow = collect($rows)->first(fn($row) => in_array('ABC001-A', $row, true));
+        $itemRow = collect($rows)->first(fn($row) => in_array('ABC001-K', $row, true));
         $this->assertNotNull($headerRow);
         $this->assertNotNull($itemRow);
         $this->assertFalse($itemRow[array_search('Keliose vietose', $headerRow, true)]);
@@ -317,10 +317,10 @@ class ImportDryRunTest extends TestCase
         $spreadsheet = new Spreadsheet();
         $spreadsheet->getActiveSheet()->fromArray([
             ['Kodas', 'Keliose vietose?'],
-            ['ABC001-A', '=FALSE()'],
-            ['ABC002-A', '=TRUE()'],
-            ['ABC003-A', '=1=1'],
-            ['ABC004-A', false],
+            ['ABC001-K', '=FALSE()'],
+            ['ABC002-K', '=TRUE()'],
+            ['ABC003-K', '=1=1'],
+            ['ABC004-K', false],
         ], null, 'A1', true);
         $path = tempnam(sys_get_temp_dir(), 'formulas_') . '.xlsx';
         (new Xlsx($spreadsheet))->save($path);

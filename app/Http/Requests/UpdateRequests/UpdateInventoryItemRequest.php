@@ -2,7 +2,13 @@
 
 namespace App\Http\Requests\UpdateRequests;
 
+use App\Enums\RoleEnum;
+use App\Models\InventoryItem;
+use App\Models\MeasurementUnit;
+use App\Rules\AmountForUnit;
+use App\Support\ItemCode;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateInventoryItemRequest extends FormRequest
 {
@@ -21,7 +27,16 @@ class UpdateInventoryItemRequest extends FormRequest
      */
     public function rules(): array
     {
+        // Amounts follow the unit the item will have after saving. While the unit stays the
+        // same, unchanged (possibly legacy) amounts are accepted as they are.
+        $item = $this->route('inventoryItem');
+        $unit = MeasurementUnit::find($this->input('measurement_unit_id')) ?? $item?->measurementUnit;
+        $unitChanged = $item && (int) $unit?->id !== (int) $item->measurement_unit_id;
+        $stored = fn(string $field) => $unitChanged || $item?->$field === null ? null : (float) $item->$field;
+
         return [
+            'local_name' => ['required', Rule::unique('inventory_items', 'local_name')->ignore($this->route('inventoryItem'))],
+            'measurement_unit_id' => ['nullable', 'exists:measurement_units,id'],
             'name' => ['required', 'min:2', 'max:255'],
             'name_eng' => ['required', 'min:2', 'max:255'],
             'inventory_type' => 'required:exists:item_types,id',
@@ -35,10 +50,9 @@ class UpdateInventoryItemRequest extends FormRequest
             'barcode' => ['nullable', 'string'],
             'url_to_provider' => ['nullable', 'string'],
             'alt_url_to_provider' => ['nullable', 'string'],
-            'total_amount' => ['required', 'numeric', 'min:0'],
-            'critical_amount' => ['nullable','numeric'],
-            'to_order_amount' => ['nullable','numeric'],
-            'average_consumption' => ['nullable','numeric'],
+            'total_amount' => ['required', 'numeric', 'min:0', new AmountForUnit($unit, $stored('total_amount'))],
+            'critical_amount' => ['nullable', 'numeric', new AmountForUnit($unit, $stored('critical_amount'))],
+            'to_order_amount' => ['nullable', 'numeric', new AmountForUnit($unit, $stored('to_order_amount'))],
             'multiple_locations' => ['boolean'],
             'cupboard' => ['nullable','numeric','between:1,50'],
             'shelf' => ['nullable','string'],
@@ -50,5 +64,33 @@ class UpdateInventoryItemRequest extends FormRequest
             'max_loan_term_days' => ['nullable', 'integer', 'min:0', 'gte:min_loan_term_days'],
             'updated_by' => 'required|exists:users,id'
         ];
+    }
+
+    /**
+     * Only users who may alter codes can change the code or the unit. Changing the
+     * unit rewrites the code's suffix (ŠVIE102-P -> ŠVIE102-K); everyone else keeps
+     * the item's current code and unit whatever the request contains.
+     */
+    protected function prepareForValidation(): void
+    {
+        /** @var InventoryItem $item */
+        $item = $this->route('inventoryItem');
+
+        if (!$this->user()?->hasAnyRole([RoleEnum::ADMIN, RoleEnum::SUPER_ADMIN])) {
+            $this->merge([
+                'local_name' => $item->local_name,
+                'measurement_unit_id' => $item->measurement_unit_id,
+            ]);
+            return;
+        }
+
+        $unitId = $this->input('measurement_unit_id');
+        $localName = $this->input('local_name') ?: $item->local_name;
+
+        if ($unitId && (int) $unitId !== (int) $item->measurement_unit_id && ($unit = MeasurementUnit::find($unitId))) {
+            $localName = ItemCode::withUnit($localName, $unit->code);
+        }
+
+        $this->merge(['local_name' => $localName]);
     }
 }

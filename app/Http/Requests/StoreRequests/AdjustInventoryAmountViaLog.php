@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\StoreRequests;
 
+use App\Rules\AmountForUnit;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -37,8 +38,9 @@ class AdjustInventoryAmountViaLog extends FormRequest
             'action' => ['required', Rule::in(['REMOVE', 'RETURN'])],
             'amount' => [
                 'required',
-                'integer',
-                'min:1',
+                'numeric',
+                'gt:0',
+                new AmountForUnit($this->route('inventoryItem')?->measurementUnit),
             ],
             'comment' => ['required', 'min:5', 'max:100'],
             'term' => $this->termRules(),

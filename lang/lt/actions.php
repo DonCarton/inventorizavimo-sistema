@@ -44,6 +44,12 @@ return [
         'deleted' => 'Tipas [:name] sėkmingai ištrintas.',
         'still_related' => 'Tipas yra priskirtas inventoriaus įrašams [:count]. Ištrinti negalima.'
     ],
+    'measurementUnit' => [
+        'created' => 'Naujas matavimo vienetas [:code] sukurtas.',
+        'updated' => 'Matavimo vienetas [:code] atnaujintas.',
+        'deleted' => 'Matavimo vienetas [:code] ištrintas.',
+        'still_related' => 'Matavimo vienetas priskirtas inventoriaus įrašams [:count], todėl jo ištrinti negalima. Vietoj to jį išjunkite.',
+    ],
     'systemConfiguration' => [
         'updated' => 'Nustatymas pakeistas sėkmingai.'
     ],

@@ -18,13 +18,18 @@ import { useState, useEffect, useRef } from 'react';
 import FlexibleStaticSelect from '@/Components/Forms/FlexibleStaticSelect';
 import MiscButton from "@/Components/Forms/MiscButton.jsx";
 import { TbEye } from "react-icons/tb";
+import formatMonthlyConsumption from "@/Libs/formatMonthlyConsumption";
 
-export default function Edit({auth, inventoryItem, logsForItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, can, loanTermLimitsEnabled}) {
+// Same suffix replacement as App\Support\ItemCode::withUnit (the server recomputes it on save).
+const codeWithUnit = (code, unitCode) => `${code.replace(/-\p{Lu}{1,3}$/u, '')}-${unitCode}`;
+
+export default function Edit({auth, inventoryItem, logsForItem, laboratories, facilities, itemTypes, queryParams, referrer, cupboardOptions, shelfOptions, can, loanTermLimitsEnabled, measurementUnits = []}) {
     const isFirstLoad = useRef(true);
     const handleConfirmMessage = StringHelper.__("Are you sure you want to delete this item") + '?';
     const [facilityOptions, setFacilityOptions] = useState(facilities.data || []);
     const {data, setData, put, delete: destroy, errors, processing} = useForm({
         local_name: inventoryItem.data.localName || '',
+        measurement_unit_id: inventoryItem.data.measurementUnitId || '',
         inventory_type: inventoryItem.data.inventoryType || '',
         name: inventoryItem.data.name || '',
         name_eng: inventoryItem.data.nameEng || '',
@@ -39,7 +44,6 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
         total_amount: inventoryItem.data.totalAmount || 0,
         critical_amount: inventoryItem.data.criticalAmount || 0,
         to_order_amount: inventoryItem.data.toOrderAmount || '',
-        average_consumption: inventoryItem.data.averageConsumption || '',
         multiple_locations: inventoryItem.data.multipleLocations || 0,
         laboratory: inventoryItem.data.laboratory || '',
         facilities: inventoryItem.data.facilities || [],
@@ -52,6 +56,18 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
         min_loan_term_days: inventoryItem.data.minLoanTermDays ?? '',
         max_loan_term_days: inventoryItem.data.maxLoanTermDays ?? '',
     })
+    // Amounts follow the selected unit's decimal places (0 = whole numbers only).
+    const selectedUnit = measurementUnits.find((option) => String(option.id) === String(data.measurement_unit_id));
+    const unitDecimals = selectedUnit ? selectedUnit.decimal_places : null;
+    const handleUnitChange = (e) => {
+        const unit = measurementUnits.find((option) => String(option.id) === e.target.value);
+        if (!unit) return;
+        setData((current) => ({
+            ...current,
+            measurement_unit_id: unit.id,
+            local_name: codeWithUnit(current.local_name, unit.code),
+        }));
+    };
     useEffect(() => {
         if (!data.laboratory) {
             setFacilityOptions([]);
@@ -138,6 +154,25 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
                                             <InputError message={errors.local_name} className="mt-2"/>
                                         </div>
                                         <div className="mt-4">
+                                            <InputLabel htmlFor="inventoryItems_measurement_unit">{StringHelper.__("Unit")}</InputLabel>
+                                            <select id="inventoryItems_measurement_unit" name="measurement_unit_id"
+                                                    disabled={!can.alterLocalName}
+                                                    value={data.measurement_unit_id}
+                                                    onChange={handleUnitChange}
+                                                    className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full disabled:bg-gray-400 disabled:text-white">
+                                                {!data.measurement_unit_id && <option value="">{StringHelper.__("Choose a value")}</option>}
+                                                {measurementUnits.map(unit => (
+                                                    <option key={unit.id} value={unit.id}>{unit.name} ({unit.code})</option>
+                                                ))}
+                                            </select>
+                                            {can.alterLocalName && String(data.measurement_unit_id) !== String(inventoryItem.data.measurementUnitId ?? '') && (
+                                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                                    {StringHelper.__("Changing the unit also changes the code")}: {inventoryItem.data.localName} → {data.local_name}
+                                                </p>
+                                            )}
+                                            <InputError message={errors.measurement_unit_id} className="mt-2"/>
+                                        </div>
+                                        <div className="mt-4">
                                             <InputLabel
                                                 htmlFor="inventoryItems_inventory_type">{StringHelper.__("Type")}</InputLabel>
                                             <SelectForSingleItem
@@ -200,7 +235,7 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <div className="mt-4 w-full">
                                             <InputLabel htmlFor="inventoryItems_total_amount" value={StringHelper.__("Amount")}/>
-                                            <NumericInput id="inventoryItems_total_amount" type="text"
+                                            <NumericInput id="inventoryItems_total_amount" type="text" decimals={unitDecimals}
                                                           name="total_amount" value={data.total_amount}
                                                           className="mt-1 block w-full"
                                                           onChange={e => setData('total_amount', e.target.value)}/>
@@ -209,7 +244,7 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
                                         <div className="mt-4 w-full">
                                             <InputLabel htmlFor="inventoryItems_critical_amount"
                                                         value={StringHelper.__("Critical amount")}/>
-                                            <TextInput id="inventoryItems_critical_amount" type="text"
+                                            <NumericInput id="inventoryItems_critical_amount" type="text" decimals={unitDecimals}
                                                        name="critical_amount" value={data.critical_amount}
                                                        className="mt-1 block w-full"
                                                        onChange={e => setData('critical_amount', e.target.value)}/>
@@ -218,7 +253,7 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
                                         <div className="mt-4 w-full">
                                             <InputLabel htmlFor="inventoryItems_to_order_amount"
                                                         value={StringHelper.__("To order")}/>
-                                            <NumericInput id="inventoryItems_to_order_amount" type="text"
+                                            <NumericInput id="inventoryItems_to_order_amount" type="text" decimals={unitDecimals}
                                                        name="to_order_amount" value={data.to_order_amount}
                                                        className="mt-1 block w-full"
                                                        onChange={e => setData('to_order_amount', e.target.value)}/>
@@ -227,11 +262,11 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
                                         <div className="mt-4 w-full">
                                             <InputLabel htmlFor="inventoryItems_average_consumption"
                                                         value={StringHelper.__("Average consumption")}/>
-                                            <NumericInput id="inventoryItems_average_consumption" type="text"
-                                                       name="average_consumption" value={data.average_consumption}
-                                                       className="mt-1 block w-full"
-                                                       onChange={e => setData('average_consumption', e.target.value)}/>
-                                            <InputError message={errors.average_consumption} className="mt-2"/>
+                                            <TextInput id="inventoryItems_average_consumption" type="text"
+                                                       disabled={true} readOnly={true}
+                                                       value={formatMonthlyConsumption(inventoryItem.data)}
+                                                       className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
+                                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{StringHelper.__("Calculated per month from usage in the last 12 months")}.</p>
                                         </div>
                                         {can.alterLoanTermRange && loanTermLimitsEnabled && selectedItemTypeAllowsLoanTerm && (<>
                                             <div className="mt-4 w-full">

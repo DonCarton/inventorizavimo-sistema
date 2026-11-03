@@ -26,7 +26,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property double $total_amount
  * @property double $critical_amount
  * @property double $to_order_amount
- * @property double $average_consumption
  * @property boolean $multiple_locations
  * @property int $laboratory
  * @property int $cupboard
@@ -52,6 +51,12 @@ class InventoryItemResource extends JsonResource
         return [
             'id' => $this->id,
             'localName' => $this->local_name,
+            'measurementUnitId' => $this->measurement_unit_id,
+            'measurementUnit' => $this->measurementUnit ? [
+                'code' => $this->measurementUnit->code,
+                'name' => $this->measurementUnit->name,
+                'decimalPlaces' => $this->measurementUnit->decimal_places,
+            ] : null,
             'inventoryType' => $this->inventory_type,
             'name' => $this->name,
             'nameEng' => $this->name_eng,
@@ -66,7 +71,7 @@ class InventoryItemResource extends JsonResource
             'totalAmount' => $this->total_amount,
             'criticalAmount' => $this->critical_amount,
             'toOrderAmount' => $this->to_order_amount,
-            'averageConsumption' => $this->average_consumption,
+            'averageConsumption' => $this->averageMonthlyConsumption(),
             'multipleLocations' => $this->multiple_locations,
             'laboratory' => $this->laboratory,
             'facilities' => $this->facilities->pluck('id')->all(),

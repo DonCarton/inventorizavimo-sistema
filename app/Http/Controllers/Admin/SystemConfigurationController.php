@@ -14,12 +14,10 @@ class SystemConfigurationController extends Controller
 {
     public function index(): Response|RedirectResponse
     {
-        $systemConfiguration = SystemConfiguration::all()->groupBy("category");
         $myConfigurations = SystemConfiguration::with("value")
             ->get()
             ->groupBy("category");
         return Inertia::render("Admin/Index", [
-            "systemConfiguration" => $systemConfiguration,
             "myConfigurations" => $myConfigurations,
             "success" => session("success"),
             "failure" => session("failure"),
@@ -64,8 +62,9 @@ class SystemConfigurationController extends Controller
                                 $fail(
                                     __("validation.custom.value.range_numeric"),
                                 );
+                            } else {
+                                $fail(__("validation.custom.value.range_generic"));
                             }
-                            $fail(__("validation.custom.value.range_generic"));
                         }
                     }
                 },

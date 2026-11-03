@@ -24,7 +24,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property double $total_amount
  * @property double $critical_amount
  * @property double $to_order_amount
- * @property double $average_consumption
  * @property boolean $multiple_locations
  * @property int $laboratory
  * @property int $cupboard
@@ -56,7 +55,7 @@ class RichInventoryItemResource extends JsonResource
                         'totalAmount' => $this->total_amount,
                         'criticalAmount' => $this->critical_amount,
                         'toOrderAmount' => $this->to_order_amount,
-                        'averageConsumption' => $this->average_consumption,
+                        'averageConsumption' => $this->averageMonthlyConsumption(),
                     ],
                 ],
                 [

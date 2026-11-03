@@ -21,12 +21,13 @@ use App\Http\Resources\SelectObjectResources\LaboratoryResourceForMulti;
 use App\Imports\InventoryImport;
 use App\Jobs\NotifyFailedImports;
 use App\Models\AmountLog;
+use App\Models\ConsumptionLog;
 use App\Models\InventoryItem;
 use App\Models\ItemType;
 use App\Models\Laboratory;
+use App\Models\MeasurementUnit;
 use App\Models\SystemConfiguration;
 use App\Observers\InventoryItemObserver;
-use App\Rules\NonNegativeAmount;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -181,8 +182,23 @@ class InventoryItemController extends Controller
             'referrer' => $request->query('referrer'),
             'queryParams' => $request->query('query'),
             'cupboardOptions' => $configurations['cupboardOptions'],
-            'shelfOptions' => $configurations['shelfOptions']
+            'shelfOptions' => $configurations['shelfOptions'],
+            'measurementUnits' => $this->measurementUnitOptions(),
         ]);
+    }
+
+    /**
+     * Units offered in the create/edit forms: active ones, plus the item's current
+     * unit when it has been deactivated since.
+     */
+    private function measurementUnitOptions(?int $currentUnitId = null): array
+    {
+        return MeasurementUnit::query()
+            ->where('is_active', true)
+            ->when($currentUnitId, fn($query) => $query->orWhere('id', $currentUnitId))
+            ->orderBy('code')
+            ->get(['id', 'code', 'name', 'decimal_places'])
+            ->toArray();
     }
 
     /**
@@ -228,6 +244,7 @@ class InventoryItemController extends Controller
             'referrer' => $request->query('referrer'),
             'cupboardOptions' => $configurations['cupboardOptions'],
             'shelfOptions' => $configurations['shelfOptions'],
+            'measurementUnits' => $this->measurementUnitOptions($inventoryItem->measurement_unit_id),
             'loanTermLimitsEnabled' => SystemConfiguration::isEnabled('loan_term_limits_enabled'),
             'can' => [
                 'alterLocalName' => $request->user()->hasAnyRole([RoleEnum::ADMIN,RoleEnum::SUPER_ADMIN]),
@@ -274,19 +291,31 @@ class InventoryItemController extends Controller
     {
         $queryParams = $request->query('query');
         $redirectDestination = $request->query('referrer', 'index');
-        if ($request['amount_removed'] > 0) {
-            $data = $request->validate([
-                'amount_removed' => ['numeric', new NonNegativeAmount($inventoryItem->total_amount)],
-                'total_amount' => 'numeric',
-                'updated_by' => 'required'
-            ]);
-            $data['total_amount'] = $data['total_amount'] - $data['amount_removed'];
+        $data = $request->validated();
+        // Start from the stored total (not the one the browser sent).
+        $total = (float) $inventoryItem->total_amount;
+
+        if ((float) ($data['amount_removed'] ?? 0) > 0) {
+            $removed = $inventoryItem->roundAmount((float) $data['amount_removed']);
+            $total -= $removed;
+
+            // Using up a consumable is what average consumption is calculated from.
+            if ($inventoryItem->itemType?->change_acc_amount) {
+                ConsumptionLog::create([
+                    'inventory_item_id' => $inventoryItem->id,
+                    'amount' => $removed,
+                    'created_by' => $request->user()->id,
+                ]);
+            }
         } else {
-            $data = $request->only(['amount_added', 'total_amount', 'updated_by']);
-            $data['total_amount'] = $data['total_amount'] + $data['amount_added'];
+            $total += $inventoryItem->roundAmount((float) $data['amount_added']);
         }
+
+        // The added/removed amount follows the unit; the total is only cleaned of float
+        // noise, so legacy totals with more decimals than the unit (e.g. 2.5 packages)
+        // keep their fraction instead of being silently rounded.
         $inventoryItem->update([
-            'total_amount' => $data['total_amount'],
+            'total_amount' => round($total, MeasurementUnit::MAX_DECIMAL_PLACES),
             'updated_by' => $data['updated_by']
         ]);
         if ($request['urlToRedirect']){
@@ -336,7 +365,7 @@ class InventoryItemController extends Controller
             return Inertia::render('User/EditLog', [
                 'inventoryItem' => new CRUDInventoryItemResource($inventoryItem),
                 'logsForItem' => AmountLogResource::collection($amountLogs),
-                'totalInUse' => $inventoryItem->total_amount - $totalTaken + $totalReturned,
+                'totalInUse' => $inventoryItem->roundAmount($inventoryItem->total_amount - $totalTaken + $totalReturned),
                 'laboratories' => LaboratoryResource::collection($laboratories),
                 'redirectToReader' => $redirectToReader,
                 'queryParams' => $queryParams,
@@ -373,8 +402,10 @@ class InventoryItemController extends Controller
                 ->where('laboratory_id', $laboratoryId)
                 ->where('action', 'RETURN')
                 ->sum('amount');
-            $availableInLaboratory = $amountInLaboratory - $amountReturned;
-            if ($request->amount > $availableInLaboratory) {
+            // Sums of decimal amounts carry float noise (0.3 - 0.1 = 0.19999999999999998),
+            // so compare at the unit's precision instead of exactly.
+            $availableInLaboratory = $inventoryItem->roundAmount($amountInLaboratory - $amountReturned);
+            if ($inventoryItem->roundAmount((float) $request->amount) > $availableInLaboratory) {
                 return back()->withErrors(['amount' => __("actions.inventoryItem.volumeMismatch")]);
             }
         }
@@ -382,7 +413,7 @@ class InventoryItemController extends Controller
             'inventory_item_id' => $inventoryItem->id,
             'laboratory_id' => $request->input('laboratory_id'),
             'action' => $request->input('action'),
-            'amount' => $request->input('amount'),
+            'amount' => $inventoryItem->roundAmount((float) $request->input('amount')),
             'comment' => $request->input('comment'),
             'term' => $request->input('term'),
             'created_by' => $request->user()->id,
@@ -396,7 +427,9 @@ class InventoryItemController extends Controller
             ->where('laboratory_id', $laboratoryId)
             ->where('action', 'RETURN')
             ->sum('amount');
-        if ($totalTakenInLab == $totalReturnedInLab) {
+        // Everything this lab borrowed is back: clear its loan entries (compared at the
+        // unit's precision, as 0.1 + 0.2 is not exactly 0.3 in floating point).
+        if ($inventoryItem->roundAmount($totalTakenInLab - $totalReturnedInLab) <= 0) {
             AmountLog::where('inventory_item_id', $inventoryItem->id)
                 ->where('laboratory_id', $laboratoryId)
                 ->delete();
@@ -437,6 +470,8 @@ class InventoryItemController extends Controller
             'cupboardOptions' => $configurations['cupboardOptions'],
             'shelfOptions' => $configurations['shelfOptions'],
             'loanTermRange' => $inventoryItem->loanTermRange(),
+            // Usage chart: only consumables have consumption history.
+            'consumptionByMonth' => $inventoryItem->itemType?->change_acc_amount ? $inventoryItem->monthlyConsumption() : null,
             'can' => [
                 'edit' => $request->user()->can('edit', $inventoryItem),
             ],

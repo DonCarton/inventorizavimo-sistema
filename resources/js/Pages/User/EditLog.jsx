@@ -135,7 +135,7 @@ export default function Edit({auth, inventoryItem, logsForItem, totalInUse, labo
                                     <div className="mt-4">
                                         <InputLabel htmlFor="inventoryItems_amount">{StringHelper.__("Amount")}<span
                                             className="text-red-500">*</span></InputLabel>
-                                        <NumericInput type="text" className="mt-1 block w-full"
+                                        <NumericInput type="text" className="mt-1 block w-full" decimals={inventoryItem.unit_decimals ?? null}
                                                       id="inventoryItems_amount" name="amount"
                                                       onChange={e => setData('amount', e.target.value)}></NumericInput>
                                         <InputError message={errors.amount} className="mt-2"/>
