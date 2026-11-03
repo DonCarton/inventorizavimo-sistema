@@ -150,6 +150,7 @@ export default function Edit({auth, inventoryItem, logsForItem, laboratories, fa
                                                        value={data.local_name}
                                                        disabled={!can.alterLocalName}
                                                        readOnly={!can.alterLocalName}
+                                                       onChange={e => setData('local_name', e.target.value)}
                                                        className="mt-1 block w-full disabled:bg-gray-400 disabled:text-white"/>
                                             <InputError message={errors.local_name} className="mt-2"/>
                                         </div>
